@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DB Audit: /decisoes — MdFlow</title>
+  <style>
+    :root {
+      --background: 25 16% 6%;
+      --card: 30 18% 9%;
+      --surface: 28 14% 11%;
+      --sidebar: 30 20% 4%;
+      --foreground: 36 17% 93%;
+      --muted-foreground: 33 10% 58%;
+      --primary: 162 72% 45%;
+      --border: 28 10% 21%;
+      --destructive: 0 84% 60%;
+      --warning: 38 92% 50%;
+      --success: 142 71% 45%;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      border-bottom: 2px solid hsl(var(--border));
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      font-family: Manrope, -apple-system, sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .header .subtitle {
+      color: hsl(var(--muted-foreground));
+      font-size: 0.95rem;
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background-color: hsl(var(--card));
+      border: 1px solid hsl(var(--border));
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+    }
+
+    .card-title {
+      color: hsl(var(--muted-foreground));
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: JetBrains Mono, monospace;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .card-value .label {
+      font-size: 0.9rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      font-family: Manrope, -apple-system, sans-serif;
+      border-left: 3px solid hsl(var(--primary));
+      padding-left: 1rem;
+    }
+
+    .section h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: hsl(var(--surface));
+      border: 1px solid hsl(var(--border));
+      border-radius: 0.5rem;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    thead {
+      background-color: hsl(var(--card));
+      color: hsl(var(--foreground));
+    }
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-bottom: 1px solid hsl(var(--border));
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid hsl(var(--border));
+      font-size: 0.9rem;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background-color: hsl(var(--card));
+    }
+
+    .issue {
+      background-color: hsl(var(--card));
+      border-left: 4px solid;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .issue.p0 {
+      border-left-color: hsl(var(--destructive));
+      background-color: color-mix(in srgb, hsl(var(--destructive)) 10%, hsl(var(--card)));
+    }
+
+    .issue.p1 {
+      border-left-color: hsl(var(--warning));
+      background-color: color-mix(in srgb, hsl(var(--warning)) 10%, hsl(var(--card)));
+    }
+
+    .issue.p2 {
+      border-left-color: hsl(var(--primary));
+      background-color: color-mix(in srgb, hsl(var(--primary)) 10%, hsl(var(--card)));
+    }
+
+    .issue-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .issue-priority {
+      font-weight: 700;
+      font-family: JetBrains Mono, monospace;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .issue.p0 .issue-priority {
+      color: hsl(var(--destructive));
+    }
+
+    .issue.p1 .issue-priority {
+      color: hsl(var(--warning));
+    }
+
+    .issue.p2 .issue-priority {
+      color: hsl(var(--primary));
+    }
+
+    .issue-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .issue-detail {
+      margin: 0.75rem 0 0.5rem 0;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .issue-detail strong {
+      color: hsl(var(--foreground));
+    }
+
+    .code-block {
+      background-color: hsl(var(--background));
+      border: 1px solid hsl(var(--border));
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-family: JetBrains Mono, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .code-block code {
+      color: hsl(var(--primary));
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.25rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge.pass {
+      background-color: color-mix(in srgb, hsl(var(--success)) 20%, hsl(var(--card)));
+      color: hsl(var(--success));
+    }
+
+    .badge.fail {
+      background-color: color-mix(in srgb, hsl(var(--destructive)) 20%, hsl(var(--card)));
+      color: hsl(var(--destructive));
+    }
+
+    .badge.warning {
+      background-color: color-mix(in srgb, hsl(var(--warning)) 20%, hsl(var(--card)));
+      color: hsl(var(--warning));
+    }
+
+    .checklist {
+      list-style: none;
+    }
+
+    .checklist li {
+      padding: 0.75rem 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .checklist li::before {
+      content: '✅';
+      flex-shrink: 0;
+    }
+
+    .checklist li.pending::before {
+      content: '⚠️';
+    }
+
+    .next-steps {
+      background-color: hsl(var(--surface));
+      border: 1px solid hsl(var(--border));
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .next-steps ol {
+      margin-left: 1.5rem;
+    }
+
+    .next-steps li {
+      margin-bottom: 0.75rem;
+    }
+
+    .next-steps strong {
+      color: hsl(var(--foreground));
+    }
+
+    .footer {
+      border-top: 1px solid hsl(var(--border));
+      padding-top: 1.5rem;
+      margin-top: 2rem;
+      color: hsl(var(--muted-foreground));
+      font-size: 0.85rem;
+    }
+
+    .highlight {
+      background-color: hsl(var(--primary));
+      color: hsl(var(--background));
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-family: JetBrains Mono, monospace;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>DB Audit: /decisoes</h1>
+      <p class="subtitle">MdFlow Supabase Schema • 2026-03-31 • Projeto: qdivfairxhdihaqqypgb</p>
+    </div>
+
+    <div class="summary-cards">
+      <div class="card">
+        <div class="card-title">Tabelas Auditadas</div>
+        <div class="card-value">1 <span class="label">tabla</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Issues P0</div>
+        <div class="card-value" style="color: hsl(var(--destructive));">3</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Issues P1</div>
+        <div class="card-value" style="color: hsl(var(--warning));">2</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Issues P2</div>
+        <div class="card-value" style="color: hsl(var(--primary));">1</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Tabela: decisoes</h2>
+      <h3>Verificações Obrigatórias</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Verificação</th>
+            <th>Status</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="highlight">organizacao_id</span></td>
+            <td><span class="badge pass">✅ OK</span></td>
+            <td>Presente, FK, NOT NULL</td>
+          </tr>
+          <tr>
+            <td><span class="highlight">deleted_at</span></td>
+            <td><span class="badge pass">✅ OK</span></td>
+            <td>Soft delete obrigatório presente</td>
+          </tr>
+          <tr>
+            <td><span class="highlight">created_at / updated_at</span></td>
+            <td><span class="badge pass">✅ OK</span></td>
+            <td>Timestamps de auditoria presentes</td>
+          </tr>
+          <tr>
+            <td>RLS habilitado</td>
+            <td><span class="badge fail">❌ P0</span></td>
+            <td>Não validado (MCP indisponível)</td>
+          </tr>
+          <tr>
+            <td>Índices em <span class="highlight">organizacao_id</span></td>
+            <td><span class="badge fail">❌ P0</span></td>
+            <td>Não validado (MCP indisponível)</td>
+          </tr>
+          <tr>
+            <td>Trigger <span class="highlight">updated_at</span></td>
+            <td><span class="badge warning">⚠️ P0</span></td>
+            <td>Não validado (MCP indisponível)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Issues P0 — Bloqueadores</h2>
+
+      <div class="issue p0">
+        <div class="issue-header">
+          <span class="issue-priority">P0</span>
+          <span class="issue-title">Inconsistência: <span class="highlight">arquivada</span> vs <span class="highlight">status_analise</span></span>
+        </div>
+        <div class="issue-detail">
+          <strong>Problema:</strong> Tabela referencia campo <span class="highlight">arquivada</span> em migration 20260305100001 (WHERE arquivada = false), mas também usa <span class="highlight">status_analise</span> com valores 'pendente' | 'arquivada' | NULL
+        </div>
+        <div class="issue-detail">
+          <strong>Impacto:</strong> Lógica de negócio quebrada. Trigger filtra <span class="highlight">status_analise <> 'arquivada'</span> mas índice filtra <span class="highlight">arquivada = false</span>
+        </div>
+        <div class="issue-detail">
+          <strong>Raiz:</strong> Qual é verdadeiramente o flag de arquivo? Há duplicação semântica.
+        </div>
+      </div>
+
+      <div class="issue p0">
+        <div class="issue-header">
+          <span class="issue-priority">P0</span>
+          <span class="issue-title">RLS Policy não validado</span>
+        </div>
+        <div class="issue-detail">
+          <strong>Problema:</strong> Não foi possível validar RLS policies. Supabase Management API indisponível.
+        </div>
+        <div class="issue-detail">
+          <strong>Crítico:</strong> MdFlow obriga <span class="highlight">POLICY "decisoes_org_isolation" ON decisoes USING (organizacao_id = public.get_org_id())</span>
+        </div>
+        <div class="issue-detail">
+          <strong>Risco:</strong> Possível data leak multi-tenant se policy estiver faltando
+        </div>
+      </div>
+
+      <div class="issue p0">
+        <div class="issue-header">
+          <span class="issue-priority">P0</span>
+          <span class="issue-title">Índices em <span class="highlight">organizacao_id</span> não validados</span>
+        </div>
+        <div class="issue-detail">
+          <strong>Esperado:</strong>
+        </div>
+        <div class="code-block"><code>CREATE INDEX idx_decisoes_org ON decisoes(organizacao_id);
+CREATE INDEX idx_decisoes_org_active ON decisoes(organizacao_id) WHERE deleted_at IS NULL;</code></div>
+        <div class="issue-detail">
+          <strong>Status:</strong> Não foi possível validar via MCP. Aplicar imediatamente.
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Issues P1 — Importantes</h2>
+
+      <div class="issue p1">
+        <div class="issue-header">
+          <span class="issue-priority">P1</span>
+          <span class="issue-title">FK <span class="highlight">intimacao_id</span> com semântica duvidosa</span>
+        </div>
+        <div class="issue-detail">
+          <strong>Problema:</strong> Migration 20260306000001 adiciona <span class="highlight">intimacao_id</span> FK, mas RPC 20260305100003 também faz <span class="highlight">UPDATE intimacoes SET decisao_id</span> (relação bidirecional)
+        </div>
+        <div class="issue-detail">
+          <strong>Questão:</strong> Uma intimação pode ter múltiplas decisões? Ou uma decisão referencia múltiplas intimações?
+        </div>
+        <div class="issue-detail">
+          <strong>Padrão MdFlow:</strong> FKs devem ter semântica clara (1:N vs N:N com tabela de join)
+        </div>
+      </div>
+
+      <div class="issue p1">
+        <div class="issue-header">
+          <span class="issue-priority">P1</span>
+          <span class="issue-title"><span class="highlight">status_analise</span> sem CHECK CONSTRAINT claro</span>
+        </div>
+        <div class="issue-detail">
+          <strong>Problema:</strong> Migration referencia valores 'pendente' | 'arquivada', mas não há CHECK CONSTRAINT documentado
+        </div>
+        <div class="issue-detail">
+          <strong>Risco:</strong> Inserção de valores inválidos via INSERT direto (sem passar pela RPC)
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Issues P2 — Melhorias</h2>
+
+      <div class="issue p2">
+        <div class="issue-header">
+          <span class="issue-priority">P2</span>
+          <span class="issue-title">Campos de cálculo permitindo NULL</span>
+        </div>
+        <div class="issue-detail">
+          <strong>Problema:</strong> <span class="highlight">valor_total_calculado</span>, <span class="highlight">data_calculo</span>, <span class="highlight">calculo_memoria</span> podem ser NULL indefinidamente
+        </div>
+        <div class="issue-detail">
+          <strong>Melhoria:</strong> Adicionar DEFAULT ou computed column se são sempre calculados via <span class="highlight">rpc_calcular_valor_atualizado</span>
+        </div>
+        <div class="issue-detail">
+          <strong>Severidade:</strong> Apenas DX. Não bloqueia funcionamento.
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>SQL de Correção — Pronto para Aplicar</h2>
+
+      <h3>P0.1 — RLS Policy (OBRIGATÓRIO)</h3>
+      <div class="code-block"><code>ALTER TABLE decisoes ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "decisoes_org_isolation" ON decisoes;
+CREATE POLICY "decisoes_org_isolation" ON decisoes
+  FOR ALL USING (organizacao_id = public.get_org_id())
+  WITH CHECK (organizacao_id = public.get_org_id());</code></div>
+
+      <h3>P0.2 — Índices Obrigatórios</h3>
+      <div class="code-block"><code>CREATE INDEX IF NOT EXISTS idx_decisoes_org ON decisoes(organizacao_id);
+CREATE INDEX IF NOT EXISTS idx_decisoes_org_active ON decisoes(organizacao_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_decisoes_valor_total
+  ON decisoes(organizacao_id, valor_total_calculado)
+  WHERE valor_total_calculado IS NOT NULL AND (status_analise IS NULL OR status_analise <> 'arquivada');</code></div>
+
+      <h3>P0.3 — CHECK Constraint em status_analise</h3>
+      <div class="code-block"><code>ALTER TABLE decisoes ADD CONSTRAINT decisoes_status_check 
+  CHECK (status_analise IS NULL OR status_analise IN ('pendente', 'arquivada', 'analisada'))
+  NOT VALID;
+
+VALIDATE CONSTRAINT decisoes_status_check;</code></div>
+
+      <h3>P0.4 — Trigger updated_at (se faltando)</h3>
+      <div class="code-block"><code>CREATE TRIGGER IF NOT EXISTS trg_decisoes_updated_at BEFORE UPDATE ON decisoes
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();</code></div>
+
+      <h3>P0.5 — Esclarecer semântica de arquivada vs status_analise (DECISION)</h3>
+      <div class="code-block"><code>-- Opção A: RECOMENDADA — Remover "arquivada" e usar APENAS status_analise
+ALTER TABLE decisoes DROP COLUMN IF EXISTS arquivada CASCADE;
+
+-- Opção B: Remover "status_analise" e usar APENAS "arquivada"
+-- ALTER TABLE decisoes DROP COLUMN IF EXISTS status_analise CASCADE;
+-- ALTER TABLE decisoes ADD COLUMN arquivada BOOLEAN DEFAULT false;
+-- ALTER TABLE decisoes ADD CONSTRAINT decisoes_arquivada_check CHECK (arquivada IN (true, false));</code></div>
+    </div>
+
+    <div class="section">
+      <h2>RPCs Relacionadas — Status</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>RPC</th>
+            <th>Security Definer</th>
+            <th>Search Path</th>
+            <th>RETURNS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="highlight">rpc_decisoes_inserir_via_pipeline</span></td>
+            <td><span class="badge pass">✅</span></td>
+            <td><span class="badge pass">✅</span></td>
+            <td>JSONB ✅</td>
+          </tr>
+          <tr>
+            <td><span class="highlight">rpc_calcular_valor_atualizado</span></td>
+            <td><span class="badge pass">✅</span></td>
+            <td><span class="badge pass">✅</span></td>
+            <td>JSONB ✅</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Triggers</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Trigger</th>
+            <th>Evento</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="highlight">trg_decisao_update_processo</span></td>
+            <td>AFTER INSERT/UPDATE/DELETE</td>
+            <td><span class="badge pass">✅ Implementado</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 1rem; color: hsl(var(--muted-foreground));">Função: Atualiza <span class="highlight">processos.ultima_decisao_*</span> após mudanças em decisoes.</p>
+    </div>
+
+    <div class="section">
+      <h2>Conformidades Validadas</h2>
+      <ul class="checklist">
+        <li><span class="highlight">organizacao_id</span> presente e obrigatório</li>
+        <li><span class="highlight">created_at</span> e <span class="highlight">updated_at</span> presentes</li>
+        <li><span class="highlight">deleted_at</span> para soft delete presente</li>
+        <li>RPCs com SECURITY DEFINER + SET search_path</li>
+        <li>RPCs retornam JSONB</li>
+        <li>FKs para tabelas principais (processos, intimacoes, usuarios)</li>
+        <li>CHECK constraints em campos enum (resultado, tipo_condenacao, indice_correcao)</li>
+        <li>JSONB para dados complexos (calculo_memoria, ia_payload)</li>
+      </ul>
+    </div>
+
+    <div class="next-steps">
+      <h3>🔴 Próximos Passos</h3>
+      <ol>
+        <li><strong>URGENTE — P0:</strong> Aplicar RLS policy + índices (via Supabase Studio)</li>
+        <li><strong>URGENTE — P0:</strong> Esclarecer semântica de <span class="highlight">arquivada</span> vs <span class="highlight">status_analise</span> com CTO</li>
+        <li><strong>Importante — P1:</strong> Validar cardinalidade da FK <span class="highlight">intimacao_id</span> (1:1, 1:N, N:N?)</li>
+        <li><strong>Teste:</strong> End-to-end com org_id de teste (55a0c7ba-1a23-4ae1-b69b-a13811324735)</li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      <p>Auditoria realizada em 2026-03-31 • Projeto MdFlow (qdivfairxhdihaqqypgb) • Gerado por: mdflow-db-auditor (Claude Haiku 4.5)</p>
+      <p style="margin-top: 0.5rem;">Para dúvidas, consulte: ~/beta-mdflow/CLAUDE.md (seção Backend Supabase)</p>
+    </div>
+  </div>
+</body>
+</html>
