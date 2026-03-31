@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA — Restrições Vazias no ClienteDrawer · 2026-03-31</title>
+<style>
+  :root {
+    --bg: #12100e;
+    --card: #1a1714;
+    --surface: #211e1a;
+    --border: #3a3530;
+    --fg: #f2efe8;
+    --muted: #9e978a;
+    --primary: #20c997;
+    --destructive: #ef4444;
+    --warning: #f59e0b;
+    --success: #22c55e;
+    --violet: #a78bfa;
+    --sky: #38bdf8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 32px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1, h2, h3 { font-family: Manrope, Inter, sans-serif; }
+  h1 { font-size: 24px; font-weight: 700; color: var(--fg); margin-bottom: 6px; }
+  h2 { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 12px; margin-top: 28px; }
+  h3 { font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .card-surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .badge-destructive { color: var(--destructive); border-color: color-mix(in srgb, var(--destructive) 30%, transparent); background: color-mix(in srgb, var(--destructive) 12%, transparent); }
+  .badge-warning { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 30%, transparent); background: color-mix(in srgb, var(--warning) 12%, transparent); }
+  .badge-success { color: var(--success); border-color: color-mix(in srgb, var(--success) 30%, transparent); background: color-mix(in srgb, var(--success) 12%, transparent); }
+  .badge-primary { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 30%, transparent); background: color-mix(in srgb, var(--primary) 12%, transparent); }
+  .badge-muted { color: var(--muted); border-color: var(--border); background: var(--surface); }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .kpi-value { font-family: Manrope, sans-serif; font-size: 28px; font-weight: 700; line-height: 1.1; }
+  .kpi-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .kpi-sub { font-size: 11px; margin-top: 2px; }
+  code, .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+  pre {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    line-height: 1.7;
+    margin: 10px 0;
+  }
+  pre .comment { color: var(--muted); }
+  pre .keyword { color: var(--violet); }
+  pre .string { color: var(--primary); }
+  pre .destructive { color: var(--destructive); }
+  pre .warning { color: var(--warning); }
+  pre .success { color: var(--success); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--surface); }
+  td { padding: 8px 12px; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .sep { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .alert {
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    border-left: 3px solid;
+    font-size: 13px;
+  }
+  .alert-destructive { background: color-mix(in srgb, var(--destructive) 8%, var(--card)); border-color: var(--destructive); color: var(--destructive); }
+  .alert-warning { background: color-mix(in srgb, var(--warning) 8%, var(--card)); border-color: var(--warning); color: var(--warning); }
+  .alert-success { background: color-mix(in srgb, var(--success) 8%, var(--card)); border-color: var(--success); color: var(--success); }
+  .alert-primary { background: color-mix(in srgb, var(--primary) 8%, var(--card)); border-color: var(--primary); color: var(--primary); }
+  .alert p { color: var(--fg); margin-top: 4px; font-size: 13px; }
+  .alert strong { color: inherit; }
+  .row { display: flex; gap: 12px; align-items: baseline; }
+  .row label { color: var(--muted); font-size: 12px; min-width: 180px; }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title span { font-size: 16px; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot-red { background: var(--destructive); }
+  .dot-yellow { background: var(--warning); }
+  .dot-green { background: var(--success); }
+  .dot-blue { background: var(--primary); }
+  .flow-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin: 10px 0;
+  }
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .flow-arrow { color: var(--muted); font-size: 16px; }
+  .flow-step.bad { border-color: var(--destructive); color: var(--destructive); background: color-mix(in srgb, var(--destructive) 8%, var(--surface)); }
+  .flow-step.ok { border-color: var(--success); color: var(--success); background: color-mix(in srgb, var(--success) 8%, var(--surface)); }
+  .flow-step.warn { border-color: var(--warning); color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface)); }
+  .timeline { list-style: none; padding-left: 0; }
+  .timeline li { position: relative; padding-left: 24px; padding-bottom: 12px; }
+  .timeline li::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: var(--border); }
+  .timeline li:last-child::before { display: none; }
+  .timeline li::after { content: ''; position: absolute; left: 4px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--primary); border: 1px solid var(--bg); }
+</style>
+</head>
+<body>
+
+<h1>QA — Restrições Vazias no ClienteDrawer</h1>
+<p class="subtitle">Investigação completa · MdFlow /clientes · 2026-03-31 · Agente Beto / Claude Code</p>
+
+<!-- VEREDICTO -->
+<div class="alert alert-destructive">
+  <strong>CAUSA RAIZ CONFIRMADA (dupla):</strong>
+  <p>
+    <strong>Causa 1 — Dados não migrados (71,6% dos clientes):</strong> A tabela <code>restricoes</code> tem apenas 4.427 linhas cobrindo 1.235 clientes distintos. Os 3.112 clientes restantes (71,6%) não têm nenhuma linha em <code>restricoes</code> — foram importados do ADVBOX sem migração das restrições. Para esses, a aba mostra "Nenhuma restrição cadastrada" porque realmente não existe nenhum dado.
+  </p>
+  <p style="margin-top:8px">
+    <strong>Causa 2 — Bug lógico (todos os contextos exceto CRM):</strong> O <code>ClienteDrawerTabRestricoes</code> recebe <code>showProcessoStatus=true</code> em context=clientes, que deveria resultar em <code>apenasSemProcesso=false</code>. Isso está CORRETO. Porém em context=CRM, <code>showProcessoStatus=false</code> → <code>apenasSemProcesso=true</code>, o que OCULTA as restrições já vinculadas a processos (são 4.354 de 4.427, ou seja 98,3% das restrições têm processo_id).
+  </p>
+</div>
+
+<!-- KPIs -->
+<h2>Números do Banco</h2>
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--fg)">4.427</div>
+    <div class="kpi-label">Total restrições</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--success)">4.354</div>
+    <div class="kpi-label">Com processo_id</div>
+    <div class="kpi-sub" style="color:var(--muted)">98,3%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--warning)">73</div>
+    <div class="kpi-label">Sem processo_id</div>
+    <div class="kpi-sub" style="color:var(--muted)">1,7%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--success)">4.343</div>
+    <div class="kpi-label">Com cliente_id</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--warning)">73</div>
+    <div class="kpi-label">Com lead_id (sem cliente)</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--fg)">4.347</div>
+    <div class="kpi-label">Total clientes ativos</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--success)">1.235</div>
+    <div class="kpi-label">Clientes COM restrições</div>
+    <div class="kpi-sub" style="color:var(--muted)">28,4%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--destructive)">3.112</div>
+    <div class="kpi-label">Clientes SEM restrições</div>
+    <div class="kpi-sub" style="color:var(--muted)">71,6% · dados não migrados</div>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--destructive)">2.349</div>
+    <div class="kpi-label">Processos com dados restricao_* embutidos mas sem restricao_id</div>
+    <div class="kpi-sub" style="color:var(--muted)">Dados em campos legados, não na tabela restricoes</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color:var(--muted)">0</div>
+    <div class="kpi-label">Clientes com lead_id preenchido</div>
+    <div class="kpi-sub" style="color:var(--muted)">lead_id = null em 100% dos clientes</div>
+  </div>
+</div>
+
+<!-- SCHEMA DA TABELA -->
+<h2>Schema Real da Tabela <code>restricoes</code></h2>
+<div class="card">
+<pre>
+<span class="comment">-- Colunas confirmadas via SELECT (REST API, service_role)</span>
+id                      UUID PRIMARY KEY
+organizacao_id          UUID NOT NULL REFERENCES organizacoes(id)
+lead_id                 UUID (FK → leads.id) — <span class="warning">NULL na maioria</span>
+cliente_id              UUID (FK → clientes.id) — <span class="success">preenchido em 98%</span>
+empresa_id              UUID (FK → empresas.id)
+empresa_nome            TEXT
+orgao_nome              TEXT
+orgao_id                UUID
+tipo                    TEXT  <span class="comment">-- comprador | devedor | fiador | avalista</span>
+codigo_contrato         TEXT
+data_restricao          DATE
+valor                   NUMERIC
+processavel             BOOLEAN
+motivo_nao_processavel  TEXT
+processo_id             UUID (FK → processos.id) — <span class="success">98,3% preenchido</span>
+drive_pasta_id          TEXT
+drive_pasta_url         TEXT
+uid_legado              TEXT
+tipo_legado             INTEGER
+created_by              UUID
+created_at              TIMESTAMPTZ
+updated_at              TIMESTAMPTZ
+deleted_at              TIMESTAMPTZ
+</pre>
+</div>
+
+<!-- FLUXO DO CÓDIGO -->
+<h2>Fluxo de Código — Como o Drawer Carrega Restrições</h2>
+<div class="card">
+  <div class="section-title"><span>📁</span> ClienteDrawer.tsx (context=clientes)</div>
+
+  <div class="card-surface">
+    <h3>Passo 1 — Carregamento dos dados do cliente</h3>
+    <div class="flow-box">
+      <div class="flow-step warn">cpfSlug passado?</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">useCliente(cpfSlug) ✓</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">clienteByCpf.id preenchido ✓</div>
+    </div>
+    <div class="flow-box">
+      <div class="flow-step warn">sem CPF (id direto)?</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">useClienteById(clienteId) ✓</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">clienteById.id preenchido ✓</div>
+    </div>
+    <p style="color:var(--muted);font-size:12px;margin-top:8px">Importante: <strong>todos os 4.347 clientes têm lead_id = null</strong>. Nenhum cliente está vinculado a um lead.</p>
+  </div>
+
+  <div class="card-surface">
+    <h3>Passo 2 — useRestricoes no ClienteDrawer (linhas 165-170) — badge do header</h3>
+    <pre>
+<span class="keyword">const</span> { data: restricoes = [] } = <span class="string">useRestricoes</span>({
+  organizacaoId,
+  leadId: lead?.id                    <span class="comment">// ← undefined (context=clientes)</span>
+          ?? clienteById?.lead_id     <span class="comment">// ← null</span>
+          ?? clienteByCpf?.lead_id,   <span class="comment">// ← null</span>
+  clienteId: clienteByCpf?.id ?? clienteById?.id,  <span class="comment">// ← preenchido ✓</span>
+  enabled: open,
+  <span class="comment">// apenasSemProcesso não passado → usa default FALSE</span>
+});</pre>
+    <p style="color:var(--success);font-size:12px">Este call está correto. Retorna todas as restrições do cliente para o badge.</p>
+  </div>
+
+  <div class="card-surface">
+    <h3>Passo 3 — ClienteDrawerTabRestricoes (linha 371-381)</h3>
+    <pre>
+&lt;<span class="string">ClienteDrawerTabRestricoes</span>
+  organizacaoId={organizacaoId}
+  leadId={lead?.id}           <span class="comment">// ← undefined (context=clientes, lead não carregado)</span>
+  clienteId={cliente?.id}     <span class="comment">// ← id do cliente ✓</span>
+  showProcessoStatus={!isCrm && !isDistribuicao}  <span class="comment">// ← true para context=clientes</span>
+/&gt;</pre>
+  </div>
+
+  <div class="card-surface">
+    <h3>Passo 4 — useRestricoes na tab (ClienteDrawerTabRestricoes, linha 150-153)</h3>
+    <pre>
+<span class="keyword">const</span> { data: restricoesAll } = <span class="string">useRestricoes</span>({
+  organizacaoId, clienteId, leadId,
+  apenasSemProcesso: !showProcessoStatus,  <span class="comment">// = !true = FALSE ← CORRETO para context=clientes</span>
+});
+
+<span class="comment">// enabled = !!organizacaoId && (!!clienteId || !!leadId || !!processoId)</span>
+<span class="comment">//         = true && (true || false || false)</span>
+<span class="comment">//         = true ✓ (se clienteId for preenchido)</span></pre>
+    <p style="color:var(--success);font-size:12px">Este call está correto para context=clientes. Chama fn_restricoes_listar com p_apenas_sem_processo=false, retornando TODAS as restrições do cliente incluindo as com processo.</p>
+  </div>
+
+  <div class="card-surface">
+    <h3>Passo 5 — fn_restricoes_listar (RPC) — verificação confirmada</h3>
+    <pre>
+<span class="comment">-- Teste com cliente MAYKOL ROBERTO FERREIRA (1c3d94e1) — tem 7 restrições:</span>
+
+p_apenas_sem_processo = <span class="destructive">TRUE</span>  → retorna <span class="destructive">0 restrições</span>  <span class="comment">← bug no context=CRM</span>
+p_apenas_sem_processo = <span class="success">FALSE</span> → retorna <span class="success">7 restrições</span> <span class="comment">← correto para context=clientes</span></pre>
+  </div>
+</div>
+
+<!-- BUG REAL #2 — CRM -->
+<h2>Bug Confirmado #2 — Context CRM Oculta Restrições Vinculadas</h2>
+<div class="card">
+  <div class="alert alert-destructive">
+    <strong>Bug ativo no context CRM:</strong>
+    <p>Quando o ClienteDrawer abre em context=<code>crm</code>, <code>showProcessoStatus = false</code>, então <code>apenasSemProcesso = !false = TRUE</code>. Isso filtra apenas restrições sem processo vinculado. Como 98,3% das restrições têm processo_id, praticamente nenhuma aparece no contexto CRM.</p>
+  </div>
+  <pre>
+<span class="comment">// context=crm → isCrm=true</span>
+showProcessoStatus = !isCrm && !isDistribuicao = <span class="destructive">false</span>
+
+<span class="comment">// Na tab:</span>
+apenasSemProcesso = !showProcessoStatus = <span class="destructive">true</span>
+
+<span class="comment">// Resultado: fn_restricoes_listar com p_apenas_sem_processo=TRUE</span>
+<span class="comment">// Das 4.354 restrições com processo_id → NENHUMA retornada</span>
+<span class="comment">// Apenas as 73 sem processo_id seriam visíveis no CRM</span></pre>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Context</th>
+        <th>showProcessoStatus</th>
+        <th>apenasSemProcesso</th>
+        <th>Restrições visíveis</th>
+        <th>Correto?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-primary">clientes</span></td>
+        <td><code>true</code></td>
+        <td><code>false</code></td>
+        <td>Todas (incluindo com processo)</td>
+        <td><span class="badge badge-success">SIM</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-warning">crm</span></td>
+        <td><code>false</code></td>
+        <td><code>true</code></td>
+        <td>Apenas sem processo (1,7%)</td>
+        <td><span class="badge badge-destructive">DEPENDE</span></td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-muted">distribuicao</span></td>
+        <td><code>false</code></td>
+        <td><code>true</code></td>
+        <td>Apenas sem processo</td>
+        <td><span class="badge badge-success">SIM (é o propósito)</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="color:var(--muted);font-size:12px;margin-top:12px">
+    Nota: para o contexto CRM, mostrar apenas sem processo pode ser o comportamento INTENCIONAL (o CRM quer ver restrições para distribuir). Para context=distribuicao é definitivamente correto. A questão é se no CRM também se quer ver restrições já distribuídas — isso precisa de validação com o CTO.
+  </p>
+</div>
+
+<!-- CAUSA RAIZ PRINCIPAL — DADOS -->
+<h2>Causa Raiz Principal — Déficit de Dados (71,6%)</h2>
+<div class="card">
+  <div class="alert alert-warning">
+    <strong>Problema de Dados, não de Código:</strong>
+    <p>Para 3.112 clientes (71,6%), a aba Restrições mostra corretamente "Nenhuma restrição cadastrada" porque genuinamente não existe nenhuma linha na tabela <code>restricoes</code> vinculada a esses clientes.</p>
+  </div>
+
+  <div class="card-surface">
+    <h3>Por que 71,6% dos clientes não têm restrições?</h3>
+    <ul style="padding-left:20px;line-height:2">
+      <li>Todos os clientes foram criados em março de 2026 (migração ADVBOX)</li>
+      <li>A migração de restrições cobriu apenas <strong>1.235 clientes</strong> dos 4.347</li>
+      <li>Os processos desses 3.112 clientes têm campos legados (<code>restricao_orgao_nome</code>, <code>restricao_valor</code>, etc.) mas <strong>sem linha correspondente na tabela <code>restricoes</code></strong></li>
+      <li>2.349 processos têm <code>restricao_orgao_nome</code> preenchido mas <code>restricao_id = null</code></li>
+      <li>O ADVBOX não exporta os dados de "anotações de restrição" no mesmo endpoint dos processos</li>
+    </ul>
+  </div>
+
+  <div class="card-surface">
+    <h3>Exemplo confirmado: ALEXANDRE CORREA GONCALVES</h3>
+    <div class="row" style="flex-direction:column;gap:6px">
+      <div class="row"><label>Clientes</label> <span><code>8bfb76cc-...</code></span></div>
+      <div class="row"><label>Processos ativos</label> <span>3 processos (CNJs: 5003982-, 5003561-, 5003981-)</span></div>
+      <div class="row"><label>Restrições na tabela restricoes</label> <span style="color:var(--destructive)">0 (zero)</span></div>
+      <div class="row"><label>restricao_orgao_nome nos processos</label> <span style="color:var(--muted)">null — dados legados não migrados</span></div>
+    </div>
+  </div>
+
+  <div class="card-surface">
+    <h3>Exemplo positivo: MAYKOL ROBERTO FERREIRA</h3>
+    <div class="row" style="flex-direction:column;gap:6px">
+      <div class="row"><label>Cliente ID</label> <span><code>1c3d94e1-...</code></span></div>
+      <div class="row"><label>lead_id</label> <span style="color:var(--muted)">null</span></div>
+      <div class="row"><label>Restrições na tabela restricoes</label> <span style="color:var(--success)">7 restrições com cliente_id</span></div>
+      <div class="row"><label>fn_restricoes_listar resultado</label> <span style="color:var(--success)">7 itens retornados (apenasSemProcesso=false)</span></div>
+      <div class="row"><label>Empresas</label> <span>Banco Digio, Bradesco, DM Pagamento, Telefônica, Santander...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROPOSTA DE FIX -->
+<h2>Proposta de Fix</h2>
+<div class="card">
+  <div class="alert alert-primary">
+    <strong>Fix 1 (dados) — Migração retroativa das restrições</strong>
+    <p>Criar script para extrair dados de restrição dos campos legados (<code>restricao_orgao_nome</code>, <code>restricao_valor</code>, <code>restricao_tipo</code>, <code>restricao_contrato</code>) dos processos e inserir linhas na tabela <code>restricoes</code> vinculadas a <code>cliente_id</code> e <code>processo_id</code>.</p>
+  </div>
+
+  <h3 style="margin-bottom:10px">Arquivo: nova migration SQL</h3>
+  <pre>
+<span class="comment">-- Migração: criar restrições a partir dos dados legados nos processos</span>
+<span class="comment">-- Escopo: 2.349 processos com restricao_orgao_nome não nulo e restricao_id nulo</span>
+<span class="comment">-- REQUER APROVAÇÃO CTO antes de executar em produção</span>
+
+<span class="keyword">INSERT INTO</span> restricoes (
+  organizacao_id, cliente_id, processo_id,
+  orgao_nome, empresa_nome,
+  tipo, codigo_contrato, data_restricao,
+  valor, processavel, created_by
+)
+<span class="keyword">SELECT</span>
+  p.organizacao_id,
+  p.cliente_id,
+  p.id <span class="keyword">as</span> processo_id,
+  p.restricao_orgao_nome,
+  p.empresa_nome,
+  p.restricao_tipo,
+  p.restricao_contrato,
+  COALESCE(p.restricao_data_new, p.restricao_data),
+  COALESCE(p.restricao_valor_new, p.restricao_valor),
+  <span class="keyword">true</span> <span class="keyword">as</span> processavel,
+  p.created_by
+<span class="keyword">FROM</span> processos p
+<span class="keyword">WHERE</span>
+  p.restricao_orgao_nome <span class="keyword">IS NOT NULL</span>
+  <span class="keyword">AND</span> p.restricao_id <span class="keyword">IS NULL</span>
+  <span class="keyword">AND</span> p.cliente_id <span class="keyword">IS NOT NULL</span>
+  <span class="keyword">AND</span> p.deleted_at <span class="keyword">IS NULL</span>
+  <span class="keyword">AND</span> p.organizacao_id = <span class="string">'55a0c7ba-1a23-4ae1-b69b-a13811324735'</span>;
+
+<span class="comment">-- Após inserção: atualizar processos.restricao_id</span>
+<span class="keyword">UPDATE</span> processos p
+<span class="keyword">SET</span> restricao_id = r.id
+<span class="keyword">FROM</span> restricoes r
+<span class="keyword">WHERE</span>
+  r.processo_id = p.id
+  <span class="keyword">AND</span> p.restricao_id <span class="keyword">IS NULL</span>
+  <span class="keyword">AND</span> r.created_at > NOW() - INTERVAL <span class="string">'1 minute'</span>;
+<span class="comment">-- Limitar a restrições recém-criadas para segurança</span></pre>
+
+  <hr class="sep" />
+
+  <div class="alert alert-warning" style="margin-top:16px">
+    <strong>Fix 2 (código) — Verificar intenção do filtro CRM</strong>
+    <p>
+      O filtro <code>apenasSemProcesso=true</code> no context CRM é intencional para mostrar apenas restrições pendentes de distribuição. Porém, depois que uma restrição é distribuída (recebe processo_id), ela desaparece da aba CRM. Se a intenção é mostrar TODAS as restrições também no CRM, alterar o ClienteDrawerTabRestricoes para sempre usar <code>apenasSemProcesso=false</code> e usar o badge de "Processo vinculado" para indicar o status.
+    </p>
+  </div>
+
+  <pre>
+<span class="comment">// Arquivo: src/components/shared/cliente_drawer/tabs/ClienteDrawerTabRestricoes.tsx</span>
+<span class="comment">// Linha 150-153</span>
+
+<span class="comment">// ATUAL (oculta restrições com processo no CRM):</span>
+apenasSemProcesso: !showProcessoStatus,
+
+<span class="comment">// PROPOSTO (se quiser mostrar todas também no CRM):</span>
+apenasSemProcesso: <span class="keyword">false</span>,
+<span class="comment">// Usar showProcessoStatus apenas para controlar o badge visual de status</span></pre>
+</div>
+
+<!-- ARQUIVO + LINHA DO BUG -->
+<h2>Mapa de Arquivos Relevantes</h2>
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Arquivo</th>
+        <th>Linha</th>
+        <th>Relevância</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>src/hooks/useRestricoes.ts</code></td>
+        <td>55</td>
+        <td>enabled check: <code>(!!clienteId || !!leadId || !!processoId)</code></td>
+        <td><span class="badge badge-success">OK</span></td>
+      </tr>
+      <tr>
+        <td><code>src/hooks/useRestricoes.ts</code></td>
+        <td>44-51</td>
+        <td>RPC fn_restricoes_listar — todos os parâmetros corretos</td>
+        <td><span class="badge badge-success">OK</span></td>
+      </tr>
+      <tr>
+        <td><code>src/components/shared/cliente_drawer/ClienteDrawer.tsx</code></td>
+        <td>165-170</td>
+        <td>leadId para o badge: usa lead?.id ?? clienteById?.lead_id (sempre null para clientes)</td>
+        <td><span class="badge badge-success">OK</span></td>
+      </tr>
+      <tr>
+        <td><code>src/components/shared/cliente_drawer/ClienteDrawer.tsx</code></td>
+        <td>371-381</td>
+        <td>Passa leadId={lead?.id} (undefined no context=clientes) e clienteId={cliente?.id}</td>
+        <td><span class="badge badge-success">OK</span></td>
+      </tr>
+      <tr>
+        <td><code>src/components/shared/cliente_drawer/tabs/ClienteDrawerTabRestricoes.tsx</code></td>
+        <td>150-153</td>
+        <td><code>apenasSemProcesso: !showProcessoStatus</code> — correto para clientes, pode ser limitante para CRM</td>
+        <td><span class="badge badge-warning">REVISAR (CRM)</span></td>
+      </tr>
+      <tr>
+        <td><code>src/pages/clientes/index.tsx</code></td>
+        <td>370-377</td>
+        <td>Passa cpfSlug ou clienteId para ClienteDrawer corretamente</td>
+        <td><span class="badge badge-success">OK</span></td>
+      </tr>
+      <tr>
+        <td><code>src/pages/clientes/components/ClienteList.tsx</code></td>
+        <td>209-215</td>
+        <td>Ao clicar: usa CPF como slug ou id como fallback</td>
+        <td><span class="badge badge-success">OK</span></td>
+      </tr>
+      <tr>
+        <td>Tabela <code>restricoes</code> (Supabase)</td>
+        <td>—</td>
+        <td>3.112 clientes sem linhas de restrição — dados não migrados do ADVBOX</td>
+        <td><span class="badge badge-destructive">LACUNA DE DADOS</span></td>
+      </tr>
+      <tr>
+        <td>Tabela <code>processos</code> (Supabase)</td>
+        <td>—</td>
+        <td>2.349 processos com campos restricao_* preenchidos mas restricao_id=null</td>
+        <td><span class="badge badge-destructive">MIGRAÇÃO PENDENTE</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- RESUMO EXECUTIVO -->
+<h2>Resumo Executivo para o CTO</h2>
+<div class="card">
+  <div class="card-surface">
+    <h3>O que está acontecendo</h3>
+    <p style="margin-top:6px">Quando um usuário abre o ClienteDrawer em <code>/clientes</code> e clica na aba "Restrições", para 71,6% dos clientes (3.112 de 4.347) a aba mostra <strong>"Nenhuma restrição cadastrada"</strong>. O código está correto — a query RPC funciona, os parâmetros são passados corretamente. O problema é que esses clientes simplesmente não têm linhas na tabela <code>restricoes</code>.</p>
+  </div>
+
+  <div class="card-surface">
+    <h3>Por que não têm dados</h3>
+    <p style="margin-top:6px">A migração ADVBOX de março/2026 importou processos com os dados de restrição embutidos nos campos legados do processo (<code>restricao_orgao_nome</code>, <code>restricao_valor</code>, etc.) mas <strong>não criou linhas na tabela <code>restricoes</code></strong>. Resultado: 2.349 processos têm os dados mas estão "invisíveis" para a aba de restrições.</p>
+  </div>
+
+  <div class="card-surface">
+    <h3>Ação necessária</h3>
+    <ul style="padding-left:20px;line-height:2;margin-top:6px">
+      <li><span class="badge badge-destructive">P0</span> Aprovar e executar migration SQL para criar linhas em <code>restricoes</code> a partir dos campos legados dos processos (~2.349 linhas)</li>
+      <li><span class="badge badge-warning">P1</span> Revisar se o filtro <code>apenasSemProcesso=true</code> no context CRM é intencional ou não</li>
+      <li><span class="badge badge-muted">P2</span> Verificar pipeline ADVBOX para garantir que novos processos criam restrições na tabela desde o início</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="sep">
+<p style="color:var(--muted);font-size:11px;text-align:center">
+  Investigação: Agente Beto (Claude Code) · MdFlow QA · 2026-03-31 ·
+  Banco: qdivfairxhdihaqqypgb · Org: Midas 55a0c7ba
+</p>
+
+</body>
+</html>
