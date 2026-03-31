@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA /decisoes — MdFlow | 2026-03-31</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; display: inline-block; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+.detail-block { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; }
+.detail-block.warn { border-left-color: var(--accent4); }
+.detail-block.ok { border-left-color: var(--accent3); }
+.detail-block.danger { border-left-color: var(--accent2); }
+.detail-block h4 { font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; }
+.detail-block p, .detail-block li { font-size: 0.83rem; color: var(--text-muted); line-height: 1.7; }
+.detail-block ul { padding-left: 18px; margin-top: 6px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; margin-right: 4px; }
+.tag-p0 { background: rgba(255,107,107,0.15); color: var(--accent2); }
+.tag-p1 { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.tag-p2 { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.commit-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
+.commit-hash { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent); background: rgba(124,109,255,0.1); padding: 2px 8px; border-radius: 6px; }
+.commit-msg { font-size: 0.85rem; }
+.progress-bar { height: 8px; border-radius: 4px; background: var(--surface3); overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent3), var(--accent)); }
+.tab-list { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+.tab-item { padding: 4px 12px; border-radius: 8px; font-size: 0.78rem; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">🔍</span>
+    <h1 class="gradient-text">QA Completo — /decisoes</h1>
+    <p class="hero-sub">Auditoria de qualidade da pagina de gestao de decisoes judiciais do MdFlow</p>
+    <div class="badges">
+      <span class="badge bp">MdFlow Frontend</span>
+      <span class="badge bg">16/17 resolvidos</span>
+      <span class="badge by">1 pendencia de decisao</span>
+      <span class="badge bb">2026-03-31</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value">24</div>
+      <div class="stat-label">Arquivos auditados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent2);">4</div>
+      <div class="stat-label">Bugs P0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent4);">10</div>
+      <div class="stat-label">Bugs P1</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent5);">3</div>
+      <div class="stat-label">Bugs P2</div>
+    </div>
+  </div>
+
+  <!-- RESUMO EXECUTIVO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>Resumo Executivo</h2>
+    </div>
+    <div class="card">
+      <p style="margin-bottom: 12px;">QA profundo da pagina <strong>/decisoes</strong> do MdFlow — 24 arquivos frontend totalizando 5.037 linhas de codigo. A auditoria cobriu: conformidade com Design System v5, type safety TypeScript, queries Supabase, RLS, triggers de banco e integridade de dados.</p>
+      <div class="grid g2" style="margin-top: 16px;">
+        <div class="detail-block ok">
+          <h4>Resultado geral</h4>
+          <ul>
+            <li>4 P0 + 10 P1 + 3 P2 encontrados</li>
+            <li>16 de 17 totalmente resolvidos</li>
+            <li>1 pendencia de decisao arquitetural (FK bidirecional)</li>
+          </ul>
+        </div>
+        <div class="detail-block">
+          <h4>Escopo da pagina</h4>
+          <ul>
+            <li>Dashboard com KPIs + 6 tabs</li>
+            <li>8 modais de acao</li>
+            <li>Integracao n8n + Supabase realtime</li>
+            <li>Calculo de valor atualizado via RPC</li>
+          </ul>
+        </div>
+      </div>
+      <div class="progress-bar" style="margin-top: 16px;">
+        <div class="progress-fill" style="width: 94%;"></div>
+      </div>
+      <p style="text-align: right; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">94% resolvido (16/17)</p>
+    </div>
+  </div>
+
+  <!-- O QUE E /DECISOES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚖️</span>
+      <h2>O que e a pagina /decisoes</h2>
+    </div>
+    <div class="card">
+      <p style="margin-bottom: 14px;">Gerencia todas as decisoes judiciais da operacao: sentencas, tutelas antecipadas, acordaos e despachos. E o ponto central para acompanhar o resultado dos processos.</p>
+      <div class="card-title" style="margin-top: 16px;">6 Tabs do Dashboard</div>
+      <div class="tab-list">
+        <span class="tab-item">Dashboard (KPIs)</span>
+        <span class="tab-item">Aguardando</span>
+        <span class="tab-item">Tutelas</span>
+        <span class="tab-item">Merito Favoravel</span>
+        <span class="tab-item">Merito Desfavoravel</span>
+        <span class="tab-item">Arquivadas</span>
+      </div>
+      <div class="card-title" style="margin-top: 16px;">8 Modais de Acao</div>
+      <div class="tab-list">
+        <span class="tab-item">Aprovar</span>
+        <span class="tab-item">Rejeitar</span>
+        <span class="tab-item">Arquivar</span>
+        <span class="tab-item">Desarquivar</span>
+        <span class="tab-item">Nova Decisao Manual</span>
+        <span class="tab-item">Importar</span>
+        <span class="tab-item">Notificar Cliente</span>
+        <span class="tab-item">Analise IA</span>
+      </div>
+      <div class="card-title" style="margin-top: 16px;">Integracoes</div>
+      <div class="tab-list">
+        <span class="tab-item">n8n Webhooks</span>
+        <span class="tab-item">Supabase Realtime</span>
+        <span class="tab-item">RPC calculo valor atualizado</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CORRECOES FRONTEND -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔧</span>
+      <h2>Correcoes Frontend</h2>
+    </div>
+
+    <!-- P0 -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title"><span class="tag tag-p0">P0</span> Hardcode de cores fora do Design System</div>
+      <div class="code">RecursosVinculados.tsx:28-34</div>
+      <div class="detail-block danger" style="margin-top: 12px;">
+        <h4>Problema</h4>
+        <p>Usava <code>yellow-400</code>, <code>yellow-500</code>, <code>blue-400</code>, <code>blue-500</code> — cores Tailwind raw que nao existem no DS v5 Warm Charcoal. Se o tema mudar, essas cores ficam estaticas enquanto todo o resto muda.</p>
+      </div>
+      <div class="detail-block ok">
+        <h4>Fix aplicado</h4>
+        <p>Trocou para tokens semanticos <code>warning</code> (amarelo) e <code>info</code> (azul) do Design System.</p>
+      </div>
+      <span class="status-pill sp-done">corrigido</span>
+    </div>
+
+    <!-- P1: getComputedStyle -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title"><span class="tag tag-p1">P1</span> getComputedStyle com fallback hex hardcoded</div>
+      <div class="code">ModalAprovarDecisao.tsx:93-99</div>
+      <div class="detail-block warn" style="margin-top: 12px;">
+        <h4>Problema</h4>
+        <p><code>getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#20c997'</code> — acessava CSS var em runtime para o confetti, com fallback hex. getComputedStyle e instavel em SSR e pode retornar string vazia.</p>
+      </div>
+      <div class="detail-block ok">
+        <h4>Fix aplicado</h4>
+        <p>Removeu getComputedStyle. Usa cores diretas <code>['#20c997', '#f59e0b']</code> — canvas-confetti nao suporta CSS vars, entao hex direto e a abordagem correta.</p>
+      </div>
+      <span class="status-pill sp-done">corrigido</span>
+    </div>
+
+    <!-- P1: Duplo cast -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title"><span class="tag tag-p1">P1</span> Duplo cast as unknown as unknown</div>
+      <div class="code">ModalAprovarDecisao.tsx:66</div>
+      <div class="detail-block warn" style="margin-top: 12px;">
+        <h4>Problema</h4>
+        <p><code>approveRaw as unknown as unknown as RpcResult</code> — cast triplo desnecessario. Code smell que indica confusao de tipos.</p>
+      </div>
+      <div class="detail-block ok">
+        <h4>Fix aplicado</h4>
+        <p>Simplificou para <code>approveRaw as unknown as RpcResult</code>.</p>
+      </div>
+      <span class="status-pill sp-done">corrigido</span>
+    </div>
+
+    <!-- P1: as any -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title"><span class="tag tag-p1">P1</span> as any em tipo de resultado</div>
+      <div class="code">AguardandoCard.tsx:113</div>
+      <div class="detail-block warn" style="margin-top: 12px;">
+        <h4>Problema</h4>
+        <p><code>decisao.resultado as any</code> passado para ResultadoBadge. O <code>any</code> desabilita toda a checagem TypeScript nesse ponto.</p>
+      </div>
+      <div class="detail-block ok">
+        <h4>Fix aplicado</h4>
+        <p>Trocou para <code>decisao.resultado as DecisaoResultado</code> com import correto do tipo.</p>
+      </div>
+      <span class="status-pill sp-done">corrigido</span>
+    </div>
+  </div>
+
+  <!-- 10x AS ANY SUPABASE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗑️</span>
+      <h2>Remocao dos 10x as any em chamadas Supabase</h2>
+    </div>
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="detail-block" style="margin-bottom: 16px;">
+        <h4>Contexto</h4>
+        <p>O frontend usava <code>(supabase as any).rpc(...)</code> e <code>(supabase as any).from(...)</code> em 10 lugares porque os tipos gerados supostamente nao incluiam a tabela <code>decisoes</code>. Na verdade, os tipos JA existiam — eram residuos de quando foram adicionados.</p>
+      </div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Arquivo</th>
+              <th>Cast removido</th>
+              <th>Causa real</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ModalAprovarDecisao.tsx</td>
+              <td><code>(supabase as any).rpc('rpc_decisoes_aprovar')</code></td>
+              <td><code>null</code> passado onde tipo espera <code>undefined</code></td>
+            </tr>
+            <tr>
+              <td>ModalArquivar.tsx</td>
+              <td><code>supabase.rpc('rpc_decisoes_arquivar' as any)</code></td>
+              <td>Literal de string com cast desnecessario</td>
+            </tr>
+            <tr>
+              <td>ModalConfirmarRejeicao.tsx</td>
+              <td><code>(supabase.from('decisoes') as any)</code></td>
+              <td>Cast desnecessario — tipos ja existiam</td>
+            </tr>
+            <tr>
+              <td>ModalNovaDecisaoManual.tsx (2x)</td>
+              <td><code>payload as any</code> + <code>{ arquivo_url } as any</code></td>
+              <td>Payload era <code>Record&lt;string, unknown&gt;</code> — agora usa <code>TablesInsert&lt;'decisoes'&gt;</code></td>
+            </tr>
+            <tr>
+              <td>RecursosVinculados.tsx</td>
+              <td><code>(supabase as any).from('decisoes_recursos')</code></td>
+              <td>Cast desnecessario</td>
+            </tr>
+            <tr>
+              <td>DecisaoCalculoSection.tsx</td>
+              <td><code>(supabase as any).rpc('rpc_calcular_valor_atualizado')</code></td>
+              <td>Cast desnecessario</td>
+            </tr>
+            <tr>
+              <td>ModalNotificarCliente.tsx</td>
+              <td><code>(decisao as any).processos?.clientes?.id</code></td>
+              <td>Campo de join adicionado ao tipo <code>Decisao</code></td>
+            </tr>
+            <tr>
+              <td>DecisaoModalShell.tsx</td>
+              <td><code>.maybeSingle() as { data: any }</code></td>
+              <td>Cast desnecessario</td>
+            </tr>
+            <tr>
+              <td>AguardandoCard.tsx</td>
+              <td><code>decisao.resultado as any</code></td>
+              <td>Ja corrigido no P1 acima</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CORRECAO BANCO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗃️</span>
+      <h2>Correcao Banco — Conflito arquivada vs status_analise</h2>
+    </div>
+
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="detail-block danger" style="margin-bottom: 16px;">
+        <h4>O problema</h4>
+        <p>Dois mecanismos faziam a mesma coisa:</p>
+        <ul>
+          <li><code>arquivada</code> (BOOLEAN) — usado pelo frontend em 12+ lugares para filtrar decisoes ativas vs arquivadas</li>
+          <li><code>status_analise = 'arquivada'</code> — usado por um trigger no banco</li>
+        </ul>
+        <p style="margin-top: 8px;">O trigger <code>fn_trg_decisao_update_processo</code> filtrava com <code>status_analise &lt;&gt; 'arquivada'</code>, mas o indice filtrava com <code>arquivada = false</code>. Resultado: inconsistencia potencial nos dados agregados.</p>
+      </div>
+
+      <div class="detail-block ok" style="margin-bottom: 16px;">
+        <h4>Decisao tomada</h4>
+        <p><strong><code>arquivada</code> (boolean) e o SSOT para estado de arquivo.</strong></p>
+        <p style="margin-top: 6px;">Razao: arquivamento e ortogonal ao status de analise. Uma decisao "aprovada" pode ser arquivada sem perder o status original. Quando desarquivada, o status_analise original e preservado.</p>
+        <ul style="margin-top: 8px;">
+          <li><code>status_analise</code>: pendente &rarr; processando &rarr; aprovado / rejeitado / erro (ciclo de analise IA)</li>
+          <li><code>arquivada</code>: true/false (estado de arquivo, independente)</li>
+        </ul>
+      </div>
+
+      <div class="card-title">Migration 20260401000002 — fix_decisoes_arquivada_ssot</div>
+      <div class="grid g2" style="margin-top: 8px;">
+        <div class="detail-block">
+          <h4>1. Trigger corrigido</h4>
+          <p>Agora usa <code>arquivada = false AND deleted_at IS NULL</code></p>
+        </div>
+        <div class="detail-block">
+          <h4>2. CHECK constraint</h4>
+          <p><code>status_analise</code> so aceita: pendente, processando, aprovado, rejeitado, erro. Valor 'arquivada' proibido.</p>
+        </div>
+        <div class="detail-block">
+          <h4>3. Dados legados limpos</h4>
+          <p>Registros com <code>status_analise='arquivada'</code> migrados para 'aprovado'.</p>
+        </div>
+        <div class="detail-block">
+          <h4>4. Indices criados</h4>
+          <p><code>idx_decisoes_org_active</code> e <code>idx_decisoes_org_archived</code></p>
+        </div>
+      </div>
+      <div style="margin-top: 12px;"><span class="status-pill sp-done">migration aplicada</span></div>
+    </div>
+  </div>
+
+  <!-- RLS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔒</span>
+      <h2>RLS e Seguranca</h2>
+    </div>
+    <div class="card">
+      <div class="detail-block ok">
+        <h4>Validado — OK</h4>
+        <ul>
+          <li>RLS habilitado na tabela <code>decisoes</code></li>
+          <li>4 policies cobrindo SELECT / INSERT / UPDATE / DELETE</li>
+          <li>Todas filtram por <code>organizacao_id = org_id()</code></li>
+          <li>DELETE requer <code>perfil = 'admin'</code></li>
+          <li>11 indices incluindo o basico em <code>organizacao_id</code></li>
+          <li>Multi-tenant isolado corretamente</li>
+        </ul>
+      </div>
+      <div style="margin-top: 12px;"><span class="status-pill sp-done">validado</span></div>
+    </div>
+  </div>
+
+  <!-- FK BIDIRECIONAL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <h2>FK intimacao_id — Pendente de Decisao</h2>
+    </div>
+    <div class="card">
+      <div class="detail-block warn" style="margin-bottom: 16px;">
+        <h4>Contexto</h4>
+        <p>A tabela <code>decisoes</code> tem um campo <code>intimacao_id</code> (FK para <code>intimacoes</code>), e a tabela <code>intimacoes</code> tem um campo <code>decisao_id</code> (FK para <code>decisoes</code>). Isso e uma FK bidirecional — anti-padrao no MdFlow.</p>
+      </div>
+
+      <div class="grid g2" style="margin-bottom: 16px;">
+        <div class="stat-card">
+          <div class="stat-value" style="color: var(--accent4);">8.693</div>
+          <div class="stat-label">Decisoes ativas</div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">ZERO com intimacao_id preenchido</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color: var(--accent4);">561</div>
+          <div class="stat-label">Intimacoes</div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">ZERO com decisao_id preenchido</p>
+        </div>
+      </div>
+
+      <div class="grid g2" style="margin-bottom: 16px;">
+        <div class="detail-block">
+          <h4>decisoes.intimacao_id</h4>
+          <p>"esta decisao foi gerada a partir desta intimacao" — direcao natural (intimacao gera decisao)</p>
+        </div>
+        <div class="detail-block">
+          <h4>intimacoes.decisao_id</h4>
+          <p>"esta intimacao resultou nesta decisao" — mesma informacao, lado inverso. Redundante.</p>
+        </div>
+      </div>
+
+      <div class="detail-block warn">
+        <h4>Recomendacao</h4>
+        <ul>
+          <li><strong>Manter</strong> <code>decisoes.intimacao_id</code> — lado canonico</li>
+          <li><strong>Remover</strong> <code>intimacoes.decisao_id</code> — redundante, cria dependencia circular</li>
+          <li><strong>Pergunta pendente:</strong> Uma intimacao pode gerar mais de 1 decisao?
+            <ul>
+              <li>Se NAO (1:1): adicionar <code>UNIQUE(intimacao_id)</code> em decisoes</li>
+              <li>Se SIM (1:N): manter sem UNIQUE, usar apenas o indice parcial existente</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div style="margin-top: 12px;"><span class="status-pill sp-pend">aguardando decisao</span></div>
+    </div>
+  </div>
+
+  <!-- CONFORMIDADES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">✅</span>
+      <h2>Conformidades Positivas</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 1.5rem; margin-bottom: 8px;">0</div>
+        <div class="card-title">console.log</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 1.5rem; margin-bottom: 8px;">0</div>
+        <div class="card-title">TODO / FIXME</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 1.5rem; margin-bottom: 8px;">500</div>
+        <div class="card-title">Maior arquivo (linhas)</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 16px;">
+      <div class="grid g2">
+        <div class="detail-block ok">
+          <h4>Padroes corretos</h4>
+          <ul>
+            <li>Soft delete (<code>deleted_at IS NULL</code>) em todas as queries</li>
+            <li>Action-Driven UI (frontend executa <code>response.action</code>)</li>
+            <li>Realtime com cleanup no unmount</li>
+            <li>Tokens CSS variables em 95%+ do codigo</li>
+          </ul>
+        </div>
+        <div class="detail-block ok">
+          <h4>Stack correta</h4>
+          <ul>
+            <li>Sonner toasts (nao alert/confirm)</li>
+            <li>Lucide icons (nao emoji no UI)</li>
+            <li>React Query com staleTime</li>
+            <li>Nenhum arquivo &gt; 500 linhas</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMITS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📦</span>
+      <h2>Commits Realizados</h2>
+    </div>
+    <div class="commit-row">
+      <span class="commit-hash">a58b859b</span>
+      <span class="commit-msg">fix(decisoes): corrige hardcodes de cor e type safety no QA</span>
+      <span class="status-pill sp-done">pushed</span>
+    </div>
+    <div class="commit-row">
+      <span class="commit-hash">migration</span>
+      <span class="commit-msg">20260401000002 — fix_decisoes_arquivada_ssot</span>
+      <span class="status-pill sp-done">pushed</span>
+    </div>
+    <div class="commit-row">
+      <span class="commit-hash">agent</span>
+      <span class="commit-msg">Remocao dos 10x as any em chamadas Supabase</span>
+      <span class="status-pill sp-done">pushed</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · 2026-03-31
+  </div>
+
+</div>
+</body>
+</html>
