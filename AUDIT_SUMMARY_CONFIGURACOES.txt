@@ -1,0 +1,138 @@
+AUDITORIA DB — /configuracoes
+MdFlow Supabase Schema Audit
+2026-03-31 17:30 UTC
+
+═══════════════════════════════════════════════════════════════════════
+
+RESUMO EXECUTIVO
+
+Página:           /configuracoes (12 tabs de administração)
+Tabelas:          20 (users, organizacoes, advogados, config_*, etc)
+Issues:           5 P0 | 8 P1 | 3 P2 (16 total)
+Conformidade:     60% (12/20 tabelas conformes)
+Recomendação:     AÇÃO IMEDIATA — P0 fixes necessários em 24-48h
+
+═══════════════════════════════════════════════════════════════════════
+
+P0 — BLOQUEADORES (CRÍTICO)
+
+1. users — Falta soft delete (deleted_at)
+   Impacto: Impossível desativar sem DELETE hard
+   Viola: Padrão obrigatório + LGPD + RLS
+   Fix: ALTER TABLE users ADD COLUMN deleted_at TIMESTAMPTZ
+
+2. organizacoes — Falta soft delete
+   Impacto: Não suspender org sem perder dados
+   Viola: Multi-tenant core
+   Fix: ALTER TABLE organizacoes ADD COLUMN deleted_at TIMESTAMPTZ
+
+3. RLS users — Policy não valida deleted_at
+   Impacto: Usuários deletados conseguem logar
+   Risco: LGPD, segurança crítica
+   Fix: Recreate policy com "AND deleted_at IS NULL"
+
+4. fn_hydrate_user RPC — Não verifica deleted_at
+   Impacto: Sessão revalidável para usuário deletado
+   Localização: migration 20260224011908_c0ff93b8.sql:40
+   Fix: Adicionar "AND deleted_at IS NULL" na query
+
+5. TabUsuarios.tsx — resetPasswordForEmail inseguro
+   Impacto: Enumeration attack possível
+   Localização: src/pages/configuracoes/tabs/TabUsuarios.tsx:317
+   Fix: Criar RPC segura fn_reset_user_password com SECURITY DEFINER
+
+═══════════════════════════════════════════════════════════════════════
+
+P1 — IMPORTANTES (IMPLEMENTAR SEMANA 1)
+
+1. users.setor_id — FK sem validação de org
+2. advogados.ativo — Sem índice (performance)
+3. config_* — Sem RPC de validação (dados sujos)
+4. users.config_ui — JSONB sem schema validation
+5. organizacao_setores — Nome não é único
+6. advogados.oab — Sem validação de formato
+7. RLS advogados — Policy vaga (sem granularidade)
+8. usuarios_organizacoes — Tabela fantasma?
+
+═══════════════════════════════════════════════════════════════════════
+
+ARQUIVOS ENTREGUES
+
+📄 Markdown Completo (519 linhas)
+   ~/beta-mdflow/AUDIT_CONFIGURACOES_2026-03-31.md
+   
+   Contém: Status tabelas, 16 issues detalhados, SQL pronto,
+   conformidades validadas, próximos passos
+
+🌐 HTML Interativo
+   https://github.com/mdlab-christian/beto-reports/
+   blob/main/audit_configuracoes_2026-03-31.html
+   
+   Dashboard visual, tabelas com cores, design dark mode
+
+📋 Índice de Auditorias
+   ~/beta-mdflow/AUDITS_INDEX.md
+   
+   Rastreio de todas as auditorias, próximas sugeridas
+
+═══════════════════════════════════════════════════════════════════════
+
+SQL DE CORREÇÃO P0 (PRONTO PARA APLICAÇÃO)
+
+-- P0.1: Soft delete users
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
+CREATE INDEX idx_users_deleted_at ON public.users(deleted_at);
+
+-- P0.2: Soft delete organizacoes
+ALTER TABLE public.organizacoes ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
+CREATE INDEX idx_organizacoes_deleted_at ON public.organizacoes(deleted_at);
+
+-- P0.3: RLS policy com soft delete
+DROP POLICY IF EXISTS "users_org_isolation" ON public.users;
+CREATE POLICY "users_org_isolation" ON public.users
+  FOR ALL USING (organizacao_id = public.get_org_id() AND deleted_at IS NULL)
+  WITH CHECK (organizacao_id = public.get_org_id() AND deleted_at IS NULL);
+
+-- P0.4: fn_hydrate_user validar deleted_at
+-- Ver seção SQL completa no arquivo Markdown
+
+═══════════════════════════════════════════════════════════════════════
+
+CONFORMIDADES VALIDADAS
+
+✅ 19/20: organizacao_id presente
+✅ 18/20: soft delete (deleted_at)
+✅ 20/20: índice em organizacao_id
+✅ 20/20: RLS habilitado
+✅ 20/20: created_at + updated_at
+✅ 15/20: trigger set_updated_at
+✅ 7: RPCs com SECURITY DEFINER
+✅ 0: ENUM nativos (todo TEXT CHECK)
+✅ fn_get_org_id() existe e é SECURITY DEFINER
+
+═══════════════════════════════════════════════════════════════════════
+
+PRÓXIMOS PASSOS
+
+HOJE
+  [ ] Compartilhar com CTO (Christian)
+  [ ] Revisar P0 issues críticos
+
+AMANHÃ (2026-04-01)
+  [ ] Christian aprova P0 fixes
+  [ ] Backup Supabase
+  [ ] Aplicar P0.1-P0.4
+
+SEMANA 1
+  [ ] Aplicar P1.1-P1.4 (índices + constraints)
+  [ ] Investigar P1.8 (usuarios_organizacoes)
+  [ ] Re-auditar após fixes
+
+═══════════════════════════════════════════════════════════════════════
+
+Auditor: mdflow-db-auditor (Haiku 4.5)
+Data: 2026-03-31 17:30 UTC
+Revisão sugerida: 24h após P0 fixes
+
+Para detalhes completos, veja:
+  Markdown: ~/beta-mdflow/AUDIT_CONFIGURACOES_2026-03-31.md
