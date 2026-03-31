@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DB Audit: /execucoes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0d0f18 0%, #1a1d2e 100%);
+      color: #e0e6ed;
+      line-height: 1.6;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #161926;
+      border: 1px solid #2a2e3f;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+    header {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      padding: 40px;
+      border-bottom: 2px solid #3a6ba0;
+    }
+    header h1 {
+      font-size: 2.2em;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #e0e6ed;
+    }
+    header .subtitle {
+      color: #b0b8c5;
+      font-size: 1em;
+      margin: 8px 0;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .metric {
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 3px solid #7c6dff;
+    }
+    .metric-label {
+      font-size: 0.85em;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+    .metric-value {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: #e0e6ed;
+    }
+    .score-7 { border-left-color: #f59e0b; }
+    .score-7 .metric-value { color: #f59e0b; }
+    
+    main { padding: 40px; }
+    
+    section {
+      margin-bottom: 40px;
+    }
+    
+    h2 {
+      font-size: 1.6em;
+      color: #e0e6ed;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #2a2e3f;
+    }
+    
+    h3 {
+      font-size: 1.1em;
+      color: #b0b8c5;
+      margin-top: 20px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: #0d0f18;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    th {
+      background: #1a1d2e;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #7c6dff;
+      border-bottom: 2px solid #2a2e3f;
+    }
+    
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #2a2e3f;
+    }
+    
+    tr:hover { background: rgba(124, 109, 255, 0.05); }
+    
+    .status-ok { color: #10b981; font-weight: 600; }
+    .status-warn { color: #f59e0b; font-weight: 600; }
+    .status-error { color: #ef4444; font-weight: 600; }
+    
+    .issue {
+      background: #1a1d2e;
+      border-left: 4px solid #ef4444;
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 6px;
+    }
+    
+    .issue.p1 { border-left-color: #ef4444; }
+    .issue.p2 { border-left-color: #f59e0b; }
+    
+    .issue-title {
+      font-size: 1.05em;
+      font-weight: 600;
+      color: #e0e6ed;
+      margin-bottom: 8px;
+    }
+    
+    .issue-sev {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .issue.p2 .issue-sev {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+    
+    .issue-desc {
+      color: #b0b8c5;
+      margin: 10px 0;
+    }
+    
+    .code-block {
+      background: #0d0f18;
+      border: 1px solid #2a2e3f;
+      border-radius: 6px;
+      padding: 15px;
+      margin: 15px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9em;
+      overflow-x: auto;
+      color: #a5f3fc;
+    }
+    
+    .conformity {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 4px solid #10b981;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+      color: #a7f3d0;
+    }
+    
+    .conformity::before {
+      content: "✓ ";
+      font-weight: 700;
+      color: #10b981;
+    }
+    
+    footer {
+      background: #0d0f18;
+      padding: 20px 40px;
+      border-top: 1px solid #2a2e3f;
+      color: #666;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 0.8em;
+      font-weight: 600;
+      margin: 2px;
+    }
+    
+    .badge-ok { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    .badge-warn { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .badge-error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>DB Audit: /execucoes</h1>
+      <p class="subtitle">MdFlow Supabase Schema Audit Report</p>
+      <div class="metrics">
+        <div class="metric score-7">
+          <div class="metric-label">Score Geral</div>
+          <div class="metric-value">7.5/10</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Tabelas Auditadas</div>
+          <div class="metric-value">2</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Issues P0</div>
+          <div class="metric-value" style="color: #10b981;">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Issues P1</div>
+          <div class="metric-value" style="color: #ef4444;">3</div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Tabelas Resumo -->
+      <section>
+        <h2>Tabelas Auditadas</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Tabela</th>
+              <th>Existe</th>
+              <th>org_id</th>
+              <th>deleted_at</th>
+              <th>RLS</th>
+              <th>Índices</th>
+              <th>Trigger</th>
+              <th>RPCs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>execucoes</td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-ok">✅</span></td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>execucoes_eventos</td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-warn">❌</span></td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-ok">✅</span></td>
+              <td><span class="status-ok">—</span></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Issues P0 -->
+      <section>
+        <h2>Issues P0 — Bloqueadores</h2>
+        <p style="color: #10b981; font-weight: 600;">✓ Nenhum bloqueador encontrado</p>
+      </section>
+
+      <!-- Issues P1 -->
+      <section>
+        <h2>Issues P1 — Importantes</h2>
+        
+        <div class="issue p1">
+          <div class="issue-sev">P1</div>
+          <div class="issue-title">P1-E1: execucoes.processo_id é nullable</div>
+          <div class="issue-desc">
+            A coluna <code>processo_id</code> é nullable, permitindo registros orphan sem processo vinculado.
+            Viola integridade referencial.
+          </div>
+          <div class="code-block">
+-- Solução: Tornar NOT NULL
+ALTER TABLE execucoes ALTER COLUMN processo_id SET NOT NULL;
+          </div>
+        </div>
+
+        <div class="issue p1">
+          <div class="issue-sev">P1</div>
+          <div class="issue-title">P1-E2: View canônica 'execucoes_vw' não existe</div>
+          <div class="issue-desc">
+            Documentação referencia <code>execucoes_vw</code> mas apenas <code>view_execucoes_list</code> existe.
+            Frontend pode falhar se referenciar nome incorreto.
+          </div>
+          <div class="code-block">
+-- Opção 1: Criar alias
+CREATE OR REPLACE VIEW public.execucoes_vw AS
+SELECT * FROM view_execucoes_list;
+          </div>
+        </div>
+
+        <div class="issue p1">
+          <div class="issue-sev">P1</div>
+          <div class="issue-title">P1-E3: fn_acordo_marcar_pago tem código morta</div>
+          <div class="issue-desc">
+            Função testa <code>IF EXISTS (TABLE financeiro_lancamentos)</code> que não existe.
+            Integração é feita via trigger.
+          </div>
+          <div class="code-block">
+-- Apenas documentar a função (requer aprovação)
+COMMENT ON FUNCTION fn_acordo_marcar_pago IS 'Nota: IF EXISTS ...';
+          </div>
+        </div>
+      </section>
+
+      <!-- Issues P2 -->
+      <section>
+        <h2>Issues P2 — Melhorias</h2>
+        
+        <div class="issue p2">
+          <div class="issue-sev">P2</div>
+          <div class="issue-title">P2-E1: Nomenclatura inconsistente de views</div>
+          <div class="issue-desc">
+            Algumas views usam <code>vw_</code> prefix, outras <code>_vw</code> suffix.
+            Estabelecer padrão único recomendado.
+          </div>
+        </div>
+
+        <div class="issue p2">
+          <div class="issue-sev">P2</div>
+          <div class="issue-title">P2-E2: execucoes_eventos sem deleted_at</div>
+          <div class="issue-desc">
+            Tabela de audit trail (append-only) não possui <code>deleted_at</code>.
+            <strong>Aceitável:</strong> logs de auditoria devem ser imutáveis.
+          </div>
+        </div>
+      </section>
+
+      <!-- Conformidades -->
+      <section>
+        <h2>Conformidades Verificadas</h2>
+        <div class="conformity">RLS habilitado em ambas as tabelas com política de isolamento por org</div>
+        <div class="conformity">soft delete (deleted_at) em tabela principal</div>
+        <div class="conformity">organizacao_id em todas as tabelas (soft-tenancy)</div>
+        <div class="conformity">Índices em colunas de query comuns</div>
+        <div class="conformity">RPC SECURITY DEFINER em fn_append_evento_execucao</div>
+        <div class="conformity">Trigger updated_at automático em execucoes</div>
+        <div class="conformity">CHECK constraints em etapa e tipo_decisao (não ENUM nativo)</div>
+        <div class="conformity">Foreign keys bem estruturadas com CASCADE delete</div>
+        <div class="conformity">Audit trail dedicado com execucoes_eventos</div>
+        <div class="conformity">Idempotência de eventos (append-only)</div>
+      </section>
+
+      <!-- Enums -->
+      <section>
+        <h2>Enumerados Válidos</h2>
+        <h3>execucoes.etapa</h3>
+        <p><code>cadastrada</code> | <code>ajuizada</code> | <code>intimacao</code> | <code>penhora</code> | <code>alvara_pedido</code> | <code>alvara_expedido</code> | <code>pago</code> | <code>encerrada</code></p>
+        
+        <h3>execucoes.tipo_decisao</h3>
+        <p><code>favoravel</code> | <code>desfavoravel</code> | <code>parcial</code></p>
+        
+        <h3>execucoes_eventos.tipo</h3>
+        <p><code>CRIADA</code> | <code>ALVARA_SOLICITADO</code> | <code>ALVARA_RECEBIDO</code> | <code>DEPOSITO_REALIZADO</code> | <code>DEPOSITO_CONFIRMADO</code> | <code>HONORARIOS_PAGOS</code> | <code>CONCLUIDA</code> | <code>CANCELADA</code> | <code>REABERTA</code></p>
+      </section>
+
+      <!-- Próximos Passos -->
+      <section>
+        <h2>Próximos Passos</h2>
+        <ul style="margin-left: 20px; color: #b0b8c5;">
+          <li>Confirmar com Christian se <code>processo_id</code> deve ser NOT NULL</li>
+          <li>Executar grep no frontend por <code>execucoes_vw</code></li>
+          <li>Decidir sobre limpeza de código em <code>fn_acordo_marcar_pago</code></li>
+          <li>Padronizar nomenclatura de views (vw_ prefix recomendado)</li>
+          <li>Testar RLS de execucoes_eventos com 2 organizações</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>Auditoria realizada em 31 de março, 2026 | Auditor: Claude Code / Beto</p>
+      <p style="margin-top: 10px; color: #444;">Relatório completo: <a href="AUDIT_EXECUCOES_2026-03-31.md" style="color: #7c6dff;">AUDIT_EXECUCOES_2026-03-31.md</a></p>
+    </footer>
+  </div>
+</body>
+</html>
