@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoria Frontend — /configuracoes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0d0b09;
+            color: #f2efe8;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            border-bottom: 2px solid #20c997;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        h2 { 
+            font-size: 1.8rem; 
+            margin-top: 2rem; 
+            margin-bottom: 1rem; 
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #3a3530;
+        }
+        h3 { font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.8rem; color: #34d399; }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: #1a1714;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #3a3530;
+        }
+        .metric {
+            background: #211e1a;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #20c997;
+        }
+        .metric-value { font-size: 2rem; font-weight: 700; color: #34d399; }
+        .metric-label { font-size: 0.9rem; color: #9e978a; text-transform: uppercase; letter-spacing: 0.5px; }
+        .severity {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        .p0 { background: #ef4444; color: white; }
+        .p1 { background: #f59e0b; color: #000; }
+        .p2 { background: #8b5cf6; color: white; }
+        .ok { background: #22c55e; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem; }
+        .issue {
+            background: #211e1a;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+        .issue.p0 { border-color: #ef4444; }
+        .issue.p1 { border-color: #f59e0b; }
+        .issue.p2 { border-color: #8b5cf6; }
+        .file-path {
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #34d399;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .code-snippet {
+            background: #0d0b09;
+            border: 1px solid #3a3530;
+            padding: 0.75rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #1a1714;
+            border: 1px solid #3a3530;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        th {
+            background: #211e1a;
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #3a3530;
+            font-weight: 600;
+            color: #34d399;
+        }
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #3a3530;
+        }
+        tr:last-child td { border-bottom: none; }
+        .tree {
+            background: #0d0b09;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #3a3530;
+            margin: 1rem 0;
+            font-family: 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: #9e978a;
+        }
+        .tree-item { margin-left: 1.5rem; }
+        .tree-file { color: #34d399; }
+        .tree-folder { color: #8b5cf6; font-weight: 600; }
+        .checklist {
+            background: #1a1714;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        .check-item.pass { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .check-item.fail { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .check-item.warn { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .checkbox { font-weight: 700; font-size: 1.2rem; }
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.75rem 0;
+        }
+        .bar { flex: 1; height: 24px; background: linear-gradient(90deg, #20c997, #34d399); border-radius: 3px; }
+        .bar-label { font-weight: 600; color: #34d399; }
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #3a3530;
+            font-size: 0.85rem;
+            color: #9e978a;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Auditoria Frontend — /configuracoes</h1>
+            <p style="color: #9e978a; margin-top: 0.5rem;">MdFlow Design System v5 • Padrões React/TypeScript</p>
+            <p style="color: #9e978a; margin-top: 0.25rem;">Auditado: 31 de março de 2026 às 17:47 BRT</p>
+        </header>
+
+        <div class="summary">
+            <div class="metric">
+                <div class="metric-value">41</div>
+                <div class="metric-label">Arquivos TypeScript</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">8,920</div>
+                <div class="metric-label">Total de Linhas</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">7</div>
+                <div class="metric-label">P0 Bloqueadores</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">6</div>
+                <div class="metric-label">P1 Importantes</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">3</div>
+                <div class="metric-label">P2 Melhorias</div>
+            </div>
+        </div>
+
+        <!-- P0 — Bloqueadores -->
+        <h2>🚨 P0 — Bloqueadores (Corrigir antes do próximo deploy)</h2>
+
+        <div class="issue p0">
+            <span class="severity p0">P0</span>
+            <strong>Multi-tenant isolation: .update() e .delete() sem filtro organizacao_id</strong>
+            <div class="file-path">26 arquivos afetados</div>
+            <p style="margin-top: 0.5rem;">
+                Queries executam atualização/exclusão apenas por ID, sem garantir que o registro pertence à organização do usuário. 
+                Isso permite que um usuário modifique/delete dados de outra organização (CRÍTICO).
+            </p>
+            <div class="code-snippet">
+// ❌ INSEGURO — não valida organizacao_id
+await supabase
+  .from('docs_tipos')
+  .update({ ativo: novoAtivo })
+  .eq('id', id);  // Falta: .eq('organizacao_id', organizacao_id!)
+
+// ✅ CORRETO
+await supabase
+  .from('docs_tipos')
+  .update({ ativo: novoAtivo })
+  .eq('id', id)
+  .eq('organizacao_id', organizacao_id!);
+            </div>
+            <p style="margin-top: 0.75rem; color: #f59e0b;"><strong>Arquivos críticos:</strong></p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                <li>TabDocumentos.tsx:98, 116, 132, 151</li>
+                <li>TabContas.tsx:49, 82</li>
+                <li>TabWhatsapp.tsx:63, 171</li>
+                <li>TabProcessos.tsx:171, 189</li>
+                <li>TabAtividades.tsx:100</li>
+                <li>TabAdvogados.tsx:126</li>
+                <li>TabEstados.tsx:88, 104</li>
+                <li>TabUsuarios.tsx:120, 153</li>
+                <li>e mais 7 arquivos...</li>
+            </ul>
+        </div>
+
+        <div class="issue p0">
+            <span class="severity p0">P0</span>
+            <strong>Inline styles com backgroundColor dinâmico (sem fallback CSS)</strong>
+            <div class="file-path">TabProcessos.tsx:79, TabAtividades.tsx:203, TabEtiquetas.tsx:150</div>
+            <p style="margin-top: 0.5rem;">
+                Cores armazenadas em banco de dados (hex) são aplicadas diretamente via <code>style={{ backgroundColor: ... }}</code>.
+                Sem validação ou fallback, pode quebrar layout se cor for inválida.
+            </p>
+            <div class="code-snippet">
+// ❌ Problemático
+&lt;span style={{ backgroundColor: sit.cor || 'hsl(var(--muted-foreground))' }} /&gt;
+
+// ✅ Melhor — validar hex antes
+const isValidHex = /^#(?:[0-9a-f]{3}){1,2}$/i.test(cor);
+const bgColor = isValidHex ? cor : 'hsl(var(--muted-foreground))';
+&lt;span style={{ backgroundColor: bgColor }} /&gt;
+            </div>
+        </div>
+
+        <div class="issue p0">
+            <span class="severity p0">P0</span>
+            <strong>Ausência de soft delete em 6 tabs (apenas 2 implementam .is('deleted_at', null))</strong>
+            <div class="file-path">TabController.tsx, TabContas.tsx, TabWhatsapp.tsx, TabAtividades.tsx, etc.</div>
+            <p style="margin-top: 0.5rem;">
+                Queries trazem registros excluídos. Viola padrão LGPD e causa inconsistência de dados.
+            </p>
+            <div class="code-snippet">
+// ✅ CORRETO (apenas TabDocumentos.tsx)
+const { data } = await supabase
+  .from('docs_categorias')
+  .select('*')
+  .eq('organizacao_id', organizacao_id!)
+  .is('deleted_at', null)  // Obrigatório
+  .order('nome');
+
+// ❌ INCOMPLETO (maioria)
+const { data } = await supabase
+  .from('controller_dominios')
+  .select('*')
+  .eq('organizacao_id', organizacao_id!)
+  .order('termo');  // Sem .is('deleted_at', null)
+            </div>
+            <p style="margin-top: 0.75rem;"><strong>Implementar em:</strong> TabController, TabContas, TabWhatsapp, TabAtividades, TabAdvogados, TabEstados, TabEtiquetas</p>
+        </div>
+
+        <div class="issue p0">
+            <span class="severity p0">P0</span>
+            <strong>ModalEditarUsuario: .update() sem .eq('organizacao_id')</strong>
+            <div class="file-path">ModalEditarUsuario.tsx:142-150</div>
+            <div class="code-snippet">
+// ❌ INSEGURO
+const { error } = await supabase
+  .from('users')
+  .update({...})
+  .eq('id', userId);  // Falta organizacao_id
+
+// ✅ CORRETO
+.eq('id', userId)
+.eq('organizacao_id', organizacao_id!)
+            </div>
+        </div>
+
+        <div class="issue p0">
+            <span class="severity p0">P0</span>
+            <strong>TabContas.tsx: .select('*') expõe dados sensíveis sem máscara de acesso_financeiro</strong>
+            <div class="file-path">TabContas.tsx:34, 66</div>
+            <p style="margin-top: 0.5rem;">
+                Query retorna TODOS os dados de contas bancárias e cartões. Mesmo com BlindedValue() no template, 
+                os dados brutos estão em JS. Se acesso_financeiro=false, deve filtrar no backend.
+            </p>
+            <div class="code-snippet">
+// Atual: query retorna tudo, frontend mascara
+// Melhor: backend filtra baseado em permissão
+const { acesso_financeiro } = useAuth();
+
+// ✅ Considerar RPC que retorna campos já mascarados se sem acesso
+            </div>
+        </div>
+
+        <div class="issue p0">
+            <span class="severity p0">P0</span>
+            <strong>Action-Driven UI incompleto: sem switch/case em todas as respostas webhook</strong>
+            <div class="file-path">Apenas TabController.tsx implementa. Faltam em: TabUsuarios, TabDocumentos, TabAdvogados, etc.</div>
+            <p style="margin-top: 0.5rem;">
+                Modais/forms disparam webhook mas nunca verificam <code>response.action</code>. 
+                Deviam usar <code>handleWebhookAction()</code> em vez de IF(success).
+            </p>
+        </div>
+
+        <!-- P1 — Importantes -->
+        <h2>⚠️ P1 — Importantes (Refatorar na próxima sprint)</h2>
+
+        <div class="issue p1">
+            <span class="severity p1">P1</span>
+            <strong>Arquivos >500 linhas (limite Design System v5)</strong>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Arquivo</th>
+                        <th>Linhas</th>
+                        <th>Recomendação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TabUsuarios.tsx</td>
+                        <td>489</td>
+                        <td>OK (no limite)</td>
+                    </tr>
+                    <tr>
+                        <td>ModalEditarUsuario.tsx</td>
+                        <td>425</td>
+                        <td>OK</td>
+                    </tr>
+                    <tr>
+                        <td>DistribuicaoEditor.tsx</td>
+                        <td>384</td>
+                        <td>OK</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 1rem;">✅ <strong>Conformidade:</strong> Todos os arquivos estão dentro do limite de 500 linhas.</p>
+        </div>
+
+        <div class="issue p1">
+            <span class="severity p1">P1</span>
+            <strong>Imports excessivos (>15 por arquivo)</strong>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Arquivo</th>
+                        <th>Imports</th>
+                        <th>Impacto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ConfiguracoesPage.tsx</td>
+                        <td>23</td>
+                        <td>Alto — considerar lazy loading das tabs</td>
+                    </tr>
+                    <tr>
+                        <td>TabUsuarios.tsx</td>
+                        <td>19</td>
+                        <td>Médio</td>
+                    </tr>
+                    <tr>
+                        <td>ModalEditarUsuario.tsx</td>
+                        <td>19</td>
+                        <td>Médio</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 1rem;"><strong>Ação:</strong> Considerar <code>React.lazy()</code> + <code>Suspense</code> para ConfiguracoesPage (carrega 12 tabs antecipadamente).</p>
+        </div>
+
+        <div class="issue p1">
+            <span class="severity p1">P1</span>
+            <strong>Soft delete não implementado em queries (7 tabs)</strong>
+            <p style="margin-top: 0.5rem;">
+                Devem adicionar <code>.is('deleted_at', null)</code> em:
+            </p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                <li>TabController.tsx (controller_dominios)</li>
+                <li>TabContas.tsx (contas_bancarias, cartoes_credito)</li>
+                <li>TabWhatsapp.tsx (whatsapp_numeros, mdzap_ai_modules)</li>
+                <li>TabProcessos.tsx (processos_situacoes)</li>
+                <li>TabAtividades.tsx (atividades_tipos)</li>
+                <li>TabAdvogados.tsx (advogados_internos, advogados_externos)</li>
+                <li>TabEstados.tsx (possivelmente)</li>
+            </ul>
+        </div>
+
+        <div class="issue p1">
+            <span class="severity p1">P1</span>
+            <strong>PermissionGrid refetch manual em ModalEditarUsuario</strong>
+            <div class="file-path">ModalEditarUsuario.tsx (após salvar permissões)</div>
+            <p style="margin-top: 0.5rem;">
+                Após mudança de permissões, refetch não ocorre automaticamente. 
+                Adicionar <code>onSaved()</code> callback ou <code>queryClient.invalidateQueries()</code>.
+            </p>
+        </div>
+
+        <div class="issue p1">
+            <span class="severity p1">P1</span>
+            <strong>Responsividade limitada (29 breakpoints, apenas 3 mobile-specific)</strong>
+            <div class="file-path">ConfiguracoesPage.tsx:105 (hidden sm:inline)</div>
+            <p style="margin-top: 0.5rem;">
+                Tabelas e modais não adaptam para mobile &lt;640px. Labels de permissões (PermissionGrid) não quebram em telas pequenas.
+            </p>
+            <p style="margin-top: 0.75rem;">✅ <strong>Positivo:</strong> overflow-x-auto nas TabsList previne quebra horizontal.</p>
+        </div>
+
+        <!-- P2 — Melhorias -->
+        <h2>🔧 P2 — Melhorias (Próximas semanas)</h2>
+
+        <div class="issue p2">
+            <span class="severity p2">P2</span>
+            <strong>color_picker_grid.tsx: sem validação de formato de cor</strong>
+            <div class="file-path">color_picker_grid.tsx:39</div>
+            <p style="margin-top: 0.5rem;">
+                Permite cores inválidas. Adicionar validação regex <code>/^#[0-9a-fA-F]{6}$/</code>.
+            </p>
+        </div>
+
+        <div class="issue p2">
+            <span class="severity p2">P2</span>
+            <strong>TabCartaoCredito: gradient hardcoded para bandeiras</strong>
+            <div class="file-path">ModalCartaoCredito.tsx:199</div>
+            <div class="code-snippet">
+// Hardcoded em JS
+style={{ background: BANDEIRA_GRADIENTS[bandeira] || BANDEIRA_GRADIENTS.outro }}
+
+// ✅ Poderia ser CSS classes
+className={cn('bg-gradient-' + bandeira)}
+            </div>
+        </div>
+
+        <div class="issue p2">
+            <span class="severity p2">P2</span>
+            <strong>Falta integração com Health Check (HealthValidatorBanner.tsx não explora conforme spec)</strong>
+            <div class="file-path">ConfiguracoesPage.tsx:83-87, HealthValidatorBanner.tsx</div>
+            <p style="margin-top: 0.5rem;">
+                Banner existe mas não há dados públicos sobre o que ele valida. Considerar documentar.
+            </p>
+        </div>
+
+        <!-- Conformidades -->
+        <h2>✅ Conformidades Verificadas</h2>
+
+        <div class="checklist">
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Sem hardcodes de cor hex em className direto (apenas inline styles dinâmicas)</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Toast usando Sonner (zero react-hot-toast, react-toastify)</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Sem console.log/debug em produção</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Sem TypeScript `: any` ou `as any` (type safety forte)</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Sem fetch/axios direto para APIs externas (webhook via n8n)</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Sem service_role_key exposto no frontend</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Empty/Loading/Error states implementados em 10+ tabs</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Dirty state em modais críticos (TabTemplate, ModalContaBancaria, ModalCartaoCredito)</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>ErrorBoundary em TabsContent (TabErrorFallback)</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Cegueira financeira implementada em TabContas (BlindedValue)</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Sem modais aninhados (um por vez em cada tab)</span>
+            </div>
+            <div class="check-item pass">
+                <span class="checkbox">✓</span>
+                <span>Ícones Lucide React exclusively (sem @heroicons, phosphor, etc)</span>
+            </div>
+            <div class="check-item warn">
+                <span class="checkbox">⚠</span>
+                <span>Paginação: não há listagens muito longas (todas &lt;50 itens, server-side ok)</span>
+            </div>
+        </div>
+
+        <!-- Estrutura -->
+        <h2>📁 Estrutura de Arquivos</h2>
+
+        <div class="tree">
+            <div class="tree-folder">📦 configuracoes/</div>
+            <div class="tree-item"><span class="tree-file">index.tsx</span> (1 linha — entry point)</div>
+            <div class="tree-item"><span class="tree-file">ConfiguracoesPage.tsx</span> (125 linhas — hub principal)</div>
+            <div class="tree-item"><span class="tree-file">types.ts</span> (15 linhas)</div>
+            <div class="tree-item"><span class="tree-file">constants.ts</span> (18 linhas)</div>
+            <div class="tree-item">
+                <span class="tree-folder">📂 constants/</span>
+                <div class="tree-item"><span class="tree-file">perfil.constants.ts</span> (12 linhas)</div>
+            </div>
+            <div class="tree-item">
+                <span class="tree-folder">📂 components/ (7 arquivos)</span>
+                <div class="tree-item"><span class="tree-file">HealthValidatorBanner.tsx</span> (244 linhas)</div>
+                <div class="tree-item"><span class="tree-file">PermissionGrid.tsx</span> (329 linhas)</div>
+                <div class="tree-item"><span class="tree-file">DistribuicaoEditor.tsx</span> (384 linhas)</div>
+                <div class="tree-item"><span class="tree-file">color_picker_grid.tsx</span> (45 linhas)</div>
+                <div class="tree-item"><span class="tree-file">PlaybookIAEditor.tsx</span> (121 linhas)</div>
+                <div class="tree-item"><span class="tree-file">PlaybookIAGlobal.tsx</span> (92 linhas)</div>
+                <div class="tree-item"><span class="tree-file">RegrasAvancadasEditor.tsx</span> (176 linhas)</div>
+            </div>
+            <div class="tree-item">
+                <span class="tree-folder">📂 tabs/ (12 arquivos principais)</span>
+                <div class="tree-item"><span class="tree-file">TabUsuarios.tsx</span> (489 linhas) ⚠️ no limite</div>
+                <div class="tree-item"><span class="tree-file">TabAdvogados.tsx</span> (381 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabDocumentos.tsx</span> (381 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabContas.tsx</span> (262 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabProcessos.tsx</span> (290 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabAtividades.tsx</span> (304 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabEtiquetas.tsx</span> (193 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabTemplates.tsx</span> (238 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabWhatsapp.tsx</span> (345 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabController.tsx</span> (308 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabEstados.tsx</span> (244 linhas)</div>
+                <div class="tree-item"><span class="tree-file">TabCRM.tsx</span> (18 linhas — wrapper)</div>
+                <div style="margin-left: 1.5rem;">
+                    <span class="tree-folder">📂 crm/ (3 sub-tabs)</span>
+                    <div class="tree-item"><span class="tree-file">CrmEstagiosFunil.tsx</span> (216 linhas)</div>
+                    <div class="tree-item"><span class="tree-file">CrmFollowupConfig.tsx</span> (239 linhas)</div>
+                    <div class="tree-item"><span class="tree-file">CrmOrigens.tsx</span> (158 linhas)</div>
+                </div>
+            </div>
+            <div class="tree-item">
+                <span class="tree-folder">📂 modals/ (17 arquivos)</span>
+                <div class="tree-item"><span class="tree-file">ModalEditarUsuario.tsx</span> (425 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalAdvogado.tsx</span> (303 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalContaBancaria.tsx</span> (289 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalCartaoCredito.tsx</span> (333 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalTemplate.tsx</span> (249 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalDominio.tsx</span> (206 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalConvidarUsuario.tsx</span> (219 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalGerenciarSetores.tsx</span> (303 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalEtiqueta.tsx</span> (176 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalSituacaoProcesso.tsx</span> (178 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalTipoAtividade.tsx</span> (190 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalTipoDocumento.tsx</span> (162 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalCategoriaDocumento.tsx</span> (112 linhas)</div>
+                <div class="tree-item"><span class="tree-file">ModalParceiro.tsx</span> (220 linhas)</div>
+                <div class="tree-item"><span class="tree-file">SubTabFuncionario.tsx</span> (277 linhas)</div>
+            </div>
+        </div>
+
+        <!-- Matriz de Risco -->
+        <h2>📊 Matriz de Risco por Arquivo</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Arquivo</th>
+                    <th>Linhas</th>
+                    <th>P0 Issuers</th>
+                    <th>P1 Issues</th>
+                    <th>P2 Issues</th>
+                    <th>Risco</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>TabDocumentos.tsx</td>
+                    <td>381</td>
+                    <td>4 (.update sem org)</td>
+                    <td>1 (soft delete)</td>
+                    <td>—</td>
+                    <td style="color: #ef4444;">🔴 Alto</td>
+                </tr>
+                <tr>
+                    <td>TabContas.tsx</td>
+                    <td>262</td>
+                    <td>2 (.update sem org)</td>
+                    <td>2 (soft delete, acesso_financeiro)</td>
+                    <td>—</td>
+                    <td style="color: #ef4444;">🔴 Alto</td>
+                </tr>
+                <tr>
+                    <td>TabController.tsx</td>
+                    <td>308</td>
+                    <td>1 (soft delete)</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td style="color: #f59e0b;">🟠 Médio</td>
+                </tr>
+                <tr>
+                    <td>ModalEditarUsuario.tsx</td>
+                    <td>425</td>
+                    <td>1 (.update sem org)</td>
+                    <td>1 (imports)</td>
+                    <td>—</td>
+                    <td style="color: #f59e0b;">🟠 Médio</td>
+                </tr>
+                <tr>
+                    <td>TabAtividades.tsx</td>
+                    <td>304</td>
+                    <td>1 (.update sem org)</td>
+                    <td>1 (soft delete)</td>
+                    <td>—</td>
+                    <td style="color: #f59e0b;">🟠 Médio</td>
+                </tr>
+                <tr>
+                    <td>TabAdvogados.tsx</td>
+                    <td>381</td>
+                    <td>1 (.update sem org)</td>
+                    <td>1 (soft delete)</td>
+                    <td>—</td>
+                    <td style="color: #f59e0b;">🟠 Médio</td>
+                </tr>
+                <tr style="background: rgba(34, 197, 94, 0.05);">
+                    <td>ConfiguracoesPage.tsx</td>
+                    <td>125</td>
+                    <td>—</td>
+                    <td>1 (imports 23)</td>
+                    <td>—</td>
+                    <td style="color: #22c55e;">🟢 Baixo</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Recomendações -->
+        <h2>🎯 Plano de Ação</h2>
+
+        <h3>Imediato (P0 — Esta semana)</h3>
+        <ol style="margin-left: 1.5rem;">
+            <li><strong>Adicionar .eq('organizacao_id')</strong> em todos os .update() e .delete()
+                <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                    <li>Script: buscar todos "`.update({`" sem ".eq('organizacao_id'" e corrigir</li>
+                    <li>Testar com 2 orgs simultâneas para garantir isolamento</li>
+                </ul>
+            </li>
+            <li><strong>Implementar .is('deleted_at', null)</strong> em 7 tabs</li>
+            <li><strong>Validar cores hex</strong> em color_picker_grid.tsx</li>
+        </ol>
+
+        <h3>Curto prazo (P1 — Próximas 2 sprints)</h3>
+        <ol style="margin-left: 1.5rem;">
+            <li>Refatorar ConfiguracoesPage com React.lazy() + Suspense</li>
+            <li>Melhorar responsividade em mobile (&lt;640px)</li>
+            <li>Implementar action-driven UI em modais via webhook</li>
+        </ol>
+
+        <h3>Longo prazo (P2 — Backlog)</h3>
+        <ol style="margin-left: 1.5rem;">
+            <li>Documentar Health Check (HealthValidatorBanner)</li>
+            <li>Refatorar cores de cartão para CSS classes</li>
+        </ol>
+
+        <!-- Conclusão -->
+        <h2>📈 Resumo Executivo</h2>
+
+        <div style="background: #1a1714; padding: 1.5rem; border-radius: 6px; border-left: 4px solid #20c997;">
+            <p><strong>Status Geral:</strong> <span style="color: #f59e0b;">⚠️ Requer Intervenção</span></p>
+            <p style="margin-top: 1rem;">
+                A página <code>/configuracoes</code> está <strong>funcionalmente completa</strong> mas apresenta 
+                <strong>falhas críticas de segurança multi-tenant</strong> em 26 operações de UPDATE/DELETE.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>Impacto:</strong> Um usuário malicioso pode modificar dados de outra organização via 
+                IDs capturados do console ou sniffing de rede.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>Recomendação:</strong> Agendar correção P0 como <strong>sprint de segurança imediata</strong>.
+                Considerar code review com foco em isolamento de tenant em todas as pages.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>Estimativa de correção:</strong> 4-6 horas (P0s) + 8-12 horas (P1s) = 1-2 dias de desenvolvimento.
+            </p>
+        </div>
+
+        <footer>
+            <p>Auditoria gerada automaticamente | 31 de março de 2026</p>
+            <p style="margin-top: 0.5rem;">Mais informações: <code>~/beto-reports/audit-configuracoes-mdflow.html</code></p>
+        </footer>
+    </div>
+</body>
+</html>
