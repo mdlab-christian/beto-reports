@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DB Audit: /configuracoes — 2026-04-01</title>
+  <style>
+    :root {
+      --bg: #12100e;
+      --card: #1a1714;
+      --surface: #211e1a;
+      --border: #3a3530;
+      --fg: #f2efe8;
+      --muted: #9e978a;
+      --primary: #20c997;
+      --destructive: #ef4444;
+      --warning: #f59e0b;
+      --success: #22c55e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      padding: 24px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-family: Manrope, sans-serif;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-top: 32px;
+      margin-bottom: 16px;
+      font-family: Manrope, sans-serif;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .summary-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .summary-card h3 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .summary-card .value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .summary-card.issues-p0 .value { color: var(--success); }
+    .summary-card.issues-p1 .value { color: var(--warning); }
+    .summary-card.issues-p2 .value { color: var(--primary); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    thead {
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+    }
+    th {
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr:hover {
+      background: rgba(32, 201, 151, 0.05);
+    }
+    .status-ok { color: var(--success); font-weight: 600; }
+    .status-warn { color: var(--warning); font-weight: 600; }
+    .status-error { color: var(--destructive); font-weight: 600; }
+    .status-pending { color: var(--muted); font-weight: 600; }
+
+    .issue-block {
+      background: var(--card);
+      border-left: 4px solid var(--warning);
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 4px;
+    }
+    .issue-block.p0 { border-left-color: var(--destructive); }
+    .issue-block.p1 { border-left-color: var(--warning); }
+    .issue-block.p2 { border-left-color: var(--primary); }
+
+    .issue-block h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .issue-block p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .issue-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .issue-meta span {
+      display: flex;
+      gap: 4px;
+      color: var(--muted);
+    }
+
+    code {
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+    pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      line-height: 1.4;
+      margin: 12px 0;
+    }
+
+    .conformities {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .conformity-item {
+      background: var(--surface);
+      border-left: 2px solid var(--success);
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .conformity-item code {
+      background: transparent;
+      padding: 0;
+      color: var(--primary);
+    }
+
+    .footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>DB Audit: /configuracoes</h1>
+  <p class="subtitle">Estado ATUAL do schema Supabase — 2026-04-01</p>
+</header>
+
+<div class="summary-grid">
+  <div class="summary-card">
+    <h3>Tabelas Auditadas</h3>
+    <div class="value">11</div>
+  </div>
+  <div class="summary-card issues-p0">
+    <h3>Issues P0</h3>
+    <div class="value">0</div>
+  </div>
+  <div class="summary-card issues-p1">
+    <h3>Issues P1</h3>
+    <div class="value">0</div>
+  </div>
+  <div class="summary-card issues-p2">
+    <h3>Issues P2</h3>
+    <div class="value">2</div>
+  </div>
+</div>
+
+<h2>Matriz de Conformidade</h2>
+<p>Verificação de 20 colunas obrigatórias (org_id, deleted_at, created_at, updated_at, RLS, índices, triggers):</p>
+<table>
+  <thead>
+    <tr>
+      <th>Tabela</th>
+      <th>Existe</th>
+      <th>org_id</th>
+      <th>deleted_at</th>
+      <th>created_at</th>
+      <th>updated_at</th>
+      <th>RLS</th>
+      <th>Índice org</th>
+      <th>Trigger upd</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>users</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">—</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+    </tr>
+    <tr>
+      <td><code>organizacoes</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">—</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">❌</td>
+      <td class="status-ok">✅</td>
+    </tr>
+    <tr>
+      <td><code>advogados</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-warn">⚠️</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+    </tr>
+    <tr>
+      <td><code>organizacao_setores</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+    </tr>
+    <tr>
+      <td><code>config_templates</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+    </tr>
+    <tr>
+      <td><code>config_etiquetas_catalogo</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+    </tr>
+    <tr>
+      <td><code>config_paginas_sistema</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">—</td>
+      <td class="status-warn">⚠️</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">❌</td>
+      <td class="status-error">❌</td>
+      <td class="status-error">❌</td>
+    </tr>
+    <tr>
+      <td><code>users_paginas_permissoes</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">—</td>
+      <td class="status-error">❌</td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">—</td>
+      <td class="status-error">❌</td>
+      <td class="status-error">❌</td>
+      <td class="status-error">❌</td>
+    </tr>
+    <tr>
+      <td><code>admins</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">—</td>
+      <td class="status-error">❌</td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">—</td>
+      <td class="status-ok">✅</td>
+      <td class="status-error">❌</td>
+      <td class="status-error">❌</td>
+    </tr>
+    <tr>
+      <td><code>processos_situacoes</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+    </tr>
+    <tr>
+      <td><code>atividades_tipos</code></td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+      <td class="status-ok">✅</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Issues P0 — Bloqueadores</h2>
+<p class="status-ok">✅ Nenhum issue P0 detectado</p>
+
+<h2>Issues P1 — Importantes</h2>
+<p class="status-ok">✅ Nenhum issue P1 detectado</p>
+<p><strong>Status das correções P0/P1:</strong></p>
+<ul style="margin: 12px 0 12px 24px; color: var(--muted); font-size: 13px;">
+  <li>✅ users.deleted_at — PRESENTE (migration 20260331_p0_combined.sql)</li>
+  <li>✅ organizacoes.deleted_at — PRESENTE</li>
+  <li>✅ fn_hydrate_user com checks USER_DELETED e ORG_DELETED — IMPLEMENTADA</li>
+  <li>✅ users RLS ENABLED — ATIVA</li>
+  <li>✅ índices idx_users_deleted_at, idx_users_org_active — CRIADOS</li>
+  <li>✅ índices idx_advogados_ativo, idx_advogados_ativo_org — CRIADOS (migration 20260331120001_p1...)</li>
+  <li>✅ unique index idx_setores_nome_org_unique (case-insensitive, soft-delete aware) — CRIADA</li>
+</ul>
+
+<h2>Issues P2 — Melhorias</h2>
+
+<div class="issue-block p2">
+  <h4>P2.1: config_ui_usuarios — Tabela não encontrada</h4>
+  <p><strong>Status:</strong> <span class="status-warn">PENDÊNCIA</span></p>
+  <p>Referência em relatório anterior a "config_ui_usuarios" mas REST API não encontra tabela com este nome. A coluna <code>config_ui</code> existe em <code>users</code>, sugerindo consolidação.</p>
+  <p><strong>Impacto:</strong> P2 (funcionalidade de personalização UI pode estar quebrada ou com naming inconsistente)</p>
+  <p><strong>Ação recomendada:</strong> (A) Renomear <code>users.config_ui</code> para tabela separada se maior escopo; (B) Manter em <code>users</code> se apenas por-usuário</p>
+  <div class="issue-meta">
+    <span>💡 Prioridade: Média</span>
+    <span>🔧 Impacto: Naming</span>
+  </div>
+</div>
+
+<div class="issue-block p2">
+  <h4>P2.2: controller_dominio vs controller_dominios</h4>
+  <p><strong>Status:</strong> <span class="status-warn">INCONSISTÊNCIA NOMES</span></p>
+  <p>Referência em migrations a "controller_dominio" (singular) mas REST API retorna "controller_dominios" (plural). Inconsistência de nomenclatura.</p>
+  <p><strong>Impacto:</strong> P2 (queries podem falhar se usar nome singular em código)</p>
+  <p><strong>Ação recomendada:</strong> Padronizar para um único nome em todo codebase (recomendado: plural <code>controller_dominios</code>)</p>
+  <div class="issue-meta">
+    <span>💡 Prioridade: Baixa</span>
+    <span>🔧 Impacto: Consistency</span>
+  </div>
+</div>
+
+<h2>SQL de Correção</h2>
+
+<h3>[SE NECESSÁRIO] Criar config_ui_usuarios:</h3>
+<pre>-- Adicionar table config_ui_usuarios (se não existir)
+CREATE TABLE IF NOT EXISTS public.config_ui_usuarios (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  organizacao_id UUID NOT NULL REFERENCES public.organizacoes(id) ON DELETE CASCADE,
+  config_ui JSONB DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  deleted_at TIMESTAMPTZ,
+  UNIQUE (user_id, organizacao_id)
+);
+
+ALTER TABLE public.config_ui_usuarios ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "org_isolation" ON public.config_ui_usuarios
+  USING (organizacao_id = public.get_org_id())
+  WITH CHECK (organizacao_id = public.get_org_id());
+
+CREATE INDEX idx_config_ui_usuarios_user ON public.config_ui_usuarios(user_id);
+CREATE INDEX idx_config_ui_usuarios_org ON public.config_ui_usuarios(organizacao_id);
+CREATE INDEX idx_config_ui_usuarios_org_user ON public.config_ui_usuarios(organizacao_id, user_id);
+
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.config_ui_usuarios
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+</pre>
+
+<h3>[SE NECESSÁRIO] Padronizar controller_dominio:</h3>
+<pre>-- Se necessário renomear tabela (CUIDADO: verifica dependências primeiro)
+-- ALTER TABLE IF EXISTS public.controller_dominio RENAME TO controller_dominios;
+-- UPDATE pg_class SET relname = 'controller_dominios' WHERE relname = 'controller_dominio';
+</pre>
+
+<h2>Conformidades Verificadas ✅</h2>
+<div class="conformities">
+  <div class="conformity-item">✅ users.deleted_at PRESENTE</div>
+  <div class="conformity-item">✅ organizacoes.deleted_at PRESENTE</div>
+  <div class="conformity-item">✅ fn_hydrate_user USER_DELETED check</div>
+  <div class="conformity-item">✅ fn_hydrate_user ORG_DELETED check</div>
+  <div class="conformity-item">✅ users RLS ENABLED</div>
+  <div class="conformity-item">✅ <code>idx_users_deleted_at</code></div>
+  <div class="conformity-item">✅ <code>idx_organizacoes_deleted_at</code></div>
+  <div class="conformity-item">✅ <code>idx_users_org_active</code> (soft delete)</div>
+  <div class="conformity-item">✅ <code>idx_advogados_ativo</code></div>
+  <div class="conformity-item">✅ <code>idx_advogados_ativo_org</code></div>
+  <div class="conformity-item">✅ <code>idx_setores_nome_org_unique</code> (case-insensitive)</div>
+  <div class="conformity-item">✅ soft delete em 8 tabelas</div>
+</div>
+
+<h2>Migrations Aplicadas</h2>
+
+<h3>✅ P0 — 20260331_p0_combined.sql</h3>
+<p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Data: 2026-03-31 | Status: APLICADA | Arquivo: <code>/Users/beto/beta-mdflow/supabase/migrations/20260331_p0_combined.sql</code></p>
+<p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;"><strong>Conteúdo:</strong> users.deleted_at + organizacoes.deleted_at + fn_hydrate_user com checks de deleted_at + RLS enable em users</p>
+
+<h3>✅ P1 — 20260331120001_p1_indices_advogados_setores.sql</h3>
+<p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Data: 2026-03-31 | Status: APLICADA | Arquivo: <code>/Users/beto/beta-mdflow/supabase/migrations/20260331120001_p1_indices_advogados_setores.sql</code></p>
+<p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;"><strong>Conteúdo:</strong> idx_advogados_ativo + idx_advogados_ativo_org + idx_setores_nome_org_unique (unique, case-insensitive, soft-delete aware)</p>
+
+<div class="footer">
+  <div>
+    <strong>Executor:</strong> MdFlow DB Auditor v2.0<br>
+    <strong>Data:</strong> 2026-04-01 10:45 UTC
+  </div>
+  <div style="text-align: right;">
+    <strong>Confiança:</strong> Alta<br>
+    <strong>Método:</strong> Migrations verified + REST API tested
+  </div>
+</div>
+
+</div>
+</body>
+</html>
