@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controller V5 — Briefing Backend + Plano de Correção</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#12100e;--card:#1a1714;--surface:#211e1a;--border:#3a3530;--border-l:#2e2b27;
+  --text:#f2efe8;--muted:#9e978a;
+  --primary:#20c997;--primary-dim:rgba(32,201,151,.12);--primary-bd:rgba(32,201,151,.3);
+  --destructive:#ef4444;--destructive-dim:rgba(239,68,68,.12);
+  --warning:#f59e0b;--warning-dim:rgba(245,158,11,.12);
+  --success:#22c55e;--success-dim:rgba(34,197,94,.12);
+  --info:#0ea5e9;--info-dim:rgba(14,165,233,.12);
+  --violet:#8b5cf6;--violet-dim:rgba(139,92,246,.12);
+  --rose:#f43f5e;--rose-dim:rgba(244,63,94,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.6}
+h1,h2,h3,h4{font-family:'Manrope',sans-serif}
+code,.mono{font-family:'JetBrains Mono',monospace}
+
+/* TOP NAV */
+.topnav{position:sticky;top:0;z-index:100;background:hsl(30,20%,3%);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;height:48px;gap:0}
+.topnav-logo{font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;color:var(--primary);margin-right:28px}
+.topnav-logo span{color:var(--text)}
+.tn{height:100%;padding:0 16px;border:none;background:none;color:var(--muted);font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px}
+.tn:hover{color:var(--text)}
+.tn.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+.tn a{color:var(--primary);text-decoration:none;font-size:12px}
+
+/* SECTION WRAPPER */
+.swrap{display:none;max-width:1100px;margin:0 auto;padding:36px 24px 80px}
+.swrap.active{display:block}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.3px}
+.bg{background:var(--success-dim);color:var(--success);border:1px solid rgba(34,197,94,.3)}
+.bb{background:var(--info-dim);color:var(--info);border:1px solid rgba(14,165,233,.3)}
+.bp{background:var(--violet-dim);color:var(--violet);border:1px solid rgba(139,92,246,.3)}
+.ba{background:var(--warning-dim);color:var(--warning);border:1px solid rgba(245,158,11,.3)}
+.br{background:var(--destructive-dim);color:var(--destructive);border:1px solid rgba(239,68,68,.3)}
+.bmuted{background:rgba(158,151,138,.1);color:var(--muted);border:1px solid rgba(158,151,138,.2)}
+
+/* HEADER */
+.page-header{margin-bottom:32px}
+.page-header h1{font-size:28px;font-weight:800;margin-bottom:8px}
+.page-header p{color:var(--muted);font-size:14px;max-width:700px;line-height:1.6}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* SECTION TITLE */
+.sec-h{font-size:18px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sec-h span{color:var(--muted);font-weight:400;font-size:14px}
+.section{margin-bottom:36px}
+
+/* PREMISSAS GRID */
+.prem-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.prem-card{background:var(--surface);border:1px solid var(--border-l);border-radius:9px;padding:14px 16px;display:flex;gap:12px}
+.prem-num{width:24px;height:24px;border-radius:50%;background:var(--primary-dim);border:1px solid var(--primary-bd);color:var(--primary);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.prem-body strong{font-size:13px;color:var(--text);display:block;margin-bottom:4px}
+.prem-body p{font-size:12px;color:var(--muted);line-height:1.5}
+.prem-body code{font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(255,255,255,.07);padding:1px 4px;border-radius:3px;color:var(--primary)}
+.prem-card.critical{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.04)}
+.prem-card.critical .prem-num{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:var(--destructive)}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.card-head{padding:13px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.card-head-left{display:flex;align-items:center;gap:8px}
+.card-body{padding:16px 18px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:8px 12px;color:var(--muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2)}
+.tbl td{padding:7px 12px;border-bottom:1px solid var(--border-l);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--surface)}
+.tbl .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--primary)}
+.tbl .muted{color:var(--muted);font-size:11px}
+
+/* CODE BLOCK */
+pre{background:#0d0b09;border:1px solid var(--border);border-radius:7px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;color:#e8e0d4;overflow-x:auto;margin:10px 0}
+pre .c{color:#6a6560}
+pre .k{color:#20c997}
+pre .t{color:#8b5cf6}
+pre .s{color:#f59e0b}
+pre .n{color:#0ea5e9}
+
+/* ALERT */
+.alert{padding:13px 16px;border-radius:8px;font-size:13px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+.alert-warn{background:var(--warning-dim);border:1px solid rgba(245,158,11,.3)}
+.alert-info{background:var(--info-dim);border:1px solid rgba(14,165,233,.3)}
+.alert-r{background:var(--destructive-dim);border:1px solid rgba(239,68,68,.3)}
+.alert-g{background:var(--success-dim);border:1px solid rgba(34,197,94,.3)}
+.alert-ico{flex-shrink:0;font-size:15px;margin-top:1px}
+
+/* WIREFRAME */
+.wireframe{background:#0d0b09;border:1px solid var(--border);border-radius:7px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:#9e978a;margin:10px 0}
+.wireframe .hi{color:#20c997}
+.wireframe .dim{color:#4a4540}
+
+/* 5 OABs TABLE */
+.oab-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.oab-card{background:var(--surface);border:1px solid var(--border-l);border-radius:8px;padding:12px 13px}
+.oab-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px}
+.oab-oab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--primary);margin-bottom:2px}
+.oab-trib{font-size:11px;color:var(--muted)}
+
+/* GRID 2 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+
+/* RPC CARD */
+.rpc-card{background:var(--surface);border:1px solid var(--border-l);border-radius:8px;padding:14px 16px;margin-bottom:10px}
+.rpc-name{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--primary);font-weight:600;margin-bottom:6px}
+.rpc-sig{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);background:rgba(0,0,0,.25);padding:8px 12px;border-radius:5px;overflow-x:auto;margin-bottom:7px;white-space:nowrap}
+.rpc-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.rpc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.rtag{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
+.rtag.rpc{background:var(--info-dim);color:var(--info)}
+.rtag.sec{background:var(--violet-dim);color:var(--violet)}
+.rtag.bulk{background:var(--warning-dim);color:var(--warning)}
+.rtag.p0{background:var(--destructive-dim);color:var(--destructive)}
+
+/* CHECKLIST */
+.checklist{display:flex;flex-direction:column;gap:6px;margin-bottom:28px}
+.chk{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;background:var(--card);border:1px solid var(--border);border-radius:9px;transition:all .12s}
+.chk.done{background:rgba(34,197,94,.04);border-color:rgba(34,197,94,.2)}
+.chk:hover{border-color:var(--border)}
+.chk-status{font-size:17px;flex-shrink:0;margin-top:1px}
+.chk-num{width:22px;height:22px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--muted);margin-top:1px}
+.chk.done .chk-num{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3);color:var(--success)}
+.chk-body{flex:1}
+.chk-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.chk-desc{font-size:12px;color:var(--muted);line-height:1.45}
+.chk-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.ctag{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600}
+.ctag.p0{background:var(--destructive-dim);color:var(--destructive)}
+.ctag.p1{background:var(--warning-dim);color:var(--warning)}
+.ctag.p2{background:var(--info-dim);color:var(--info)}
+.ctag.ui{background:var(--violet-dim);color:var(--violet)}
+.ctag.logic{background:var(--success-dim);color:var(--success)}
+.ctag.backend{background:rgba(158,151,138,.12);color:var(--muted);border:1px solid var(--border)}
+.ctag.prem{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-bd)}
+
+/* LEVA */
+.leva{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.leva-head{padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.leva-head:hover{background:var(--surface)}
+.leva-dot{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;font-family:'Manrope',sans-serif}
+.leva-info{flex:1}
+.leva-num{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.leva-ttl{font-size:15px;font-weight:700;color:var(--text)}
+.leva-meta{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+.leva-body{padding:0 18px 16px}
+.leva-tasks{display:flex;flex-direction:column;gap:5px}
+.lt{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border-l);border-radius:6px;font-size:12px}
+.lt-p{font-size:10px;font-weight:700;padding:2px 5px;border-radius:4px;flex-shrink:0;margin-top:1px}
+.lt .chk-body{flex:1}
+
+/* PRIORITY SUMMARY */
+.pri-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.pri-card{background:var(--card);border-radius:9px;padding:14px;text-align:center}
+.pri-num{font-family:'Manrope',sans-serif;font-size:28px;font-weight:800;line-height:1}
+.pri-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-top:2px}
+.pri-desc{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+.pri0{border:1px solid rgba(239,68,68,.35)}.pri0 .pri-num,.pri0 .pri-label{color:var(--destructive)}
+.pri1{border:1px solid rgba(245,158,11,.35)}.pri1 .pri-num,.pri1 .pri-label{color:var(--warning)}
+.pri2{border:1px solid rgba(14,165,233,.35)}.pri2 .pri-num,.pri2 .pri-label{color:var(--info)}
+.pri3{border:1px solid rgba(139,92,246,.35)}.pri3 .pri-num,.pri3 .pri-label{color:var(--violet)}
+
+/* FOOTER */
+.doc-footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;align-items:center}
+
+@media(max-width:768px){
+  .prem-grid,.grid2,.grid3,.oab-grid,.pri-summary{grid-template-columns:1fr}
+  .swrap{padding:20px 16px 60px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <div class="topnav-logo">Md<span>Flow</span></div>
+  <button class="tn active" onclick="showSection('briefing',this)">Briefing Backend</button>
+  <button class="tn" onclick="showSection('plano',this)">Plano de Correção</button>
+  <div style="margin-left:auto">
+    <a href="controller-v5-mockup-v2-20260401.html" target="_blank" style="color:var(--primary);font-size:12px;text-decoration:none">← Ver Mockup V2</a>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     SECTION 1: BRIEFING BACKEND
+════════════════════════════════════════════════ -->
+<div class="swrap active" id="s-briefing">
+
+  <div class="page-header">
+    <h1>Controller V5 — Briefing Backend</h1>
+    <p>Contrato completo entre frontend e backend: premissas invioláveis, view principal, RPCs, tipos TypeScript, JSONB analise_ia e wireframe dos cards. Este documento é o <strong>"mecanismo"</strong> — o frontend deve implementar EXATAMENTE o que aqui está descrito.</p>
+    <div class="badge-row">
+      <span class="badge bg">9 Premissas Invioláveis</span>
+      <span class="badge bb">8 RPCs</span>
+      <span class="badge bp">65+ colunas na view</span>
+      <span class="badge ba">5 OABs parametrizadas</span>
+      <span class="badge br">3 status (não mais 5)</span>
+      <span class="badge bmuted">Autores: Christian + João Victor + Jarbas 2.0</span>
+    </div>
+  </div>
+
+  <!-- 9 PREMISSAS -->
+  <div class="section">
+    <div class="sec-h">🔒 9 Premissas Invioláveis <span>Violação = PAUSA imediata na implementação</span></div>
+    <div class="alert alert-r"><span class="alert-ico">🚨</span><div>Estas 9 premissas são acordos firmados com Christian e João Victor. Qualquer divergência no frontend deve ser identificada como blocker P0 antes de mergear.</div></div>
+    <div class="prem-grid">
+      <div class="prem-card critical">
+        <div class="prem-num">P1</div>
+        <div class="prem-body">
+          <strong>Fluxo de status: nao_lida → lida → finalizada</strong>
+          <p>Apenas estes 3 status existem. Os antigos <code>processada</code>, <code>ignorada</code>, <code>arquivada</code> foram abolidos. A migration de banco é obrigatória antes do frontend.</p>
+        </div>
+      </div>
+      <div class="prem-card">
+        <div class="prem-num">P2</div>
+        <div class="prem-body">
+          <strong>Lida = alteração visual APENAS</strong>
+          <p>Marcar como lida não remove o card da lista nem muda sua posição. Apenas altera a tipografia (font-weight: normal, sem negrito).</p>
+        </div>
+      </div>
+      <div class="prem-card critical">
+        <div class="prem-num">P3</div>
+        <div class="prem-body">
+          <strong>Finalizada = line-through + opacity 0.4 (permanece visível)</strong>
+          <p>Card continua na lista com <code>text-decoration: line-through</code> e <code>opacity: 0.4</code>. Só some se o filtro "Ver finalizadas" estiver desligado.</p>
+        </div>
+      </div>
+      <div class="prem-card critical">
+        <div class="prem-num">P4</div>
+        <div class="prem-body">
+          <strong>ZERO prazo nos cards da lista</strong>
+          <p>Prazo NUNCA aparece no card da lista de intimações. Aparece apenas: KPI "Vence hoje", drawer aba Intimação, e aba Equipe. Exibir prazo no card = P0 bloqueante.</p>
+        </div>
+      </div>
+      <div class="prem-card">
+        <div class="prem-num">P5</div>
+        <div class="prem-body">
+          <strong>Urgente + importante coexistem</strong>
+          <p>Uma intimação pode ser simultaneamente urgente (🔴 dot vermelho) e importante (⭐ ring amarelo). São flags independentes — toggle buttons sempre visíveis no card.</p>
+        </div>
+      </div>
+      <div class="prem-card critical">
+        <div class="prem-num">P6</div>
+        <div class="prem-body">
+          <strong>Classes IA (A–G) NUNCA exibidas</strong>
+          <p>A classificação interna da Cecília (Classe A, B, C, D, E, F, G) é informação interna de roteamento. Nunca mostrar na UI. KPI "Estratégicas" = classes E+F, mas o label é "Estratégicas" — nunca "Classe E" ou "Classe F".</p>
+        </div>
+      </div>
+      <div class="prem-card critical">
+        <div class="prem-num">P7</div>
+        <div class="prem-body">
+          <strong>Mudança de fase via dialog, nunca automática</strong>
+          <p>Avançar fase do processo sempre exige diálogo de confirmação com o advogado. O sistema nunca avança fase automaticamente mesmo que a IA sugira.</p>
+        </div>
+      </div>
+      <div class="prem-card critical">
+        <div class="prem-num">P8</div>
+        <div class="prem-body">
+          <strong>Ciência com Renúncia = confirmação humana SEMPRE</strong>
+          <p>Modal especial com 3 checkboxes obrigatórios + campo de observação. Esta ação autoriza peticionamento automático via JARBAS no EPROC. Irreversível — nunca pode ser automática.</p>
+        </div>
+      </div>
+      <div class="prem-card">
+        <div class="prem-num">P9</div>
+        <div class="prem-body">
+          <strong>5 OABs parametrizadas (não hardcoded)</strong>
+          <p>As 5 OABs vêm do banco (tabela <code>jarbas_accounts</code>). O filtro "Advogado + OAB" é dinâmico. Nunca hardcodar nomes ou números de OAB no frontend.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 OABs -->
+  <div class="section">
+    <div class="sec-h">👤 5 OABs Parametrizadas</div>
+    <div class="oab-grid">
+      <div class="oab-card">
+        <div class="oab-name">Christian Paz</div>
+        <div class="oab-oab">RS116571</div>
+        <div class="oab-trib">TJRS</div>
+      </div>
+      <div class="oab-card">
+        <div class="oab-name">Christian Paz</div>
+        <div class="oab-oab">SC074025</div>
+        <div class="oab-trib">TJSC</div>
+      </div>
+      <div class="oab-card">
+        <div class="oab-name">Christian Paz</div>
+        <div class="oab-oab">SP535101</div>
+        <div class="oab-trib">TJSP</div>
+      </div>
+      <div class="oab-card">
+        <div class="oab-name">Heloísa Miglioranza</div>
+        <div class="oab-oab">RS131163</div>
+        <div class="oab-trib">TJRS</div>
+      </div>
+      <div class="oab-card">
+        <div class="oab-name">Heloísa Miglioranza</div>
+        <div class="oab-oab">SC075466</div>
+        <div class="oab-trib">TJSC</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIREFRAME CARD -->
+  <div class="section">
+    <div class="sec-h">🃏 Wireframe dos Cards</div>
+    <div class="grid2">
+      <div>
+        <div class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="dim">[☐]</span> <span class="hi">●</span> <span class="hi">CNJ-NNNNNNN-DD.AAAA.J.TR.OOOO</span> <span class="dim">|</span> <span class="hi">cliente_nome</span>    <span class="dim">│</span>
+<span class="dim">│         empresa_nome · tribunal · OAB/XXXXXX         │</span>
+<span class="dim">│</span>         <span class="hi">ia_acao_recomendada (truncated)</span>    <span class="dim">2h ago</span>     <span class="dim">│</span>
+<span class="dim">│</span>                                          <span class="hi">[🔴][⭐][✓]</span> <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────┘</span></div>
+        <div class="alert alert-info" style="margin-top:10px"><span class="alert-ico">ℹ</span><div><strong>Regra P4:</strong> Prazo NUNCA aparece aqui. Apenas o trio: CNJ | cliente | empresa · tribunal · OAB.</div></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-head"><div class="card-head-left">Estados Visuais dos Cards</div></div>
+          <div class="card-body">
+            <table class="tbl">
+              <tr><th>Status</th><th>Visual</th></tr>
+              <tr><td><code class="mono">nao_lida</code></td><td>font-weight 700, border-left 2px primary, dot verde</td></tr>
+              <tr><td><code class="mono">lida</code></td><td>font-weight 400, sem border-left, dot cinza</td></tr>
+              <tr><td><code class="mono">finalizada</code></td><td>opacity 0.38, line-through no CNJ + cliente + ia_acao</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="card-head"><div class="card-head-left">Toggles do Card (sempre visíveis)</div></div>
+          <div class="card-body">
+            <table class="tbl">
+              <tr><th>Botão</th><th>Ação</th><th>Estado on</th></tr>
+              <tr><td>🔴 Urgente</td><td>Toggle urgente=true/false</td><td>opacity 1, vermelho</td></tr>
+              <tr><td>⭐ Importante</td><td>Toggle importante=true/false</td><td>opacity 1, amarelo</td></tr>
+              <tr><td>✓ Finalizar</td><td>Toggle finalizada/lida <em>(sem confirm)</em></td><td>opacity 1, verde</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW PRINCIPAL -->
+  <div class="section">
+    <div class="sec-h">🗄 View Principal: <code style="font-size:16px">v_controller_intimacoes_completa</code></div>
+    <div class="alert alert-info"><span class="alert-ico">ℹ</span><div>View com 65+ colunas que une <code>intimacoes_eproc</code>, <code>processos</code>, <code>clientes</code>, <code>jarbas_accounts</code>, <code>analise_ia</code>. O frontend consulta <strong>sempre via RPC</strong>, nunca diretamente na view.</div></div>
+    <div class="card">
+      <div class="card-head"><div class="card-head-left">Colunas chave (seleção)</div></div>
+      <div class="card-body">
+        <table class="tbl">
+          <tr><th>Coluna</th><th>Tipo</th><th>Origem</th><th>Notas</th></tr>
+          <tr><td class="mono">id</td><td class="muted">uuid</td><td class="muted">intimacoes_eproc</td><td class="muted">PK da intimação</td></tr>
+          <tr><td class="mono">cnj</td><td class="muted">text</td><td class="muted">processos</td><td class="muted">Formato NNNNNNN-DD.AAAA.J.TR.OOOO</td></tr>
+          <tr><td class="mono">cliente_nome</td><td class="muted">text</td><td class="muted">clientes</td><td class="muted">JOIN via processo</td></tr>
+          <tr><td class="mono">empresa_nome</td><td class="muted">text</td><td class="muted">processos</td><td class="muted">Nome da empresa ré</td></tr>
+          <tr><td class="mono">oab_login</td><td class="muted">text</td><td class="muted">jarbas_accounts</td><td class="muted">Ex: RS116571, SC074025</td></tr>
+          <tr><td class="mono">tribunal</td><td class="muted">text</td><td class="muted">jarbas_accounts</td><td class="muted">TJRS, TJSC, TJSP</td></tr>
+          <tr><td class="mono">status</td><td class="muted">text CHECK</td><td class="muted">intimacoes_eproc</td><td class="muted">nao_lida | lida | finalizada</td></tr>
+          <tr><td class="mono">urgente</td><td class="muted">boolean</td><td class="muted">intimacoes_eproc</td><td class="muted">Flag manual do advogado</td></tr>
+          <tr><td class="mono">importante</td><td class="muted">boolean</td><td class="muted">intimacoes_eproc</td><td class="muted">Flag manual do advogado</td></tr>
+          <tr><td class="mono">ia_acao_recomendada</td><td class="muted">text</td><td class="muted">analise_ia (JSONB)</td><td class="muted">Extraído do JSONB → coluna virtual</td></tr>
+          <tr><td class="mono">ia_risco_nivel</td><td class="muted">text</td><td class="muted">analise_ia (JSONB)</td><td class="muted">baixo | medio | alto | critico</td></tr>
+          <tr><td class="mono">resumo_ia</td><td class="muted">text</td><td class="muted">analise_ia (JSONB)</td><td class="muted">Resumo humanizado do caso</td></tr>
+          <tr><td class="mono">flag_ciencia_renuncia</td><td class="muted">boolean</td><td class="muted">analise_ia (JSONB)</td><td class="muted">→ mostra botão especial P8</td></tr>
+          <tr><td class="mono">flag_sisbajud</td><td class="muted">boolean</td><td class="muted">analise_ia (JSONB)</td><td class="muted">→ mostra alerta SISBAJUD no drawer</td></tr>
+          <tr><td class="mono">requer_atividade</td><td class="muted">boolean</td><td class="muted">analise_ia (JSONB)</td><td class="muted">→ pill "Requer Atividade"</td></tr>
+          <tr><td class="mono">documentos_exigidos</td><td class="muted">text[]</td><td class="muted">analise_ia (JSONB)</td><td class="muted">Array de tipos de docs necessários</td></tr>
+          <tr><td class="mono">organizacao_id</td><td class="muted">uuid</td><td class="muted">intimacoes_eproc</td><td class="muted">Multi-tenant — obrigatório em toda query</td></tr>
+          <tr><td class="mono">created_at</td><td class="muted">timestamptz</td><td class="muted">intimacoes_eproc</td><td class="muted">Data de captura pelo JARBAS</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- JSONB analise_ia -->
+  <div class="section">
+    <div class="sec-h">🧠 Estrutura JSONB: <code style="font-size:16px">analise_ia</code></div>
+    <div class="grid2">
+      <div>
+        <pre>{
+  <span class="k">"acao_recomendada"</span>: <span class="s">"Apresentar defesa em 15 dias..."</span>,
+  <span class="k">"risco_nivel"</span>: <span class="s">"medio"</span>,
+  <span class="k">"resumo"</span>: <span class="s">"Citação em ação de cobrança..."</span>,
+  <span class="k">"confianca"</span>: <span class="n">0.87</span>,  <span class="c">// NUNCA exibir na UI (P6)</span>
+  <span class="k">"classe"</span>: <span class="s">"C"</span>,         <span class="c">// NUNCA exibir na UI (P6)</span>
+  <span class="k">"flags"</span>: {
+    <span class="k">"ciencia_renuncia"</span>: <span class="n">false</span>,
+    <span class="k">"ciencia_renuncia_status"</span>: <span class="n">null</span>,
+    <span class="k">"sisbajud"</span>: <span class="n">false</span>,
+    <span class="k">"requer_atividade"</span>: <span class="n">true</span>,
+    <span class="k">"documentos_exigidos"</span>: [<span class="s">"Contestação"</span>]
+  },
+  <span class="k">"prazo_dias"</span>: <span class="n">15</span>,       <span class="c">// apenas no drawer, nunca no card</span>
+  <span class="k">"prazo_data"</span>: <span class="s">"2026-04-16"</span>
+}</pre>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-head"><div class="card-head-left">⚠ Campos que NUNCA aparecem na UI</div></div>
+          <div class="card-body">
+            <table class="tbl">
+              <tr><th>Campo</th><th>Razão</th></tr>
+              <tr><td class="mono">confianca</td><td class="muted">Premissa P6 — dado interno</td></tr>
+              <tr><td class="mono">classe</td><td class="muted">Premissa P6 — classificação Cecília (A–G)</td></tr>
+              <tr><td class="mono">prazo_dias / prazo_data</td><td class="muted">Premissa P4 — só no drawer e KPI</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="card-head"><div class="card-head-left">Campos que acionam UI especial</div></div>
+          <div class="card-body">
+            <table class="tbl">
+              <tr><th>Flag</th><th>Efeito na UI</th></tr>
+              <tr><td class="mono">ciencia_renuncia=true</td><td class="muted">Botão âmbar "Ciência com Renúncia" no drawer (P8)</td></tr>
+              <tr><td class="mono">sisbajud=true</td><td class="muted">Alert vermelho "Alerta SISBAJUD" no drawer</td></tr>
+              <tr><td class="mono">requer_atividade=true</td><td class="muted">Pill "Requer Atividade" filtrável</td></tr>
+              <tr><td class="mono">documentos_exigidos≠[]</td><td class="muted">Pill "Doc. Pendente" + tab Documentos preenchida</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8 RPCs -->
+  <div class="section">
+    <div class="sec-h">⚙ 8 RPCs — Contrato de API</div>
+    <div class="alert alert-warn"><span class="alert-ico">⚠</span><div>Todas as RPCs são <code>SECURITY DEFINER</code>, retornam <code>JSONB</code> com envelope <code>&#123;success, data, error_code, message&#125;</code>, e verificam <code>organizacao_id</code> internamente. O frontend nunca acessa as tabelas diretamente.</div></div>
+
+    <div class="rpc-card">
+      <div class="rpc-name">fn_controller_v5_kpis</div>
+      <div class="rpc-sig">fn_controller_v5_kpis(p_org uuid, p_advogados text[] DEFAULT NULL)</div>
+      <div class="rpc-desc">Retorna os 4 KPIs da barra superior: nao_lidas, urgentes, vence_hoje, estrategicas. Aceita filtro opcional por array de logins de OAB. Executado no carregamento da página e a cada 30s (staleTime).</div>
+      <div class="rpc-tags"><span class="rtag rpc">READ-ONLY</span><span class="rtag sec">SECURITY DEFINER</span></div>
+    </div>
+
+    <div class="rpc-card">
+      <div class="rpc-name">fn_controller_v5_list</div>
+      <div class="rpc-sig">fn_controller_v5_list(p_org uuid, p_filtros jsonb, p_page int DEFAULT 1, p_per_page int DEFAULT 50)</div>
+      <div class="rpc-desc">Lista paginada com todos os filtros aplicados no banco. O JSONB p_filtros aceita: status, urgente, importante, advogados[], tribunais[], ciencia_renuncia, requer_atividade, q (busca), sort. Retorna total + items.</div>
+      <div class="rpc-tags"><span class="rtag rpc">READ-ONLY</span><span class="rtag sec">SECURITY DEFINER</span></div>
+    </div>
+
+    <div class="rpc-card">
+      <div class="rpc-name">fn_controller_marcar_lida</div>
+      <div class="rpc-sig">fn_controller_marcar_lida(p_ids uuid[], p_org uuid)</div>
+      <div class="rpc-desc">Marca um array de intimações como "lida". Só funciona para status "nao_lida". Registra em eventos_operacionais. Retorna count de atualizados.</div>
+      <div class="rpc-tags"><span class="rtag bulk">BULK</span><span class="rtag sec">SECURITY DEFINER</span></div>
+    </div>
+
+    <div class="rpc-card">
+      <div class="rpc-name">fn_controller_finalizar</div>
+      <div class="rpc-sig">fn_controller_finalizar(p_ids uuid[], p_org uuid, p_notas text DEFAULT NULL)</div>
+      <div class="rpc-desc">Finaliza um array de intimações (status → "finalizada"). Funciona para nao_lida e lida. Notas opcionais são salvas no histórico. Revertível via fn_controller_reabrir.</div>
+      <div class="rpc-tags"><span class="rtag bulk">BULK</span><span class="rtag sec">SECURITY DEFINER</span></div>
+    </div>
+
+    <div class="rpc-card">
+      <div class="rpc-name">fn_controller_toggle_flag</div>
+      <div class="rpc-sig">fn_controller_toggle_flag(p_id uuid, p_org uuid, p_field text, p_value boolean)</div>
+      <div class="rpc-desc">Toggle genérico para campos booleanos: urgente e importante. p_field aceita "urgente" | "importante". Atualiza e retorna o novo valor.</div>
+      <div class="rpc-tags"><span class="rtag rpc">WRITE</span><span class="rtag sec">SECURITY DEFINER</span></div>
+    </div>
+
+    <div class="rpc-card">
+      <div class="rpc-name">fn_controller_ciencia_renuncia</div>
+      <div class="rpc-sig">fn_controller_ciencia_renuncia(p_id uuid, p_org uuid, p_actor_id uuid, p_obs text DEFAULT NULL)</div>
+      <div class="rpc-desc">Registra a confirmação de Ciência com Renúncia. Atualiza flags no JSONB, gera evento auditável em eventos_operacionais com actor_id, timestamp e observações. Aciona webhook n8n para peticionamento JARBAS.</div>
+      <div class="rpc-tags"><span class="rtag p0">P0 — IRREVERSÍVEL</span><span class="rtag sec">SECURITY DEFINER</span></div>
+    </div>
+
+    <div class="rpc-card">
+      <div class="rpc-name">fn_controller_nova_atividade</div>
+      <div class="rpc-sig">fn_controller_nova_atividade(p_payload jsonb)</div>
+      <div class="rpc-desc">Cria atividade vinculada ao processo. Payload: {intimacao_id, tipo, descricao, prazo, prioridade, responsaveis[], observacoes, organizacao_id, actor_id}. Retorna id da atividade criada.</div>
+      <div class="rpc-tags"><span class="rtag rpc">WRITE</span><span class="rtag sec">SECURITY DEFINER</span></div>
+    </div>
+
+    <div class="rpc-card">
+      <div class="rpc-name">fn_controller_nova_decisao</div>
+      <div class="rpc-sig">fn_controller_nova_decisao(p_payload jsonb)</div>
+      <div class="rpc-desc">Registra decisão judicial. Payload: {processo_id, resultado, resumo, data_decisao, valor_condenado_centavos, organizacao_id, actor_id}. Resultado: favoravel_total | favoravel_parcial | desfavoravel.</div>
+      <div class="rpc-tags"><span class="rtag rpc">WRITE</span><span class="rtag sec">SECURITY DEFINER</span></div>
+    </div>
+  </div>
+
+  <!-- TYPESCRIPT TYPES -->
+  <div class="section">
+    <div class="sec-h">📐 Tipos TypeScript</div>
+    <pre><span class="k">type</span> <span class="t">StatusIntimacao</span> = <span class="s">'nao_lida'</span> | <span class="s">'lida'</span> | <span class="s">'finalizada'</span>;
+<span class="k">type</span> <span class="t">RiscoNivel</span> = <span class="s">'baixo'</span> | <span class="s">'medio'</span> | <span class="s">'alto'</span> | <span class="s">'critico'</span>;
+<span class="k">type</span> <span class="t">ResultadoDecisao</span> = <span class="s">'favoravel_total'</span> | <span class="s">'favoravel_parcial'</span> | <span class="s">'desfavoravel'</span>;
+
+<span class="k">interface</span> <span class="t">IntimacaoRow</span> {
+  id: string;
+  cnj: string;
+  cliente_nome: string;
+  empresa_nome: string;
+  oab_login: string;          <span class="c">// ex: 'RS116571'</span>
+  tribunal: string;           <span class="c">// 'TJRS' | 'TJSC' | 'TJSP'</span>
+  adv_nome: string;
+  status: <span class="t">StatusIntimacao</span>;
+  urgente: boolean;
+  importante: boolean;
+  ia_acao_recomendada: string;
+  ia_risco_nivel: <span class="t">RiscoNivel</span>;
+  resumo_ia: string;
+  flag_ciencia_renuncia: boolean;
+  ciencia_renuncia_status: <span class="s">'pendente'</span> | <span class="s">'confirmada'</span> | null;
+  flag_sisbajud: boolean;
+  requer_atividade: boolean;
+  documentos_exigidos: string[];
+  tipo: string;               <span class="c">// 'citacao' | 'intimacao' | 'mandado' | 'decisao'</span>
+  organizacao_id: string;
+  created_at: string;         <span class="c">// ISO timestamptz</span>
+}
+
+<span class="k">interface</span> <span class="t">ControllerV5Filters</span> {
+  q?: string;
+  status?: <span class="t">StatusIntimacao</span>;
+  tribunais?: string[];
+  advogados?: string[];       <span class="c">// logins OAB</span>
+  urgente?: boolean;
+  importante?: boolean;
+  ciencia_renuncia?: boolean;
+  requer_atividade?: boolean;
+  tipo_decisao?: boolean;
+  doc_pendente?: boolean;
+  mostrar_finalizadas?: boolean;
+  sort?: <span class="s">'recente'</span> | <span class="s">'antigo'</span> | <span class="s">'urgente'</span>;
+  page?: number;
+  per_page?: number;
+}
+
+<span class="k">interface</span> <span class="t">ControllerV5KPIs</span> {
+  nao_lidas: number;
+  urgentes: number;
+  vence_hoje: number;
+  estrategicas: number;       <span class="c">// label genérico, não expõe "classes E+F"</span>
+}</pre>
+  </div>
+
+  <!-- FILTROS E ACTION-DRIVEN UI -->
+  <div class="section">
+    <div class="sec-h">🎛 Filtros e Action-Driven UI</div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><div class="card-head-left">Barra de Filtros (ordem)</div></div>
+        <div class="card-body">
+          <table class="tbl">
+            <tr><th>#</th><th>Controle</th><th>Tipo</th></tr>
+            <tr><td>1</td><td>Busca (CNJ, cliente)</td><td class="muted">Input text, debounce 300ms</td></tr>
+            <tr><td>2</td><td>Status</td><td class="muted">Dropdown: Todos | Não lida | Lida | Finalizada</td></tr>
+            <tr><td>3</td><td>Tribunal</td><td class="muted">Dropdown: Todos | TJRS | TJSC | TJSP</td></tr>
+            <tr><td>4</td><td>Advogado + OAB</td><td class="muted">Dropdown dinâmico (jarbas_accounts)</td></tr>
+            <tr><td>5</td><td>Ordenação</td><td class="muted">Mais recente | Mais antigo | Urgentes</td></tr>
+            <tr><td>6</td><td>Ver finalizadas</td><td class="muted">Checkbox toggle</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-head-left">Pills de Filtro Rápido</div></div>
+        <div class="card-body">
+          <table class="tbl">
+            <tr><th>Pill</th><th>Filtra por</th></tr>
+            <tr><td>⚠ Ciência c/ Renúncia</td><td class="muted">flag_ciencia_renuncia = true</td></tr>
+            <tr><td>📋 Requer Atividade</td><td class="muted">requer_atividade = true</td></tr>
+            <tr><td>⚖ Decisão</td><td class="muted">tipo = 'decisao'</td></tr>
+            <tr><td>📄 Doc. Pendente</td><td class="muted">documentos_exigidos.length > 0</td></tr>
+          </table>
+          <div class="alert alert-warn" style="margin-top:12px;font-size:11px"><span class="alert-ico">⚠</span><div><strong>Removido:</strong> Não há filtro por "tipo de intimação" (citação/intimação/mandado). Isso foi eliminado na revisão funcional.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-info" style="margin-top:12px">
+      <span class="alert-ico">🔗</span>
+      <div><strong>Action-Driven UI (P-03 CLAUDE.md):</strong> O frontend nunca decide o próximo passo. n8n retorna <code>&#123;success, action, data&#125;</code> e o frontend executa <code>switch(response.action)</code>. Para ciência_renuncia: action = <code>"webhook_triggered"</code> → frontend faz polling em <code>/webhook/controller/ciencia/status</code>.</div>
+    </div>
+  </div>
+
+  <!-- KPI SEMANTICS -->
+  <div class="section">
+    <div class="sec-h">📊 Semântica dos 4 KPIs</div>
+    <div class="grid2">
+      <table class="tbl">
+        <tr><th>KPI</th><th>Label</th><th>Condição</th><th>Cor</th></tr>
+        <tr><td>1</td><td><strong>Não lidas</strong></td><td class="muted">status = 'nao_lida'</td><td><span style="color:var(--primary)">Verde primary</span></td></tr>
+        <tr><td>2</td><td><strong>Urgentes</strong></td><td class="muted">urgente = true AND status ≠ 'finalizada'</td><td><span style="color:var(--destructive)">Vermelho</span></td></tr>
+        <tr><td>3</td><td><strong>Vence hoje</strong></td><td class="muted">prazo_data = CURRENT_DATE AND status ≠ 'finalizada'</td><td><span style="color:var(--warning)">Âmbar</span></td></tr>
+        <tr><td>4</td><td><strong>Estratégicas</strong></td><td class="muted">importante = true AND status ≠ 'finalizada'</td><td><span style="color:var(--info)">Azul info</span></td></tr>
+      </table>
+      <div>
+        <div class="alert alert-r"><span class="alert-ico">🚨</span><div><strong>KPI 4 — Estratégicas:</strong> Internamente são "classes E + F" da Cecília. O label NUNCA pode ser "Alta Estratégia", "Classe E/F" ou qualquer variação. Apenas "Estratégicas".</div></div>
+        <div class="alert alert-warn"><span class="alert-ico">⚠</span><div>Clicar em um KPI filtra a lista. Clicar novamente no mesmo KPI limpa o filtro. KPI ativo = border verde primário.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Controller V5 — Briefing Backend · MdFlow / MDX LegalTech · 01/04/2026</span>
+    <span>Autores: Christian + João Victor + Jarbas 2.0 · Beto / Claude Code</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     SECTION 2: PLANO DE CORREÇÃO
+════════════════════════════════════════════════ -->
+<div class="swrap" id="s-plano">
+
+  <div class="page-header">
+    <h1>Plano de Correção — 16 Pontos</h1>
+    <p>Todas as 16 correções identificadas na revisão funcional do Mockup V1, com status de aplicação no Mockup V2 e instrução de implementação no código React real.</p>
+    <div class="badge-row">
+      <span class="badge bg">16 correções totais</span>
+      <span class="badge br">4 P0 bloqueantes</span>
+      <span class="badge ba">6 P1 importantes</span>
+      <span class="badge bb">6 P2 melhorias</span>
+    </div>
+  </div>
+
+  <!-- PRIORITY SUMMARY -->
+  <div class="pri-summary">
+    <div class="pri-card pri0"><div class="pri-num">4</div><div class="pri-label">P0</div><div class="pri-desc">Bloqueiam o lançamento em produção</div></div>
+    <div class="pri-card pri1"><div class="pri-num">6</div><div class="pri-label">P1</div><div class="pri-desc">Essenciais para UX correto</div></div>
+    <div class="pri-card pri2"><div class="pri-num">4</div><div class="pri-label">P2</div><div class="pri-desc">Melhorias significativas</div></div>
+    <div class="pri-card pri3"><div class="pri-num">2</div><div class="pri-label">P3</div><div class="pri-desc">Polimento e refinamento</div></div>
+  </div>
+
+  <div class="alert alert-g"><span class="alert-ico">✅</span><div><strong>Mockup V2 aplicou TODAS as 16 correções.</strong> O arquivo <a href="controller-v5-mockup-v2-20260401.html" target="_blank" style="color:var(--primary)">controller-v5-mockup-v2-20260401.html</a> é o simulador de referência para a implementação React.</div></div>
+
+  <div class="section">
+    <div class="sec-h">📋 16 Correções — Status Mockup V2</div>
+    <div class="checklist">
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">1</div>
+        <div class="chk-body">
+          <div class="chk-title">Filtro de Advogados com 5 OABs parametrizadas</div>
+          <div class="chk-desc">Substituir filtro genérico por dropdown com as 5 OABs reais: Christian (RS116571, SC074025, SP535101) e Heloísa (RS131163, SC075466). No React: buscar de jarbas_accounts onde org = orgId.</div>
+          <div class="chk-tags"><span class="ctag p0">P0</span><span class="ctag prem">P9</span><span class="ctag ui">UI</span><span class="ctag backend">Backend</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">2</div>
+        <div class="chk-body">
+          <div class="chk-title">Remover filtro por Tipo de Intimação</div>
+          <div class="chk-desc">O filtro "Tipo" (citação/intimação/mandado/decisão) foi removido da filter bar. Decisões são detectáveis via pill, não há filtro separado por tipo.</div>
+          <div class="chk-tags"><span class="ctag p1">P1</span><span class="ctag ui">UI</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">3</div>
+        <div class="chk-body">
+          <div class="chk-title">Novas pills: Ciência c/ Renúncia | Requer Atividade | Decisão | Doc. Pendente</div>
+          <div class="chk-desc">4 pills de filtro rápido baseadas nos flags do JSONB analise_ia. Cada pill é toggle — ativa filtra, desativa limpa. Podem ser combinadas.</div>
+          <div class="chk-tags"><span class="ctag p1">P1</span><span class="ctag prem">P8</span><span class="ctag ui">UI</span><span class="ctag logic">Lógica</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">4</div>
+        <div class="chk-body">
+          <div class="chk-title">Histórico da intimação na aba Intimação do drawer</div>
+          <div class="chk-desc">Timeline com: data de captura pelo JARBAS, análise OlivIA, marcação como lida (se aplicável), finalização. No React: buscar de intimacoes_historico ou eventos_operacionais.</div>
+          <div class="chk-tags"><span class="ctag p2">P2</span><span class="ctag ui">UI</span><span class="ctag backend">Backend</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">5</div>
+        <div class="chk-body">
+          <div class="chk-title">Modal Atividade com largura 600px+ e multi-responsável</div>
+          <div class="chk-desc">Modal de criar atividade expandido para 600px. Campos: tipo, descrição, prazo, prioridade, observações. Multi-responsável via chips clicáveis (toggle on/off).</div>
+          <div class="chk-tags"><span class="ctag p1">P1</span><span class="ctag ui">UI</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">6</div>
+        <div class="chk-body">
+          <div class="chk-title">Multi-responsável via chips no modal de atividade</div>
+          <div class="chk-desc">Chips toggleáveis para cada membro da equipe: Christian, Heloísa, Leonardo, Stephanie, Marcelo. Estado visual: border primary + bg primary-dim quando selecionado.</div>
+          <div class="chk-tags"><span class="ctag p1">P1</span><span class="ctag ui">UI</span><span class="ctag logic">Lógica</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">7</div>
+        <div class="chk-body">
+          <div class="chk-title">Modal Documento com dropdown de tipos pré-definidos</div>
+          <div class="chk-desc">Substituir campo texto livre por select com catálogo: Contestação, Petição inicial, Recurso de apelação, REsp, Embargos de declaração, Tutela de urgência, etc. + campo título personalizado.</div>
+          <div class="chk-tags"><span class="ctag p2">P2</span><span class="ctag ui">UI</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">8</div>
+        <div class="chk-body">
+          <div class="chk-title">Modal Decisão simplificado: 3 opções visuais</div>
+          <div class="chk-desc">Substituir formulário complexo por 3 opções cards: Favorável Total (verde), Favorável Parcial (âmbar), Desfavorável (vermelho). Auto-fill do resumo com conteúdo do resumo_ia. Campos: resultado + resumo + data + valor.</div>
+          <div class="chk-tags"><span class="ctag p1">P1</span><span class="ctag ui">UI</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">9</div>
+        <div class="chk-body">
+          <div class="chk-title">Bulk Mode: marcar lida + marcar não lida + finalizar</div>
+          <div class="chk-desc">Bulk bar com 3 ações: "Marcar como lida" (só afeta nao_lida), "Marcar como não lida" (qualquer → nao_lida), "Finalizar selecionados". Ativar via botão "Seleção" na topbar.</div>
+          <div class="chk-tags"><span class="ctag p1">P1</span><span class="ctag logic">Lógica</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">10</div>
+        <div class="chk-body">
+          <div class="chk-title">Estados visuais corretos: nao_lida bold | finalizada line-through + opacity 0.4</div>
+          <div class="chk-desc">nao_lida: font-weight 700, border-left 2px primary. lida: font-weight 400, sem border. finalizada: opacity 0.38, text-decoration line-through no CNJ + cliente + ia_acao. Conforme Premissas P1/P2/P3.</div>
+          <div class="chk-tags"><span class="ctag p0">P0</span><span class="ctag prem">P1 P2 P3</span><span class="ctag ui">UI</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">11</div>
+        <div class="chk-body">
+          <div class="chk-title">Finalização = toggle direto (sem modal de confirmação)</div>
+          <div class="chk-desc">Clicar ✓ no card ou no botão do footer do drawer finaliza diretamente (nao_lida/lida → finalizada). Clicar novamente reverte (finalizada → lida). Toast de confirmação. Sem dialog intermediário.</div>
+          <div class="chk-tags"><span class="ctag p0">P0</span><span class="ctag logic">Lógica</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">12</div>
+        <div class="chk-body">
+          <div class="chk-title">Card click NÃO auto-marca como lida</div>
+          <div class="chk-desc">Clicar no card abre o drawer apenas. NÃO altera o status. Status só muda via ação explícita: toggle finalizar, bulk lida, bulk não lida. No React: remover a chamada a fn_controller_marcar_lida no onClick do card.</div>
+          <div class="chk-tags"><span class="ctag p0">P0</span><span class="ctag prem">P2</span><span class="ctag logic">Lógica</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">13</div>
+        <div class="chk-body">
+          <div class="chk-title">Redesign do card: 3 linhas (CNJ+cliente / empresa·tribunal·OAB / ia_acao+time)</div>
+          <div class="chk-desc">Linha 1: CNJ (mono 10px) + cliente_nome. Linha 2: empresa_nome · tribunal · OAB/XXXXXX. Linha 3: ia_acao_recomendada (truncada) + time ago. ZERO prazo visível (P4).</div>
+          <div class="chk-tags"><span class="ctag p0">P0</span><span class="ctag prem">P4</span><span class="ctag ui">UI</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">14</div>
+        <div class="chk-body">
+          <div class="chk-title">Urgente 🔴 e Importante ⭐ como toggle buttons per-card (sempre visíveis)</div>
+          <div class="chk-desc">Dois botões no lado direito de cada card. Sempre visíveis (não só no hover). Toggle individual: urgente=🔴, importante=⭐. Coexistem independentemente (P5). Estado off: opacity 0.3. Estado on: opacity 1, cor temática.</div>
+          <div class="chk-tags"><span class="ctag p1">P1</span><span class="ctag prem">P5</span><span class="ctag ui">UI</span><span class="ctag logic">Lógica</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">15</div>
+        <div class="chk-body">
+          <div class="chk-title">Alerta SISBAJUD no drawer quando flag_sisbajud=true</div>
+          <div class="chk-desc">Alert vermelho no topo da aba Intimação quando flag_sisbajud=true. Texto: "Alerta SISBAJUD: bloqueio ou penhora pendente. Verificar valores antes de qualquer manifestação."</div>
+          <div class="chk-tags"><span class="ctag p2">P2</span><span class="ctag ui">UI</span></div>
+        </div>
+      </div>
+
+      <div class="chk done">
+        <span class="chk-status">✅</span>
+        <div class="chk-num">16</div>
+        <div class="chk-body">
+          <div class="chk-title">Modal Ciência com Renúncia especial (P8 — confirmação humana obrigatória)</div>
+          <div class="chk-desc">Modal âmbar com: aviso sobre irreversibilidade + 3 checkboxes obrigatórios + campo obs. Botão de confirmação amarelo. Só habilita quando TODOS os 3 checkboxes marcados. Após confirmar: toast + chamada fn_controller_ciencia_renuncia + webhook n8n.</div>
+          <div class="chk-tags"><span class="ctag p2">P2</span><span class="ctag prem">P8</span><span class="ctag ui">UI</span><span class="ctag logic">Lógica</span><span class="ctag backend">Backend</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 5 LEVAS DE IMPLEMENTAÇÃO -->
+  <div class="section">
+    <div class="sec-h">🚀 5 Levas de Implementação <span>Ordem obrigatória — cada leva produz um diff revisável</span></div>
+
+    <div class="leva">
+      <div class="leva-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div class="leva-dot" style="background:rgba(239,68,68,.15);color:var(--destructive)">0</div>
+        <div class="leva-info">
+          <div class="leva-num" style="color:var(--destructive)">Leva 0 — BLOQUEANTE</div>
+          <div class="leva-ttl">Migrations de Banco</div>
+        </div>
+        <div class="leva-meta"><span class="badge br">P0</span><span class="badge bmuted">Pré-requisito</span></div>
+      </div>
+      <div class="leva-body">
+        <div class="leva-tasks">
+          <div class="lt"><span class="lt-p" style="background:var(--destructive-dim);color:var(--destructive)">P0</span><div class="chk-body"><div class="chk-title">Migration: status enum nao_lida/lida/finalizada</div><div class="chk-desc">Renomear nova→nao_lida, eliminar processada/ignorada/arquivada. UPDATE em todos registros existentes.</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--destructive-dim);color:var(--destructive)">P0</span><div class="chk-body"><div class="chk-title">Migration: colunas urgente e importante (boolean, DEFAULT false)</div><div class="chk-desc">Adicionar às tabelas intimacoes_eproc se não existirem.</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--destructive-dim);color:var(--destructive)">P0</span><div class="chk-body"><div class="chk-title">Criar/atualizar 8 RPCs conforme contratos deste briefing</div><div class="chk-desc">SECURITY DEFINER, RETURNS JSONB, verificação organizacao_id, envelope canônico.</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--destructive-dim);color:var(--destructive)">P0</span><div class="chk-body"><div class="chk-title">Atualizar view v_controller_intimacoes_completa</div><div class="chk-desc">Incluir colunas ia_acao_recomendada, ia_risco_nivel, flags extraídos do JSONB.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="leva">
+      <div class="leva-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div class="leva-dot" style="background:rgba(245,158,11,.15);color:var(--warning)">1</div>
+        <div class="leva-info">
+          <div class="leva-num" style="color:var(--warning)">Leva 1 — Core</div>
+          <div class="leva-ttl">Lista + Card Layout + Estados Visuais</div>
+        </div>
+        <div class="leva-meta"><span class="badge ba">6 correções</span><span class="badge br">P0</span></div>
+      </div>
+      <div class="leva-body">
+        <div class="leva-tasks">
+          <div class="lt"><span class="lt-p" style="background:var(--destructive-dim);color:var(--destructive)">P0</span><div class="chk-body"><div class="chk-title">Correção #10: Estados visuais (nao_lida bold, finalizada line-through)</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--destructive-dim);color:var(--destructive)">P0</span><div class="chk-body"><div class="chk-title">Correção #11: Toggle finalizar sem modal</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--destructive-dim);color:var(--destructive)">P0</span><div class="chk-body"><div class="chk-title">Correção #12: Remover auto-lida no onClick do card</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--destructive-dim);color:var(--destructive)">P0</span><div class="chk-body"><div class="chk-title">Correção #13: Redesign 3 linhas do card (sem prazo)</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--warning-dim);color:var(--warning)">P1</span><div class="chk-body"><div class="chk-title">Correção #14: Botões urgente/importante per-card</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--warning-dim);color:var(--warning)">P1</span><div class="chk-body"><div class="chk-title">Correção #1: Filtro advogados com 5 OABs</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="leva">
+      <div class="leva-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div class="leva-dot" style="background:rgba(14,165,233,.15);color:var(--info)">2</div>
+        <div class="leva-info">
+          <div class="leva-num" style="color:var(--info)">Leva 2 — Filtros + Modais</div>
+          <div class="leva-ttl">Filter Bar, Pills, Modal Atividade, Decisão, Documento</div>
+        </div>
+        <div class="leva-meta"><span class="badge bb">5 correções</span></div>
+      </div>
+      <div class="leva-body">
+        <div class="leva-tasks">
+          <div class="lt"><span class="lt-p" style="background:var(--warning-dim);color:var(--warning)">P1</span><div class="chk-body"><div class="chk-title">Correção #2: Remover filtro Tipo</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--warning-dim);color:var(--warning)">P1</span><div class="chk-body"><div class="chk-title">Correção #3: Novas 4 pills de filtro rápido</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--warning-dim);color:var(--warning)">P1</span><div class="chk-body"><div class="chk-title">Correção #5+6: Modal Atividade 600px + multi-responsável</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--warning-dim);color:var(--warning)">P1</span><div class="chk-body"><div class="chk-title">Correção #8: Modal Decisão simplificado (3 opções)</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--info-dim);color:var(--info)">P2</span><div class="chk-body"><div class="chk-title">Correção #7: Modal Documento com dropdown</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="leva">
+      <div class="leva-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div class="leva-dot" style="background:rgba(139,92,246,.15);color:var(--violet)">3</div>
+        <div class="leva-info">
+          <div class="leva-num" style="color:var(--violet)">Leva 3 — Drawer + Bulk + Flags Especiais</div>
+          <div class="leva-ttl">Drawer V5, Bulk Mode, SISBAJUD, Ciência</div>
+        </div>
+        <div class="leva-meta"><span class="badge bp">4 correções</span></div>
+      </div>
+      <div class="leva-body">
+        <div class="leva-tasks">
+          <div class="lt"><span class="lt-p" style="background:var(--warning-dim);color:var(--warning)">P1</span><div class="chk-body"><div class="chk-title">Correção #9: Bulk marcar lida + não lida + finalizar</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--info-dim);color:var(--info)">P2</span><div class="chk-body"><div class="chk-title">Correção #4: Histórico na aba Intimação do drawer</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--info-dim);color:var(--info)">P2</span><div class="chk-body"><div class="chk-title">Correção #15: Alerta SISBAJUD no drawer</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--info-dim);color:var(--info)">P2</span><div class="chk-body"><div class="chk-title">Correção #16: Modal Ciência com Renúncia (P8)</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="leva">
+      <div class="leva-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div class="leva-dot" style="background:rgba(32,201,151,.15);color:var(--primary)">4</div>
+        <div class="leva-info">
+          <div class="leva-num" style="color:var(--primary)">Leva 4 — Abas Adicionais</div>
+          <div class="leva-ttl">Aba Equipe, Dashboard, Playbooks (fora do escopo das 16 correções)</div>
+        </div>
+        <div class="leva-meta"><span class="badge bg">Fora das 16 correções</span></div>
+      </div>
+      <div class="leva-body">
+        <div class="leva-tasks">
+          <div class="lt"><span class="lt-p" style="background:var(--info-dim);color:var(--info)">P2</span><div class="chk-body"><div class="chk-title">Aba Equipe: intimações por advogado com KPIs individuais e prazo</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--violet-dim);color:var(--violet)">P3</span><div class="chk-body"><div class="chk-title">Aba Dashboard: gráficos de volume, tempo médio de resposta, conversão</div></div></div>
+          <div class="lt"><span class="lt-p" style="background:var(--violet-dim);color:var(--violet)">P3</span><div class="chk-body"><div class="chk-title">Aba Playbooks: workflows pré-definidos por tipo de intimação</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLIANCE CHECKLIST -->
+  <div class="section">
+    <div class="sec-h">✅ Checklist de Compliance Final</div>
+    <div class="grid3">
+      <div class="card">
+        <div class="card-head"><div class="card-head-left" style="color:var(--success)">✓ Premissas</div></div>
+        <div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.7">
+          ✅ P1 — Status 3 valores<br>
+          ✅ P2 — Lida = visual only<br>
+          ✅ P3 — Finalizada line-through<br>
+          ✅ P4 — Zero prazo no card<br>
+          ✅ P5 — Urg + Imp coexistem<br>
+          ✅ P6 — Classes IA ocultas<br>
+          ✅ P7 — Fase via dialog<br>
+          ✅ P8 — Ciência com confirm<br>
+          ✅ P9 — OABs parametrizadas
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-head-left" style="color:var(--success)">✓ Design System</div></div>
+        <div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.7">
+          ✅ Warm Charcoal #12100e<br>
+          ✅ Primary #20c997<br>
+          ✅ Nenhum hex hardcoded<br>
+          ✅ Inter / Manrope / JetBrains<br>
+          ✅ CNJ em JetBrains Mono<br>
+          ✅ Sidebar sempre dark<br>
+          ✅ Toasts via Sonner<br>
+          ✅ Drawer 500px direita
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-head-left" style="color:var(--success)">✓ Arquitetura</div></div>
+        <div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.7">
+          ✅ organizacao_id em toda query<br>
+          ✅ RLS via public.get_org_id()<br>
+          ✅ RPCs com SECURITY DEFINER<br>
+          ✅ Action-Driven UI<br>
+          ✅ staleTime: 30_000<br>
+          ✅ Soft delete (deleted_at)<br>
+          ✅ Multi-tenant absoluto<br>
+          ✅ Backend é Lei (P-01)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Controller V5 — Plano de Correção · 16 pontos · MdFlow / MDX LegalTech · 01/04/2026</span>
+    <span>Beto / Claude Code · <a href="controller-v5-mockup-v2-20260401.html" target="_blank" style="color:var(--primary)">Ver Mockup V2</a></span>
+  </div>
+</div>
+
+<script>
+function showSection(id, btn){
+  document.querySelectorAll('.swrap').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  document.querySelectorAll('.tn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+// Abrir/fechar levas
+document.querySelectorAll('.leva-body').forEach(b=>{
+  b.style.display='block';
+});
+</script>
+</body>
+</html>
