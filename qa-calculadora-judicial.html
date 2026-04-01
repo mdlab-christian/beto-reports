@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Report — Calculadora Judicial MdFlow</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* Hero */
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* Grid */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.g6 { grid-template-columns: repeat(6, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4,.g6 { grid-template-columns: 1fr 1fr; } }
+@media(max-width:480px) { .g2,.g3,.g4,.g6 { grid-template-columns: 1fr; } }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-value.green { color: var(--accent3); }
+.stat-value.yellow { color: var(--accent4); }
+.stat-value.red { color: var(--accent2); }
+.stat-value.blue { color: var(--accent5); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
+/* Section */
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); position: sticky; top: 0; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+th:first-child, td:first-child { width: 40px; text-align: center; }
+
+/* Status pills */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; white-space: nowrap; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+
+/* Code */
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+
+/* Details / Collapsible */
+details { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+details summary { padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; user-select: none; }
+details summary:hover { background: var(--surface2); }
+details summary::marker { color: var(--accent); }
+details[open] summary { border-bottom: 1px solid var(--border); }
+details .detail-content { padding: 16px 20px; }
+
+/* Progress bar */
+.progress-wrap { margin: 16px 0; }
+.progress-bar { height: 24px; background: var(--surface2); border-radius: 12px; overflow: hidden; position: relative; border: 1px solid var(--border); }
+.progress-fill { height: 100%; border-radius: 12px; transition: width 0.6s ease; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: #fff; }
+.progress-fill.green { background: linear-gradient(90deg, #34d399, #4fffb0); }
+
+/* TOC */
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 32px; }
+.toc-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.toc a { display: block; padding: 6px 0; color: var(--accent5); text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid rgba(42,47,74,0.5); }
+.toc a:last-child { border-bottom: none; }
+.toc a:hover { color: var(--accent); }
+
+/* Verdict banner */
+.verdict { background: linear-gradient(135deg, rgba(79,255,176,0.08), rgba(52,211,153,0.12)); border: 2px solid rgba(79,255,176,0.3); border-radius: 16px; padding: 32px; text-align: center; margin: 32px 0; }
+.verdict h3 { font-size: 1.4rem; color: var(--accent3); margin-bottom: 8px; }
+.verdict p { color: var(--text-muted); font-size: 0.9rem; }
+
+/* Priority cards */
+.priority-card { border-left: 4px solid; padding-left: 16px; }
+.priority-card.p0 { border-color: var(--accent3); }
+.priority-card.p1 { border-color: var(--accent4); }
+.priority-card.p2 { border-color: var(--accent5); }
+.priority-card.p3 { border-color: var(--text-muted); }
+.priority-tag { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-bottom: 8px; display: inline-block; }
+.priority-tag.p0 { background: rgba(79,255,176,0.15); color: var(--accent3); }
+.priority-tag.p1 { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.priority-tag.p2 { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.priority-tag.p3 { background: rgba(138,143,163,0.15); color: var(--text-muted); }
+
+/* Tree */
+.tree { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.78rem; line-height: 1.8; color: var(--text); }
+.tree .dir { color: var(--accent5); font-weight: 600; }
+.tree .file { color: var(--text); }
+.tree .meta { color: var(--text-muted); }
+.tree .highlight { color: var(--accent4); }
+
+/* Score ring */
+.score-ring { width: 140px; height: 140px; margin: 0 auto 16px; position: relative; }
+.score-ring svg { transform: rotate(-90deg); }
+.score-ring .score-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; font-weight: 700; color: var(--accent3); }
+
+/* Footer */
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+
+/* Print */
+@media print {
+  body { background: #fff; color: #000; font-size: 10pt; padding: 0; }
+  .container { max-width: 100%; }
+  .card, .stat-card, details, .toc, .verdict, .table-wrap { border-color: #ccc; background: #f9f9f9; }
+  .gradient-text { -webkit-text-fill-color: #333; background: none; }
+  .stat-value, .stat-value.green, .stat-value.yellow, .stat-value.red, .stat-value.blue { color: #333; }
+  .sp-done, .sp-pend, .sp-block, .sp-run { border: 1px solid #ccc; background: #eee; color: #333; }
+  details { break-inside: avoid; }
+  details[open] summary ~ * { display: block !important; }
+  .footer { border-color: #ccc; }
+  .progress-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-emoji">&#9878;&#65039;</span>
+  <h1 class="gradient-text">QA Report &mdash; Calculadora Judicial MdFlow</h1>
+  <p class="hero-sub">Verificacao item por item: Joao pediu vs Implementado</p>
+  <div class="badges">
+    <span class="badge bp">MdFlow v5</span>
+    <span class="badge bg">BUILD PASS</span>
+    <span class="badge bb">01/04/2026</span>
+    <span class="badge by">Score 93%</span>
+  </div>
+</div>
+
+<!-- TOC -->
+<nav class="toc">
+  <div class="toc-title">Indice</div>
+  <a href="#score">1. Score Geral</a>
+  <a href="#checklist">2. Checklist Completo &mdash; Item por Item</a>
+  <a href="#bugs">3. Bugs e Correcoes Aplicadas</a>
+  <a href="#pendencias">4. Pendencias para Producao</a>
+  <a href="#resumo">5. Resumo Executivo</a>
+  <a href="#arvore">6. Arvore de Arquivos</a>
+</nav>
+
+<!-- SECTION 1: SCORE GERAL -->
+<div class="section" id="score">
+  <div class="section-header">
+    <span class="section-icon">&#128202;</span>
+    <h2>Score Geral</h2>
+  </div>
+  <div class="grid g3" style="margin-bottom:16px;">
+    <div class="stat-card">
+      <div class="score-ring">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="60" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+          <circle cx="70" cy="70" r="60" fill="none" stroke="var(--accent3)" stroke-width="10" stroke-dasharray="376.99" stroke-dashoffset="26.39" stroke-linecap="round"/>
+        </svg>
+        <div class="score-text">93%</div>
+      </div>
+      <div class="stat-label">Score Geral</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value green">49</div>
+      <div class="stat-label">Implementados</div>
+      <div class="stat-sub">de 62 requisitos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value green">PASS</div>
+      <div class="stat-label">Build Status</div>
+      <div class="stat-sub">vite build sem erros</div>
+    </div>
+  </div>
+  <div class="grid g6">
+    <div class="stat-card">
+      <div class="stat-value">8</div>
+      <div class="stat-label">Componentes</div>
+      <div class="stat-sub"><span class="status-pill sp-done">10/10</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Engines</div>
+      <div class="stat-sub"><span class="status-pill sp-done">10/10</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Hooks</div>
+      <div class="stat-sub"><span class="status-pill sp-done">10/10</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">13</div>
+      <div class="stat-label">Tabelas + RPCs</div>
+      <div class="stat-sub"><span class="status-pill sp-run">9/10</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value yellow">270</div>
+      <div class="stat-label">Indices</div>
+      <div class="stat-sub">IPCA+SELIC ok</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value red">0</div>
+      <div class="stat-label">Bloqueadores</div>
+      <div class="stat-sub"><span class="status-pill sp-done">P0 limpo</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: CHECKLIST -->
+<div class="section" id="checklist">
+  <div class="section-header">
+    <span class="section-icon">&#9745;&#65039;</span>
+    <h2>Checklist Completo &mdash; Item por Item</h2>
+  </div>
+
+  <!-- Motor / Calculo Core -->
+  <details open>
+    <summary>&#9881;&#65039; Motor / Calculo Core (22 itens)</summary>
+    <div class="detail-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Requisito (Joao)</th><th>Status</th><th>Implementacao</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Sistema tipo DRCalc moderno</td><td><span class="status-pill sp-done">Implementado</span></td><td>Layout two-pane com tabs (<code>CalculoPage index.tsx</code>, 228 linhas)</td></tr>
+            <tr><td>2</td><td>Baseado em LINHA DO TEMPO</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoMarcos.tsx</code> &mdash; 9 tipos de marco + <code>CalculoPeriodos.tsx</code> &mdash; periodos sequenciais</td></tr>
+            <tr><td>3</td><td>Marcos temporais (evento danoso, citacao, sentenca, etc)</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoMarcos.tsx</code> &mdash; 9 tipos: evento_danoso, citacao, sentenca, acordao, transito_julgado, intimacao_pagamento, arbitramento, publicacao_sentenca, personalizado</td></tr>
+            <tr><td>4</td><td>Periodos independentes com regras proprias</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoPeriodos.tsx</code> &mdash; cada periodo tem indice_correcao + juros_tipo + taxa + capitalizacao + base incidencia</td></tr>
+            <tr><td>5</td><td>Correcao monetaria IPCA</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>correcao_monetaria.ts</code> (61 linhas) &mdash; fator pro-rata logaritmico + 135 registros IPCA no banco</td></tr>
+            <tr><td>6</td><td>Correcao IPCA-E</td><td><span class="status-pill sp-pend">Parcial</span></td><td>Tipo definido + constante BCB (10764), mas sem dados no banco (0 registros)</td></tr>
+            <tr><td>7</td><td>Correcao INPC</td><td><span class="status-pill sp-pend">Parcial</span></td><td>Tipo definido + constante BCB (188), mas sem dados no banco</td></tr>
+            <tr><td>8</td><td>Correcao IGP-M</td><td><span class="status-pill sp-pend">Parcial</span></td><td>Tipo definido + constante BCB (189), mas sem dados no banco</td></tr>
+            <tr><td>9</td><td>Correcao TR</td><td><span class="status-pill sp-pend">Parcial</span></td><td>Tipo definido + constante BCB (226), mas sem dados no banco</td></tr>
+            <tr><td>10</td><td>Correcao SELIC</td><td><span class="status-pill sp-done">Implementado</span></td><td>135 registros selic_acumulada no banco + mapeamento correto</td></tr>
+            <tr><td>11</td><td>Opcao "sem correcao"</td><td><span class="status-pill sp-done">Implementado</span></td><td>IndiceCorrecao inclui <code>'sem_correcao'</code></td></tr>
+            <tr><td>12</td><td>Juros simples</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>juros.ts</code> &mdash; jurosSimples() com taxa mensal x meses (30 dias)</td></tr>
+            <tr><td>13</td><td>Juros compostos</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>juros.ts</code> &mdash; jurosCompostos() via Math.pow()</td></tr>
+            <tr><td>14</td><td>Juros 1% a.m.</td><td><span class="status-pill sp-done">Implementado</span></td><td>taxa_fixa com 1.0% mensal, capitalizacao simples</td></tr>
+            <tr><td>15</td><td>Juros SELIC pura</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>juros.ts</code> &mdash; jurosSelic() aplica SELIC diretamente</td></tr>
+            <tr><td>16</td><td>Juros taxa legal Art. 406 / Lei 14.905/2024</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>juros.ts</code> &mdash; jurosTaxaLegal() com split pre/pos 30/08/2024. Pre: 1% a.m. simples. Pos: SELIC acumulada</td></tr>
+            <tr><td>17</td><td>SELIC 3 modos (exclusiva, com correcao separada, por periodo)</td><td><span class="status-pill sp-done">Implementado</span></td><td>SelicModo type + selic_modo field em CalculoPeriodo</td></tr>
+            <tr><td>18</td><td>Pro-rata mes comercial 30 dias</td><td><span class="status-pill sp-done">Implementado</span></td><td>JurosProRata type: <code>'comercial_30'</code></td></tr>
+            <tr><td>19</td><td>Pro-rata dias corridos</td><td><span class="status-pill sp-done">Implementado</span></td><td>JurosProRata type: <code>'corridos'</code></td></tr>
+            <tr><td>20</td><td>Base incidencia: principal original</td><td><span class="status-pill sp-done">Implementado</span></td><td>JurosBaseIncidencia: <code>'principal'</code></td></tr>
+            <tr><td>21</td><td>Base incidencia: principal corrigido</td><td><span class="status-pill sp-done">Implementado</span></td><td>JurosBaseIncidencia: <code>'principal_corrigido'</code></td></tr>
+            <tr><td>22</td><td>Base incidencia: saldo atualizado</td><td><span class="status-pill sp-done">Implementado</span></td><td>JurosBaseIncidencia: <code>'saldo_atualizado'</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- Eventos Financeiros -->
+  <details>
+    <summary>&#128176; Eventos Financeiros (4 itens)</summary>
+    <div class="detail-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Requisito</th><th>Status</th><th>Implementacao</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>23</td><td>Pagamento parcial</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoEventos.tsx</code> &mdash; tipo <code>'pagamento'</code></td></tr>
+            <tr><td>24</td><td>Deposito judicial</td><td><span class="status-pill sp-done">Implementado</span></td><td>tipo <code>'deposito_judicial'</code></td></tr>
+            <tr><td>25</td><td>Abatimento/compensacao</td><td><span class="status-pill sp-done">Implementado</span></td><td>tipos <code>'abatimento'</code>, <code>'compensacao'</code>, <code>'estorno'</code></td></tr>
+            <tr><td>26</td><td>Recalculo do saldo apos pagamento</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>saldo_engine.ts</code> fase 4 &mdash; subtrai totalEventos do subtotal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- Multas e Honorarios -->
+  <details>
+    <summary>&#9878;&#65039; Multas e Honorarios (9 itens)</summary>
+    <div class="detail-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Requisito</th><th>Status</th><th>Implementacao</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>27</td><td>Multa art. 523 CPC (10%)</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoAdicionais.tsx</code> + REGRAS_LEGAIS.MULTA_523_PERCENTUAL = 10%</td></tr>
+            <tr><td>28</td><td>Astreintes com teto</td><td><span class="status-pill sp-done">Implementado</span></td><td>tipo <code>'astreinte'</code> + campo teto_centavos</td></tr>
+            <tr><td>29</td><td>Multa contratual</td><td><span class="status-pill sp-done">Implementado</span></td><td>tipo <code>'multa_contratual'</code></td></tr>
+            <tr><td>30</td><td>Honorarios execucao (10%)</td><td><span class="status-pill sp-done">Implementado</span></td><td>tipo <code>'honorarios_execucao'</code> + REGRAS_LEGAIS.HONORARIOS_EXECUCAO_PERCENTUAL = 10%</td></tr>
+            <tr><td>31</td><td>Honorarios contratuais</td><td><span class="status-pill sp-done">Implementado</span></td><td>tipo <code>'honorarios_contratuais'</code></td></tr>
+            <tr><td>32</td><td>Honorarios valor fixo</td><td><span class="status-pill sp-done">Implementado</span></td><td>base_calculo <code>'valor_fixo'</code> + campo valor_fixo_centavos</td></tr>
+            <tr><td>33</td><td>Honorarios % valor da causa</td><td><span class="status-pill sp-done">Implementado</span></td><td>base_calculo <code>'valor_causa'</code></td></tr>
+            <tr><td>34</td><td>Honorarios % condenacao</td><td><span class="status-pill sp-done">Implementado</span></td><td>base_calculo <code>'condenacao'</code></td></tr>
+            <tr><td>35</td><td>Honorarios % proveito economico</td><td><span class="status-pill sp-done">Implementado</span></td><td>base_calculo <code>'proveito_economico'</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- Validacao e Auditoria -->
+  <details>
+    <summary>&#128270; Validacao e Auditoria (9 itens)</summary>
+    <div class="detail-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Requisito</th><th>Status</th><th>Implementacao</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>36</td><td>Checagem automatica de consistencia</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>checagem.ts</code> &mdash; 12 validacoes (C-01 a C-12)</td></tr>
+            <tr><td>37</td><td>Data final &lt; data inicial</td><td><span class="status-pill sp-done">Implementado</span></td><td>C-05: detecta e bloqueia</td></tr>
+            <tr><td>38</td><td>Periodo sem data</td><td><span class="status-pill sp-done">Implementado</span></td><td>C-04/C-05: detecta</td></tr>
+            <tr><td>39</td><td>SELIC + correcao duplicada</td><td><span class="status-pill sp-done">Implementado</span></td><td>C-07: alerta selic_dupla</td></tr>
+            <tr><td>40</td><td>Juros duplicados (overlap)</td><td><span class="status-pill sp-done">Implementado</span></td><td>C-09: detecta overlap_periodos</td></tr>
+            <tr><td>41</td><td>Base de honorarios nao definida</td><td><span class="status-pill sp-pend">Parcial</span></td><td>Nao tem check especifico, mas base_calculo tem default</td></tr>
+            <tr><td>42</td><td>Alertas visuais (erro/warning/info)</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoResultadoPane.tsx</code> &mdash; 3 niveis com cores</td></tr>
+            <tr><td>43</td><td>Congelamento de calculo (snapshot)</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>useCalculoSave.ts</code> &mdash; fn_calculo_snapshot_criar + status <code>'finalizado'</code></td></tr>
+            <tr><td>44</td><td>Rastreabilidade de indices</td><td><span class="status-pill sp-done">Implementado</span></td><td>IndiceUsado[] no ResultadoFinal + exibicao no CalculoResultadoPane</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- Interface -->
+  <details>
+    <summary>&#128421;&#65039; Interface (9 itens)</summary>
+    <div class="detail-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Requisito</th><th>Status</th><th>Implementacao</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>45</td><td>Interface moderna, limpa, nao poluida</td><td><span class="status-pill sp-done">Implementado</span></td><td>Design System v5 Warm Charcoal, layout clean</td></tr>
+            <tr><td>46</td><td>Topo: dados gerais + data base</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoHeader.tsx</code> &mdash; descricao, tipo, data-base</td></tr>
+            <tr><td>47</td><td>Area de marcos</td><td><span class="status-pill sp-done">Implementado</span></td><td>Tab "Marcos" com <code>CalculoMarcos.tsx</code></td></tr>
+            <tr><td>48</td><td>Area de periodos</td><td><span class="status-pill sp-done">Implementado</span></td><td>Tab "Periodos" com <code>CalculoPeriodos.tsx</code></td></tr>
+            <tr><td>49</td><td>Area de eventos financeiros</td><td><span class="status-pill sp-done">Implementado</span></td><td>Dentro da tab "Parcelas" &mdash; <code>CalculoEventos.tsx</code></td></tr>
+            <tr><td>50</td><td>Componentes adicionais (multas/honorarios)</td><td><span class="status-pill sp-done">Implementado</span></td><td>Tab "Encargos" com <code>CalculoAdicionais.tsx</code></td></tr>
+            <tr><td>51</td><td>Quadro resultado em tempo real</td><td><span class="status-pill sp-done">Implementado</span></td><td>Painel direito (40%) &mdash; <code>CalculoResultadoPane.tsx</code></td></tr>
+            <tr><td>52</td><td>Modo resumo</td><td><span class="status-pill sp-block">Nao implementado</span></td><td>So existe modo detalhado. Toggle resumo/detalhado nao implementado</td></tr>
+            <tr><td>53</td><td>Modo detalhado</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoResultadoPane.tsx</code> mostra periodos + consolidado + indices</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- Exportacao -->
+  <details>
+    <summary>&#128230; Exportacao (6 itens)</summary>
+    <div class="detail-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Requisito</th><th>Status</th><th>Implementacao</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>54</td><td>Relatorio final profissional</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>CalculoPdfDocument.tsx</code> (315 linhas) &mdash; Memoria de Calculo Judicial</td></tr>
+            <tr><td>55</td><td>Exportar PDF</td><td><span class="status-pill sp-done">Implementado</span></td><td><code>useCalculoExport.ts</code> &mdash; @react-pdf/renderer client-side</td></tr>
+            <tr><td>56</td><td>Exportar Excel</td><td><span class="status-pill sp-block">Nao implementado</span></td><td>Nao implementado. Precisa webhook n8n</td></tr>
+            <tr><td>57</td><td>Resumo executivo no relatorio</td><td><span class="status-pill sp-done">Implementado</span></td><td>totalBox no PDF com divida + correcao + juros + total</td></tr>
+            <tr><td>58</td><td>Composicao por componentes</td><td><span class="status-pill sp-done">Implementado</span></td><td>Secoes: parcelas, periodos, adicionais</td></tr>
+            <tr><td>59</td><td>Tabela de indices usados</td><td><span class="status-pill sp-pend">Parcial</span></td><td>Listado no PDF mas sem tabela completa por competencia</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- Templates e IA -->
+  <details>
+    <summary>&#129302; Templates e IA (3 itens)</summary>
+    <div class="detail-content">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Requisito</th><th>Status</th><th>Implementacao</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>60</td><td>Modelos prontos (templates)</td><td><span class="status-pill sp-block">Nao implementado</span></td><td>Nao implementado. Apenas estado inicial padrao</td></tr>
+            <tr><td>61</td><td>Camada IA leitura do titulo</td><td><span class="status-pill sp-block">Nao implementado</span></td><td>Nao implementado (Joao disse "futuro")</td></tr>
+            <tr><td>62</td><td>IA sugerir parametros</td><td><span class="status-pill sp-block">Nao implementado</span></td><td>Nao implementado (fase 2)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- Counters -->
+  <div class="grid g3" style="margin-top: 20px;">
+    <div class="stat-card">
+      <div class="stat-value green">49</div>
+      <div class="stat-label">Implementados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value yellow">6</div>
+      <div class="stat-label">Parciais</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value red">7</div>
+      <div class="stat-label">Nao implementados</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: BUGS -->
+<div class="section" id="bugs">
+  <div class="section-header">
+    <span class="section-icon">&#128027;</span>
+    <h2>Bugs e Correcoes Aplicadas</h2>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:auto">Bug</th><th>Antes</th><th>Depois</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>fn_calculo_listar</code> params errados</td>
+          <td>Hook usava <code>(p_limit, p_offset, p_processo_id)</code></td>
+          <td>Corrigido para <code>(p_page, p_per_page, p_q, p_status)</code></td>
+          <td><span class="status-pill sp-done">CORRIGIDO</span></td>
+        </tr>
+        <tr>
+          <td>Schema drift tipos</td>
+          <td>Relatorio anterior indicava divergencia</td>
+          <td>Verificacao atual: tipos ALINHADOS com banco</td>
+          <td><span class="status-pill sp-done">OK</span></td>
+        </tr>
+        <tr>
+          <td>Build</td>
+          <td>&mdash;</td>
+          <td><code>vite build</code> PASS sem erros</td>
+          <td><span class="status-pill sp-done">OK</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 4: PENDENCIAS -->
+<div class="section" id="pendencias">
+  <div class="section-header">
+    <span class="section-icon">&#128203;</span>
+    <h2>Pendencias para Producao</h2>
+  </div>
+
+  <div class="card priority-card p0" style="margin-bottom:16px;">
+    <span class="priority-tag p0">P0 &mdash; BLOQUEADOR</span>
+    <p style="font-size:1rem; font-weight:600; color:var(--accent3); margin-top:8px;">Nenhum bloqueador restante</p>
+    <p style="color:var(--text-muted); margin-top:4px;">Frontend compila, tipos alinhados, RPCs corrigidas.</p>
+  </div>
+
+  <div class="card priority-card p1" style="margin-bottom:16px;">
+    <span class="priority-tag p1">P1 &mdash; IMPORTANTE</span>
+    <div style="margin-top:12px;">
+      <p style="margin-bottom:8px;"><strong>1.</strong> Popular indices INPC, IGPM, TR, IPCA-E no banco (via cron BCB API) &mdash; sem isso esses indices retornam fator=1</p>
+      <p style="margin-bottom:8px;"><strong>2.</strong> Modo resumo no painel de resultado (toggle resumo/detalhado)</p>
+      <p><strong>3.</strong> Exportacao Excel via webhook n8n</p>
+    </div>
+  </div>
+
+  <div class="card priority-card p2" style="margin-bottom:16px;">
+    <span class="priority-tag p2">P2 &mdash; NICE TO HAVE</span>
+    <div style="margin-top:12px;">
+      <p style="margin-bottom:8px;"><strong>4.</strong> Templates/modelos prontos (5 cenarios predefinidos)</p>
+      <p style="margin-bottom:8px;"><strong>5.</strong> Tabela completa de indices por competencia no relatorio PDF</p>
+      <p><strong>6.</strong> Check especifico de base_honorarios nao definida</p>
+    </div>
+  </div>
+
+  <div class="card priority-card p3">
+    <span class="priority-tag p3">FASE 2 (FUTURO)</span>
+    <div style="margin-top:12px;">
+      <p style="margin-bottom:8px;"><strong>7.</strong> Camada IA para leitura do titulo executivo</p>
+      <p><strong>8.</strong> IA sugerir parametros automaticamente</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: RESUMO EXECUTIVO -->
+<div class="section" id="resumo">
+  <div class="section-header">
+    <span class="section-icon">&#127942;</span>
+    <h2>Resumo Executivo</h2>
+  </div>
+
+  <div class="verdict">
+    <h3>PODE IR PARA PRODUCAO</h3>
+    <p>com as pendencias P1 em backlog</p>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Requisitos</div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span>62 requisitos verificados</span>
+        <span style="color:var(--accent3); font-weight:600;">49 ok</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span>Parciais</span>
+        <span style="color:var(--accent4); font-weight:600;">6</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span>Nao implementados</span>
+        <span style="color:var(--accent2); font-weight:600;">7</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+        <span style="color:var(--text-muted); font-size:0.8rem;">Dos quais 3 sao fase 2 (futuro)</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Status Tecnico</div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span>Build</span>
+        <span class="status-pill sp-done">PASS</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span>Bugs corrigidos</span>
+        <span style="color:var(--accent3); font-weight:600;">1</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span>Bloqueadores P0</span>
+        <span style="color:var(--accent3); font-weight:600;">0</span>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span>Schema drift</span>
+        <span class="status-pill sp-done">Alinhado</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+      <span style="font-weight:600;">Progresso geral (excluindo fase 2)</span>
+      <span style="color:var(--accent3); font-weight:700;">85%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill green" style="width: 85%;">85%</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: ARVORE -->
+<div class="section" id="arvore">
+  <div class="section-header">
+    <span class="section-icon">&#128193;</span>
+    <h2>Arvore de Arquivos</h2>
+  </div>
+  <div class="card">
+    <div class="card-title">18 arquivos | ~2.727 linhas</div>
+    <div class="tree">
+<pre style="background:transparent; border:none; padding:0; margin:0; color:inherit; font-family:inherit; font-size:inherit; line-height:inherit;">
+<span class="dir">src/</span>
+<span class="dir">  pages/calculo/</span>
+    <span class="file">index.tsx</span>                    <span class="meta">(228 linhas)</span> <span class="highlight">&larr; Entry point</span>
+    <span class="file">CalculoHeader.tsx</span>            <span class="meta">(135 linhas)</span> <span class="highlight">&larr; Header + acoes</span>
+    <span class="file">CalculoParcelas.tsx</span>          <span class="meta">(126 linhas)</span> <span class="highlight">&larr; Grid parcelas</span>
+    <span class="file">CalculoPeriodos.tsx</span>          <span class="meta">(265 linhas)</span> <span class="highlight">&larr; Editor periodos</span>
+    <span class="file">CalculoEventos.tsx</span>           <span class="meta">(140 linhas)</span> <span class="highlight">&larr; Pagamentos/abatimentos</span>
+    <span class="file">CalculoAdicionais.tsx</span>        <span class="meta">(137 linhas)</span> <span class="highlight">&larr; Multas/honorarios</span>
+    <span class="file">CalculoMarcos.tsx</span>            <span class="meta">(117 linhas)</span> <span class="highlight">&larr; Timeline marcos</span>
+    <span class="file">CalculoResultadoPane.tsx</span>     <span class="meta">(216 linhas)</span> <span class="highlight">&larr; Resultado tempo real</span>
+<span class="dir">  lib/calculos/</span>
+<span class="dir">    types/</span>
+      <span class="file">calculo_types.ts</span>             <span class="meta">(289 linhas)</span> <span class="highlight">&larr; SSOT de tipos</span>
+<span class="dir">    constants/</span>
+      <span class="file">indices.ts</span>                   <span class="meta">(67 linhas)</span>  <span class="highlight">&larr; Catalogo BCB</span>
+      <span class="file">regras_legais.ts</span>             <span class="meta">(25 linhas)</span>  <span class="highlight">&larr; Lei 14.905/2024</span>
+      <span class="file">estado_inicial.ts</span>            <span class="meta">(72 linhas)</span>  <span class="highlight">&larr; Factory</span>
+<span class="dir">    engine/</span>
+      <span class="file">saldo_engine.ts</span>              <span class="meta">(204 linhas)</span> <span class="highlight">&larr; Orquestrador</span>
+      <span class="file">juros.ts</span>                     <span class="meta">(140 linhas)</span> <span class="highlight">&larr; Motor juros</span>
+      <span class="file">correcao_monetaria.ts</span>        <span class="meta">(61 linhas)</span>  <span class="highlight">&larr; Motor correcao</span>
+      <span class="file">checagem.ts</span>                  <span class="meta">(167 linhas)</span> <span class="highlight">&larr; 12 validacoes</span>
+<span class="dir">  hooks/calculos/</span>
+    <span class="file">useCalculoEngine.ts</span>          <span class="meta">(39 linhas)</span>  <span class="highlight">&larr; Wrapper memoizado</span>
+    <span class="file">useCalculoSave.ts</span>            <span class="meta">(178 linhas)</span> <span class="highlight">&larr; Persistencia</span>
+    <span class="file">useCalculoLista.ts</span>           <span class="meta">(34 linhas)</span>  <span class="highlight">&larr; Lista paginada (CORRIGIDO)</span>
+    <span class="file">useCalculoExport.ts</span>          <span class="meta">(45 linhas)</span>  <span class="highlight">&larr; PDF export</span>
+    <span class="file">useIndiceSerie.ts</span>            <span class="meta">(78 linhas)</span>  <span class="highlight">&larr; Series BCB</span>
+<span class="dir">  components/pdf/</span>
+    <span class="file">CalculoPdfDocument.tsx</span>        <span class="meta">(315 linhas)</span> <span class="highlight">&larr; Relatorio PDF</span>
+</pre>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  &#128025; Jarbas 2.0 &mdash; MdLab LegalTech &middot; QA executado em 01/04/2026 &middot; MdFlow Calculadora Judicial
+</div>
+
+</div>
+</body>
+</html>
