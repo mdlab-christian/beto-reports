@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Judicial — MdFlow</title>
+<style>
+:root {
+  --background: #0f0e0d;
+  --foreground: #e8e6e1;
+  --card: #1a1714;
+  --surface: #211e1a;
+  --border: #3a3530;
+  --primary: #34d399;
+  --primary-foreground: #022c22;
+  --muted: #a8a29e;
+  --destructive: #ef4444;
+  --warning: #f59e0b;
+  --success: #22c55e;
+  --info: #0ea5e9;
+  --chart-2: #a78bfa;
+  --radius: 10px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+h1, h2, h3 { font-family: 'Manrope', 'Inter', sans-serif; }
+.mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+/* Layout */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+.app-header-left { display: flex; align-items: center; gap: 12px; }
+.app-header-left h1 { font-size: 1.25rem; font-weight: 700; }
+.app-header-left svg { color: var(--primary); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.badge-warning { background: rgba(245,158,11,0.12); color: var(--warning); border: 1px solid rgba(245,158,11,0.25); }
+.badge-info { background: rgba(14,165,233,0.12); color: var(--info); border: 1px solid rgba(14,165,233,0.25); }
+.badge-success { background: rgba(34,197,94,0.12); color: var(--success); border: 1px solid rgba(34,197,94,0.25); }
+
+/* AI Banner */
+.ai-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: rgba(14,165,233,0.06);
+  border-bottom: 1px solid rgba(14,165,233,0.15);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.ai-banner span { display: flex; align-items: center; gap: 8px; }
+.ai-banner .ai-icon { color: var(--info); font-size: 1rem; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: inherit;
+}
+.btn-primary { background: var(--primary); color: var(--primary-foreground); }
+.btn-primary:hover { background: #2fc48d; transform: translateY(-1px); }
+.btn-outline { background: transparent; color: var(--foreground); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--surface); border-color: var(--muted); }
+.btn-outline-info { background: transparent; color: var(--info); border: 1px solid rgba(14,165,233,0.3); }
+.btn-outline-info:hover { background: rgba(14,165,233,0.08); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid transparent; }
+.btn-ghost:hover { background: var(--surface); color: var(--foreground); }
+.btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+.btn-full { width: 100%; justify-content: center; }
+.btn-dashed {
+  background: transparent;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  width: 100%;
+  justify-content: center;
+  padding: 10px;
+}
+.btn-dashed:hover { border-color: var(--primary); color: var(--primary); background: rgba(52,211,153,0.04); }
+
+/* Two Pane */
+.two-pane {
+  display: grid;
+  grid-template-columns: 1fr 0.65fr;
+  min-height: calc(100vh - 110px);
+}
+@media(max-width: 1024px) {
+  .two-pane { grid-template-columns: 1fr; }
+  .pane-right { border-left: none !important; border-top: 1px solid var(--border); }
+}
+.pane-left {
+  padding: 24px;
+  overflow-y: auto;
+}
+.pane-right {
+  padding: 24px;
+  border-left: 1px solid var(--border);
+  background: rgba(0,0,0,0.15);
+  overflow-y: auto;
+}
+
+/* Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+@media(max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.form-input, .form-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  color: var(--foreground);
+  font-size: 0.85rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  outline: none;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); }
+.form-select { -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+.form-actions { display: flex; gap: 8px; margin-bottom: 20px; }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.tab {
+  padding: 10px 18px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: inherit;
+}
+.tab:hover { color: var(--foreground); }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Table */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  font-weight: 600;
+}
+td {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+tr:hover td { background: rgba(255,255,255,0.015); }
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.table-footer .total-value { color: var(--primary); }
+
+/* Period cards */
+.period-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+  border-left: 3px solid var(--primary);
+  transition: all 0.2s;
+}
+.period-card:hover { border-color: rgba(255,255,255,0.08); border-left-color: var(--primary); background: var(--surface); }
+.period-card.violet { border-left-color: var(--chart-2); }
+.period-card.violet:hover { border-left-color: var(--chart-2); }
+.period-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.period-title { font-weight: 700; font-size: 0.9rem; }
+.period-range { font-size: 0.75rem; color: var(--muted); }
+.period-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media(max-width: 640px) { .period-grid { grid-template-columns: 1fr; } }
+.period-field-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+.period-field-value { font-size: 0.82rem; }
+
+/* Timeline bar */
+.timeline-bar {
+  display: flex;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.timeline-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--primary-foreground);
+  transition: all 0.3s;
+  position: relative;
+}
+.timeline-segment:hover { filter: brightness(1.2); }
+.timeline-segment.seg-1 { background: var(--primary); width: 60%; }
+.timeline-segment.seg-2 { background: var(--chart-2); width: 40%; color: #fff; }
+.timeline-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+/* Marcos timeline vertical */
+.marcos-timeline { padding-left: 20px; border-left: 2px solid var(--border); margin: 8px 0; }
+.marco-item {
+  position: relative;
+  padding: 10px 0 10px 20px;
+}
+.marco-item::before {
+  content: '';
+  position: absolute;
+  left: -27px;
+  top: 14px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--background);
+}
+.marco-item:nth-child(2)::before { background: var(--info); }
+.marco-item:nth-child(3)::before { background: var(--warning); }
+.marco-item:nth-child(4)::before { background: var(--success); }
+.marco-item:nth-child(5)::before { background: var(--chart-2); }
+.marco-label { font-size: 0.82rem; font-weight: 500; }
+.marco-date { font-size: 0.75rem; color: var(--muted); }
+
+/* Events */
+.event-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+}
+.event-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.event-icon.payment { background: rgba(34,197,94,0.12); }
+.event-details { flex: 1; }
+.event-details .event-name { font-weight: 500; font-size: 0.85rem; }
+.event-details .event-date { font-size: 0.75rem; color: var(--muted); }
+.event-amount { font-weight: 700; color: var(--success); }
+
+/* Toggle switch */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+.toggle-row:hover { background: var(--surface); }
+.toggle-info { flex: 1; }
+.toggle-label { font-size: 0.85rem; font-weight: 500; }
+.toggle-desc { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.toggle-switch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  transition: all 0.3s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background: var(--muted);
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--primary); border-color: var(--primary); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); background: var(--primary-foreground); }
+
+/* Result pane */
+.result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+.result-card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.result-card-body { padding: 16px 18px; }
+
+.alert-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(14,165,233,0.06);
+  border: 1px solid rgba(14,165,233,0.15);
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  color: var(--info);
+  margin-bottom: 16px;
+}
+.alert-info svg { flex-shrink: 0; margin-top: 1px; }
+
+/* Consolidado */
+.consolidado-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 0.82rem;
+}
+.consolidado-row + .consolidado-row { border-top: 1px solid rgba(58,53,48,0.5); }
+.consolidado-row.subtotal { font-weight: 600; padding: 10px 0; }
+.consolidado-row.total {
+  font-weight: 800;
+  font-size: 1.1rem;
+  padding: 14px 0;
+  margin-top: 4px;
+  border-top: 2px solid var(--primary);
+}
+.consolidado-row.total .c-value { color: var(--primary); font-size: 1.3rem; }
+.c-label { color: var(--muted); }
+.c-value { text-align: right; }
+.c-value.neg { color: var(--destructive); }
+.c-value.pos { color: var(--success); }
+
+.data-base-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+.indices-box {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.indices-box .ix-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+.indices-box .ix-item { font-size: 0.75rem; color: var(--foreground); padding: 3px 0; display: flex; align-items: center; gap: 6px; }
+.ix-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.ix-dot.ipca { background: var(--primary); }
+.ix-dot.selic { background: var(--chart-2); }
+
+/* Result table compact */
+.result-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+.result-table th { padding: 8px 10px; background: var(--surface); font-size: 0.65rem; }
+.result-table td { padding: 8px 10px; border-top: 1px solid var(--border); }
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: 16px 24px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="app-header">
+  <div class="app-header-left">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+    <h1>Calculadora Judicial</h1>
+    <span class="badge badge-warning">Rascunho</span>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-outline btn-sm">Salvar</button>
+    <button class="btn btn-primary btn-sm">Exportar PDF</button>
+  </div>
+</header>
+
+<!-- AI Banner -->
+<div class="ai-banner">
+  <span>
+    <span class="ai-icon">&#10024;</span>
+    <strong>Modo IA disponivel</strong> &mdash; Envie o titulo executivo para preenchimento automatico dos parametros
+  </span>
+  <button class="btn btn-outline-info btn-sm">Usar IA</button>
+</div>
+
+<!-- Two Pane -->
+<div class="two-pane">
+
+  <!-- LEFT PANE -->
+  <div class="pane-left">
+
+    <!-- Form -->
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">Descricao do calculo</label>
+        <input class="form-input" type="text" value="Cumprimento de Sentenca n. 5001234-56.2024.8.21.0001 — Danos morais e materiais">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select class="form-select">
+          <option selected>Cumprimento de Sentenca</option>
+          <option>Execucao de Titulo</option>
+          <option>Liquidacao</option>
+          <option>Simples</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data-base</label>
+        <input class="form-input" type="date" value="2026-03-31">
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" data-tab="parcelas">Parcelas</button>
+      <button class="tab" data-tab="marcos">Marcos</button>
+      <button class="tab active" data-tab="periodos">Periodos</button>
+      <button class="tab" data-tab="eventos">Eventos</button>
+      <button class="tab" data-tab="encargos">Encargos</button>
+    </div>
+
+    <!-- Tab: Parcelas -->
+    <div class="tab-content" id="tab-parcelas">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Descricao</th><th>Vencimento</th><th style="text-align:right">Valor</th><th style="width:40px"></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Dano moral</td>
+              <td class="mono" style="font-size:0.8rem">15/03/2022</td>
+              <td class="mono" style="text-align:right;font-size:0.8rem">R$ 15.000,00</td>
+              <td><button class="btn btn-ghost btn-sm" style="padding:4px 6px">&#x2715;</button></td>
+            </tr>
+            <tr>
+              <td>Dano material</td>
+              <td class="mono" style="font-size:0.8rem">15/03/2022</td>
+              <td class="mono" style="text-align:right;font-size:0.8rem">R$ 8.500,00</td>
+              <td><button class="btn btn-ghost btn-sm" style="padding:4px 6px">&#x2715;</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-footer">
+          <span>Total (2 parcelas)</span>
+          <span class="total-value mono">R$ 23.500,00</span>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-dashed">+ Adicionar Parcela</button>
+      </div>
+    </div>
+
+    <!-- Tab: Marcos -->
+    <div class="tab-content" id="tab-marcos">
+      <div class="marcos-timeline">
+        <div class="marco-item">
+          <div class="marco-label">Evento Danoso</div>
+          <div class="marco-date mono">10/01/2022</div>
+        </div>
+        <div class="marco-item">
+          <div class="marco-label">Citacao</div>
+          <div class="marco-date mono">15/03/2022</div>
+        </div>
+        <div class="marco-item">
+          <div class="marco-label">Sentenca</div>
+          <div class="marco-date mono">20/08/2023</div>
+        </div>
+        <div class="marco-item">
+          <div class="marco-label">Transito em Julgado</div>
+          <div class="marco-date mono">15/12/2023</div>
+        </div>
+        <div class="marco-item">
+          <div class="marco-label">Intimacao Pagamento</div>
+          <div class="marco-date mono">10/02/2024</div>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn btn-dashed">+ Adicionar Marco</button>
+      </div>
+    </div>
+
+    <!-- Tab: Periodos (ACTIVE) -->
+    <div class="tab-content active" id="tab-periodos">
+      <!-- Period 1 -->
+      <div class="period-card">
+        <div class="period-header">
+          <span class="period-title">Periodo 1</span>
+          <span class="period-range mono">15/03/2022 &rarr; 30/08/2024</span>
+        </div>
+        <div class="period-grid">
+          <div>
+            <div class="period-field-label">Correcao Monetaria</div>
+            <div class="period-field-value">IPCA (IBGE)</div>
+          </div>
+          <div>
+            <div class="period-field-label">Juros Moratorios</div>
+            <div class="period-field-value">1% a.m. &middot; Simples &middot; Sobre principal corrigido</div>
+          </div>
+          <div>
+            <div class="period-field-label">Pro-rata</div>
+            <div class="period-field-value">Comercial (30 dias)</div>
+          </div>
+          <div>
+            <div class="period-field-label">Duracao</div>
+            <div class="period-field-value mono" style="font-size:0.8rem">29 meses e 15 dias</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Period 2 -->
+      <div class="period-card violet">
+        <div class="period-header">
+          <span class="period-title">Periodo 2</span>
+          <span class="period-range mono">30/08/2024 &rarr; 31/03/2026 (data base)</span>
+        </div>
+        <div class="period-grid">
+          <div>
+            <div class="period-field-label">Correcao Monetaria</div>
+            <div class="period-field-value">Sem correcao separada</div>
+          </div>
+          <div>
+            <div class="period-field-label">Juros Moratorios</div>
+            <div class="period-field-value">SELIC (exclusiva) &mdash; Lei 14.905/2024</div>
+          </div>
+          <div>
+            <div class="period-field-label">Pro-rata</div>
+            <div class="period-field-value">Dias corridos</div>
+          </div>
+          <div>
+            <div class="period-field-label">Duracao</div>
+            <div class="period-field-value mono" style="font-size:0.8rem">19 meses e 1 dia</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-dashed">+ Adicionar Periodo</button>
+
+      <!-- Timeline bar -->
+      <div style="margin-top:20px">
+        <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;font-weight:600">Linha do Tempo</div>
+        <div class="timeline-bar">
+          <div class="timeline-segment seg-1">IPCA + 1% a.m.</div>
+          <div class="timeline-segment seg-2">SELIC</div>
+        </div>
+        <div class="timeline-labels">
+          <span class="mono">Mar/2022</span>
+          <span class="mono">Ago/2024</span>
+          <span class="mono">Mar/2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Eventos -->
+    <div class="tab-content" id="tab-eventos">
+      <div class="event-row">
+        <div class="event-icon payment">&#128181;</div>
+        <div class="event-details">
+          <div class="event-name">Pagamento parcial</div>
+          <div class="event-date mono">05/06/2024</div>
+        </div>
+        <div class="event-amount mono">- R$ 5.000,00</div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-dashed">+ Adicionar Evento</button>
+      </div>
+    </div>
+
+    <!-- Tab: Encargos -->
+    <div class="tab-content" id="tab-encargos">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label">Multa art. 523 CPC</div>
+          <div class="toggle-desc">10% sobre saldo devedor</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label">Honorarios execucao</div>
+          <div class="toggle-desc">10% sobre saldo devedor</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label">Astreintes</div>
+          <div class="toggle-desc">Multa por descumprimento de obrigacao de fazer</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label">Honorarios contratuais</div>
+          <div class="toggle-desc">Percentual contratado com o cliente</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label">Multa contratual</div>
+          <div class="toggle-desc">Clausula penal do contrato</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANE -->
+  <div class="pane-right">
+    <div class="result-card">
+      <div class="result-card-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Resultado do Calculo
+      </div>
+      <div class="result-card-body">
+
+        <!-- Alert -->
+        <div class="alert-info">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>Lei 14.905/2024 aplicada &mdash; juros legais atualizados a partir de 30/08/2024</span>
+        </div>
+
+        <!-- Detail table -->
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-bottom:8px">Detalhamento por Periodo</div>
+        <div class="table-wrap" style="margin-bottom:18px">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>Periodo</th>
+                <th style="text-align:right">Saldo Inicial</th>
+                <th style="text-align:right">Correcao</th>
+                <th style="text-align:right">Juros</th>
+                <th style="text-align:right">Saldo Final</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--primary);margin-right:6px;vertical-align:middle"></span>
+                  <span style="font-size:0.72rem">Mar/22 - Ago/24</span>
+                </td>
+                <td class="mono" style="text-align:right;font-size:0.75rem">23.500,00</td>
+                <td style="text-align:right;font-size:0.75rem"><span class="mono" style="color:var(--success)">+3.290,00</span><br><span style="font-size:0.62rem;color:var(--muted)">14,0%</span></td>
+                <td class="mono" style="text-align:right;font-size:0.75rem;color:var(--success)">+7.879,20</td>
+                <td class="mono" style="text-align:right;font-size:0.75rem;font-weight:600">34.669,20</td>
+              </tr>
+              <tr>
+                <td>
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--chart-2);margin-right:6px;vertical-align:middle"></span>
+                  <span style="font-size:0.72rem">Ago/24 - Mar/26</span>
+                </td>
+                <td class="mono" style="text-align:right;font-size:0.75rem">34.669,20</td>
+                <td style="text-align:right;font-size:0.75rem;color:var(--muted)">&mdash;</td>
+                <td class="mono" style="text-align:right;font-size:0.75rem;color:var(--success)">+6.587,15</td>
+                <td class="mono" style="text-align:right;font-size:0.75rem;font-weight:600">41.256,35</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Consolidado -->
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-bottom:10px">Consolidado</div>
+
+        <div class="consolidado-row">
+          <span class="c-label">Divida original</span>
+          <span class="c-value mono" style="font-size:0.82rem">R$ 23.500,00</span>
+        </div>
+        <div class="consolidado-row">
+          <span class="c-label">(+) Correcao monetaria</span>
+          <span class="c-value pos mono" style="font-size:0.82rem">R$ 3.290,00</span>
+        </div>
+        <div class="consolidado-row">
+          <span class="c-label">(+) Juros moratorios</span>
+          <span class="c-value pos mono" style="font-size:0.82rem">R$ 14.466,35</span>
+        </div>
+        <div class="consolidado-row subtotal">
+          <span class="c-label">(=) Subtotal</span>
+          <span class="c-value mono" style="font-size:0.85rem">R$ 41.256,35</span>
+        </div>
+        <div class="consolidado-row">
+          <span class="c-label">(-) Pagamentos</span>
+          <span class="c-value neg mono" style="font-size:0.82rem">R$ 5.000,00</span>
+        </div>
+        <div class="consolidado-row subtotal">
+          <span class="c-label">(=) Saldo devedor</span>
+          <span class="c-value mono" style="font-size:0.85rem">R$ 36.256,35</span>
+        </div>
+        <div class="consolidado-row">
+          <span class="c-label">(+) Multa 523 (10%)</span>
+          <span class="c-value pos mono" style="font-size:0.82rem">R$ 3.625,64</span>
+        </div>
+        <div class="consolidado-row">
+          <span class="c-label">(+) Honorarios (10%)</span>
+          <span class="c-value pos mono" style="font-size:0.82rem">R$ 3.625,64</span>
+        </div>
+        <div class="consolidado-row total">
+          <span>TOTAL A PAGAR</span>
+          <span class="c-value mono">R$ 43.507,63</span>
+        </div>
+
+        <!-- Data-base -->
+        <div class="data-base-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Data-base: <strong class="mono">31/03/2026</strong></span>
+        </div>
+
+        <!-- Indices -->
+        <div class="indices-box">
+          <div class="ix-title">Indices utilizados</div>
+          <div class="ix-item">
+            <span class="ix-dot ipca"></span>
+            <span>IPCA (IBGE) &mdash; Serie 433 BCB SGS &mdash; Atualizado em 15/03/2026</span>
+          </div>
+          <div class="ix-item">
+            <span class="ix-dot selic"></span>
+            <span>SELIC (BCB) &mdash; Serie 4390 BCB SGS &mdash; Atualizado em 31/03/2026</span>
+          </div>
+        </div>
+
+        <!-- Export -->
+        <div style="margin-top:16px">
+          <button class="btn btn-primary btn-full">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="app-footer">
+  Motor de calculo v1.0 &mdash; Indices atualizados via BCB/SGS &mdash; Lei 14.905/2024 incorporada
+</footer>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.getAttribute('data-tab');
+    document.getElementById('tab-' + target).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
