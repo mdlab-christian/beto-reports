@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Judicial v2 — Preview + Pendências | MdFlow</title>
+<style>
+:root {
+  --bg: #0f0e0d;
+  --fg: #e8e6e1;
+  --card: #1a1714;
+  --surface: #211e1a;
+  --border: #3a3530;
+  --primary: #34d399;
+  --primary-fg: #022c22;
+  --muted: #a8a29e;
+  --destructive: #ef4444;
+  --warning: #f59e0b;
+  --success: #22c55e;
+  --info: #0ea5e9;
+  --violet: #a78bfa;
+  --accent: #7c6dff;
+  --accent5: #5bc4f5;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.page-container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+/* --- TOC --- */
+.toc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 28px;
+  margin-bottom: 32px;
+}
+.toc-title {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.toc a {
+  color: var(--primary);
+  text-decoration: none;
+  display: inline-block;
+  margin-right: 24px;
+  margin-bottom: 6px;
+  font-size: 0.84rem;
+  transition: color 0.15s;
+}
+.toc a:hover { color: var(--fg); }
+.toc .toc-sep {
+  display: block;
+  height: 1px;
+  background: var(--border);
+  margin: 10px 0;
+}
+
+/* --- HERO --- */
+.hero {
+  text-align: center;
+  padding: 48px 24px 36px;
+}
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--info));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.hero-sub { color: var(--muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.badge-primary { background: rgba(52,211,153,0.12); color: var(--primary); border: 1px solid rgba(52,211,153,0.3); }
+.badge-info { background: rgba(14,165,233,0.1); color: var(--info); border: 1px solid rgba(14,165,233,0.25); }
+.badge-warning { background: rgba(245,158,11,0.1); color: var(--warning); border: 1px solid rgba(245,158,11,0.25); }
+.badge-violet { background: rgba(167,139,250,0.1); color: var(--violet); border: 1px solid rgba(167,139,250,0.25); }
+
+/* --- PART DIVIDER --- */
+.part-divider {
+  text-align: center;
+  padding: 40px 0 32px;
+  border-top: 2px solid var(--border);
+  margin-top: 48px;
+}
+.part-divider h2 {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+.part-divider p { color: var(--muted); font-size: 0.9rem; }
+.part-number {
+  display: inline-block;
+  background: var(--primary);
+  color: var(--primary-fg);
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 3px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+/* --- PREVIEW MOCK --- */
+.preview-frame {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 24px 0;
+}
+.preview-toolbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+.preview-dot-r { background: #ef4444; }
+.preview-dot-y { background: #f59e0b; }
+.preview-dot-g { background: #22c55e; }
+.preview-url {
+  flex: 1;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* App inside preview */
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.app-header-icon {
+  width: 32px; height: 32px;
+  background: rgba(52,211,153,0.15);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.app-header-title {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--fg);
+}
+.app-header-badge {
+  background: rgba(245,158,11,0.12);
+  color: var(--warning);
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.app-header-fields {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.app-header-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.app-header-field label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.app-header-field input {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: var(--fg);
+  font-size: 0.8rem;
+  font-family: 'JetBrains Mono', monospace;
+  width: 200px;
+}
+.app-header-field input[type="date"] {
+  width: 140px;
+  font-family: 'Inter', sans-serif;
+}
+.app-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-primary { background: var(--primary); color: var(--primary-fg); }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-outline { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--surface); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid transparent; }
+.btn-ghost:hover { color: var(--fg); background: rgba(255,255,255,0.04); }
+.btn-sm { padding: 4px 10px; font-size: 0.72rem; }
+.btn-full { width: 100%; text-align: center; }
+.btn-disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Two-pane layout */
+.app-body {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  min-height: 800px;
+}
+@media(max-width:900px) {
+  .app-body { grid-template-columns: 1fr; }
+}
+
+.pane-left {
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 900px;
+}
+.pane-right {
+  padding: 20px;
+  background: rgba(0,0,0,0.15);
+  position: relative;
+}
+@media(max-width:900px) {
+  .pane-left { border-right: none; border-bottom: 1px solid var(--border); max-height: none; }
+}
+
+/* Sections inside left pane */
+.sec {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.sec-period1 { border-left: 3px solid var(--primary); }
+.sec-period2 { border-left: 3px solid var(--violet); }
+.sec-title {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sec-title-text { display: flex; align-items: center; gap: 8px; }
+.sec-icon { font-size: 1rem; }
+.sec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media(max-width:600px) {
+  .sec-grid { grid-template-columns: 1fr; }
+}
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+.field-input, .field-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--fg);
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+}
+.field-input:focus, .field-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(52,211,153,0.15);
+}
+.field-input-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+  padding: 12px 16px;
+}
+.field-select { cursor: pointer; appearance: none; }
+
+/* Parcela list */
+.parcela-list { margin-top: 10px; }
+.parcela-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+}
+.parcela-valor {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--fg);
+}
+.parcela-label { color: var(--muted); font-size: 0.75rem; margin-left: 8px; }
+.parcela-remove {
+  color: var(--destructive);
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  background: none;
+  border: none;
+  transition: opacity 0.15s;
+}
+.parcela-remove:hover { opacity: 1; }
+.parcela-total {
+  text-align: right;
+  padding: 8px 12px 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.parcela-total strong {
+  color: var(--fg);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Toggle switch */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-info { flex: 1; }
+.toggle-label { font-weight: 600; font-size: 0.84rem; color: var(--fg); }
+.toggle-desc { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.toggle-extra { margin-top: 8px; display: flex; gap: 10px; align-items: center; }
+.toggle-extra .field { flex: 0 0 auto; }
+.toggle-extra .field-input,
+.toggle-extra .field-select {
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  width: auto;
+  min-width: 80px;
+}
+
+.switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--border);
+  border-radius: 22px;
+  transition: 0.2s;
+}
+.switch-slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--fg);
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.switch input:checked + .switch-slider { background: var(--primary); }
+.switch input:checked + .switch-slider::before { transform: translateX(18px); }
+
+/* Add period btn */
+.add-period-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+}
+.add-period-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(52,211,153,0.04);
+}
+
+/* --- RIGHT PANE (Result) --- */
+.result-alert {
+  background: rgba(14,165,233,0.08);
+  border: 1px solid rgba(14,165,233,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: var(--info);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.result-alert-icon { font-size: 1rem; flex-shrink: 0; }
+
+.result-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+.result-table th {
+  background: var(--surface);
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+.result-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(58,53,48,0.5);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.73rem;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.result-table tr:hover td { background: rgba(255,255,255,0.02); }
+.result-table .desc-cell { font-family: 'Inter', sans-serif; color: var(--muted); }
+
+.consolidado {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.consolidado-title {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.consolidado-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 0.82rem;
+}
+.consolidado-row .label { color: var(--muted); }
+.consolidado-row .value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--fg);
+}
+.consolidado-row.sub { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; }
+.consolidado-total {
+  background: rgba(52,211,153,0.08);
+  border: 1px solid rgba(52,211,153,0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.consolidado-total .label {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--fg);
+}
+.consolidado-total .value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.params-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.params-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.params-row {
+  display: flex;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: 0.78rem;
+}
+.params-row .pk { color: var(--muted); min-width: 140px; flex-shrink: 0; }
+.params-row .pv { color: var(--fg); font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; }
+
+.indices-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.indice-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 0.78rem;
+}
+.indice-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+.indice-name { color: var(--fg); }
+.indice-meta { color: var(--muted); font-size: 0.72rem; }
+
+.result-footer {
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.result-footer a { color: var(--primary); text-decoration: none; }
+.result-footer a:hover { text-decoration: underline; }
+
+.btn-group-vert { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.badge-soon {
+  font-size: 0.6rem;
+  background: rgba(167,139,250,0.12);
+  color: var(--violet);
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+/* ======================================================= */
+/* PARTE 2 — PENDENCIAS                                    */
+/* ======================================================= */
+
+.section { margin: 32px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.pend-table-wrap { overflow-x: auto; }
+.pend-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.pend-table th {
+  background: var(--surface);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.pend-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+  vertical-align: top;
+}
+.pend-table tr:hover td { background: rgba(255,255,255,0.02); }
+.pend-table .check-col { width: 36px; text-align: center; }
+.pend-table input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.pend-table .code-ref {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--primary);
+  background: rgba(52,211,153,0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.complexity-alta { color: var(--destructive); font-weight: 700; font-size: 0.75rem; }
+.complexity-media { color: var(--warning); font-weight: 600; font-size: 0.75rem; }
+.complexity-baixa { color: var(--success); font-weight: 600; font-size: 0.75rem; }
+.tipo-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tipo-refatoracao { background: rgba(167,139,250,0.12); color: var(--violet); }
+.tipo-remocao { background: rgba(239,68,68,0.1); color: var(--destructive); }
+.tipo-feature { background: rgba(52,211,153,0.12); color: var(--primary); }
+.tipo-label { background: rgba(168,162,158,0.15); color: var(--muted); }
+.tipo-schema { background: rgba(245,158,11,0.12); color: var(--warning); }
+.tipo-rename { background: rgba(14,165,233,0.1); color: var(--info); }
+.tipo-backend { background: rgba(124,109,255,0.12); color: var(--accent); }
+.tipo-pdf { background: rgba(255,107,107,0.1); color: #ff6b6b; }
+
+.code-block {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  color: var(--primary);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+  margin: 12px 0;
+}
+.code-comment { color: var(--muted); }
+
+/* Estimativa */
+.estimativa-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 12px;
+}
+.estimativa-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(58,53,48,0.4);
+}
+.estimativa-row:last-child { border-bottom: none; }
+.estimativa-num {
+  background: var(--primary);
+  color: var(--primary-fg);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.estimativa-text { font-size: 0.82rem; color: var(--fg); }
+.estimativa-items { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+.estimativa-total {
+  text-align: center;
+  padding: 14px;
+  margin-top: 16px;
+  background: rgba(52,211,153,0.06);
+  border: 1px solid rgba(52,211,153,0.15);
+  border-radius: 10px;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--primary);
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 24px 0;
+}
+@media(max-width:768px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:480px) { .stats-grid { grid-template-columns: 1fr; } }
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.stat-value.val-warning { color: var(--warning); }
+.stat-value.val-info { color: var(--info); }
+.stat-value.val-violet { color: var(--violet); }
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Nice to have table */
+.nice-table { width: 100%; border-collapse: collapse; }
+.nice-table th {
+  background: var(--surface);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+.nice-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+
+/* Footer */
+.page-footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* Print */
+@media print {
+  body { background: #fff; color: #111; }
+  .preview-frame { page-break-inside: avoid; }
+  .pend-table td, .pend-table th { font-size: 0.7rem; padding: 6px 8px; }
+  .switch { display: none; }
+}
+
+/* Textarea */
+.field-textarea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--fg);
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  min-height: 60px;
+  resize: vertical;
+}
+.field-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(52,211,153,0.15);
+}
+</style>
+</head>
+<body>
+
+<div class="page-container">
+
+<!-- TOC -->
+<nav class="toc" id="toc">
+  <div class="toc-title">Indice</div>
+  <a href="#preview">1. Preview do Frontend</a>
+  <a href="#preview-header">Header</a>
+  <a href="#preview-left">Painel Esquerdo</a>
+  <a href="#preview-right">Painel Direito</a>
+  <div class="toc-sep"></div>
+  <a href="#pendencias">2. Pendencias</a>
+  <a href="#p0">P0 Obrigatorias</a>
+  <a href="#p1">P1 Importantes</a>
+  <a href="#p2">P2 Nice to Have</a>
+  <a href="#schema">Schema Changes</a>
+  <a href="#estimativa">Estimativa C-Prompts</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-emoji">&#9878;</span>
+  <h1 class="gradient-text">Calculadora Judicial v2</h1>
+  <p class="hero-sub">Preview do novo frontend + roadmap de implementacao</p>
+  <div class="badges">
+    <span class="badge badge-primary">MdFlow v5</span>
+    <span class="badge badge-info">Warm Charcoal DS</span>
+    <span class="badge badge-warning">20 Pendencias</span>
+    <span class="badge badge-violet">6 C-Prompts</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-value">20</div>
+    <div class="stat-label">Pendencias totais</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value val-warning">12</div>
+    <div class="stat-label">P0 obrigatorias</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value val-info">5</div>
+    <div class="stat-label">P1 importantes</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value val-violet">6</div>
+    <div class="stat-label">C-Prompts estimados</div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- PARTE 1: PREVIEW                           -->
+<!-- ========================================== -->
+<div class="part-divider" id="preview">
+  <span class="part-number">PARTE 1</span>
+  <h2>Preview do Novo Frontend</h2>
+  <p>Layout two-pane, scroll vertical unico, sem abas</p>
+</div>
+
+<div class="preview-frame">
+  <!-- Browser toolbar -->
+  <div class="preview-toolbar">
+    <span class="preview-dot preview-dot-r"></span>
+    <span class="preview-dot preview-dot-y"></span>
+    <span class="preview-dot preview-dot-g"></span>
+    <span class="preview-url">app.mdflow.com.br/calculos/novo</span>
+  </div>
+
+  <!-- App Header -->
+  <div class="app-header" id="preview-header">
+    <div class="app-header-left">
+      <div class="app-header-icon">&#9878;</div>
+      <span class="app-header-title">Calculadora Judicial</span>
+      <span class="app-header-badge">Rascunho</span>
+    </div>
+    <div class="app-header-fields">
+      <div class="app-header-field">
+        <label>N. do processo</label>
+        <input type="text" value="5001234-56.2022.8.21.0001" readonly>
+      </div>
+      <div class="app-header-field">
+        <label>Data</label>
+        <input type="date" value="2026-03-31" readonly>
+      </div>
+    </div>
+    <div class="app-header-actions">
+      <button class="btn btn-outline btn-sm">Salvar</button>
+      <button class="btn btn-primary btn-sm">Exportar PDF</button>
+    </div>
+  </div>
+
+  <!-- Two-pane body -->
+  <div class="app-body">
+    <!-- LEFT PANE -->
+    <div class="pane-left" id="preview-left">
+
+      <!-- Secao 1: Valor Principal -->
+      <div class="sec">
+        <div class="sec-title">
+          <span class="sec-title-text"><span class="sec-icon">&#128176;</span> Valor Principal</span>
+        </div>
+        <div class="field">
+          <label class="field-label">Valor a ser atualizado</label>
+          <input class="field-input field-input-mono" type="text" value="R$ 15.000,00" readonly>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:10px;" onclick="document.getElementById('parcela-extra').style.display = document.getElementById('parcela-extra').style.display === 'none' ? 'block' : 'none'">+ Adicionar parcela</button>
+
+        <div class="parcela-list" id="parcela-extra">
+          <div class="parcela-item">
+            <div>
+              <span class="parcela-valor">R$ 15.000,00</span>
+              <span class="parcela-label">(parcela 1)</span>
+            </div>
+            <button class="parcela-remove" onclick="this.parentElement.style.opacity='0.3'">&#10005;</button>
+          </div>
+          <div class="parcela-item">
+            <div>
+              <span class="parcela-valor">R$ 8.500,00</span>
+              <span class="parcela-label">(parcela 2)</span>
+            </div>
+            <button class="parcela-remove" onclick="this.parentElement.style.opacity='0.3'">&#10005;</button>
+          </div>
+          <div class="parcela-total">Total: <strong>R$ 23.500,00</strong></div>
+        </div>
+      </div>
+
+      <!-- Secao 2: Periodo 1 -->
+      <div class="sec sec-period1">
+        <div class="sec-title">
+          <span class="sec-title-text"><span class="sec-icon">&#128197;</span> Periodo 1</span>
+          <button class="btn btn-ghost btn-sm" style="color:var(--destructive);opacity:0.6;">Remover</button>
+        </div>
+        <div class="sec-grid">
+          <div class="field">
+            <label class="field-label">Correcao monetaria</label>
+            <select class="field-select">
+              <option selected>IPCA (IBGE)</option>
+              <option>IPCA-E</option>
+              <option>INPC</option>
+              <option>IGP-M</option>
+              <option>TR</option>
+              <option>SELIC</option>
+              <option>Sem correcao</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Pro-rata</label>
+            <select class="field-select">
+              <option selected>Mes comercial (30 dias)</option>
+              <option>Dias corridos</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Data inicial da correcao</label>
+            <input class="field-input" type="date" value="2022-03-15">
+          </div>
+          <div class="field">
+            <label class="field-label">Data final da correcao</label>
+            <input class="field-input" type="date" value="2026-03-31">
+          </div>
+          <div class="field">
+            <label class="field-label">Tipo de juros</label>
+            <select class="field-select">
+              <option selected>1% a.m. simples</option>
+              <option>1% a.m. composto</option>
+              <option>SELIC pura</option>
+              <option>Taxa legal (Lei 14.905)</option>
+              <option>Taxa fixa personalizada</option>
+              <option>Sem juros</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Juros incidem sobre</label>
+            <select class="field-select">
+              <option>Principal original</option>
+              <option selected>Principal corrigido</option>
+              <option>Saldo atualizado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Data inicial dos juros</label>
+            <input class="field-input" type="date" value="2020-12-20">
+          </div>
+          <div class="field">
+            <label class="field-label">Data final dos juros</label>
+            <input class="field-input" type="date" value="2026-03-31">
+          </div>
+        </div>
+      </div>
+
+      <!-- Add period button -->
+      <button class="add-period-btn" onclick="document.getElementById('periodo2').style.display = document.getElementById('periodo2').style.display === 'none' ? 'block' : 'none'">+ Adicionar Periodo</button>
+
+      <!-- Secao 3: Periodo 2 -->
+      <div class="sec sec-period2" id="periodo2">
+        <div class="sec-title">
+          <span class="sec-title-text"><span class="sec-icon">&#128197;</span> Periodo 2</span>
+          <button class="btn btn-ghost btn-sm" style="color:var(--destructive);opacity:0.6;">Remover</button>
+        </div>
+        <div class="sec-grid">
+          <div class="field">
+            <label class="field-label">Correcao monetaria</label>
+            <select class="field-select">
+              <option>IPCA (IBGE)</option>
+              <option>IPCA-E</option>
+              <option>INPC</option>
+              <option>IGP-M</option>
+              <option>TR</option>
+              <option>SELIC</option>
+              <option selected>Sem correcao separada</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Pro-rata</label>
+            <select class="field-select">
+              <option selected>Mes comercial (30 dias)</option>
+              <option>Dias corridos</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Data inicial da correcao</label>
+            <input class="field-input" type="date" value="2024-08-30">
+          </div>
+          <div class="field">
+            <label class="field-label">Data final da correcao</label>
+            <input class="field-input" type="date" value="2026-03-31">
+          </div>
+          <div class="field">
+            <label class="field-label">Tipo de juros</label>
+            <select class="field-select">
+              <option>1% a.m. simples</option>
+              <option>1% a.m. composto</option>
+              <option selected>SELIC pura (Lei 14.905/2024)</option>
+              <option>Taxa legal (Lei 14.905)</option>
+              <option>Taxa fixa personalizada</option>
+              <option>Sem juros</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Juros incidem sobre</label>
+            <select class="field-select">
+              <option>Principal original</option>
+              <option selected>Saldo atualizado</option>
+              <option>Principal corrigido</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Data inicial dos juros</label>
+            <input class="field-input" type="date" value="2024-08-30">
+          </div>
+          <div class="field">
+            <label class="field-label">Data final dos juros</label>
+            <input class="field-input" type="date" value="2026-03-31">
+          </div>
+        </div>
+      </div>
+
+      <!-- Secao 4: Encargos -->
+      <div class="sec" id="encargos-sec">
+        <div class="sec-title">
+          <span class="sec-title-text"><span class="sec-icon">&#128203;</span> Encargos</span>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-label">Multa art. 523 CPC</div>
+            <div class="toggle-desc">10% sobre saldo devedor</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked onchange="toggleEncargo('multa523', this.checked)">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-label">Honorarios de execucao</div>
+            <div class="toggle-desc">10% sobre saldo devedor</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked onchange="toggleEncargo('honExec', this.checked)">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row" id="hon-adv-row">
+          <div class="toggle-info">
+            <div class="toggle-label">Honorarios advocaticios</div>
+            <div class="toggle-desc">Percentual sobre base escolhida</div>
+            <div class="toggle-extra" id="hon-adv-extra" style="display:none;">
+              <div class="field">
+                <label class="field-label">Taxa %</label>
+                <input class="field-input" type="text" value="20" style="width:60px;text-align:center;">
+              </div>
+              <div class="field">
+                <label class="field-label">Base</label>
+                <select class="field-select" style="min-width:160px;">
+                  <option>Valor da causa</option>
+                  <option selected>Condenacao</option>
+                  <option>Proveito economico</option>
+                  <option>Saldo devedor</option>
+                  <option>Valor fixo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" onchange="toggleHonAdv(this.checked)">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Secao 5: Observacoes -->
+      <div class="sec">
+        <div class="sec-title">
+          <span class="sec-title-text"><span class="sec-icon">&#128221;</span> Observacoes / Notas</span>
+          <span style="color:var(--muted);font-size:0.72rem;font-weight:400;">(opcional)</span>
+        </div>
+        <textarea class="field-textarea" placeholder="Observacoes sobre o calculo..."></textarea>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANE -->
+    <div class="pane-right" id="preview-right">
+
+      <!-- Alert -->
+      <div class="result-alert">
+        <span class="result-alert-icon">&#9432;</span>
+        <span>Lei 14.905/2024 aplicada — juros legais atualizados a partir de 30/08/2024</span>
+      </div>
+
+      <!-- Demonstrativo table -->
+      <div style="margin-bottom:4px;">
+        <span class="params-title">Demonstrativo de calculo</span>
+      </div>
+      <div class="result-table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Descricao</th>
+              <th>Valor Nom.</th>
+              <th>Fator</th>
+              <th>Val. Corrigido</th>
+              <th>Juros</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>15/03/2022</td>
+              <td class="desc-cell">Valor principal</td>
+              <td>R$ 23.500,00</td>
+              <td style="color:var(--muted);">—</td>
+              <td style="color:var(--muted);">—</td>
+              <td style="color:var(--muted);">—</td>
+              <td>R$ 23.500,00</td>
+            </tr>
+            <tr>
+              <td style="color:var(--muted);">—</td>
+              <td class="desc-cell">Correcao IPCA (P1)</td>
+              <td style="color:var(--muted);">—</td>
+              <td style="color:var(--primary);">1,1400</td>
+              <td>R$ 26.790,00</td>
+              <td style="color:var(--muted);">—</td>
+              <td>R$ 26.790,00</td>
+            </tr>
+            <tr>
+              <td style="color:var(--muted);">—</td>
+              <td class="desc-cell">Juros 1% a.m. simples (P1)</td>
+              <td style="color:var(--muted);">—</td>
+              <td style="color:var(--muted);">—</td>
+              <td style="color:var(--muted);">—</td>
+              <td style="color:var(--warning);">R$ 9.413,50</td>
+              <td>R$ 36.203,50</td>
+            </tr>
+            <tr>
+              <td>30/08/2024</td>
+              <td class="desc-cell">Juros SELIC pura (P2)</td>
+              <td style="color:var(--muted);">—</td>
+              <td style="color:var(--primary);">1,1898</td>
+              <td style="color:var(--muted);">—</td>
+              <td style="color:var(--warning);">R$ 6.587,15</td>
+              <td>R$ 42.790,65</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Consolidado -->
+      <div class="consolidado">
+        <div class="consolidado-title">Consolidado</div>
+        <div class="consolidado-row">
+          <span class="label">Divida original</span>
+          <span class="value">R$ 23.500,00</span>
+        </div>
+        <div class="consolidado-row">
+          <span class="label">(+) Correcao monetaria</span>
+          <span class="value">R$ 3.290,00</span>
+        </div>
+        <div class="consolidado-row">
+          <span class="label">(+) Juros moratorios</span>
+          <span class="value">R$ 15.000,65</span>
+        </div>
+        <div class="consolidado-row sub">
+          <span class="label">(=) Subtotal</span>
+          <span class="value">R$ 41.790,65</span>
+        </div>
+        <div class="consolidado-row">
+          <span class="label">(-) Pagamentos</span>
+          <span class="value" style="color:var(--muted);">R$ 0,00</span>
+        </div>
+        <div class="consolidado-row sub">
+          <span class="label">(=) Saldo devedor</span>
+          <span class="value">R$ 41.790,65</span>
+        </div>
+        <div class="consolidado-row" id="row-multa523">
+          <span class="label">(+) Multa 523 (10%)</span>
+          <span class="value">R$ 4.179,07</span>
+        </div>
+        <div class="consolidado-row" id="row-honExec">
+          <span class="label">(+) Hon. execucao (10%)</span>
+          <span class="value">R$ 4.179,07</span>
+        </div>
+        <div class="consolidado-total" id="total-box">
+          <span class="label">TOTAL A PAGAR</span>
+          <span class="value" id="total-value">R$ 50.148,79</span>
+        </div>
+      </div>
+
+      <!-- Parametros -->
+      <div class="params-card">
+        <div class="params-title">Parametros do calculo</div>
+        <div class="params-row">
+          <span class="pk">Indice correcao:</span>
+          <span class="pv">IPCA (IBGE) — Serie 433 BCB/SGS</span>
+        </div>
+        <div class="params-row">
+          <span class="pk">Juros:</span>
+          <span class="pv">1% a.m., simples, desde 20/12/2020</span>
+        </div>
+        <div class="params-row">
+          <span class="pk">Lei aplicada:</span>
+          <span class="pv">Art. 406 CC c/c Lei 14.905/2024</span>
+        </div>
+        <div class="params-row">
+          <span class="pk">Data-base:</span>
+          <span class="pv">01/04/2026</span>
+        </div>
+      </div>
+
+      <!-- Indices -->
+      <div class="indices-card">
+        <div class="params-title">Indices utilizados</div>
+        <div class="indice-row">
+          <span class="indice-dot"></span>
+          <span class="indice-name">IPCA (IBGE) — Serie 433 BCB SGS</span>
+          <span class="indice-meta">Atualizado em 15/03/2026</span>
+        </div>
+        <div class="indice-row">
+          <span class="indice-dot" style="background:var(--info);"></span>
+          <span class="indice-name">SELIC (BCB) — Serie 4390 BCB SGS</span>
+          <span class="indice-meta">Atualizado em 01/04/2026</span>
+        </div>
+      </div>
+
+      <!-- Export buttons -->
+      <div class="btn-group-vert">
+        <button class="btn btn-primary btn-full">Exportar PDF</button>
+        <button class="btn btn-outline btn-full btn-disabled">Exportar Excel <span class="badge-soon">Em breve</span></button>
+      </div>
+
+      <!-- Footer -->
+      <div class="result-footer">
+        Calculo gerado por MdFlow | <a href="#">mdflow.com.br/verify/abc123</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- PARTE 2: PENDENCIAS                        -->
+<!-- ========================================== -->
+<div class="part-divider" id="pendencias">
+  <span class="part-number">PARTE 2</span>
+  <h2>Pendencias de Implementacao</h2>
+  <p>Roadmap completo de mudancas necessarias no codigo</p>
+</div>
+
+<!-- P0 -->
+<div class="section" id="p0">
+  <div class="section-header">
+    <span class="section-icon">&#128308;</span>
+    <h2>P0 — Obrigatorias (quebram UX atual)</h2>
+  </div>
+  <div class="pend-table-wrap">
+    <table class="pend-table">
+      <thead>
+        <tr>
+          <th class="check-col"></th>
+          <th>#</th>
+          <th>Mudanca</th>
+          <th>Arquivo(s)</th>
+          <th>Complex.</th>
+          <th>Tipo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>1</td>
+          <td>Eliminar sistema de abas — tudo scroll vertical</td>
+          <td><span class="code-ref">pages/calculo/index.tsx</span></td>
+          <td><span class="complexity-alta">ALTA</span></td>
+          <td><span class="tipo-badge tipo-refatoracao">Refatoracao UI</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>2</td>
+          <td>Remover campo "Descricao" do header</td>
+          <td><span class="code-ref">CalculoHeader.tsx</span></td>
+          <td><span class="complexity-baixa">BAIXA</span></td>
+          <td><span class="tipo-badge tipo-remocao">Remocao</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>3</td>
+          <td>Remover campo "Tipo" do header</td>
+          <td><span class="code-ref">CalculoHeader.tsx</span></td>
+          <td><span class="complexity-baixa">BAIXA</span></td>
+          <td><span class="tipo-badge tipo-remocao">Remocao</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>4</td>
+          <td>Adicionar campo "N. do processo" (input CNJ) no header</td>
+          <td><span class="code-ref">CalculoHeader.tsx</span> + busca no banco</td>
+          <td><span class="complexity-media">MEDIA</span></td>
+          <td><span class="tipo-badge tipo-feature">Nova feature</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>5</td>
+          <td>Renomear "Data base" para "Data"</td>
+          <td><span class="code-ref">CalculoHeader.tsx</span></td>
+          <td><span class="complexity-baixa">BAIXA</span></td>
+          <td><span class="tipo-badge tipo-label">Label</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>6</td>
+          <td>Simplificar parcelas — so valor principal (sem descricao, sem data)</td>
+          <td><span class="code-ref">CalculoParcelas.tsx</span></td>
+          <td><span class="complexity-media">MEDIA</span></td>
+          <td><span class="tipo-badge tipo-refatoracao">Refatoracao</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>7</td>
+          <td>Separar data correcao e data juros nos periodos</td>
+          <td><span class="code-ref">CalculoPeriodos.tsx</span> + <span class="code-ref">calculo_types.ts</span> + banco</td>
+          <td><span class="complexity-alta">ALTA</span></td>
+          <td><span class="tipo-badge tipo-schema">Schema change</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>8</td>
+          <td>Renomear "Honorarios contratuais" para "Honorarios advocaticios"</td>
+          <td><span class="code-ref">CalculoAdicionais.tsx</span> + banco</td>
+          <td><span class="complexity-baixa">BAIXA</span></td>
+          <td><span class="tipo-badge tipo-rename">Rename</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>9</td>
+          <td>Remover astreinte e multa contratual dos encargos</td>
+          <td><span class="code-ref">CalculoAdicionais.tsx</span> + <span class="code-ref">estado_inicial.ts</span></td>
+          <td><span class="complexity-baixa">BAIXA</span></td>
+          <td><span class="tipo-badge tipo-remocao">Remocao</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>10</td>
+          <td>Remover tab/secao Marcos</td>
+          <td><span class="code-ref">index.tsx</span> + <span class="code-ref">CalculoMarcos.tsx</span></td>
+          <td><span class="complexity-baixa">BAIXA</span></td>
+          <td><span class="tipo-badge tipo-remocao">Remocao</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>11</td>
+          <td>Output estilo DrCalc — tabela detalhada com fator, dias, valor corrigido</td>
+          <td><span class="code-ref">CalculoResultadoPane.tsx</span></td>
+          <td><span class="complexity-alta">ALTA</span></td>
+          <td><span class="tipo-badge tipo-refatoracao">Refatoracao</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>12</td>
+          <td>Parametros do calculo no resultado (como DrCalc)</td>
+          <td><span class="code-ref">CalculoResultadoPane.tsx</span></td>
+          <td><span class="complexity-media">MEDIA</span></td>
+          <td><span class="tipo-badge tipo-feature">Nova secao</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- P1 -->
+<div class="section" id="p1">
+  <div class="section-header">
+    <span class="section-icon">&#128992;</span>
+    <h2>P1 — Importantes</h2>
+  </div>
+  <div class="pend-table-wrap">
+    <table class="pend-table">
+      <thead>
+        <tr>
+          <th class="check-col"></th>
+          <th>#</th>
+          <th>Mudanca</th>
+          <th>Arquivo(s)</th>
+          <th>Complex.</th>
+          <th>Tipo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>13</td>
+          <td>Popular indices INPC, IGPM, TR, IPCA-E no banco</td>
+          <td>Cron BCB API via n8n</td>
+          <td><span class="complexity-media">MEDIA</span></td>
+          <td><span class="tipo-badge tipo-backend">Backend</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>14</td>
+          <td>PDF estilo "Planilha de Debitos Judiciais" aceita por juizes</td>
+          <td><span class="code-ref">CalculoPdfDocument.tsx</span></td>
+          <td><span class="complexity-alta">ALTA</span></td>
+          <td><span class="tipo-badge tipo-pdf">Refatoracao PDF</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>15</td>
+          <td>Link de autenticidade no rodape do PDF</td>
+          <td><span class="code-ref">CalculoPdfDocument.tsx</span> + tabela hash</td>
+          <td><span class="complexity-media">MEDIA</span></td>
+          <td><span class="tipo-badge tipo-feature">Nova feature</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>16</td>
+          <td>Mais tipos de juros no select (SELIC-IPCA, taxa legal 14.905, etc.)</td>
+          <td><span class="code-ref">CalculoPeriodos.tsx</span> + <span class="code-ref">juros.ts</span></td>
+          <td><span class="complexity-media">MEDIA</span></td>
+          <td><span class="tipo-badge tipo-feature">Feature</span></td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>17</td>
+          <td>Exportacao Excel</td>
+          <td>Webhook n8n</td>
+          <td><span class="complexity-media">MEDIA</span></td>
+          <td><span class="tipo-badge tipo-feature">Nova feature</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- P2 -->
+<div class="section" id="p2">
+  <div class="section-header">
+    <span class="section-icon">&#128309;</span>
+    <h2>P2 — Nice to Have</h2>
+  </div>
+  <div class="pend-table-wrap">
+    <table class="nice-table">
+      <thead>
+        <tr>
+          <th class="check-col" style="width:36px;"></th>
+          <th>#</th>
+          <th>Mudanca</th>
+          <th>Detalhes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>18</td>
+          <td>Multiplos layouts de impressao (como DrCalc tem 2 modelos)</td>
+          <td style="color:var(--muted);">Futuro</td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>19</td>
+          <td>Auto-preenchimento com IA do titulo executivo</td>
+          <td style="color:var(--muted);">Fase 2</td>
+        </tr>
+        <tr>
+          <td class="check-col"><input type="checkbox"></td>
+          <td>20</td>
+          <td>Centenas de indices como DrCalc</td>
+          <td style="color:var(--muted);">Importar todos do BCB SGS</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Schema Changes -->
+<div class="section" id="schema">
+  <div class="section-header">
+    <span class="section-icon">&#128450;</span>
+    <h2>Schema Changes Necessarias</h2>
+  </div>
+  <div class="code-block"><span class="code-comment">-- Separar data de correcao e data de juros (hoje sao iguais)</span>
+ALTER TABLE calculo_periodos ADD COLUMN juros_data_inicial DATE;
+ALTER TABLE calculo_periodos ADD COLUMN juros_data_final DATE;
+
+<span class="code-comment">-- Renomear honorarios_contratuais -> honorarios_advocaticios
+-- (manter o antigo como alias temporariamente)</span>
+ALTER TABLE calculo_adicionais
+  RENAME COLUMN honorarios_contratuais TO honorarios_advocaticios;
+
+<span class="code-comment">-- Adicionar campo processo_numero ao calculo</span>
+ALTER TABLE calculos ADD COLUMN processo_numero TEXT;
+
+<span class="code-comment">-- Remover campos nao mais usados</span>
+ALTER TABLE calculo_adicionais DROP COLUMN IF EXISTS astreinte_valor;
+ALTER TABLE calculo_adicionais DROP COLUMN IF EXISTS multa_contratual_valor;</div>
+</div>
+
+<!-- Estimativa C-Prompts -->
+<div class="section" id="estimativa">
+  <div class="section-header">
+    <span class="section-icon">&#9889;</span>
+    <h2>Estimativa de C-Prompts</h2>
+  </div>
+  <div class="estimativa-card">
+    <div class="estimativa-row">
+      <span class="estimativa-num">C-1</span>
+      <div>
+        <div class="estimativa-text">Refatoracao UI — eliminar abas, scroll vertical, simplificar header</div>
+        <div class="estimativa-items">Itens 1, 2, 3, 4, 5, 6, 10</div>
+      </div>
+    </div>
+    <div class="estimativa-row">
+      <span class="estimativa-num">C-2</span>
+      <div>
+        <div class="estimativa-text">Periodos — separar datas correcao/juros, mais tipos de juros</div>
+        <div class="estimativa-items">Itens 7, 16</div>
+      </div>
+    </div>
+    <div class="estimativa-row">
+      <span class="estimativa-num">C-3</span>
+      <div>
+        <div class="estimativa-text">Encargos — renomear + remover itens desnecessarios</div>
+        <div class="estimativa-items">Itens 8, 9</div>
+      </div>
+    </div>
+    <div class="estimativa-row">
+      <span class="estimativa-num">C-4</span>
+      <div>
+        <div class="estimativa-text">Resultado — output estilo DrCalc + parametros</div>
+        <div class="estimativa-items">Itens 11, 12</div>
+      </div>
+    </div>
+    <div class="estimativa-row">
+      <span class="estimativa-num">C-5</span>
+      <div>
+        <div class="estimativa-text">PDF — planilha judicial + link autenticidade</div>
+        <div class="estimativa-items">Itens 14, 15</div>
+      </div>
+    </div>
+    <div class="estimativa-row">
+      <span class="estimativa-num">C-6</span>
+      <div>
+        <div class="estimativa-text">Backend — popular indices + export Excel</div>
+        <div class="estimativa-items">Itens 13, 17</div>
+      </div>
+    </div>
+    <div class="estimativa-total">Total: 6 C-Prompts | ~2-3 sessoes</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  Jarbas 2.0 — MdLab LegalTech | 31/03/2026
+</div>
+
+</div><!-- .page-container -->
+
+<script>
+// Toggle encargos
+function toggleEncargo(type, enabled) {
+  var row = document.getElementById('row-' + type);
+  if (row) {
+    row.style.opacity = enabled ? '1' : '0.3';
+    row.style.textDecoration = enabled ? 'none' : 'line-through';
+  }
+  recalcTotal();
+}
+
+function toggleHonAdv(enabled) {
+  var extra = document.getElementById('hon-adv-extra');
+  if (extra) extra.style.display = enabled ? 'flex' : 'none';
+  recalcTotal();
+}
+
+function recalcTotal() {
+  var base = 41790.65;
+  var multa = document.querySelector('#row-multa523');
+  var honExec = document.querySelector('#row-honExec');
+  var total = base;
+
+  if (multa && multa.style.opacity !== '0.3') total += 4179.07;
+  if (honExec && honExec.style.opacity !== '0.3') total += 4179.07;
+
+  // hon adv
+  var honAdvSwitch = document.querySelector('#hon-adv-row input[type=checkbox]');
+  if (honAdvSwitch && honAdvSwitch.checked) {
+    // 20% of condenacao (base)
+    total += base * 0.20;
+  }
+
+  var el = document.getElementById('total-value');
+  if (el) {
+    el.textContent = 'R$ ' + total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+}
+</script>
+</body>
+</html>
