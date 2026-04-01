@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controller V5 — Plano de Implementação</title>
+<style>
+  :root {
+    --bg: #12100e;
+    --card: #1a1714;
+    --surface: #211e1a;
+    --border: #3a3530;
+    --border-light: #2e2b27;
+    --text: #f2efe8;
+    --muted: #9e978a;
+    --primary: #20c997;
+    --primary-dim: rgba(32,201,151,0.12);
+    --primary-border: rgba(32,201,151,0.3);
+    --destructive: #ef4444;
+    --destructive-dim: rgba(239,68,68,0.12);
+    --warning: #f59e0b;
+    --warning-dim: rgba(245,158,11,0.12);
+    --success: #22c55e;
+    --success-dim: rgba(34,197,94,0.12);
+    --info: #0ea5e9;
+    --info-dim: rgba(14,165,233,0.12);
+    --violet: #8b5cf6;
+    --violet-dim: rgba(139,92,246,0.12);
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+    --rose-dim: rgba(244,63,94,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+  code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .container { max-width: 1400px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .header-left h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .header-left p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .header-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .badge-primary { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary-border); }
+  .badge-warning { background: var(--warning-dim); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-info { background: var(--info-dim); color: var(--info); border: 1px solid rgba(14,165,233,0.3); }
+  .badge-destructive { background: var(--destructive-dim); color: var(--destructive); border: 1px solid rgba(239,68,68,0.3); }
+  .badge-success { background: var(--success-dim); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-violet { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(139,92,246,0.3); }
+  .badge-muted { background: rgba(158,151,138,0.12); color: var(--muted); border: 1px solid rgba(158,151,138,0.2); }
+  .badge-rose { background: var(--rose-dim); color: var(--rose); border: 1px solid rgba(244,63,94,0.3); }
+
+  /* KPI Row */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .kpi-card .kpi-number {
+    font-family: 'Manrope', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .kpi-card .kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  .kpi-primary .kpi-number { color: var(--primary); }
+  .kpi-warning .kpi-number { color: var(--warning); }
+  .kpi-destructive .kpi-number { color: var(--destructive); }
+  .kpi-success .kpi-number { color: var(--success); }
+  .kpi-violet .kpi-number { color: var(--violet); }
+  .kpi-info .kpi-number { color: var(--info); }
+  .kpi-rose .kpi-number { color: var(--rose); }
+  .kpi-muted .kpi-number { color: var(--muted); }
+
+  /* Section */
+  .section {
+    margin-bottom: 28px;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title span { color: var(--muted); font-weight: 400; font-size: 13px; }
+
+  /* Grid 2 col */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-header h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .card-body { padding: 16px 18px; }
+
+  /* Fase block */
+  .fase-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .fase-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .fase-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .fase-title {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .fase-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .fase-body { padding: 14px 18px; }
+
+  /* Task item */
+  .task-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 7px;
+    font-size: 13px;
+  }
+  .task-item:hover { border-color: var(--border); }
+  .task-priority {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    letter-spacing: 0.3px;
+  }
+  .p0 { background: rgba(239,68,68,0.2); color: #ef4444; }
+  .p1 { background: rgba(245,158,11,0.2); color: #f59e0b; }
+  .p2 { background: rgba(14,165,233,0.2); color: #0ea5e9; }
+  .p3 { background: rgba(139,92,246,0.2); color: #8b5cf6; }
+  .task-content { flex: 1; }
+  .task-title { font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .task-desc { color: var(--muted); font-size: 12px; line-height: 1.4; }
+  .task-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tag-new { background: var(--success-dim); color: var(--success); }
+  .tag-modify { background: var(--warning-dim); color: var(--warning); }
+  .tag-keep { background: var(--info-dim); color: var(--info); }
+  .tag-delete { background: var(--destructive-dim); color: var(--destructive); }
+  .tag-backend { background: var(--violet-dim); color: var(--violet); }
+
+  /* Files table */
+  .file-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .file-table th {
+    text-align: left;
+    padding: 8px 12px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .file-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text);
+    vertical-align: top;
+  }
+  .file-table tr:last-child td { border-bottom: none; }
+  .file-table tr:hover td { background: var(--surface); }
+  .file-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--primary); }
+  .file-lines { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  /* Premissas */
+  .premissa-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .premissa-number {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary-dim);
+    border: 1px solid var(--primary-border);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .premissa-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .premissa-impact { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* Leva timeline */
+  .leva-timeline { display: flex; flex-direction: column; gap: 0; }
+  .leva-item {
+    display: flex;
+    gap: 0;
+  }
+  .leva-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 36px;
+    flex-shrink: 0;
+  }
+  .leva-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .leva-connector {
+    width: 2px;
+    flex: 1;
+    background: var(--border);
+    min-height: 24px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+  .leva-content {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+  }
+  .leva-num {
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .leva-titulo {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .leva-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .leva-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* Comparison table */
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .comp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .comp-header {
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-before .comp-header { background: var(--destructive-dim); color: var(--destructive); }
+  .comp-after .comp-header { background: var(--success-dim); color: var(--success); }
+  .comp-list { list-style: none; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .comp-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .comp-list li::before { content: '•'; flex-shrink: 0; margin-top: 1px; font-size: 12px; }
+  .comp-before .comp-list li { color: rgba(242,239,232,0.7); }
+  .comp-before .comp-list li::before { color: var(--destructive); }
+  .comp-after .comp-list li { color: var(--text); }
+  .comp-after .comp-list li::before { color: var(--success); }
+
+  /* Checklist compliance */
+  .compliance-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .compliance-item {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .compliance-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .compliance-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* Alert */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    line-height: 1.5;
+  }
+  .alert-warning { background: var(--warning-dim); border: 1px solid rgba(245,158,11,0.3); color: #f2efe8; }
+  .alert-info { background: var(--info-dim); border: 1px solid rgba(14,165,233,0.3); color: #f2efe8; }
+  .alert-destructive { background: var(--destructive-dim); border: 1px solid rgba(239,68,68,0.3); color: #f2efe8; }
+  .alert-icon { flex-shrink: 0; margin-top: 1px; font-size: 15px; }
+
+  /* Footer */
+  .footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Priority summary */
+  .priority-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .pri-card {
+    background: var(--card);
+    border-radius: 9px;
+    padding: 14px;
+    text-align: center;
+  }
+  .pri-card .pri-num { font-family: 'Manrope', sans-serif; font-size: 28px; font-weight: 800; }
+  .pri-card .pri-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .pri-card .pri-desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .pri-p0 { border: 1px solid rgba(239,68,68,0.4); }
+  .pri-p0 .pri-num { color: #ef4444; }
+  .pri-p0 .pri-label { color: #ef4444; }
+  .pri-p1 { border: 1px solid rgba(245,158,11,0.4); }
+  .pri-p1 .pri-num { color: #f59e0b; }
+  .pri-p1 .pri-label { color: #f59e0b; }
+  .pri-p2 { border: 1px solid rgba(14,165,233,0.4); }
+  .pri-p2 .pri-num { color: #0ea5e9; }
+  .pri-p2 .pri-label { color: #0ea5e9; }
+  .pri-p3 { border: 1px solid rgba(139,92,246,0.4); }
+  .pri-p3 .pri-num { color: #8b5cf6; }
+  .pri-p3 .pri-label { color: #8b5cf6; }
+
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .comparison, .compliance-grid, .priority-summary { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    body { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>🎮 Controller V5 — Plano de Implementação</h1>
+      <p>Reconstrução completa da página <code>/controller</code> do MdFlow · PRD v2.0 FINAL · 01/04/2026</p>
+      <div class="header-badges">
+        <span class="badge badge-primary">20 seções no PRD</span>
+        <span class="badge badge-warning">15 diagramas Mermaid</span>
+        <span class="badge badge-info">~58 componentes mapeados</span>
+        <span class="badge badge-destructive">9 premissas invioláveis</span>
+        <span class="badge badge-violet">5 levas de implementação</span>
+        <span class="badge badge-success">Autores: Christian + João Victor + Jarbas 2.0</span>
+      </div>
+    </div>
+    <div style="text-align:right; flex-shrink:0;">
+      <div style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;">Gerado por</div>
+      <div style="font-size:14px; font-weight:700; color:var(--primary)">Beto / Claude Code</div>
+      <div style="font-size:11px; color:var(--muted);">01/04/2026</div>
+    </div>
+  </div>
+
+  <!-- KPIs DO PROJETO -->
+  <div class="kpi-row">
+    <div class="kpi-card kpi-primary"><div class="kpi-number">64</div><div class="kpi-label">Arquivos hoje</div></div>
+    <div class="kpi-card kpi-destructive"><div class="kpi-number">30</div><div class="kpi-label">Para deletar</div></div>
+    <div class="kpi-card kpi-warning"><div class="kpi-number">10</div><div class="kpi-label">Para modificar</div></div>
+    <div class="kpi-card kpi-success"><div class="kpi-number">2</div><div class="kpi-label">Criar do zero</div></div>
+    <div class="kpi-card kpi-info"><div class="kpi-number">22</div><div class="kpi-label">Keep intactos</div></div>
+    <div class="kpi-card kpi-violet"><div class="kpi-number">16.267</div><div class="kpi-label">Linhas atuais</div></div>
+    <div class="kpi-card kpi-rose"><div class="kpi-number">~6.700</div><div class="kpi-label">Linhas a deletar</div></div>
+    <div class="kpi-card kpi-muted"><div class="kpi-number">5</div><div class="kpi-label">Levas</div></div>
+  </div>
+
+  <!-- ALERTA CRÍTICO -->
+  <div class="alert alert-destructive">
+    <span class="alert-icon">🚨</span>
+    <div>
+      <strong>Descoberta crítica:</strong> O PRD referencia arquivos <code>ControllerV4*.tsx</code> como "MODIFY" mas eles <strong>NÃO EXISTEM</strong> no repositório. A codebase atual está em V3 (<code>ControllerV3*.tsx</code>). As tarefas de "MODIFY V4" serão tratadas como <strong>CREATE V5 baseado em V3</strong> — refazer do zero preservando lógica relevante.
+    </div>
+  </div>
+
+  <div class="alert alert-warning">
+    <span class="alert-icon">⚠️</span>
+    <div>
+      <strong>Antes de qualquer frontend:</strong> Fase 0 (Backend Migrations) deve ser executada primeiro. A migration de status enum (<code>nova</code>→<code>nao_lida</code>, <code>processada/ignorada/arquivada</code>→<code>finalizada</code>) é bloqueante para todo o resto.
+    </div>
+  </div>
+
+  <!-- ANTES vs DEPOIS -->
+  <div class="section">
+    <div class="section-title">📊 Estado Atual vs. Target V5</div>
+    <div class="comparison">
+      <div class="comp-card comp-before">
+        <div class="comp-header">❌ V4 Atual (Problemas)</div>
+        <ul class="comp-list">
+          <li>5–8 abas (Intimações + Painel Joao com 10 sub-abas + Atividades + Documentos + Arquivados + Monitoramento)</li>
+          <li>Status errado: <code>processada/ignorada/arquivada</code> (viola Premissa 1)</li>
+          <li>Prazo badge visível nos cards da lista (viola Premissa 4)</li>
+          <li>Classe Cecilia badge visível (<code>E — Estratégica</code>) (viola Premissa 6)</li>
+          <li>Confiança IA % visível (viola Premissa 6)</li>
+          <li>Bulk mode parcialmente quebrado</li>
+          <li>Drawer com 6 abas em vez de 4</li>
+          <li>64 arquivos, ~16.267 linhas — muitos obsoletos (V3, V1, painel-joao)</li>
+          <li>Sem virtualização eficiente para 300–600+ itens</li>
+          <li>Drawer: largura fixa, sem resize/persist</li>
+          <li>Tab OlivIA não existe no drawer</li>
+          <li>RPCs de KPI não otimizados para V5</li>
+        </ul>
+      </div>
+      <div class="comp-card comp-after">
+        <div class="comp-header">✅ V5 Target (PRD)</div>
+        <ul class="comp-list">
+          <li>4 abas limpas: Intimações | Equipe | Dashboard | Playbooks</li>
+          <li>Status correto: <code>nao_lida</code> → <code>lida</code> → <code>finalizada</code> (9 premissas respeitadas)</li>
+          <li>Prazo APENAS no drawer, KPI cards e aba Equipe</li>
+          <li>Classe Cecilia completamente oculta da UI</li>
+          <li>Zero confiança IA visível</li>
+          <li>Bulk mode completo: Marcar lida + Finalizar com dialog</li>
+          <li>Drawer V5: 4 abas (Intimação | Processo | Documentos | OlivIA)</li>
+          <li>~34 arquivos (~9.500 linhas) — lean e organizado</li>
+          <li>Lista virtualizada (@tanstack/react-virtual) para 300–600+ itens</li>
+          <li>Drawer resizável (drag handle), largura persistida em localStorage</li>
+          <li>Tab OlivIA: gerador petições + chat contextual + notas</li>
+          <li>RPCs dedicados: <code>rpc_controller_v5_kpis</code>, <code>rpc_controller_finalizar</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREMISSAS INVIOLÁVEIS -->
+  <div class="section">
+    <div class="section-title">🔒 9 Premissas Invioláveis <span>(João Victor + Christian · violação = PAUSA imediata)</span></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <div class="premissa-item">
+        <div class="premissa-number">1</div>
+        <div>
+          <div class="premissa-text"><strong>Finaliza, não arquiva.</strong> Status: <code>nao_lida</code> → <code>lida</code> → <code>finalizada</code>.</div>
+          <div class="premissa-impact">Impact: migration banco + rename em toda UI</div>
+        </div>
+      </div>
+      <div class="premissa-item">
+        <div class="premissa-number">2</div>
+        <div>
+          <div class="premissa-text"><strong>Lida = alteração visual APENAS.</strong> Card permanece na lista, mesma posição.</div>
+          <div class="premissa-impact">Impact: font-weight muda, card não some</div>
+        </div>
+      </div>
+      <div class="premissa-item">
+        <div class="premissa-number">3</div>
+        <div>
+          <div class="premissa-text"><strong>Finalizada = riscada + visível.</strong> <code>line-through + opacity: 0.4</code>, não desaparece.</div>
+          <div class="premissa-impact">Impact: toggle "Mostrar finalizadas" na filter bar</div>
+        </div>
+      </div>
+      <div class="premissa-item">
+        <div class="premissa-number">4</div>
+        <div>
+          <div class="premissa-text"><strong>Prazo NÃO nos cards.</strong> Prazo apenas: drawer, KPI cards, aba Equipe.</div>
+          <div class="premissa-impact">Impact: remover prazo badge de IntimacaoRow</div>
+        </div>
+      </div>
+      <div class="premissa-item">
+        <div class="premissa-number">5</div>
+        <div>
+          <div class="premissa-text"><strong>Etiquetas coexistem.</strong> <code>urgente + importante</code> simultâneos. Não excludentes.</div>
+          <div class="premissa-impact">Impact: dot vermelho + ring amarelo quando ambos</div>
+        </div>
+      </div>
+      <div class="premissa-item">
+        <div class="premissa-number">6</div>
+        <div>
+          <div class="premissa-text"><strong>IA e Classes ocultas.</strong> Classes A-G e confiança NUNCA aparecem na UI.</div>
+          <div class="premissa-impact">Impact: grep e remover badges de classe/confiança</div>
+        </div>
+      </div>
+      <div class="premissa-item">
+        <div class="premissa-number">7</div>
+        <div>
+          <div class="premissa-text"><strong>Criar atividade sugere mover fase</strong> — NUNCA automático. Dialog de confirmação.</div>
+          <div class="premissa-impact">Impact: dialog pós-criação de atividade</div>
+        </div>
+      </div>
+      <div class="premissa-item">
+        <div class="premissa-number">8</div>
+        <div>
+          <div class="premissa-text"><strong>Ciência NUNCA automática.</strong> Sugestão → usuário confirma → executa via webhook.</div>
+          <div class="premissa-impact">Impact: ConfirmDialog obrigatório antes do webhook</div>
+        </div>
+      </div>
+      <div class="premissa-item">
+        <div class="premissa-number">9</div>
+        <div>
+          <div class="premissa-text"><strong>5 OABs parametrizadas.</strong> RS116571, SC074025, SP535101, RS131163, SC075466.</div>
+          <div class="premissa-impact">Impact: filtro advogado inclui todas as 5 OABs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIORITY SUMMARY -->
+  <div class="section">
+    <div class="section-title">🎯 Resumo de Prioridades</div>
+    <div class="priority-summary">
+      <div class="pri-card pri-p0">
+        <div class="pri-num">19</div>
+        <div class="pri-label">P0 — Crítico</div>
+        <div class="pri-desc">Bloqueante. Sem isso, produto quebrado.</div>
+      </div>
+      <div class="pri-card pri-p1">
+        <div class="pri-num">13</div>
+        <div class="pri-label">P1 — Importante</div>
+        <div class="pri-desc">Abas secundárias, integrações, cleanup.</div>
+      </div>
+      <div class="pri-card pri-p2">
+        <div class="pri-num">6</div>
+        <div class="pri-label">P2 — Melhoria</div>
+        <div class="pri-desc">QA, testes, export, responsividade.</div>
+      </div>
+      <div class="pri-card pri-p3">
+        <div class="pri-num">3</div>
+        <div class="pri-label">P3 — Nice-to-have</div>
+        <div class="pri-desc">Chat OlivIA, resize drag, command palette.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEVAS DE IMPLEMENTAÇÃO -->
+  <div class="section">
+    <div class="section-title">🚀 5 Levas de Implementação <span>(ordem sequencial obrigatória)</span></div>
+    <div class="leva-timeline">
+
+      <!-- Leva 1 -->
+      <div class="leva-item">
+        <div class="leva-line">
+          <div class="leva-dot" style="background:#ef4444; box-shadow: 0 0 8px #ef4444;"></div>
+          <div class="leva-connector"></div>
+        </div>
+        <div class="leva-content">
+          <div class="leva-num" style="color:#ef4444;">Leva 1 · FASE 0 + FASE 1 + FASE 2</div>
+          <div class="leva-titulo">Backend Foundation + Types + Scaffold</div>
+          <div class="leva-desc">
+            Migration crítica de status enum, criação de RPCs e views, types TypeScript V5, hooks base, scaffold da página com 4 abas. Esta leva define o contrato de dados que todas as demais levas consomem. <strong>Nada deve avançar sem essa leva completa.</strong>
+          </div>
+          <div class="leva-tags">
+            <span class="badge badge-destructive">P0 total</span>
+            <span class="badge badge-violet">7 tasks backend</span>
+            <span class="badge badge-warning">4 tasks types/hooks</span>
+            <span class="badge badge-info">3 tasks scaffold</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leva 2 -->
+      <div class="leva-item">
+        <div class="leva-line">
+          <div class="leva-dot" style="background:#f59e0b; box-shadow: 0 0 8px #f59e0b;"></div>
+          <div class="leva-connector"></div>
+        </div>
+        <div class="leva-content">
+          <div class="leva-num" style="color:#f59e0b;">Leva 2 · FASE 3</div>
+          <div class="leva-titulo">Aba Intimações Core</div>
+          <div class="leva-desc">
+            KPI cards, FilterBar, IntimacaoRow (sem prazo/classe), lista virtualizada, BulkBar. O coração da página — onde João passa 90% do tempo. Todos P0. Criar V5 baseado nos equivalentes V3 existentes.
+          </div>
+          <div class="leva-tags">
+            <span class="badge badge-destructive">P0 total</span>
+            <span class="badge badge-warning">5 componentes principais</span>
+            <span class="badge badge-success">Virtualização react-virtual</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leva 3 -->
+      <div class="leva-item">
+        <div class="leva-line">
+          <div class="leva-dot" style="background:#20c997; box-shadow: 0 0 8px #20c997;"></div>
+          <div class="leva-connector"></div>
+        </div>
+        <div class="leva-content">
+          <div class="leva-num" style="color:#20c997;">Leva 3 · FASE 4</div>
+          <div class="leva-titulo">Drawer V5 Completo</div>
+          <div class="leva-desc">
+            Drawer container (resizável), header V5 (sem classe), Tab Intimação com ação recomendada + prazo + criar atividade inline, Tab Processo (KEEP V3), Tab Documentos (KEEP V3), Tab OlivIA (NEW), footer fixo com ações. Fluxos de Premissas 7 e 8.
+          </div>
+          <div class="leva-tags">
+            <span class="badge badge-destructive">P0 total</span>
+            <span class="badge badge-success">1 novo: DrawerTabOlivia</span>
+            <span class="badge badge-info">2 KEEP: TabProcesso + TabDocumentos</span>
+            <span class="badge badge-warning">Framer Motion slide-in</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leva 4 -->
+      <div class="leva-item">
+        <div class="leva-line">
+          <div class="leva-dot" style="background:#0ea5e9; box-shadow: 0 0 8px #0ea5e9;"></div>
+          <div class="leva-connector"></div>
+        </div>
+        <div class="leva-content">
+          <div class="leva-num" style="color:#0ea5e9;">Leva 4 · FASE 5 + FASE 6</div>
+          <div class="leva-titulo">Abas Secundárias + Integrações</div>
+          <div class="leva-desc">
+            Aba Equipe (KEEP base), Aba Dashboard (merge com Monitoramento), Aba Playbooks (KEEP). Keyboard shortcuts atualizados (<code>l=lida, f=finalizar</code>), export dialog, realtime subscription, command palette.
+          </div>
+          <div class="leva-tags">
+            <span class="badge badge-warning">P1 total</span>
+            <span class="badge badge-info">3 abas secundárias</span>
+            <span class="badge badge-muted">10 keyboard shortcuts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leva 5 -->
+      <div class="leva-item">
+        <div class="leva-line">
+          <div class="leva-dot" style="background:#8b5cf6; box-shadow: 0 0 8px #8b5cf6;"></div>
+        </div>
+        <div class="leva-content">
+          <div class="leva-num" style="color:#8b5cf6;">Leva 5 · FASE 7 + FASE 8</div>
+          <div class="leva-titulo">Cleanup + QA Final</div>
+          <div class="leva-desc">
+            DELETE de 30 arquivos legado (V3, V1, painel-joao/ inteiro, Modal*, etc.), verificação de zero imports quebrados, compliance check das 9 premissas, <code>npm run build</code> sem erros, checklist de 40+ testes funcionais.
+          </div>
+          <div class="leva-tags">
+            <span class="badge badge-warning">P1 cleanup</span>
+            <span class="badge badge-info">P2 QA</span>
+            <span class="badge badge-destructive">30 arquivos deletados</span>
+            <span class="badge badge-success">Build limpo</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FASES DETALHADAS -->
+  <div class="section">
+    <div class="section-title">📋 Fases Detalhadas com Todas as Tasks</div>
+
+    <!-- FASE 0 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(239,68,68,0.15); color:#ef4444;">0</div>
+        <div class="fase-title">Backend Migrations <span style="font-size:13px; font-weight:400; color:var(--muted)">— executar ANTES de qualquer frontend</span></div>
+        <div class="fase-meta">
+          <span class="badge badge-destructive">P0</span>
+          <span class="badge badge-violet">Backend</span>
+          <span style="color:var(--muted)">7 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">Migration: status enum <code>nova→nao_lida</code>, <code>processada/ignorada/arquivada→finalizada</code></div>
+              <div class="task-desc">DROP CONSTRAINT + ADD CHECK (nao_lida, lida, finalizada, erro) + UPDATE dados existentes. CRÍTICO — bloqueia todo frontend.</div>
+            </div>
+            <span class="task-tag tag-backend">SQL</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">Migration: add colunas Cecilia v3 em <code>intimacoes</code></div>
+              <div class="task-desc">ADD COLUMN IF NOT EXISTS: modelo VARCHAR(20), custo_usd DECIMAL(10,4), tokens_total INT, versao VARCHAR(10).</div>
+            </div>
+            <span class="task-tag tag-backend">SQL</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE OR REPLACE VIEW <code>v_controller_intimacoes_completa</code></div>
+              <div class="task-desc">JOIN processos + clientes + empresas + usuarios + campos calculados (dias_ate_prazo, status_prazo). Filtrar classe A (ruído). RLS via get_org_id().</div>
+            </div>
+            <span class="task-tag tag-backend">SQL</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE FUNCTION <code>rpc_controller_v5_kpis</code></div>
+              <div class="task-desc">RETURNS JSONB com nao_lidas, urgentes, vence_hoje, estrategicas, total. SECURITY DEFINER. Optimizado para query única.</div>
+            </div>
+            <span class="task-tag tag-backend">RPC</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE FUNCTION <code>rpc_controller_finalizar</code></div>
+              <div class="task-desc">UPDATE status='finalizada' + concluida_em + concluida_por_id. SECURITY DEFINER. Retorna {success: true}.</div>
+            </div>
+            <span class="task-tag tag-backend">RPC</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">ADAPT <code>rpc_controller_batch_update_status</code></div>
+              <div class="task-desc">Atualizar validação: p_status IN ('nao_lida', 'lida', 'finalizada'). Remover processada/ignorada/arquivada.</div>
+            </div>
+            <span class="task-tag tag-backend">RPC</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE TABLE <code>controller_playbooks</code> + <code>controller_padroes_novos</code></div>
+              <div class="task-desc">Tabelas novas com RLS modelo A, trigger updated_at, índices organizacao_id. Necessário para Aba Playbooks.</div>
+            </div>
+            <span class="task-tag tag-backend">DDL</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 1 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(239,68,68,0.15); color:#ef4444;">1</div>
+        <div class="fase-title">Types e Hooks Foundation</div>
+        <div class="fase-meta">
+          <span class="badge badge-destructive">P0</span>
+          <span style="color:var(--muted)">5 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">MODIFY <code>types.ts</code> — adicionar StatusIntimacao, ControllerV5Filters, TabNameV5, ControllerV5KPIData</div>
+              <div class="task-desc">type StatusIntimacao = 'nao_lida' | 'lida' | 'finalizada'. type TabNameV5 = 'intimacoes' | 'equipe' | 'dashboard' | 'playbooks'. Interface ControllerV5Filters com todos os campos spec.</div>
+            </div>
+            <span class="task-tag tag-modify">MODIFY</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">MODIFY <code>controller_utils.ts</code> — remover 'monitoramento' de VALID_TABS</div>
+              <div class="task-desc">KEEP: classeColor, prazoStatus, prazoBadgeStyle, eprocUrl, extractTribunal, getDateGroup. REMOVE: monitoramento de VALID_TABS.</div>
+            </div>
+            <span class="task-tag tag-modify">MODIFY</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>hooks/useControllerV5.ts</code> — hook principal completo</div>
+              <div class="task-desc">Query v_controller_intimacoes_completa com todos os filtros V5, paginação (50/page), agrupamento por data, staleTime: 30_000. Interface UseControllerV5Return.</div>
+            </div>
+            <span class="task-tag tag-new">NEW</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">MODIFY <code>useControllerActions.ts</code> — lida/finalizada em vez de processada/ignorada</div>
+              <div class="task-desc">Renomear: marcarProcessada→marcarLida, marcarIgnorada→marcarNaoLida, arquivar→finalizar. Usar rpc_controller_finalizar para finalizar.</div>
+            </div>
+            <span class="task-tag tag-modify">MODIFY</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">KEEP <code>useControllerRealtime.ts</code> + <code>useControllerKeyboard.ts</code> — verificar compatibilidade</div>
+              <div class="task-desc">Verificar que realtime subscription funciona com novo status enum. Atualizar keyboard: l=lida, f=finalizar (mudança de semântica).</div>
+            </div>
+            <span class="task-tag tag-keep">KEEP</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 2 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(239,68,68,0.15); color:#ef4444;">2</div>
+        <div class="fase-title">Page Scaffold — 4 abas</div>
+        <div class="fase-meta">
+          <span class="badge badge-destructive">P0</span>
+          <span style="color:var(--muted)">3 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">MODIFY <code>index.tsx</code> — 4 abas, remover monitoramento, novo status flow</div>
+              <div class="task-desc">Tabs: [Intimações(count)] [Equipe(count)] [Dashboard] [Playbooks(badge)]. Remover tabs: Atividades, Documentos, Arquivados, Monitoramento, Painel João. Atualizar state management para TabNameV5.</div>
+            </div>
+            <span class="task-tag tag-modify">MODIFY</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">Remover rota <code>/controller/painel-joao</code> do App.tsx</div>
+              <div class="task-desc">Localizar e remover import + Route do painel-joao no roteador principal. Verificar que nenhuma navegação aponta para essa rota.</div>
+            </div>
+            <span class="task-tag tag-delete">DELETE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">Verificar page header: botões Export + Command Palette + KPIs globais</div>
+              <div class="task-desc">Header da página com título "Controller", contagem total, botão export (ExportDialog KEEP), botão Cmd+K (CommandPalette KEEP).</div>
+            </div>
+            <span class="task-tag tag-modify">MODIFY</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 3 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(239,68,68,0.15); color:#ef4444;">3</div>
+        <div class="fase-title">Aba Intimações Core <span style="font-size:13px; font-weight:400; color:var(--muted)">— 90% do tempo do João</span></div>
+        <div class="fase-meta">
+          <span class="badge badge-destructive">P0</span>
+          <span style="color:var(--muted)">5 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>ControllerV5KPIs.tsx</code> — baseado em ControllerV3KPIsEnhanced (495L)</div>
+              <div class="task-desc">4 KPIs: Não lidas (blue), Urgentes (red), Vencem hoje (amber), Estratégicas (emerald). Usar rpc_controller_v5_kpis. Click = filtro toggle. Sem badge de classe visível.</div>
+            </div>
+            <span class="task-tag tag-new">CREATE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>ControllerV5FilterBar.tsx</code> — baseado em ControllerV3FilterBar (320L)</div>
+              <div class="task-desc">Search (debounce 300ms, min 2 chars) + Status multi-select (nao_lida/lida/finalizada) + Tribunal single + Advogado multi + Ordenação + Toggle "Mostrar finalizadas". REMOVER filtro por classe (Premissa 6).</div>
+            </div>
+            <span class="task-tag tag-new">CREATE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>ControllerV5IntimacaoRow.tsx</code> — baseado em ControllerV3IntimacaoRow (461L)</div>
+              <div class="task-desc">4 linhas: [checkbox][urgency dot][CNJ copy][hover actions] | Cliente (bold/normal/strike) | Empresa · Tribunal · OAB | Ação IA (80 chars) + timestamp. REMOVER: prazo badge (P4), classe badge (P6), confiança IA (P6), botão Arquivar→Finalizar.</div>
+            </div>
+            <span class="task-tag tag-new">CREATE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>ControllerV5Intimacoes.tsx</code> — baseado em ControllerV3Intimacoes (409L) + virtualização</div>
+              <div class="task-desc">Lista virtualizada (@tanstack/react-virtual, rowHeight 72px, pageSize 50). Agrupamento por data (Hoje/Ontem/Esta semana/Mais antigas). Query key ['controller-v5-intimacoes']. Default filter: status != 'finalizada'.</div>
+            </div>
+            <span class="task-tag tag-new">CREATE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>ControllerV5BulkBar.tsx</code> — baseado em ControllerV3BulkBar</div>
+              <div class="task-desc">Fixed bottom bar quando ≥1 selecionado. Ações: [Marcar como lida] [Finalizar] [Desmarcar todos]. Dialog de confirmação para Finalizar (destrutivo). rpc_controller_batch_update_status.</div>
+            </div>
+            <span class="task-tag tag-new">CREATE</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 4 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(239,68,68,0.15); color:#ef4444;">4</div>
+        <div class="fase-title">Drawer V5 Completo <span style="font-size:13px; font-weight:400; color:var(--muted)">— painel de decisão do João</span></div>
+        <div class="fase-meta">
+          <span class="badge badge-destructive">P0</span>
+          <span style="color:var(--muted)">4 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>ControllerV5Drawer.tsx</code> — container + header + 4 tabs + footer</div>
+              <div class="task-desc">Side panel direito (não modal). Largura: min 22rem, max 65rem, default 40rem, persistida em localStorage. Drag handle na borda esquerda. Framer Motion slide-in 200ms. Header: CNJ (JetBrains Mono + copy) + tribunal badge + EPROC link + cliente + empresa/OAB + pill Urgente + pill Importante. Footer: [Criar Atividade] [Solicitar Doc] [Finalizar] [...].</div>
+            </div>
+            <span class="task-tag tag-new">CREATE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>DrawerTabIntimacao</code> (inline no Drawer)</div>
+              <div class="task-desc">A) Card Ação Recomendada (bg-primary/10) + botão "Aprovar e Criar Atividade". B) Prazo badge (só aqui - Premissa 4). C) Resumo IA (muted). D) Despacho completo toggle. E) Textarea observação (auto-save debounce 1s). F) Criar Atividade inline (CreatableSelect 18 títulos + responsável + prazo + tipo). G) Sugestão mover fase (Premissa 7).</div>
+            </div>
+            <span class="task-tag tag-new">CREATE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">KEEP <code>ControllerV3DrawerTabProcesso.tsx</code> + <code>ControllerV3DrawerTabDocumentos.tsx</code></div>
+              <div class="task-desc">Verificar que funcionam com dados da nova view. TabProcesso: dados processo + cliente + timeline + processos relacionados. TabDocumentos: upload drag&drop + docs vinculados + docs pendentes.</div>
+            </div>
+            <span class="task-tag tag-keep">KEEP</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p0">P0</span>
+            <div class="task-content">
+              <div class="task-title">CREATE <code>ControllerV5DrawerTabOlivia.tsx</code> (~200L) — NEW</div>
+              <div class="task-desc">A) Gerador petições rápidas: 5 templates (Ciência com Renuncia, Manifestação, Pedido de Prazo, Desistência de Perícia, Contrarrazões) → webhook n8n → editor → Download DOCX. B) Chat contextual por CNJ (persistente Supabase, backend n8n→Claude). C) Notas rápidas (KEEP ControllerDrawerNotas.tsx, localStorage, max 50/processo).</div>
+            </div>
+            <span class="task-tag tag-new">NEW</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 5 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(245,158,11,0.15); color:#f59e0b;">5</div>
+        <div class="fase-title">Abas Secundárias</div>
+        <div class="fase-meta">
+          <span class="badge badge-warning">P1</span>
+          <span style="color:var(--muted)">3 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">KEEP <code>ControllerEquipe.tsx</code> (467L) — verificar atividades + docs pendentes + membros</div>
+              <div class="task-desc">Merge conceitual: atividades por responsável (prazo SIM aparece aqui - P4 só bloqueia cards de intimação) + docs pendentes + cards membros. Verificar que dados carregam com novo schema.</div>
+            </div>
+            <span class="task-tag tag-keep">KEEP</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">MODIFY <code>ControllerDashboard.tsx</code> — merge com lógica do ControllerMonitoramento</div>
+              <div class="task-desc">KPIs gerenciais (processadas hoje, distribuições hoje, prazo crítico ≤3d, taxa resolução 7d) + gráficos Recharts (BarChart intimações/dia, DonutChart por classe, HorizontalBar throughput) + seção Monitoramento Cecília (status 5 OABs, último ciclo, próximo, erros).</div>
+            </div>
+            <span class="task-tag tag-modify">MODIFY</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">KEEP <code>ControllerTreinamentoHub.tsx</code> (548L) — renomear para Playbooks, apontar para novas tabelas</div>
+              <div class="task-desc">Verificar que usa controller_playbooks e controller_padroes_novos (criadas na Fase 0). Badge "novos" na tab. Input "Ensinar novo padrão" → webhook n8n. Histórico de decisões João vs. IA.</div>
+            </div>
+            <span class="task-tag tag-keep">KEEP</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 6 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(245,158,11,0.15); color:#f59e0b;">6</div>
+        <div class="fase-title">Integrações e Componentes Compartilhados</div>
+        <div class="fase-meta">
+          <span class="badge badge-warning">P1</span>
+          <span style="color:var(--muted)">4 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">MODIFY <code>useControllerKeyboard.ts</code> — atualizar semântica de shortcuts</div>
+              <div class="task-desc">Atualizar: <code>l</code> = marcar lida (era "processar"), <code>f</code> = finalizar (era "arquivar"). Manter: j/k navegar, Enter abrir drawer, Escape fechar, u urgente, i importante, a abrir sheet atividade, ? shortcuts, Cmd+K palette.</div>
+            </div>
+            <span class="task-tag tag-modify">MODIFY</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">KEEP componentes compartilhados — verificar compatibilidade</div>
+              <div class="task-desc">SheetAtividade (522L), SheetDocPendente (167L), ExportDialog (189L), TransferDialog, CommandPalette (V3, 2L—verificar se é stub), ShortcutsHelp (31L), DrawerNotas (180L), DecisaoBadge (64L), ResumoAnaliseIA (319L), ResumoPrazo (42L), JarbasStatusCard (135L).</div>
+            </div>
+            <span class="task-tag tag-keep">KEEP</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">Verificar <code>useControllerRealtime.ts</code> — subscription com novos status</div>
+              <div class="task-desc">Garantir que a subscription em tabelas intimacoes, atividades, documentos_pendentes continua funcionando. Filtrar por organizacao_id obrigatoriamente. cleanup() no unmount.</div>
+            </div>
+            <span class="task-tag tag-keep">KEEP</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">Ciência com Renuncia flow — Premissa 8</div>
+              <div class="task-desc">Dialog confirmação obrigatório antes de POST /webhook/controller/ciencia_renuncia. UPDATE ciencia_renuncia_status='pendente' → N8N → UPDATE protocolo + executada_em. Toast com protocolo.</div>
+            </div>
+            <span class="task-tag tag-modify">MODIFY</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 7 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(245,158,11,0.15); color:#f59e0b;">7</div>
+        <div class="fase-title">Cleanup — DELETE 30 arquivos legado</div>
+        <div class="fase-meta">
+          <span class="badge badge-warning">P1</span>
+          <span style="color:var(--muted)">3 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">DELETE diretório <code>painel-joao/</code> inteiro (10 arquivos)</div>
+              <div class="task-desc">index.tsx, PainelJoaoPlaybooks, PainelJoaoFiltros, PainelJoaoAuditoria, PainelJoaoEquipe, PainelJoaoReus, PainelJoaoAutomacoes, PainelJoaoIdeias, PainelJoaoNotificacoes, PainelJoaoDocumentos, PainelJoaoCaptura. ~3.100 linhas deletadas.</div>
+            </div>
+            <span class="task-tag tag-delete">DELETE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">DELETE componentes legado V3/V1/Modal — 20 arquivos</div>
+              <div class="task-desc">ControllerIntimacoes.tsx, ControllerIntimacaoRow.tsx, ControllerFilterBar.tsx, ControllerBulkActionsBar.tsx, ControllerKpis.tsx, ControllerAtividades.tsx, ControllerDocumentos.tsx, ControllerArquivados.tsx, ControllerMonitoramento.tsx, ControllerModalIntimacao.tsx, ControllerModalTabResumo.tsx, ControllerModalTabHistorico.tsx, ControllerModalTabAcoes.tsx, ControllerModalTabAnexos.tsx, ControllerModalTabChat.tsx, ControllerIngestaoManualDialog.tsx, ControllerQuickNotes.tsx, ControllerAdvboxPainel.tsx, ControllerAccordionGroup.tsx, ControllerMonitoradoRow.tsx. ~6.700 linhas deletadas.</div>
+            </div>
+            <span class="task-tag tag-delete">DELETE</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p1">P1</span>
+            <div class="task-content">
+              <div class="task-title">Verificar zero imports quebrados após deletes</div>
+              <div class="task-desc">grep -r "painel-joao\|ControllerIntimacoes\|ControllerModal\|ControllerAdvbox\|ControllerArquivados" src/ — deve retornar vazio. Verificar App.tsx, index.tsx, e qualquer barrel exports.</div>
+            </div>
+            <span class="task-tag tag-delete">VERIFY</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 8 -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(14,165,233,0.15); color:#0ea5e9;">8</div>
+        <div class="fase-title">QA Final e Build</div>
+        <div class="fase-meta">
+          <span class="badge badge-info">P2</span>
+          <span style="color:var(--muted)">6 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p2">P2</span>
+            <div class="task-content">
+              <div class="task-title">Compliance Check — 9 Premissas</div>
+              <div class="task-desc">grep "prazo" em IntimacaoRow → deve ter zero ocorrências no JSX. grep "classe\|confianca\|confiança" em componentes → zero badges visuais. Testar: lida não desaparece, finalizada fica riscada, urgente+importante simultâneos OK.</div>
+            </div>
+            <span class="task-tag tag-new">QA</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p2">P2</span>
+            <div class="task-content">
+              <div class="task-title">Testes funcionais — 40+ cenários do PRD Seção 17.2</div>
+              <div class="task-desc">Abrir /controller → 4 abas. KPI click → filtro toggle. Search CNJ/nome. Drawer open → 4 tabs. Toggle urgente persiste. Criar atividade → sugestão fase. Bulk select 3 → finalizar → dialog → strikethrough. j/k navegar. Cmd+K. Export CSV. Build sem erros.</div>
+            </div>
+            <span class="task-tag tag-new">QA</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p2">P2</span>
+            <div class="task-content">
+              <div class="task-title">Responsividade — 4 breakpoints</div>
+              <div class="task-desc">375px (mobile), 768px (tablet), 1024px (desktop), 1920px (wide). Drawer em mobile: full-width. Filtros em tablet: collapsible. Touch targets mín 32px.</div>
+            </div>
+            <span class="task-tag tag-new">QA</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p2">P2</span>
+            <div class="task-content">
+              <div class="task-title">Zero hardcode de cores — verificar tokens CSS</div>
+              <div class="task-desc">grep -r "bg-\[#\|text-\[#\|border-\[#" em src/pages/controller/ → deve retornar vazio. NUNCA hex direto, SEMPRE tokens: bg-card, text-primary, border-border, etc.</div>
+            </div>
+            <span class="task-tag tag-new">QA</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p2">P2</span>
+            <div class="task-content">
+              <div class="task-title">Zero TypeScript <code>any</code> — type coverage completo</div>
+              <div class="task-desc">tsc --noEmit → zero erros. Zero 'any' nos novos arquivos V5. IntimacaoRow tipada com IntimacaoRow interface (99 campos). ControllerV5Filters tipado completo.</div>
+            </div>
+            <span class="task-tag tag-new">QA</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p2">P2</span>
+            <div class="task-content">
+              <div class="task-title"><code>npm run build</code> — zero erros, zero warnings críticos</div>
+              <div class="task-desc">Build final de produção sem erros. Verificar bundle size não explodiu (react-virtual deve ajudar). Zero console.log residuais nos arquivos V5.</div>
+            </div>
+            <span class="task-tag tag-new">BUILD</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 9 (P3) -->
+    <div class="fase-block">
+      <div class="fase-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+        <div class="fase-number" style="background:rgba(139,92,246,0.15); color:#8b5cf6;">9</div>
+        <div class="fase-title">Nice-to-have <span style="font-size:13px; font-weight:400; color:var(--muted)">— pós V5 estável</span></div>
+        <div class="fase-meta">
+          <span class="badge badge-violet">P3</span>
+          <span style="color:var(--muted)">3 tasks</span>
+        </div>
+      </div>
+      <div class="fase-body">
+        <ul class="task-list">
+          <li class="task-item">
+            <span class="task-priority p3">P3</span>
+            <div class="task-content">
+              <div class="task-title">Tab OlivIA — Chat contextual persistente por CNJ</div>
+              <div class="task-desc">Thread por CNJ salva no Supabase. Contexto automático: dados processo + histórico + resumo IA injetado no prompt. Backend n8n webhook → Claude API.</div>
+            </div>
+            <span class="task-tag tag-new">NEW</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p3">P3</span>
+            <div class="task-content">
+              <div class="task-title">Command Palette <code>ControllerV3CommandPalette.tsx</code> — verificar se é stub (2L)</div>
+              <div class="task-desc">O arquivo atual tem apenas 2 linhas. Pode ser um stub. Se for, implementar Cmd+K busca rápida por CNJ/cliente com resultados em tempo real.</div>
+            </div>
+            <span class="task-tag tag-modify">VERIFY</span>
+          </li>
+          <li class="task-item">
+            <span class="task-priority p3">P3</span>
+            <div class="task-content">
+              <div class="task-title">Drag handle drawer com persist em localStorage</div>
+              <div class="task-desc">Resize da largura do drawer por drag (useRef + mousemove). Salvar em localStorage key 'controller-drawer-width'. Restore na abertura.</div>
+            </div>
+            <span class="task-tag tag-new">NEW</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAPA DE ARQUIVOS -->
+  <div class="section">
+    <div class="section-title">📁 Mapa Completo de Arquivos (64 → ~34)</div>
+
+    <div class="grid-2" style="gap:16px;">
+      <!-- KEEP -->
+      <div class="card">
+        <div class="card-header">
+          <h3>✅ KEEP — 22 arquivos intactos</h3>
+          <span class="badge badge-info">sem modificação</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="file-table">
+            <thead><tr><th>Arquivo</th><th>Linhas</th></tr></thead>
+            <tbody>
+              <tr><td class="file-mono">ControllerSheetAtividade.tsx</td><td class="file-lines">522</td></tr>
+              <tr><td class="file-mono">ControllerTreinamentoHub.tsx</td><td class="file-lines">548</td></tr>
+              <tr><td class="file-mono">ControllerEquipe.tsx</td><td class="file-lines">467</td></tr>
+              <tr><td class="file-mono">ControllerV3DrawerTabProcesso.tsx</td><td class="file-lines">335</td></tr>
+              <tr><td class="file-mono">ControllerResumoAnaliseIA.tsx</td><td class="file-lines">319</td></tr>
+              <tr><td class="file-mono">ControllerV3DrawerTabDocumentos.tsx</td><td class="file-lines">199</td></tr>
+              <tr><td class="file-mono">ControllerExportDialog.tsx</td><td class="file-lines">189</td></tr>
+              <tr><td class="file-mono">ControllerDrawerNotas.tsx</td><td class="file-lines">180</td></tr>
+              <tr><td class="file-mono">ControllerSheetDocPendente.tsx</td><td class="file-lines">167</td></tr>
+              <tr><td class="file-mono">ControllerTransferDialog.tsx</td><td class="file-lines">229</td></tr>
+              <tr><td class="file-mono">ControllerJarbasStatusCard.tsx</td><td class="file-lines">135</td></tr>
+              <tr><td class="file-mono">DecisaoBadge.tsx</td><td class="file-lines">64</td></tr>
+              <tr><td class="file-mono">ControllerResumoPrazo.tsx</td><td class="file-lines">42</td></tr>
+              <tr><td class="file-mono">ControllerShortcutsHelp.tsx</td><td class="file-lines">31</td></tr>
+              <tr><td class="file-mono">ControllerEquipePlus.tsx</td><td class="file-lines">~48</td></tr>
+              <tr><td class="file-mono">useControllerRealtime.ts</td><td class="file-lines">—</td></tr>
+              <tr><td class="file-mono">useControllerKeyboard.ts</td><td class="file-lines">—</td></tr>
+              <tr><td class="file-mono">ControllerV3DrawerTabFinanceiro.tsx</td><td class="file-lines">451</td></tr>
+              <tr><td class="file-mono">ControllerV3HistoricoSheet.tsx</td><td class="file-lines">297</td></tr>
+              <tr><td class="file-mono">ControllerV3CommandPalette.tsx</td><td class="file-lines">2*</td></tr>
+              <tr><td class="file-mono">ControllerDashboard.tsx</td><td class="file-lines">367</td></tr>
+              <tr><td class="file-mono">ControllerV3KPIs.tsx</td><td class="file-lines">3*</td></tr>
+            </tbody>
+          </table>
+          <div style="padding:10px 14px; font-size:11px; color:var(--muted);">* = stubs — verificar se precisam implementação real</div>
+        </div>
+      </div>
+
+      <!-- DELETE -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🗑️ DELETE — 30 arquivos (~9.800 linhas)</h3>
+          <span class="badge badge-destructive">eliminar</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="file-table">
+            <thead><tr><th>Arquivo</th><th>Linhas</th><th>Motivo</th></tr></thead>
+            <tbody>
+              <tr><td class="file-mono">painel-joao/ (10 arquivos)</td><td class="file-lines">~2.700</td><td style="color:var(--destructive); font-size:11px">Dir inteiro</td></tr>
+              <tr><td class="file-mono">ControllerIntimacoes.tsx</td><td class="file-lines">324</td><td style="color:var(--muted); font-size:11px">V3 legado</td></tr>
+              <tr><td class="file-mono">ControllerIntimacaoRow.tsx</td><td class="file-lines">301</td><td style="color:var(--muted); font-size:11px">V3 legado</td></tr>
+              <tr><td class="file-mono">ControllerFilterBar.tsx</td><td class="file-lines">382</td><td style="color:var(--muted); font-size:11px">V3 legado</td></tr>
+              <tr><td class="file-mono">ControllerBulkActionsBar.tsx</td><td class="file-lines">60</td><td style="color:var(--muted); font-size:11px">V3 legado</td></tr>
+              <tr><td class="file-mono">ControllerKpis.tsx</td><td class="file-lines">146</td><td style="color:var(--muted); font-size:11px">12 cards redundantes</td></tr>
+              <tr><td class="file-mono">ControllerAtividades.tsx</td><td class="file-lines">317</td><td style="color:var(--muted); font-size:11px">→ Equipe</td></tr>
+              <tr><td class="file-mono">ControllerDocumentos.tsx</td><td class="file-lines">324</td><td style="color:var(--muted); font-size:11px">→ Equipe</td></tr>
+              <tr><td class="file-mono">ControllerArquivados.tsx</td><td class="file-lines">420</td><td style="color:var(--muted); font-size:11px">→ Toggle finalizadas</td></tr>
+              <tr><td class="file-mono">ControllerMonitoramento.tsx</td><td class="file-lines">435</td><td style="color:var(--muted); font-size:11px">→ Dashboard</td></tr>
+              <tr><td class="file-mono">ControllerModalIntimacao.tsx</td><td class="file-lines">436</td><td style="color:var(--muted); font-size:11px">→ Drawer</td></tr>
+              <tr><td class="file-mono">ControllerModal{Resumo|Hist|Ações|Anexos|Chat}.tsx</td><td class="file-lines">~850</td><td style="color:var(--muted); font-size:11px">Modal legado</td></tr>
+              <tr><td class="file-mono">ControllerIngestaoManualDialog.tsx</td><td class="file-lines">~209</td><td style="color:var(--muted); font-size:11px">Não usado</td></tr>
+              <tr><td class="file-mono">ControllerQuickNotes.tsx</td><td class="file-lines">194</td><td style="color:var(--muted); font-size:11px">→ DrawerNotas</td></tr>
+              <tr><td class="file-mono">ControllerAdvboxPainel.tsx</td><td class="file-lines">353</td><td style="color:var(--muted); font-size:11px">Integração removida</td></tr>
+              <tr><td class="file-mono">ControllerAccordionGroup.tsx</td><td class="file-lines">132</td><td style="color:var(--muted); font-size:11px">Não referenciado</td></tr>
+              <tr><td class="file-mono">ControllerMonitoradoRow.tsx</td><td class="file-lines">120</td><td style="color:var(--muted); font-size:11px">→ Dashboard</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="card">
+        <div class="card-header">
+          <h3>✏️ MODIFY + 🆕 NEW — 12 arquivos</h3>
+          <span class="badge badge-warning">10 modify + 2 new</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="file-table">
+            <thead><tr><th>Arquivo</th><th>Status</th><th>Base</th><th>Ação Principal</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="file-mono">index.tsx</td>
+                <td><span class="task-tag tag-modify">MODIFY</span></td>
+                <td class="file-lines">494L</td>
+                <td style="font-size:12px; color:var(--muted)">4 abas, remover monitoramento, novo status flow</td>
+              </tr>
+              <tr>
+                <td class="file-mono">types.ts</td>
+                <td><span class="task-tag tag-modify">MODIFY</span></td>
+                <td class="file-lines">87L</td>
+                <td style="font-size:12px; color:var(--muted)">+StatusIntimacao, +ControllerV5Filters, +TabNameV5</td>
+              </tr>
+              <tr>
+                <td class="file-mono">controller_utils.ts</td>
+                <td><span class="task-tag tag-modify">MODIFY</span></td>
+                <td class="file-lines">27L</td>
+                <td style="font-size:12px; color:var(--muted)">Remover 'monitoramento' de VALID_TABS</td>
+              </tr>
+              <tr>
+                <td class="file-mono">useControllerActions.ts</td>
+                <td><span class="task-tag tag-modify">MODIFY</span></td>
+                <td class="file-lines">93L</td>
+                <td style="font-size:12px; color:var(--muted)">lida/finalizada em vez de processada/ignorada</td>
+              </tr>
+              <tr>
+                <td class="file-mono">ControllerDashboard.tsx</td>
+                <td><span class="task-tag tag-modify">MODIFY</span></td>
+                <td class="file-lines">367L</td>
+                <td style="font-size:12px; color:var(--muted)">Merge com lógica de ControllerMonitoramento</td>
+              </tr>
+              <tr>
+                <td class="file-mono">useControllerKeyboard.ts</td>
+                <td><span class="task-tag tag-modify">MODIFY</span></td>
+                <td class="file-lines">—</td>
+                <td style="font-size:12px; color:var(--muted)">Atualizar semântica l/f</td>
+              </tr>
+              <tr>
+                <td class="file-mono">ControllerV5KPIs.tsx</td>
+                <td><span class="task-tag tag-new">CREATE</span></td>
+                <td class="file-lines">V3KPIsEnhanced 495L</td>
+                <td style="font-size:12px; color:var(--muted)">4 KPIs novos, rpc_controller_v5_kpis, sem classe</td>
+              </tr>
+              <tr>
+                <td class="file-mono">ControllerV5FilterBar.tsx</td>
+                <td><span class="task-tag tag-new">CREATE</span></td>
+                <td class="file-lines">V3FilterBar 320L</td>
+                <td style="font-size:12px; color:var(--muted)">Sem filtro classe (P6), rename arquivados→finalizadas</td>
+              </tr>
+              <tr>
+                <td class="file-mono">ControllerV5IntimacaoRow.tsx</td>
+                <td><span class="task-tag tag-new">CREATE</span></td>
+                <td class="file-lines">V3IntimacaoRow 461L</td>
+                <td style="font-size:12px; color:var(--muted)">Remover prazo (P4) + classe (P6) + confiança (P6)</td>
+              </tr>
+              <tr>
+                <td class="file-mono">ControllerV5Intimacoes.tsx</td>
+                <td><span class="task-tag tag-new">CREATE</span></td>
+                <td class="file-lines">V3Intimacoes 409L</td>
+                <td style="font-size:12px; color:var(--muted)">react-virtual, query key v5, default hide finalizadas</td>
+              </tr>
+              <tr>
+                <td class="file-mono">ControllerV5BulkBar.tsx</td>
+                <td><span class="task-tag tag-new">CREATE</span></td>
+                <td class="file-lines">V3BulkBar 2L (stub!)</td>
+                <td style="font-size:12px; color:var(--muted)">Marcar lida + Finalizar com dialog</td>
+              </tr>
+              <tr>
+                <td class="file-mono">ControllerV5Drawer.tsx</td>
+                <td><span class="task-tag tag-new">CREATE</span></td>
+                <td class="file-lines">V3Drawer 620L</td>
+                <td style="font-size:12px; color:var(--muted)">4 tabs, resizável, sem classe, footer novo</td>
+              </tr>
+              <tr>
+                <td class="file-mono">ControllerV5DrawerTabOlivia.tsx</td>
+                <td><span class="task-tag tag-new">NEW</span></td>
+                <td class="file-lines">—</td>
+                <td style="font-size:12px; color:var(--muted)">~200L · gerador petições + chat + notas</td>
+              </tr>
+              <tr>
+                <td class="file-mono">hooks/useControllerV5.ts</td>
+                <td><span class="task-tag tag-new">NEW</span></td>
+                <td class="file-lines">—</td>
+                <td style="font-size:12px; color:var(--muted)">~150L · hook principal query + filtros + paginação</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLIANCE CHECKLIST -->
+  <div class="section">
+    <div class="section-title">✅ Checklist de Compliance Pós-Implementação</div>
+    <div class="compliance-grid">
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#ef4444;">🔴 P1 — Status Enum</div>
+        <div class="compliance-desc">grep "processada\|ignorada\|arquivada" em src/pages/controller → zero. Banco: status IN ('nao_lida','lida','finalizada','erro').</div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#ef4444;">🔴 P4 — Zero prazo nos cards</div>
+        <div class="compliance-desc">grep "prazo\|data_prazo" em ControllerV5IntimacaoRow.tsx → zero ocorrências no JSX.</div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#ef4444;">🔴 P6 — Classes ocultas</div>
+        <div class="compliance-desc">grep "classe_cecilia\|confianca\|badge.*classe\|badge.*IA" nos componentes de lista → zero visíveis.</div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#f59e0b;">🟡 P3 — Finalizada visível</div>
+        <div class="compliance-desc">Toggle "Mostrar finalizadas" OFF por padrão. Cards finalizados: opacity-40 + line-through, permanecem visíveis quando toggle ON.</div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#f59e0b;">🟡 P5 — Urgente + Importante</div>
+        <div class="compliance-desc">Testar card com urgente=true E importante=true → dot vermelho + ring amarelo simultâneos.</div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#f59e0b;">🟡 P7 — Sugestão de fase</div>
+        <div class="compliance-desc">Criar atividade tipo "Alvará" → dialog "Mover para Financeiro?" aparece. NUNCA move automaticamente.</div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#0ea5e9;">🔵 P8 — Ciência manual</div>
+        <div class="compliance-desc">Botão ciência → ConfirmDialog obrigatório → só então webhook n8n. NUNCA executar diretamente.</div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#0ea5e9;">🔵 Design System</div>
+        <div class="compliance-desc">Zero hardcode hex. grep "bg-\[#\|text-\[#" src/pages/controller → zero. SEMPRE tokens CSS.</div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-title" style="color:#0ea5e9;">🔵 TypeScript + Build</div>
+        <div class="compliance-desc">Zero 'any'. tsc --noEmit → zero erros. npm run build → zero erros. organizacao_id em TODA query.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESCOBERTAS IMPORTANTES -->
+  <div class="section">
+    <div class="section-title">🔍 Descobertas Importantes da Análise</div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div class="alert alert-destructive">
+        <span class="alert-icon">🚨</span>
+        <div><strong>V4 não existe no repo:</strong> O PRD referencia <code>ControllerV4*.tsx</code> como MODIFY, mas todos os arquivos são V3. As tarefas "MODIFY V4" serão <strong>CREATE V5 baseado em V3</strong>. Isso implica mais trabalho que o PRD prevê.</div>
+      </div>
+      <div class="alert alert-warning">
+        <span class="alert-icon">⚠️</span>
+        <div><strong>Stubs detectados:</strong> <code>ControllerV3BulkBar.tsx</code> (2L), <code>ControllerV3CommandPalette.tsx</code> (2L), <code>ControllerV3KPIs.tsx</code> (3L) são arquivos praticamente vazios. O PRD os marca como "KEEP" mas precisarão ser verificados — possivelmente criados do zero.</div>
+      </div>
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div><strong>V3 Drawer tem 620L:</strong> <code>ControllerV3Drawer.tsx</code> é o maior arquivo (620L). O novo <code>ControllerV5Drawer.tsx</code> será complexo — considerar dividir em subcomponentes se ultrapassar 500L (regra CLAUDE.md).</div>
+      </div>
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div><strong>Hooks já existem:</strong> <code>useControllerRealtime.ts</code> e <code>useControllerKeyboard.ts</code> já existem (KEEP). Apenas atualizar semântica de shortcuts (l=lida, f=finalizar).</div>
+      </div>
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div><strong>@tanstack/react-virtual já instalado:</strong> PRD confirma que está no projeto. Usar sem instalação adicional para virtualização da lista de 300–600+ itens.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>Controller V5 — Plano de Implementação | PRD v2.0 FINAL · 01/04/2026</div>
+    <div>Gustavo (implementação) · Beto/CC (análise) · MdLab LegalTech</div>
+  </div>
+
+</div>
+
+<script>
+// Inicializar fases abertas (primeiras 4 abertas, resto fechado)
+document.querySelectorAll('.fase-body').forEach((body, index) => {
+  if (index >= 4) {
+    body.style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>
