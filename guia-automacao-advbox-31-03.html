@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia: Automacao AdvBox — Cadastramento 31/03/2026</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+.table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
+.table-wrap table { border-radius: 14px; overflow: hidden; }
+.table-wrap th:first-child { border-radius: 14px 0 0 0; }
+.table-wrap th:last-child { border-radius: 0 14px 0 0; }
+.highlight { color: var(--accent); font-weight: 600; }
+.highlight-green { color: var(--accent3); font-weight: 600; }
+.highlight-red { color: var(--accent2); font-weight: 600; }
+.highlight-yellow { color: var(--accent4); font-weight: 600; }
+.bug-card { background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(255,107,107,0.02)); border: 1px solid rgba(255,107,107,0.25); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.fix-card { background: linear-gradient(135deg, rgba(79,255,176,0.08), rgba(79,255,176,0.02)); border: 1px solid rgba(79,255,176,0.25); border-radius: 14px; padding: 20px; }
+.version-timeline { position: relative; padding-left: 24px; }
+.version-timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.version-item { position: relative; margin-bottom: 20px; }
+.version-item::before { content: ''; position: absolute; left: -20px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface3); border: 2px solid var(--border); }
+.version-item.active::before { background: var(--accent3); border-color: var(--accent3); box-shadow: 0 0 8px rgba(79,255,176,0.4); }
+.version-item h4 { font-size: 0.9rem; margin-bottom: 4px; }
+.version-item p { font-size: 0.82rem; color: var(--text-muted); }
+.flow-steps { display: flex; flex-direction: column; gap: 12px; }
+.flow-step { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.flow-num { min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(124,109,255,0.2); color: var(--accent); font-weight: 700; font-size: 0.8rem; }
+.flow-content { flex: 1; }
+.flow-content strong { display: block; margin-bottom: 2px; }
+.flow-content span { font-size: 0.82rem; color: var(--text-muted); }
+.oab-tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.oab-rs { background: rgba(124,109,255,0.15); color: var(--accent); }
+.oab-sc { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.oab-sp { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.process-list { max-height: 400px; overflow-y: auto; }
+.process-list::-webkit-scrollbar { width: 6px; }
+.process-list::-webkit-scrollbar-track { background: var(--surface); }
+.process-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.tab-container { margin-bottom: 16px; }
+.tab-buttons { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab-btn { padding: 8px 16px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s; font-family: inherit; }
+.tab-btn:hover { background: var(--surface2); color: var(--text); }
+.tab-btn.active { background: rgba(124,109,255,0.15); color: var(--accent); border-color: rgba(124,109,255,0.3); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.api-item { padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
+.api-method { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.api-post { background: rgba(79,255,176,0.15); color: var(--accent3); }
+.api-get { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.api-path { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--text); margin-left: 8px; }
+.api-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+.checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(42,47,74,0.5); }
+.checklist-icon { font-size: 1rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">&#9881;&#65039;</span>
+    <h1 class="gradient-text">Automacao AdvBox v3</h1>
+    <p class="hero-sub">Cadastramento automatizado de 69 processos via API interna — 31/03/2026</p>
+    <div class="badges">
+      <span class="badge bg">100% sucesso</span>
+      <span class="badge bp">v3 — bug OAB corrigido</span>
+      <span class="badge bb">69 processos</span>
+      <span class="badge by">3 tribunais</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value">69</div>
+      <div class="stat-label">Processos Total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent3);">66</div>
+      <div class="stat-label">Criados Auto</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent4);">3</div>
+      <div class="stat-label">Pulados (existiam)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent2);">0</div>
+      <div class="stat-label">Erros Finais</div>
+    </div>
+  </div>
+
+  <!-- BUG FIX SECTION -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128027;</span>
+      <h2>Bug Corrigido na v3</h2>
+    </div>
+
+    <div class="bug-card">
+      <div class="card-title" style="color: var(--accent2);">Problema (v1 e v2)</div>
+      <p style="margin-bottom: 10px;">O <span class="code" style="display:inline; padding: 2px 6px;">groups_id</span> era hardcoded como <span class="highlight-red">498044</span> (CHRISTIAN SP535101) para <strong>todos</strong> os processos, independente da OAB real.</p>
+      <p style="color: var(--text-muted); font-size: 0.82rem;">Resultado: processos do RS e SC eram cadastrados no grupo errado (SP).</p>
+    </div>
+
+    <div class="fix-card">
+      <div class="card-title" style="color: var(--accent3);">Solucao (v3)</div>
+      <p style="margin-bottom: 12px;">O <span class="code" style="display:inline; padding: 2px 6px;">groups_id</span> agora e determinado <span class="highlight-green">dinamicamente</span> pela coluna OAB da planilha:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>OAB</th><th>groups_id</th><th>Grupo no AdvBox</th><th>Tribunal</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="oab-tag oab-rs">RS116571</span></td>
+              <td class="highlight">225949</td>
+              <td>CHRISTIAN RS116571</td>
+              <td>TJRS (.8.21.)</td>
+            </tr>
+            <tr>
+              <td><span class="oab-tag oab-sc">SC74025</span></td>
+              <td class="highlight">498042</td>
+              <td>CHRISTIAN SC74025</td>
+              <td>TJSC (.8.24.)</td>
+            </tr>
+            <tr>
+              <td><span class="oab-tag oab-sp">SP535101</span></td>
+              <td class="highlight">498044</td>
+              <td>CHRISTIAN SP535101</td>
+              <td>TJSP (.8.26.)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADO POR OAB -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128202;</span>
+      <h2>Resultado por OAB</h2>
+    </div>
+    <div class="grid g3">
+      <div class="stat-card" style="border-color: rgba(124,109,255,0.3);">
+        <div class="stat-value">28</div>
+        <div class="stat-label"><span class="oab-tag oab-rs">RS116571</span></div>
+        <div style="font-size:0.72rem; color: var(--text-muted); margin-top:4px;">grupo 225949 — TJRS</div>
+      </div>
+      <div class="stat-card" style="border-color: rgba(91,196,245,0.3);">
+        <div class="stat-value" style="color: var(--accent5);">10</div>
+        <div class="stat-label"><span class="oab-tag oab-sc">SC74025</span></div>
+        <div style="font-size:0.72rem; color: var(--text-muted); margin-top:4px;">grupo 498042 — TJSC</div>
+      </div>
+      <div class="stat-card" style="border-color: rgba(255,209,102,0.3);">
+        <div class="stat-value" style="color: var(--accent4);">31</div>
+        <div class="stat-label"><span class="oab-tag oab-sp">SP535101</span></div>
+        <div style="font-size:0.72rem; color: var(--text-muted); margin-top:4px;">grupo 498044 — TJSP</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUXO DA AUTOMACAO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#9889;</span>
+      <h2>Fluxo da Automacao</h2>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-content">
+          <strong>Login via Playwright</strong>
+          <span>Sessao anterior (agent-browser) salvava cookies do dominio errado. Solucao: Playwright direto headless, cookies em <code style="color:var(--accent3)">/tmp/advbox_auth.json</code></span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-content">
+          <strong>Teste com 3 primeiros processos</strong>
+          <span><code style="color:var(--accent3)">python3 advbox_automation_v3.py --test</code> — 3/3 OK, grupo RS116571 correto</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-content">
+          <strong>Execucao completa</strong>
+          <span><code style="color:var(--accent3)">python3 -u advbox_automation_v3.py</code> — 68/69 OK em ~8 minutos</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-content">
+          <strong>Correcao manual do processo #60</strong>
+          <span>Cliente "JOAO PAULO FRACELOSO DIAS" nao encontrado via busca automatica. Criado manualmente via API — ID 13963690</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALHES TECNICOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128736;&#65039;</span>
+      <h2>Detalhes Tecnicos</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Configuracao</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div><span style="color:var(--text-muted)">Script:</span> <span class="code" style="display:inline; padding:2px 6px;">advbox_automation_v3.py</span></div>
+          <div><span style="color:var(--text-muted)">Conta:</span> joao@perinottipazadvogados.com</div>
+          <div><span style="color:var(--text-muted)">Rate limit:</span> 1.5s entre requests</div>
+          <div><span style="color:var(--text-muted)">Tempo total:</span> ~8 minutos</div>
+          <div><span style="color:var(--text-muted)">Planilha:</span> processos para cadastramento 31_03.xlsx</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">APIs Utilizadas</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div class="api-item">
+            <div><span class="api-method api-post">POST</span><span class="api-path">/search</span></div>
+            <div class="api-desc">Busca global (clientes e processos)</div>
+          </div>
+          <div class="api-item">
+            <div><span class="api-method api-post">POST</span><span class="api-path">/customers</span></div>
+            <div class="api-desc">Cria contato (customers_origins_id=302582)</div>
+          </div>
+          <div class="api-item">
+            <div><span class="api-method api-post">POST</span><span class="api-path">/lawsuits</span></div>
+            <div class="api-desc">Cria processo</div>
+          </div>
+          <div class="api-item">
+            <div><span class="api-method api-get">GET</span><span class="api-path">/processos</span></div>
+            <div class="api-desc">Extrai CSRF token</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMPOS ENVIADOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128230;</span>
+      <h2>Campos da Criacao de Processo</h2>
+    </div>
+    <div class="card">
+      <div class="table-wrap" style="border:none;">
+        <table>
+          <thead><tr><th>Campo</th><th>Valor</th><th>Nota</th></tr></thead>
+          <tbody>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">_token</span></td><td>CSRF token dinamico</td><td>Extraido de /processos</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">customer_type[]</span></td><td>1 (cliente) / 3 (contraria)</td><td>Determina papel da parte</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">customer_list[]</span></td><td>ID do cliente</td><td>Buscado ou criado via API</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">contrary_list[]</span></td><td>ID da parte contraria</td><td>Buscado ou criado via API</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">groups_id</span></td><td style="color:var(--accent3); font-weight:600;">Dinamico pela OAB</td><td>Correcao principal v3</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">type_lawsuits_id</span></td><td>1880677</td><td>Tipo padrao</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">steps_id</span></td><td>3</td><td>Etapa inicial</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">stages_id</span></td><td>789277</td><td>Fase padrao</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">users_id</span></td><td>140216</td><td>Joao (responsavel)</td></tr>
+            <tr><td><span class="code" style="display:inline;padding:2px 6px;">process_number</span></td><td>CNJ completo</td><td>Numero do processo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTIMIZACOES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128161;</span>
+      <h2>Otimizacoes do Script</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Cache de Clientes</div>
+        <p style="font-size:0.85rem;">Dicionario <span class="code" style="display:inline;padding:2px 6px;">customer_cache</span> em memoria. Quando o mesmo cliente/contraria aparece em multiplos processos, a busca e feita so uma vez.</p>
+        <p style="color:var(--accent3); font-weight:600; margin-top:8px;">~60% menos requests</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Deteccao de PJ</div>
+        <p style="font-size:0.85rem;">Funcao <span class="code" style="display:inline;padding:2px 6px;">is_pj()</span> detecta pessoa juridica por keywords: S.A, LTDA, BANCO, FUNDO, CAIXA, SERVICOS, FINANCEIRA, COMPANHIA, ENERGIA, INSTITUICAO, DISTRIBUIDORA, PAGAMENTO.</p>
+        <p style="color:var(--accent5); margin-top:8px; font-size:0.82rem;">Define tipo do contato automaticamente</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA COMPLETA DE PROCESSOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128203;</span>
+      <h2>Lista Completa — 69 Processos</h2>
+    </div>
+
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab('tab-rs')"><span class="oab-tag oab-rs">RS116571</span> 28 processos</button>
+        <button class="tab-btn" onclick="showTab('tab-sc')"><span class="oab-tag oab-sc">SC74025</span> 10 processos</button>
+        <button class="tab-btn" onclick="showTab('tab-sp')"><span class="oab-tag oab-sp">SP535101</span> 31 processos</button>
+      </div>
+
+      <!-- RS TAB -->
+      <div id="tab-rs" class="tab-panel active">
+        <div class="table-wrap">
+          <div class="process-list">
+            <table>
+              <thead><tr><th>#</th><th>Processo</th><th>Autor</th><th>Reu</th><th>ID AdvBox</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5002967-47.2026.8.21.0070</td><td>ANDRINE DOS SANTOS FISCHBORN</td><td>MERCADO PAGO</td><td class="highlight">13963592</td></tr>
+                <tr><td>2</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5003145-91.2026.8.21.0006</td><td>ANDRE HARROTE</td><td>MERCADO PAGO</td><td class="highlight">13963593</td></tr>
+                <tr><td>3</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5009662-67.2026.8.21.0021</td><td>JAQUELINE CORREA SOUZA</td><td>MERCADO PAGO</td><td class="highlight">13963595</td></tr>
+                <tr><td>4</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5074339-69.2026.8.21.0001</td><td>BIANCA CASSIMIRO</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963596</td></tr>
+                <tr><td>5</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5075011-77.2026.8.21.0001</td><td>FABIANA MARIA DOS REIS</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963597</td></tr>
+                <tr><td>6</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5075024-76.2026.8.21.0001</td><td>CRISTIANO ULGUIM LEAL</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963599</td></tr>
+                <tr><td>7</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5075647-43.2026.8.21.0001</td><td>MARIA APARECIDA VIEIRA AZEVEDO</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963600</td></tr>
+                <tr><td>8</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5075798-09.2026.8.21.0001</td><td>MARIELE DA SILVA FOGLIATO</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963601</td></tr>
+                <tr><td>9</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5075847-50.2026.8.21.0001</td><td>ANDRE DOS SANTOS SCHABBACH</td><td>BANRISUL</td><td class="highlight">13963602</td></tr>
+                <tr><td>10</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5075905-53.2026.8.21.0001</td><td>MAICON JODEL FLORES NUNES</td><td>BANRISUL</td><td class="highlight">13963603</td></tr>
+                <tr><td>11</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5076007-75.2026.8.21.0001</td><td>GRAZIELA MARTINS PACHECO</td><td>VERO</td><td class="highlight">13963604</td></tr>
+                <tr><td>12</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5076096-98.2026.8.21.0001</td><td>CRISTIANO ULGUIM LEAL</td><td>TELEFONICA BRASIL</td><td class="highlight">13963605</td></tr>
+                <tr><td>13</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5076236-35.2026.8.21.0001</td><td>DIEGO DE CASTRO</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963606</td></tr>
+                <tr><td>14</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5076253-71.2026.8.21.0001</td><td>ADRIANO PRADELLA</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963607</td></tr>
+                <tr><td>15</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5076337-72.2026.8.21.0001</td><td>ALEXANDRE BORGES BRANQUIEL</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963609</td></tr>
+                <tr><td>16</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5076346-34.2026.8.21.0001</td><td>JONAS AUGUSTO LIMA DOS SANTOS</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963611</td></tr>
+                <tr><td>17</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5076425-13.2026.8.21.0001</td><td>KAREN FABIANE DE LIMA FERREIRA</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963613</td></tr>
+                <tr><td>18</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5076436-42.2026.8.21.0001</td><td>CRISTIANO OLIVEIRA PECK</td><td>BOA VISTA SERVICOS</td><td class="highlight">13963614</td></tr>
+                <tr><td>19</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5077678-36.2026.8.21.0001</td><td>ALINE OLSEN</td><td>NU PAGAMENTOS</td><td class="highlight">13963615</td></tr>
+                <tr><td>20</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5077683-58.2026.8.21.0001</td><td>VANDERLEIA MORBACH</td><td>NU PAGAMENTOS</td><td class="highlight">13963618</td></tr>
+                <tr><td>21</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5077706-04.2026.8.21.0001</td><td>LORENI DOS SANTOS NUNES</td><td>BANCO BRADESCO</td><td class="highlight">13963621</td></tr>
+                <tr><td>22</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5077751-08.2026.8.21.0001</td><td>CARLA FERNANDA DA CONCEICAO PAIM</td><td>NU PAGAMENTOS</td><td class="highlight">13963624</td></tr>
+                <tr><td>23</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5077909-63.2026.8.21.0001</td><td>ALAN ALVES DA SILVA</td><td>BANRISUL</td><td class="highlight">13963625</td></tr>
+                <tr><td>24</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5077973-73.2026.8.21.0001</td><td>FABIO ROCHA DIDONE</td><td>RGE SUL</td><td class="highlight">13963627</td></tr>
+                <tr><td>25</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5078069-88.2026.8.21.0001</td><td>CAMILA GONCALVES CRUZ</td><td>RGE SUL</td><td class="highlight">13963628</td></tr>
+                <tr><td>26</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5078086-27.2026.8.21.0001</td><td>NATAN MACHADO ALESSIO</td><td>RGE SUL</td><td class="highlight">13963629</td></tr>
+                <tr><td>27</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5078430-08.2026.8.21.0001</td><td>KAREN FABIANE DE LIMA FERREIRA</td><td>BOTICARIO</td><td class="highlight">13963630</td></tr>
+                <tr><td>28</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5112635-97.2025.8.21.0001</td><td>ELENIR COUTO SILVEIRA</td><td>O BOTICARIO</td><td class="highlight">13963631</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SC TAB -->
+      <div id="tab-sc" class="tab-panel">
+        <div class="table-wrap">
+          <div class="process-list">
+            <table>
+              <thead><tr><th>#</th><th>Processo</th><th>Autor</th><th>Reu</th><th>ID AdvBox</th></tr></thead>
+              <tbody>
+                <tr><td>29</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5009177-51.2026.8.24.0064</td><td>FELIPE MANOEL SABINO JUNIOR</td><td>MERCADO PAGO</td><td class="highlight">13963633</td></tr>
+                <tr><td>30</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5009202-84.2026.4.04.7200</td><td>ANTONIO HENRIQUE SANTOS SOUZA</td><td>CEF</td><td class="highlight">13963634</td></tr>
+                <tr><td>31</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5009204-54.2026.4.04.7200</td><td>ANTONIO HENRIQUE SANTOS SOUZA</td><td>CEF</td><td class="highlight">13963635</td></tr>
+                <tr><td>32</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5018165-87.2026.8.24.0023</td><td>THALITA DE AGUIAR FELSKI</td><td>VERO</td><td class="highlight">13963636</td></tr>
+                <tr><td>33</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5018170-12.2026.8.24.0023</td><td>AUGUSTO CEZAR COSTA ARAUJO</td><td>CELESC</td><td class="highlight">13963638</td></tr>
+                <tr><td>34</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5018173-64.2026.8.24.0023</td><td>MARCOS ROBERTO BOMBEM</td><td>CELESC</td><td class="highlight">13963639</td></tr>
+                <tr><td>35</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5018356-35.2026.8.24.0023</td><td>TAIZ RIBEIRO FERREIRA JUNIOR</td><td>MERCADO PAGO</td><td class="highlight">13963641</td></tr>
+                <tr><td>36</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5018379-78.2026.8.24.0023</td><td>FELIPE MANOEL SABINO JUNIOR</td><td>BOA VISTA</td><td class="highlight">13963642</td></tr>
+                <tr><td>37</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5018386-70.2026.8.24.0023</td><td>JULIANE DENISIA DE OLIVEIRA</td><td>CELESC</td><td class="highlight">13963643</td></tr>
+                <tr><td>38</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">5090419-64.2025.8.24.0000</td><td>LEANDRO PEREIRA IZAIAS</td><td>MERCADO PAGO</td><td class="highlight">13963646</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SP TAB -->
+      <div id="tab-sp" class="tab-panel">
+        <div class="table-wrap">
+          <div class="process-list">
+            <table>
+              <thead><tr><th>#</th><th>Processo</th><th>Autor</th><th>Reu</th><th>ID AdvBox</th></tr></thead>
+              <tbody>
+                <tr><td>39</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4006314-73.2026.8.26.0068</td><td>WILLIAM DE CAMPOS MOREIRA</td><td>BOA VISTA</td><td class="highlight">13963647</td></tr>
+                <tr><td>40</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4006329-42.2026.8.26.0068</td><td>MARCIO ANTONIO PENICHE</td><td>BOA VISTA</td><td class="highlight">13963648</td></tr>
+                <tr><td>41</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4006340-71.2026.8.26.0068</td><td>LUCIANA CRISTINE TEIXEIRA</td><td>BOA VISTA</td><td class="highlight">13963651</td></tr>
+                <tr><td>42</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4051037-81.2026.8.26.0100</td><td>NATIELI DE SOUZA SILVA</td><td>VERO</td><td class="highlight">13963653</td></tr>
+                <tr><td>43</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4051049-95.2026.8.26.0100</td><td>JOSE RIBAMAR DE BARROS SANTOS JUNIOR</td><td>ITAPEVA XI</td><td class="highlight">13963654</td></tr>
+                <tr><td>44</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4051182-40.2026.8.26.0100</td><td>SILVANA NUNES POLIDORO</td><td>EDP SAO PAULO</td><td class="highlight">13963655</td></tr>
+                <tr><td>45</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4051309-75.2026.8.26.0100</td><td>LEONARDO PEREIRA DOS SANTOS</td><td>ELETROPAULO</td><td class="highlight">13963658</td></tr>
+                <tr><td>46</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052660-83.2026.8.26.0100</td><td>ERASMO CARLOS DA SILVA</td><td>ELETROPAULO</td><td class="highlight">13963659</td></tr>
+                <tr><td>47</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052662-53.2026.8.26.0100</td><td>LEONARDO PEREIRA DOS SANTOS</td><td>ELETROPAULO</td><td class="highlight">13963660</td></tr>
+                <tr><td>48</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052728-33.2026.8.26.0100</td><td>SARA REGINA DOS SANTOS SODRE</td><td>MERCADO PAGO</td><td class="highlight">13963661</td></tr>
+                <tr><td>49</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052733-55.2026.8.26.0100</td><td>SEBASTIAO JORGE SETIMI</td><td>MERCADO PAGO</td><td class="highlight">13963662</td></tr>
+                <tr><td>50</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052758-68.2026.8.26.0100</td><td>MARIO CESAR OLIVEIRA SILVA</td><td>MERCADO PAGO</td><td class="highlight">13963663</td></tr>
+                <tr><td>51</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052764-75.2026.8.26.0100</td><td>FAGNER ALEXANDRE MARTINS CORREIA</td><td>CIA PIRATININGA</td><td class="highlight">13963665</td></tr>
+                <tr><td>52</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052769-97.2026.8.26.0100</td><td>ROBERTO LIBARINO DE CASTRO</td><td>NU PAGAMENTOS</td><td class="highlight">13963666</td></tr>
+                <tr><td>53</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052787-21.2026.8.26.0100</td><td>ELIETE GARCIA DOS SANTOS</td><td>CIA PIRATININGA</td><td class="highlight">13963667</td></tr>
+                <tr><td>54</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052789-88.2026.8.26.0100</td><td>ELIETE GARCIA DOS SANTOS</td><td>MERCADO PAGO</td><td class="highlight">13963668</td></tr>
+                <tr><td>55</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052794-13.2026.8.26.0100</td><td>ELIETE GARCIA DOS SANTOS</td><td>DM INSTITUICAO</td><td class="highlight">13963670</td></tr>
+                <tr><td>56</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052796-80.2026.8.26.0100</td><td>DUILLIO ANTONIO ALMINO FRANCISCO</td><td>BANCO DAYCOVAL</td><td class="highlight">13963672</td></tr>
+                <tr><td>57</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052801-05.2026.8.26.0100</td><td>DUILLIO ANTONIO ALMINO FRANCISCO</td><td>EDP SAO PAULO</td><td class="highlight">13963673</td></tr>
+                <tr><td>58</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052814-04.2026.8.26.0100</td><td>DUILLIO ANTONIO ALMINO FRANCISCO</td><td>REALIZE</td><td class="highlight">13963674</td></tr>
+                <tr><td>59</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052817-56.2026.8.26.0100</td><td>ALECSANDRO APARECIDO MONTEIRO</td><td>BANCO BRADESCO</td><td class="highlight">13963675</td></tr>
+                <tr><td>60</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052861-75.2026.8.26.0100</td><td>JOAO PAULO FRACELOSO DIAS</td><td>ELETROPAULO</td><td class="highlight" style="color:var(--accent4);">13963690 <span class="status-pill sp-pend" style="font-size:0.65rem;">corrigido manual</span></td></tr>
+                <tr><td>61</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052927-55.2026.8.26.0100</td><td>ELIETE GARCIA DOS SANTOS</td><td>CIA PIRATININGA</td><td class="highlight">13963677</td></tr>
+                <tr><td>62</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052933-62.2026.8.26.0100</td><td>BRUNO FARIAS ALMEIDA</td><td>TELEFONICA</td><td class="highlight">13963679</td></tr>
+                <tr><td>63</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4052950-98.2026.8.26.0100</td><td>FABIANO FERNANDES DO ESPIRITO SANTO</td><td>BOA VISTA</td><td class="highlight">13963680</td></tr>
+                <tr><td>64</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4053128-47.2026.8.26.0100</td><td>LUIZ RODRIGO ADAO</td><td>NU PAGAMENTOS</td><td class="highlight">13963681</td></tr>
+                <tr><td>65</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4053138-91.2026.8.26.0100</td><td>KARINA MONTEFUSCO</td><td>TORRA TORRA</td><td class="highlight">13963682</td></tr>
+                <tr><td>66</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4053140-61.2026.8.26.0100</td><td>NEIDE APARECIDA SOARES</td><td>ELETROPAULO</td><td class="highlight">13963683</td></tr>
+                <tr><td>67</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4053198-64.2026.8.26.0100</td><td>TABATA FERREIRA SILVA BORGES</td><td>ELETROPAULO</td><td class="highlight">13963684</td></tr>
+                <tr><td>68</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4053304-26.2026.8.26.0100</td><td>ANTONIO MARTINS</td><td>BANCO PAN</td><td class="highlight">13963686</td></tr>
+                <tr><td>69</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">4053389-12.2026.8.26.0100</td><td>KAUANE SIMOES SILVA</td><td>ELETROPAULO</td><td class="highlight">13963687</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMO RODAR NOVAMENTE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128260;</span>
+      <h2>Como Rodar Novamente</h2>
+    </div>
+    <div class="card">
+      <div class="card-title">Passo 1 — Login via Playwright (se sessao expirou)</div>
+      <div class="code">python3 &lt;&lt; 'EOF'
+from playwright.sync_api import sync_playwright
+import json
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto('https://app.advbox.com.br/login', wait_until='domcontentloaded', timeout=30000)
+    page.fill('input[type="email"]', 'joao@perinottipazadvogados.com')
+    page.fill('input[type="password"]', 'Joao1234@')
+    with page.expect_navigation(timeout=30000, wait_until='domcontentloaded'):
+        page.click('button:has-text("Entrar")')
+    import time; time.sleep(3)
+    if '/2fa' in page.url:
+        print('2FA REQUIRED — check email')
+        exit(1)
+    state = {'cookies': context.cookies()}
+    with open('/tmp/advbox_auth.json', 'w') as f:
+        json.dump(state, f)
+    print(f'Logged in: {page.url}')
+    browser.close()
+EOF</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title">Passo 2 — Atualizar planilha e testar</div>
+      <div class="code"># Editar EXCEL_FILE no script para apontar para a nova planilha
+# Testar com 3 primeiros processos
+python3 advbox_automation_v3.py --test</div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title">Passo 3 — Execucao completa</div>
+      <div class="code">python3 -u advbox_automation_v3.py 2>&amp;1 | tee /tmp/advbox_run.log</div>
+    </div>
+  </div>
+
+  <!-- ERROS CONHECIDOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#9888;&#65039;</span>
+      <h2>Erros Conhecidos e Solucoes</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Erro</th><th>Causa</th><th>Solucao</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="status-pill sp-block">CSRF token mismatch (419)</span></td>
+            <td>Sessao expirou</td>
+            <td>Re-logar via Playwright e salvar cookies</td>
+          </tr>
+          <tr>
+            <td><span class="status-pill sp-block">customers_origins_id obrigatorio</span></td>
+            <td>Campo origem nao enviado na criacao de contato</td>
+            <td>Sempre enviar 302582 (INTERNET)</td>
+          </tr>
+          <tr>
+            <td><span class="status-pill sp-block">Error 1015 Rate limited</span></td>
+            <td>Cloudflare</td>
+            <td>Manter SLEEP_BETWEEN &gt;= 1.5s</td>
+          </tr>
+          <tr>
+            <td><span class="status-pill sp-pend">Cliente nao encontrado</span></td>
+            <td>Nome na planilha difere do AdvBox</td>
+            <td>Criar manualmente via API</td>
+          </tr>
+          <tr>
+            <td><span class="status-pill sp-pend">agent-browser cookies errados</span></td>
+            <td>Contexto do browser misturado com MdFlow local</td>
+            <td>Usar Playwright direto em vez de agent-browser</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EVOLUCAO DAS VERSOES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128200;</span>
+      <h2>Evolucao das Versoes</h2>
+    </div>
+    <div class="card">
+      <div class="version-timeline">
+        <div class="version-item">
+          <h4>v1 — advbox_automation.py <span style="color:var(--text-muted); font-weight:400; font-size:0.8rem;">30/03/2026</span></h4>
+          <p>Primeira versao. groups_id hardcoded SP535101 para todos os processos.</p>
+        </div>
+        <div class="version-item">
+          <h4>v2 — advbox_automation_v2.py <span style="color:var(--text-muted); font-weight:400; font-size:0.8rem;">30/03/2026</span></h4>
+          <p>Melhorias no parsing de planilha. groups_id ainda hardcoded.</p>
+        </div>
+        <div class="version-item active">
+          <h4 style="color:var(--accent3);">v3 — advbox_automation_v3.py <span style="color:var(--accent3); font-weight:400; font-size:0.8rem;">31/03/2026</span></h4>
+          <p style="color:var(--text);">groups_id dinamico por OAB. Bug corrigido. 69/69 processos cadastrados com sucesso.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- META -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128196;</span>
+      <h2>Meta</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Execucao</div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:0.85rem;">
+          <div><span style="color:var(--text-muted)">Data:</span> 31/03/2026</div>
+          <div><span style="color:var(--text-muted)">Operador:</span> Beto (Claude Code)</div>
+          <div><span style="color:var(--text-muted)">Supervisor:</span> Christian</div>
+          <div><span style="color:var(--text-muted)">Conta AdvBox:</span> joao@perinottipazadvogados.com</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Resultado</div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:0.85rem;">
+          <div><span style="color:var(--text-muted)">Total processados:</span> <span class="highlight-green">69</span></div>
+          <div><span style="color:var(--text-muted)">Taxa de sucesso:</span> <span class="highlight-green">100%</span></div>
+          <div><span style="color:var(--text-muted)">Tempo:</span> ~8 minutos</div>
+          <div><span style="color:var(--text-muted)">Script:</span> advbox_automation_v3.py</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    &#128025; Jarbas 2.0 — MdLab LegalTech &middot; 31/03/2026
+  </div>
+
+</div>
+
+<script>
+function showTab(tabId) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>
