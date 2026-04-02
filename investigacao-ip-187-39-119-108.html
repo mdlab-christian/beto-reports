@@ -3,527 +3,616 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Investigação IP 187.39.119.108 — Procurações ZapSign</title>
+<title>Investigação IP 187.39.119.108 — Varredura Completa</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
   :root {
-    --bg: #0d0f18;
-    --surface: #161926;
-    --card: #1a1f2e;
+    --bg: #12100e;
+    --surface: #1a1714;
+    --card: #211e1a;
     --accent: #ef4444;
     --accent2: #f59e0b;
     --primary: #20c997;
     --text: #f2efe8;
     --muted: #9e978a;
-    --border: #2a2f3e;
+    --border: #3a3530;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; padding:24px; }
-  .container { max-width:1200px; margin:0 auto; }
-  h1 { font-family:'Manrope',sans-serif; font-size:28px; font-weight:800; margin-bottom:8px; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; padding:24px; line-height:1.5; }
+  .container { max-width:1400px; margin:0 auto; }
+  h1 { font-family:'Manrope',sans-serif; font-size:28px; font-weight:800; margin-bottom:4px; }
   h1 span { color:var(--accent); }
+  h2 { font-family:'Manrope',sans-serif; font-size:20px; font-weight:700; margin:32px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
   .subtitle { color:var(--muted); font-size:14px; margin-bottom:32px; }
-  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px; }
+  .badge { display:inline-block; background:var(--accent); color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:4px; margin-left:8px; }
+  
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:32px; }
   .kpi { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; }
-  .kpi-value { font-family:'Manrope',sans-serif; font-size:32px; font-weight:800; }
+  .kpi-value { font-family:'Manrope',sans-serif; font-size:36px; font-weight:800; line-height:1; }
   .kpi-value.danger { color:var(--accent); }
   .kpi-value.warning { color:var(--accent2); }
   .kpi-value.info { color:var(--primary); }
-  .kpi-label { color:var(--muted); font-size:13px; margin-top:4px; }
+  .kpi-label { color:var(--muted); font-size:13px; margin-top:8px; }
+  
   .alert { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:12px; padding:20px; margin-bottom:32px; }
   .alert-title { color:var(--accent); font-weight:700; font-size:16px; margin-bottom:8px; }
-  .alert-text { color:var(--muted); font-size:14px; line-height:1.6; }
-  table { width:100%; border-collapse:collapse; font-size:13px; }
-  thead { position:sticky; top:0; z-index:10; }
-  th { background:var(--surface); color:var(--muted); text-align:left; padding:12px 16px; font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:0.5px; border-bottom:2px solid var(--border); }
-  td { padding:10px 16px; border-bottom:1px solid var(--border); vertical-align:top; }
-  tr:hover td { background:rgba(32,201,151,0.04); }
-  .badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:600; }
-  .badge-danger { background:rgba(239,68,68,0.15); color:#ef4444; }
-  .badge-warning { background:rgba(245,158,11,0.15); color:#f59e0b; }
-  .mono { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--primary); }
-  .email { color:var(--muted); font-size:12px; }
-  .phone { color:var(--muted); font-size:11px; font-family:'JetBrains Mono',monospace; }
-  .file-list { font-size:11px; color:var(--muted); max-height:60px; overflow:hidden; }
-  .section-title { font-family:'Manrope',sans-serif; font-size:20px; font-weight:700; margin:32px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
-  .footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; text-align:center; }
-  .ip-highlight { background:rgba(239,68,68,0.15); padding:2px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; color:var(--accent); font-weight:700; }
-  .timeline { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:24px; }
-  .timeline-item { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:12px; }
-  .timeline-count { font-weight:700; color:var(--accent); }
+  
+  .section { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:24px; }
+  
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; color:var(--muted); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; padding:12px 16px; border-bottom:1px solid var(--border); }
+  td { padding:10px 16px; border-bottom:1px solid rgba(58,53,48,0.5); font-size:14px; }
+  tr:hover { background:rgba(255,255,255,0.02); }
+  
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media (max-width:768px) { .two-col { grid-template-columns:1fr; } }
+  
+  .ip-72 { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:24px; }
+  .ip-72 .label { color:var(--accent2); font-weight:600; }
+  
+  .footer { text-align:center; color:var(--muted); font-size:12px; margin-top:48px; padding-top:24px; border-top:1px solid var(--border); }
 </style>
 </head>
 <body>
 <div class="container">
   <h1>Investigação IP <span>187.39.119.108</span></h1>
-  <p class="subtitle">Análise de procurações ZapSign — Google Drive (todos os drives) | Gerado em 02/04/2026 14:20</p>
+  <p class="subtitle">Varredura completa — 6,453 procurações analisadas no Drive Midas ANTIGO · 5,409 IPs extraídos · 1,193 IPs únicos · Gerado em 02/04/2026</p>
   
   <div class="alert">
-    <div class="alert-title">⚠ ALERTA: Múltiplos assinantes no mesmo IP</div>
-    <div class="alert-text">
-      Foram encontrados <strong>43 clientes diferentes</strong> que assinaram procurações via ZapSign 
-      utilizando o <strong>mesmo endereço IP</strong> (<span class="ip-highlight">187.39.119.108</span>), 
-      totalizando <strong>194 documentos</strong>. 
-      Isso indica que as assinaturas foram realizadas a partir do mesmo dispositivo/rede, 
-      possivelmente por um intermediário ou captador.
-      O período vai de <strong>dezembro/2025 a março/2026</strong>.
-    </div>
+    <div class="alert-title">CONFIRMADO: Padrão de captação irregular</div>
+    <p>O IP <code style="background:rgba(239,68,68,0.2);padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace">187.39.119.108</code> foi usado para assinar procurações de <strong>43 clientes diferentes</strong> — uma anomalia extrema. O segundo IP mais compartilhado tem apenas <strong>3</strong> clientes. Isso indica que um intermediário/captador está assinando documentos em nome dos clientes, todos a partir do mesmo dispositivo e rede.</p>
   </div>
-
+  
   <div class="kpi-grid">
     <div class="kpi">
       <div class="kpi-value danger">43</div>
-      <div class="kpi-label">Assinantes únicos</div>
+      <div class="kpi-label">Clientes únicos com o IP alvo</div>
     </div>
     <div class="kpi">
-      <div class="kpi-value warning">194</div>
-      <div class="kpi-label">Documentos com o IP</div>
+      <div class="kpi-value warning">146</div>
+      <div class="kpi-label">Procurações assinadas deste IP</div>
     </div>
     <div class="kpi">
-      <div class="kpi-value info">43</div>
-      <div class="kpi-label">Emails diferentes</div>
+      <div class="kpi-value info">6,453</div>
+      <div class="kpi-label">Procurações analisadas (total)</div>
     </div>
     <div class="kpi">
-      <div class="kpi-value" style="color:var(--muted);">187.39.119.108</div>
-      <div class="kpi-label">IP investigado</div>
+      <div class="kpi-value info">1,193</div>
+      <div class="kpi-label">IPs únicos encontrados</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value" style="color:var(--text)">2025-09 → 2026-03</div>
+      <div class="kpi-label">Período de atividade</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value danger">14.3x</div>
+      <div class="kpi-label">Mais que o 2º IP mais usado</div>
     </div>
   </div>
-
-  <div class="section-title">Distribuição por mês</div>
-  <div class="timeline">
-    <div class="timeline-item"><span class="timeline-count">4</span> docs em 2025/09</div>
-    <div class="timeline-item"><span class="timeline-count">4</span> docs em 2025/10</div>
-    <div class="timeline-item"><span class="timeline-count">5</span> docs em 2025/11</div>
-    <div class="timeline-item"><span class="timeline-count">103</span> docs em 2025/12</div>
-    <div class="timeline-item"><span class="timeline-count">62</span> docs em 2026/01</div>
-    <div class="timeline-item"><span class="timeline-count">7</span> docs em 2026/02</div>
-    <div class="timeline-item"><span class="timeline-count">9</span> docs em 2026/03</div>
+  
+  <div class="ip-72">
+    <p><span class="label">IP 72.14.201.200</span> — pesquisado a pedido, <strong>não encontrado</strong> em nenhuma das 6,453 procurações analisadas. Também sem resultados na busca fulltext do Google Drive. Nota: faixa 72.14.x.x pertence ao Google (possível proxy/VPN).</p>
   </div>
-
-  <div class="section-title">Lista completa de assinantes</div>
-  <div style="overflow-x:auto;">
-  <table>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Assinante</th>
-        <th>Email</th>
-        <th>Telefone</th>
-        <th>Data assinatura</th>
-        <th>Docs</th>
-        <th>Empresas/Contratos</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td><strong>MANOELA DE FATIMA DREBES MANCY</strong></td>
-        <td class="email">cdds2001@gmail.com</td>
-        <td class="phone">5551920012392</td>
-        <td>03/03/2026 20:05</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td><strong>JOÃO PEDRO DE CAMPOS PELICOLI</strong></td>
-        <td class="email">jpelicoli2003@gmail.com</td>
-        <td class="phone">5551997389702</td>
-        <td>13/02/2026 16:27</td>
-        <td><span class="badge badge-danger">7</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td><strong>ALEXSANDER SILVA DE VARGAS</strong></td>
-        <td class="email">alexsandervargas194@gmail.com</td>
-        <td class="phone">5551989063855</td>
-        <td>27/01/2026 14:02</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td><strong>MARCIO ROBERTO FINESSI DA SILVA</strong></td>
-        <td class="email">marciofinessidasilva@outlook.com</td>
-        <td class="phone">5517997827417</td>
-        <td>10/12/2025 15:04</td>
-        <td><span class="badge badge-warning">2</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td><strong>WILTON JOÃO DE SOUZA</strong></td>
-        <td class="email">wiltonjoaosouza34@gmail.com</td>
-        <td class="phone">5511972447553</td>
-        <td>09/12/2025 18:33</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td><strong>PAULO SERGIO ARAUJO</strong></td>
-        <td class="email">paulo.see.araujo@gmail.com</td>
-        <td class="phone">5519992828334</td>
-        <td>08/12/2025 19:08</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td><strong>TIAGO PEREIRA LIMA</strong></td>
-        <td class="email">tiagopereiralima50@gmail.com</td>
-        <td class="phone">5518997686142</td>
-        <td>08/12/2025 19:23</td>
-        <td><span class="badge badge-warning">2</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td><strong>JUNIOR ALVES AYRES</strong></td>
-        <td class="email">alvesjuniora@gmail.com</td>
-        <td class="phone">555599947175</td>
-        <td>07/12/2025 16:20</td>
-        <td><span class="badge badge-danger">5</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td><strong>DAIANE FERREIRA DE LIMA</strong></td>
-        <td class="email">daiferreira_lima@gmail.com</td>
-        <td class="phone">555496425065</td>
-        <td>07/12/2025 15:45</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>10</td>
-        <td><strong>LUIZ RODRIGO ADÃO</strong></td>
-        <td class="email">luizaorodrigo.adao@gmail.com</td>
-        <td class="phone">551191535106</td>
-        <td>07/12/2025 14:52</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>11</td>
-        <td><strong>ZILDA PEREIRA DA SILVA</strong></td>
-        <td class="email">zi_pereira.silva@outlook.com</td>
-        <td class="phone">5514997367695</td>
-        <td>07/12/2025 13:17</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>12</td>
-        <td><strong>VALDIR DE FREITAS</strong></td>
-        <td class="email">valdirdefreitas34@hotmail.com</td>
-        <td class="phone">5511960205909</td>
-        <td>10/12/2025 19:54</td>
-        <td><span class="badge badge-danger">6</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>13</td>
-        <td><strong>SILVONEI LUIZ VALCARENGHI</strong></td>
-        <td class="email">silvoneiluiz.1578@hotmail.com</td>
-        <td class="phone">554998214175</td>
-        <td>10/12/2025 21:02</td>
-        <td><span class="badge badge-warning">2</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>14</td>
-        <td><strong>CARLA FERNANDA DA CONCIÇÃO PAIM</strong></td>
-        <td class="email">carlapaim2025@gmail.com</td>
-        <td class="phone">555192314311</td>
-        <td>10/12/2025 21:20</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>15</td>
-        <td><strong>EDEMAR FRANCA RIBEIRO</strong></td>
-        <td class="email">ed.franca_ribeiro@gmail.com</td>
-        <td class="phone">555497141235</td>
-        <td>11/12/2025 15:10</td>
-        <td><span class="badge badge-danger">5</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>16</td>
-        <td><strong>SELMA RAMOS PIRES</strong></td>
-        <td class="email">selmapires1972@outlook.com</td>
-        <td class="phone">5517996634751</td>
-        <td>11/12/2025 17:04</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>17</td>
-        <td><strong>RONNY BENTO DE SOUZA</strong></td>
-        <td class="email">ronnybentosouza78@hotmail.com</td>
-        <td class="phone">5511982256211</td>
-        <td>11/12/2025 16:41</td>
-        <td><span class="badge badge-danger">5</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>18</td>
-        <td><strong>PAULO CEZAR GOMES DE OLIVEIRA</strong></td>
-        <td class="email">paulinhodeoliveiragomes@gmail.com</td>
-        <td class="phone">555592012588</td>
-        <td>11/12/2025 17:54</td>
-        <td><span class="badge badge-danger">6</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>19</td>
-        <td><strong>BIANCA CASSIMIRO DE LIMA</strong></td>
-        <td class="email">biancadelima008@gmail.com</td>
-        <td class="phone">555591902867</td>
-        <td>11/12/2025 17:55</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>20</td>
-        <td><strong>CARLOS EDUARDO DE OLIVEIRA CAMPOS</strong></td>
-        <td class="email">carlos.eduardooliveiracam@gmail.com</td>
-        <td class="phone">5519992637373</td>
-        <td>06/12/2025 15:39</td>
-        <td><span class="badge badge-danger">5</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>21</td>
-        <td><strong>FABRICIO ROCHA GONCALVES</strong></td>
-        <td class="email">fabriciorocha61@gmail.com</td>
-        <td class="phone">5518991662656</td>
-        <td>11/12/2025 20:46</td>
-        <td><span class="badge badge-warning">2</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>22</td>
-        <td><strong>IGOR FERNANDES DE LIMA</strong></td>
-        <td class="email">igordelima1104@gmail.com</td>
-        <td class="phone">5517992370220</td>
-        <td>05/12/2025 15:15</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>23</td>
-        <td><strong>JANAÍNA DA SILVA MACIEL GONÇALVES</strong></td>
-        <td class="email">janainasilvamaciel@gmail.com</td>
-        <td class="phone">555194531832</td>
-        <td>12/12/2025 14:44</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>24</td>
-        <td><strong>ANTONIO JOEL DA SILVEIRA MOURA</strong></td>
-        <td class="email">antoniojoelmoura@gmail.com</td>
-        <td class="phone">555191605821</td>
-        <td>12/12/2025 20:23</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>25</td>
-        <td><strong>LEONARDO PEREIRA DO NASCIMENTO</strong></td>
-        <td class="email">leonardonascimento1904@gmail.com</td>
-        <td class="phone">5513988255989</td>
-        <td>06/12/2025 19:43</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>26</td>
-        <td><strong>RENATA DA SILVA MELLO</strong></td>
-        <td class="email">renatamellosilva@outlook.com</td>
-        <td class="phone">5511983906371</td>
-        <td>08/12/2025 19:53</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>27</td>
-        <td><strong>ELIZANDRA DE MELO</strong></td>
-        <td class="email">demeloeli@outlook.com</td>
-        <td class="phone">5548999963962</td>
-        <td>14/12/2025 17:08</td>
-        <td><span class="badge badge-danger">5</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>28</td>
-        <td><strong>MARCIO JOSE BRUXEL</strong></td>
-        <td class="email">marciojose.bruxel@gmail.com</td>
-        <td class="phone">5555991555736</td>
-        <td>14/12/2025 17:52</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>29</td>
-        <td><strong>KAREN FABIANE DE LIMA FERREIRA</strong></td>
-        <td class="email">karrnfanianeferreira200@gmail.com</td>
-        <td class="phone">5551996027292</td>
-        <td>14/12/2025 16:19</td>
-        <td><span class="badge badge-danger">9</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>30</td>
-        <td><strong>CICERA PERIM</strong></td>
-        <td class="email">ciceroperim@gmail.com.br</td>
-        <td class="phone">5511991755899</td>
-        <td>14/12/2025 17:48</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>31</td>
-        <td><strong>JUNIOR MARTIM GRINGS</strong></td>
-        <td class="email">juniorgringa@gmail.com</td>
-        <td class="phone">555182806399</td>
-        <td>14/12/2025 18:06</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>32</td>
-        <td><strong>MALVINO FRANCISCO DE EREMITA SILVA</strong></td>
-        <td class="email">malvinofran.silva@gmail.com</td>
-        <td class="phone">551196176882</td>
-        <td>04/12/2025 14:48</td>
-        <td><span class="badge badge-danger">6</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>33</td>
-        <td><strong>ADIR MORERA SUTEL</strong></td>
-        <td class="email">aadir.morera@gmail.com</td>
-        <td class="phone">5551995209398</td>
-        <td>07/12/2025 18:53</td>
-        <td><span class="badge badge-danger">9</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>34</td>
-        <td><strong>LUIS ROBERTO BORBA</strong></td>
-        <td class="email">luizrobertoborba@gmail.com</td>
-        <td class="phone">5551995968051</td>
-        <td>02/12/2025 19:10</td>
-        <td><span class="badge badge-warning">2</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>35</td>
-        <td><strong>NATAN MACHADO ALESSIO</strong></td>
-        <td class="email">natan.m.alessio@gmail.com</td>
-        <td class="phone">555180182372</td>
-        <td>07/12/2025 18:19</td>
-        <td><span class="badge badge-danger">12</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>36</td>
-        <td><strong>EMERSON ADRIANO FABRICIO</strong></td>
-        <td class="email">emersonadri.farb@gmail.com</td>
-        <td class="phone">5519999777323</td>
-        <td>07/12/2025 19:32</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>37</td>
-        <td><strong>WELVIS FRANCIS DOS SANTOS SILVA</strong></td>
-        <td class="email">welvissantossilva589@gmail.com</td>
-        <td class="phone">5511964417755</td>
-        <td>04/12/2025 15:37</td>
-        <td><span class="badge badge-warning">3</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>38</td>
-        <td><strong>JEAN CARLO BARBOSA</strong></td>
-        <td class="email">jeancarlo.ba@gmail.com</td>
-        <td class="phone">5516999348415</td>
-        <td>05/12/2025 15:30</td>
-        <td><span class="badge badge-danger">5</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>39</td>
-        <td><strong>- Claudia De Sant_anna Da Silva</strong></td>
-        <td class="email">claudiasantana210@gmail.com</td>
-        <td class="phone">5518991712879</td>
-        <td>01/12/2025 20:52</td>
-        <td><span class="badge badge-danger">6</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>40</td>
-        <td><strong>VERIDIANA LEITE FACANHA ARROIO</strong></td>
-        <td class="email">diana.leite1909@gmail.com</td>
-        <td class="phone">5511978155105</td>
-        <td>01/12/2025 19:32</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>41</td>
-        <td><strong>FÁBIO COSTA DA SILVA</strong></td>
-        <td class="email">fabiocostadasilva153@gmail.com</td>
-        <td class="phone">5511913128654</td>
-        <td>09/11/2025 17:38</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>42</td>
-        <td><strong>CARLOS DANIEL DOS SANTOS DIAS</strong></td>
-        <td class="email">cddsd030201@gmail.com</td>
-        <td class="phone">5551920012392</td>
-        <td>06/11/2025 20:59</td>
-        <td><span class="badge badge-danger">10</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-      <tr>
-        <td>43</td>
-        <td><strong>VINICIUS ANTONUCCI PAZ</strong></td>
-        <td class="email">pazvinipaz@gmail.com</td>
-        <td class="phone">5551995552837</td>
-        <td>26/09/2025 15:42</td>
-        <td><span class="badge badge-warning">4</span></td>
-        <td class="file-list">Procuracao</td>
-      </tr>
-    </tbody>
-  </table>
+  
+  <div class="two-col">
+    <div class="section">
+      <h2 style="margin-top:0">Timeline de Assinaturas</h2>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+  <span style="width:80px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)">2025-09</span>
+  <div style="flex:1;background:var(--surface);border-radius:4px;height:28px;overflow:hidden">
+    <div style="width:4.545454545454546%;background:var(--accent);height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px">
+      <span style="font-size:12px;font-weight:700">1</span>
+    </div>
   </div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+  <span style="width:80px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)">2025-11</span>
+  <div style="flex:1;background:var(--surface);border-radius:4px;height:28px;overflow:hidden">
+    <div style="width:4.545454545454546%;background:var(--accent);height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px">
+      <span style="font-size:12px;font-weight:700">1</span>
+    </div>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+  <span style="width:80px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)">2025-12</span>
+  <div style="flex:1;background:var(--surface);border-radius:4px;height:28px;overflow:hidden">
+    <div style="width:100.0%;background:var(--accent);height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px">
+      <span style="font-size:12px;font-weight:700">22</span>
+    </div>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+  <span style="width:80px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)">2026-01</span>
+  <div style="flex:1;background:var(--surface);border-radius:4px;height:28px;overflow:hidden">
+    <div style="width:72.72727272727273%;background:var(--accent);height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px">
+      <span style="font-size:12px;font-weight:700">16</span>
+    </div>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+  <span style="width:80px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)">2026-02</span>
+  <div style="flex:1;background:var(--surface);border-radius:4px;height:28px;overflow:hidden">
+    <div style="width:4.545454545454546%;background:var(--accent);height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px">
+      <span style="font-size:12px;font-weight:700">1</span>
+    </div>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+  <span style="width:80px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)">2026-03</span>
+  <div style="flex:1;background:var(--surface);border-radius:4px;height:28px;overflow:hidden">
+    <div style="width:9.090909090909092%;background:var(--accent);height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px">
+      <span style="font-size:12px;font-weight:700">2</span>
+    </div>
+  </div>
+</div>
 
-  <div class="section-title">Detalhes técnicos</div>
-  <table>
-    <thead>
-      <tr><th>Campo</th><th>Valor</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>IP investigado</td><td class="mono">187.39.119.108</td></tr>
-      <tr><td>Fonte dos dados</td><td>Google Drive — fullText search em todos os drives (My Drive + 4 Shared Drives)</td></tr>
-      <tr><td>Shared Drives analisados</td><td>Escritório - atendimento, Jurídico - Perinotti Paz, Midas - ANTIGO, Midas Soluções Financeiras</td></tr>
-      <tr><td>Método de extração</td><td>pdftotext → regex "IP: X.X.X.X" na seção ZapSign</td></tr>
-      <tr><td>Total PDFs baixados</td><td>199</td></tr>
-      <tr><td>Resultados com IP alvo</td><td>194</td></tr>
-      <tr><td>Assinantes únicos</td><td>43</td></tr>
-      <tr><td>Período coberto</td><td>Dez/2025 — Mar/2026</td></tr>
-    </tbody>
-  </table>
+    </div>
+    <div class="section">
+      <h2 style="margin-top:0">TOP 15 IPs — Clientes Únicos</h2>
+      <table>
+        <thead><tr><th>IP</th><th style="text-align:center">Clientes</th></tr></thead>
+        <tbody><tr style="background:rgba(239,68,68,0.15);">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">187.39.119.108 <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">ALVO</span></td>
+  <td style="text-align:center;font-weight:700;color:var(--accent)">43</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">201.70.121.133</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">3</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">187.94.15.100</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">3</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">177.75.155.56</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">143.208.159.1</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">191.39.11.150</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">177.75.145.90</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">128.201.194.15</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">161.22.59.164</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">189.40.88.152</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">189.45.180.35</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">190.102.46.238</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">170.78.242.230</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">45.179.83.5</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+<tr style="">
+  <td style="font-family:'JetBrains Mono',monospace;font-size:13px">138.204.46.1</td>
+  <td style="text-align:center;font-weight:700;color:var(--text)">2</td>
+</tr>
+</tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2 style="margin-top:0">DDDs dos Telefones</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">51 <strong style="color:var(--accent)">13</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">11 <strong style="color:var(--accent)">10</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">55 <strong style="color:var(--accent)">4</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">18 <strong style="color:var(--accent)">3</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">19 <strong style="color:var(--accent)">3</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">17 <strong style="color:var(--accent)">3</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">54 <strong style="color:var(--accent)">2</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">16 <strong style="color:var(--accent)">1</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">48 <strong style="color:var(--accent)">1</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">13 <strong style="color:var(--accent)">1</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">49 <strong style="color:var(--accent)">1</strong></span>
+<span style="background:var(--surface);padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:13px">14 <strong style="color:var(--accent)">1</strong></span>
 
+    </div>
+    <p style="color:var(--muted);font-size:12px;margin-top:12px">Clientes de diversas regiões do Brasil assinando do mesmo IP — reforça hipótese de captador centralizado</p>
+  </div>
+  
+  <h2>Todos os 43 Clientes — IP 187.39.119.108</h2>
+  <div class="section" style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Telefone</th>
+          <th>Data</th>
+          <th style="text-align:center">Docs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td style="color:var(--muted)">1</td>
+  <td><strong>2 - Procuracao - Vinicius Antonucci Paz</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">pazvinipaz@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 995552837</td>
+  <td>2025-09-26</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">2</td>
+  <td><strong>2 - Procuracao - Fábio Costa Da Silva</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">fabiocostadasilva153@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 913128654</td>
+  <td>2025-11-10</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">3</td>
+  <td><strong>Claudia De Sant_anna Da Silva</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">claudiasantana210@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (18) 991712879</td>
+  <td>2025-12-03</td>
+  <td style="text-align:center">5</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">4</td>
+  <td><strong>Veridiana Leite Facanha Arroio</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">diana.leite1909@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 978155105</td>
+  <td>2025-12-03</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">5</td>
+  <td><strong>Jean Carlo Barbosa</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">jeancarlo.ba@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (16) 999348415</td>
+  <td>2025-12-09</td>
+  <td style="text-align:center">4</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">6</td>
+  <td><strong>Welvis Francis Dos Santos Silva</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">welvissantossilva589@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 964417755</td>
+  <td>2025-12-10</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">7</td>
+  <td><strong>Luis Roberto Borba</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">luizrobertoborba@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 995968051</td>
+  <td>2025-12-11</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">8</td>
+  <td><strong>Natan Machado Alessio</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">natan.m.alessio@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 80182372</td>
+  <td>2025-12-11</td>
+  <td style="text-align:center">11</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">9</td>
+  <td><strong>Emerson Adriano Fabricio</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">emersonadri.farb@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (19) 999777323</td>
+  <td>2025-12-11</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">10</td>
+  <td><strong>Malvino Francisco De Eremita Silva</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">malvinofran.silva@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 96176882</td>
+  <td>2025-12-12</td>
+  <td style="text-align:center">5</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">11</td>
+  <td><strong>Adir Morera Sutel</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">aadir.morera@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 995209398</td>
+  <td>2025-12-12</td>
+  <td style="text-align:center">8</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">12</td>
+  <td><strong>Cicera Perim</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">ciceroperim@gmail.com.br</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 991755899</td>
+  <td>2025-12-14</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">13</td>
+  <td><strong>Junior Martim Grings</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">juniorgringa@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 82806399</td>
+  <td>2025-12-14</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">14</td>
+  <td><strong>Karen Fabiane De Lima Ferreira</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">karrnfanianeferreira200@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 996027292</td>
+  <td>2025-12-14</td>
+  <td style="text-align:center">8</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">15</td>
+  <td><strong>Marcio Jose Bruxel</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">marciojose.bruxel@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (55) 991555736</td>
+  <td>2025-12-15</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">16</td>
+  <td><strong>Elizandra De Melo</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">demeloeli@outlook.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (48) 999963962</td>
+  <td>2025-12-16</td>
+  <td style="text-align:center">4</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">17</td>
+  <td><strong>Renata Da Silva Mello</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">renatamellosilva@outlook.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 983906371</td>
+  <td>2025-12-17</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">18</td>
+  <td><strong>Leonardo Pereira Do Nascimento</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">leonardonascimento1904@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (13) 988255989</td>
+  <td>2025-12-18</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">19</td>
+  <td><strong>Janaína Da Silva Maciel Gonçalves</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">janainasilvamaciel@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 94531832</td>
+  <td>2025-12-19</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">20</td>
+  <td><strong>Antonio Joel Da Silveira Moura</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">antoniojoelmoura@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 91605821</td>
+  <td>2025-12-19</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">21</td>
+  <td><strong>Carlos Eduardo De Oliveira Campos</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">carlos.eduardooliveiracam@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (19) 992637373</td>
+  <td>2025-12-22</td>
+  <td style="text-align:center">4</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">22</td>
+  <td><strong><span style="color:var(--muted)">Nome não extraído</span></strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">fabriciorocha61@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (18) 991662656</td>
+  <td>2025-12-22</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">23</td>
+  <td><strong>Igor Fernandes De Lima</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">igordelima1104@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (17) 992370220</td>
+  <td>2025-12-22</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">24</td>
+  <td><strong>Bianca Cassimiro De Lima</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">biancadelima008@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (55) 91902867</td>
+  <td>2025-12-23</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">25</td>
+  <td><strong>Paulo Cezar Gomes De Oliveira</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">paulinhodeoliveiragomes@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (55) 92012588</td>
+  <td>2026-01-02</td>
+  <td style="text-align:center">5</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">26</td>
+  <td><strong>Selma Ramos Pires</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">selmapires1972@outlook.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (17) 996634751</td>
+  <td>2026-01-03</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">27</td>
+  <td><strong>Edemar Franca Ribeiro</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">ed.franca_ribeiro@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (54) 97141235</td>
+  <td>2026-01-03</td>
+  <td style="text-align:center">4</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">28</td>
+  <td><strong>Ronny Bento De Souza</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">ronnybentosouza78@hotmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 982256211</td>
+  <td>2026-01-03</td>
+  <td style="text-align:center">4</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">29</td>
+  <td><strong>Carla Fernanda Da Concição Paim</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">carlapaim2025@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 92314311</td>
+  <td>2026-01-05</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">30</td>
+  <td><strong>Silvonei Luiz Valcarenghi</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">silvoneiluiz.1578@hotmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (49) 98214175</td>
+  <td>2026-01-06</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">31</td>
+  <td><strong>Zilda Pereira Da Silva</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">zi_pereira.silva@outlook.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (14) 997367695</td>
+  <td>2026-01-07</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">32</td>
+  <td><strong>Valdir De Freitas</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">valdirdefreitas34@hotmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 960205909</td>
+  <td>2026-01-07</td>
+  <td style="text-align:center">5</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">33</td>
+  <td><strong>Junior Alves Ayres</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">alvesjuniora@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (55) 99947175</td>
+  <td>2026-01-08</td>
+  <td style="text-align:center">4</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">34</td>
+  <td><strong>Daiane Ferreira De Lima</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">daiferreira_lima@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (54) 96425065</td>
+  <td>2026-01-08</td>
+  <td style="text-align:center">2</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">35</td>
+  <td><strong>Luiz Rodrigo Adão</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">luizaorodrigo.adao@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 91535106</td>
+  <td>2026-01-08</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">36</td>
+  <td><strong>Tiago Pereira Lima</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">tiagopereiralima50@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (18) 997686142</td>
+  <td>2026-01-09</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">37</td>
+  <td><strong>Wilton João De Souza</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">wiltonjoaosouza34@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (11) 972447553</td>
+  <td>2026-01-13</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">38</td>
+  <td><strong>Paulo Sergio Araujo</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">paulo.see.araujo@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (19) 992828334</td>
+  <td>2026-01-13</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">39</td>
+  <td><strong>Marcio Roberto Finessi Da Silva</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">marciofinessidasilva@outlook.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (17) 997827417</td>
+  <td>2026-01-14</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">40</td>
+  <td><strong>Alexsander Silva De Vargas</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">alexsandervargas194@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 989063855</td>
+  <td>2026-01-27</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">41</td>
+  <td><strong>João Pedro De Campos Pelicoli</strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">jpelicoli2003@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 997389702</td>
+  <td>2026-02-13</td>
+  <td style="text-align:center">6</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">42</td>
+  <td><strong><span style="color:var(--muted)">Nome não extraído</span></strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">cdds2001@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 920012392</td>
+  <td>2026-03-03</td>
+  <td style="text-align:center">3</td>
+</tr>
+<tr>
+  <td style="color:var(--muted)">43</td>
+  <td><strong><span style="color:var(--muted)">Nome não extraído</span></strong></td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">cddsd030201@gmail.com</td>
+  <td style="font-family:'JetBrains Mono',monospace;font-size:12px">+55 (51) 920012392</td>
+  <td>2026-03-03</td>
+  <td style="text-align:center">4</td>
+</tr>
+
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="section">
+    <h2 style="margin-top:0">Metodologia</h2>
+    <ul style="color:var(--muted);font-size:14px;list-style:disc inside;line-height:2">
+      <li>Listados todos os 6,453 PDFs "2.2 - Procuracao" no Shared Drive "Midas ANTIGO" via Google Drive API v3</li>
+      <li>Cada PDF baixado e texto extraído com <code>pdftotext</code></li>
+      <li>Regex <code>IP:\s*(\d+\.\d+\.\d+\.\d+)</code> aplicado na seção de autenticação ZapSign by Truora</li>
+      <li>IPs de versão de navegador (X.0.0.0) filtrados como falso positivo</li>
+      <li>Deduplicação por email para identificar clientes únicos</li>
+      <li>Zero erros no processo de extração</li>
+    </ul>
+  </div>
+  
   <div class="footer">
-    Relatório gerado automaticamente por Beto (Claude Code) em 02/04/2026 14:20:00 | MP Advocacia / MdFlow
+    BETO · Investigação de IPs em Procurações ZapSign · Midas / MP Advocacia · 02/04/2026
   </div>
 </div>
 </body>
