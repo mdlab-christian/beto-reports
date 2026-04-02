@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daniel — Pendentes Assinatura</title>
+<style>
+  :root {
+    --bg: #12100e;
+    --surface: #1a1714;
+    --card: #211e1a;
+    --border: #3a3530;
+    --fg: #f2efe8;
+    --muted: #9e978a;
+    --primary: #20c997;
+    --warning: #f59e0b;
+    --destructive: #ef4444;
+    --success: #22c55e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', -apple-system, sans-serif;
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .header {
+    max-width: 1400px;
+    margin: 0 auto 24px;
+  }
+  .header h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    gap: 16px;
+    margin: 24px auto;
+    max-width: 1400px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 24px;
+    flex: 1;
+    min-width: 180px;
+  }
+  .stat-card .label {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .stat-card .value {
+    font-family: 'Manrope', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+  }
+  .stat-card .value.total { color: var(--primary); }
+  .stat-card .value.cobranca { color: var(--warning); }
+  .stat-card .value.nossa { color: var(--muted); }
+  .stat-card .value.cliente { color: var(--destructive); }
+
+  .filters {
+    max-width: 1400px;
+    margin: 0 auto 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filters button {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .filters button:hover, .filters button.active {
+    background: var(--primary);
+    color: var(--bg);
+    border-color: var(--primary);
+  }
+  .filters input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .filters input::placeholder { color: var(--muted); }
+
+  .table-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    background: var(--card);
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 16px;
+    text-align: left;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: var(--card); }
+  tbody tr:last-child { border-bottom: none; }
+  td {
+    padding: 10px 16px;
+    vertical-align: middle;
+  }
+  .idx { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; width: 40px; }
+  .name { font-weight: 600; white-space: nowrap; max-width: 250px; overflow: hidden; text-overflow: ellipsis; }
+  .phone a { color: var(--primary); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .phone a:hover { text-decoration: underline; }
+  .date { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+  .status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .status.cobranca { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+  .status.nossa { background: rgba(158, 151, 138, 0.15); color: var(--muted); }
+  .status.cliente { background: rgba(239, 68, 68, 0.15); color: var(--destructive); }
+  .preview {
+    color: var(--muted);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+  .footer {
+    max-width: 1400px;
+    margin: 16px auto 0;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 12px; }
+    .stats { flex-direction: column; }
+    .stat-card { min-width: unset; }
+    .name { max-width: 150px; }
+    .preview { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Atendente Daniel — Assinaturas Pendentes</h1>
+  <p>Clientes que receberam link ZapSign mas não confirmaram a assinatura do contrato/procuração</p>
+  <p>Gerado em: 02/04/2026, 13:11:03</p>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="label">Total Pendentes</div>
+    <div class="value total">193</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Cobrança Enviada</div>
+    <div class="value cobranca">75</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Última Msg Nossa</div>
+    <div class="value nossa">56</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Cliente Respondeu</div>
+    <div class="value cliente">62</div>
+  </div>
+</div>
+
+<div class="filters">
+  <input type="text" id="search" placeholder="Buscar por nome ou telefone..." oninput="filterTable()">
+  <button class="active" onclick="setFilter('all', this)">Todos</button>
+  <button onclick="setFilter('cobranca', this)">📩 Cobrança</button>
+  <button onclick="setFilter('nossa', this)">💬 Última Msg Nossa</button>
+  <button onclick="setFilter('cliente', this)">🔔 Cliente Respondeu</button>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+  <tr>
+    <th>#</th>
+    <th>Cliente</th>
+    <th>WhatsApp</th>
+    <th>ZapSign Enviado</th>
+    <th>Última Msg</th>
+    <th>Status</th>
+    <th>Última Mensagem</th>
+  </tr>
+</thead>
+<tbody id="tbody">
+<tr>
+    <td class="idx">1</td>
+    <td class="name">Junior Martim Grings</td>
+    <td class="phone"><a href="https://wa.me/555182806399" target="_blank">(51) 8280-6399</a></td>
+    <td class="date">12/14/2025 19:10:54</td>
+    <td class="date">12/17/2025 17:10:05</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Sim">Sim</td>
+  </tr>
+<tr>
+    <td class="idx">2</td>
+    <td class="name">Karen Ferreira</td>
+    <td class="phone"><a href="https://wa.me/555196027292" target="_blank">(51) 9602-7292</a></td>
+    <td class="date">12/12/2025 21:41:20</td>
+    <td class="date">12/12/2025 21:52:02</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Mas eu aguardo a senhora
+Caso o link não expire
+Fizemos sem problemas nenhum">Mas eu aguardo a senhora
+Caso o link não expire
+Fizemos sem problemas nenhum</td>
+  </tr>
+<tr>
+    <td class="idx">3</td>
+    <td class="name">ELIZANDRA DE MELO</td>
+    <td class="phone"><a href="https://wa.me/554899963962" target="_blank">(48) 9996-3962</a></td>
+    <td class="date">12/12/2025 20:11:24</td>
+    <td class="date">12/12/2025 23:35:57</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Por favor">Por favor</td>
+  </tr>
+<tr>
+    <td class="idx">4</td>
+    <td class="name">Gilesac</td>
+    <td class="phone"><a href="https://wa.me/5519998792946" target="_blank">(19) 99879-2946</a></td>
+    <td class="date">12/12/2025 20:10:36</td>
+    <td class="date">12/12/2025 20:40:27</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ja fiz">Ja fiz</td>
+  </tr>
+<tr>
+    <td class="idx">5</td>
+    <td class="name">Marinele Pacheco de Quadros da luz</td>
+    <td class="phone"><a href="https://wa.me/555492430375" target="_blank">(54) 9243-0375</a></td>
+    <td class="date">12/12/2025 19:05:10</td>
+    <td class="date">12/12/2025 19:05:15</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">6</td>
+    <td class="name">Antônio Joel da silveira Moura</td>
+    <td class="phone"><a href="https://wa.me/555191605821" target="_blank">(51) 9160-5821</a></td>
+    <td class="date">12/12/2025 17:08:51</td>
+    <td class="date">12/12/2025 22:56:06</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="O link pode expirar">O link pode expirar</td>
+  </tr>
+<tr>
+    <td class="idx">7</td>
+    <td class="name">Kelly vargas</td>
+    <td class="phone"><a href="https://wa.me/554999192746" target="_blank">(49) 9919-2746</a></td>
+    <td class="date">12/12/2025 15:36:02</td>
+    <td class="date">12/12/2025 15:36:09</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">8</td>
+    <td class="name">lavanderia asriel</td>
+    <td class="phone"><a href="https://wa.me/5518991662656" target="_blank">(18) 99166-2656</a></td>
+    <td class="date">12/11/2025 20:47:33</td>
+    <td class="date">12/12/2025 00:10:09</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Vou desistir">Vou desistir</td>
+  </tr>
+<tr>
+    <td class="idx">9</td>
+    <td class="name">Marielsa Vieira Costa</td>
+    <td class="phone"><a href="https://wa.me/555484460391" target="_blank">(54) 8446-0391</a></td>
+    <td class="date">12/11/2025 20:21:05</td>
+    <td class="date">12/11/2025 20:49:29</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Aguardo a assinatura
+O link tem tempo de expiração">Aguardo a assinatura
+O link tem tempo de expiração</td>
+  </tr>
+<tr>
+    <td class="idx">10</td>
+    <td class="name">Bianca cassimiro de lima</td>
+    <td class="phone"><a href="https://wa.me/555591902867" target="_blank">(55) 9190-2867</a></td>
+    <td class="date">12/11/2025 19:58:00</td>
+    <td class="date">12/11/2025 21:20:07</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ta certo">Ta certo</td>
+  </tr>
+<tr>
+    <td class="idx">11</td>
+    <td class="name">Paulo Cezar Gomes de Oliveira</td>
+    <td class="phone"><a href="https://wa.me/555592012588" target="_blank">(55) 9201-2588</a></td>
+    <td class="date">12/11/2025 19:30:18</td>
+    <td class="date">12/11/2025 19:58:54</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Preciso de um retorno ?
+Queres SEGUIR ou NÃOO">Preciso de um retorno ?
+Queres SEGUIR ou NÃOO</td>
+  </tr>
+<tr>
+    <td class="idx">12</td>
+    <td class="name">Selmapires</td>
+    <td class="phone"><a href="https://wa.me/5517996634751" target="_blank">(17) 99663-4751</a></td>
+    <td class="date">12/11/2025 15:39:50</td>
+    <td class="date">12/11/2025 15:39:55</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">13</td>
+    <td class="name">Ronny</td>
+    <td class="phone"><a href="https://wa.me/5511982256211" target="_blank">(11) 98225-6211</a></td>
+    <td class="date">12/10/2025 23:56:53</td>
+    <td class="date">12/11/2025 15:48:55</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Exatamente
+o senhor não paga nada nem no inicio, nem no meio e nem no fim do processo
+posso te envie o novo link ?">Exatamente
+o senhor não paga nada nem no inicio, nem no meio e nem no fim do processo
+posso te envie o novo link ?</td>
+  </tr>
+<tr>
+    <td class="idx">14</td>
+    <td class="name">Edvaldo Nunes dos Santos</td>
+    <td class="phone"><a href="https://wa.me/554797396612" target="_blank">(47) 9739-6612</a></td>
+    <td class="date">12/10/2025 23:32:01</td>
+    <td class="date">12/19/2025 21:00:08</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Já tens alguma novidade">Já tens alguma novidade</td>
+  </tr>
+<tr>
+    <td class="idx">15</td>
+    <td class="name">Silvonei Luiz valcarenghi</td>
+    <td class="phone"><a href="https://wa.me/554998214175" target="_blank">(49) 9821-4175</a></td>
+    <td class="date">12/10/2025 21:48:45</td>
+    <td class="date">12/10/2025 23:08:51</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="SIM OU NÃO">SIM OU NÃO</td>
+  </tr>
+<tr>
+    <td class="idx">16</td>
+    <td class="name">Davi Ramos</td>
+    <td class="phone"><a href="https://wa.me/5511984835064" target="_blank">(11) 98483-5064</a></td>
+    <td class="date">12/10/2025 20:45:16</td>
+    <td class="date">12/10/2025 22:38:43</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá,
+Tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej">Olá,
+Tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej</td>
+  </tr>
+<tr>
+    <td class="idx">17</td>
+    <td class="name">cicero</td>
+    <td class="phone"><a href="https://wa.me/5511917558999" target="_blank">(11) 91755-8999</a></td>
+    <td class="date">12/10/2025 18:42:53</td>
+    <td class="date">12/10/2025 18:42:57</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">18</td>
+    <td class="name">Ana Paula</td>
+    <td class="phone"><a href="https://wa.me/5519999519857" target="_blank">(19) 99951-9857</a></td>
+    <td class="date">12/10/2025 18:36:06</td>
+    <td class="date">12/10/2025 18:36:08</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">19</td>
+    <td class="name">Edemra fribeiro</td>
+    <td class="phone"><a href="https://wa.me/555497141235" target="_blank">(54) 9714-1235</a></td>
+    <td class="date">12/10/2025 15:44:29</td>
+    <td class="date">12/10/2025 15:44:35</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">20</td>
+    <td class="name">Marcio Da Carla</td>
+    <td class="phone"><a href="https://wa.me/5517997827417" target="_blank">(17) 99782-7417</a></td>
+    <td class="date">12/10/2025 15:03:54</td>
+    <td class="date">12/10/2025 15:03:59</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">21</td>
+    <td class="name">Rosimeri da Silva</td>
+    <td class="phone"><a href="https://wa.me/555180646060" target="_blank">(51) 8064-6060</a></td>
+    <td class="date">12/10/2025 14:21:28</td>
+    <td class="date">12/10/2025 14:21:50</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Qualquer duvida, fico a disposição!">Qualquer duvida, fico a disposição!</td>
+  </tr>
+<tr>
+    <td class="idx">22</td>
+    <td class="name">Analucia da silva maia</td>
+    <td class="phone"><a href="https://wa.me/555596501865" target="_blank">(55) 9650-1865</a></td>
+    <td class="date">12/10/2025 02:11:00</td>
+    <td class="date">12/10/2025 14:49:32</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">23</td>
+    <td class="name">Jose Carlos da Silva</td>
+    <td class="phone"><a href="https://wa.me/555195359370" target="_blank">(51) 9535-9370</a></td>
+    <td class="date">12/10/2025 01:27:21</td>
+    <td class="date">12/10/2025 01:34:58</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">24</td>
+    <td class="name">Valdir De Freitas</td>
+    <td class="phone"><a href="https://wa.me/5511960205909" target="_blank">(11) 96020-5909</a></td>
+    <td class="date">12/09/2025 16:12:41</td>
+    <td class="date">12/09/2025 20:50:17</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Fala seu Valdir
+oque aconteceu que não assinou o link ?
+Preciso que assine
+Antes que o link expire">Fala seu Valdir
+oque aconteceu que não assinou o link ?
+Preciso que assine
+Antes que o link expire</td>
+  </tr>
+<tr>
+    <td class="idx">25</td>
+    <td class="name">Carlos Alexandre Cardoso Silva</td>
+    <td class="phone"><a href="https://wa.me/554896714474" target="_blank">(48) 9671-4474</a></td>
+    <td class="date">12/09/2025 00:03:10</td>
+    <td class="date">12/09/2025 00:05:59</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ok">Ok</td>
+  </tr>
+<tr>
+    <td class="idx">26</td>
+    <td class="name">Lemos</td>
+    <td class="phone"><a href="https://wa.me/555596046330" target="_blank">(55) 9604-6330</a></td>
+    <td class="date">12/08/2025 20:03:23</td>
+    <td class="date">12/08/2025 21:21:15</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, tudo bem?
+Aqui é o Carlos, da Midas Restrição (Limpa Nome).
+Entrei em contato com você anteriormente e enviei o link para assinatura, porém até o momento não recebi retorno e o link continua pend">Olá, tudo bem?
+Aqui é o Carlos, da Midas Restrição (Limpa Nome).
+Entrei em contato com você anteriormente e enviei o link para assinatura, porém até o momento não recebi retorno e o link continua pend</td>
+  </tr>
+<tr>
+    <td class="idx">27</td>
+    <td class="name">Paulo Araujo</td>
+    <td class="phone"><a href="https://wa.me/5519992828334" target="_blank">(19) 99282-8334</a></td>
+    <td class="date">12/08/2025 19:43:38</td>
+    <td class="date">12/08/2025 21:24:17</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, tudo bem?
+Aqui é o Carlos, da Midas Restrição (Limpa Nome).
+Entrei em contato com você anteriormente e enviei o link para assinatura, porém até o momento não recebi retorno e o link continua pend">Olá, tudo bem?
+Aqui é o Carlos, da Midas Restrição (Limpa Nome).
+Entrei em contato com você anteriormente e enviei o link para assinatura, porém até o momento não recebi retorno e o link continua pend</td>
+  </tr>
+<tr>
+    <td class="idx">28</td>
+    <td class="name">tiagopereiralima505</td>
+    <td class="phone"><a href="https://wa.me/5518935059642" target="_blank">(18) 93505-9642</a></td>
+    <td class="date">12/08/2025 16:04:08</td>
+    <td class="date">12/08/2025 22:09:54</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Fala meu querido ?">Fala meu querido ?</td>
+  </tr>
+<tr>
+    <td class="idx">29</td>
+    <td class="name">Aline Olsen</td>
+    <td class="phone"><a href="https://wa.me/555496958845" target="_blank">(54) 9695-8845</a></td>
+    <td class="date">12/07/2025 22:16:49</td>
+    <td class="date">12/08/2025 15:53:39</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ops. Foi sem querer">Ops. Foi sem querer</td>
+  </tr>
+<tr>
+    <td class="idx">30</td>
+    <td class="name">Loreci dos Santos</td>
+    <td class="phone"><a href="https://wa.me/555491102483" target="_blank">(54) 9110-2483</a></td>
+    <td class="date">12/07/2025 21:36:55</td>
+    <td class="date">12/07/2025 21:37:00</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">31</td>
+    <td class="name">Luciano rodrigues ferreira</td>
+    <td class="phone"><a href="https://wa.me/555195514835" target="_blank">(51) 9551-4835</a></td>
+    <td class="date">12/07/2025 18:58:29</td>
+    <td class="date">12/07/2025 18:58:39</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">32</td>
+    <td class="name">Junior Alves Ayres</td>
+    <td class="phone"><a href="https://wa.me/555599947175" target="_blank">(55) 9994-7175</a></td>
+    <td class="date">12/07/2025 18:25:45</td>
+    <td class="date">12/07/2025 19:07:24</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, aqui é Carlos Daniel, da Midas Restrições – Limpa Nome Gratuito.
+Estamos chegando ao fim do prazo para a continuidade do seu Processo Limpa Nome Gratuito.
+Precisamos da sua confirmação imediatame">Olá, aqui é Carlos Daniel, da Midas Restrições – Limpa Nome Gratuito.
+Estamos chegando ao fim do prazo para a continuidade do seu Processo Limpa Nome Gratuito.
+Precisamos da sua confirmação imediatame</td>
+  </tr>
+<tr>
+    <td class="idx">33</td>
+    <td class="name">Daiane Ferreira de Lima</td>
+    <td class="phone"><a href="https://wa.me/555496425065" target="_blank">(54) 9642-5065</a></td>
+    <td class="date">12/07/2025 16:59:11</td>
+    <td class="date">12/07/2025 17:30:45</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Olá.">Olá.</td>
+  </tr>
+<tr>
+    <td class="idx">34</td>
+    <td class="name">indisponível</td>
+    <td class="phone"><a href="https://wa.me/555180182372" target="_blank">(51) 8018-2372</a></td>
+    <td class="date">12/07/2025 13:56:08</td>
+    <td class="date">12/07/2025 13:56:11</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Segundo Link">Segundo Link</td>
+  </tr>
+<tr>
+    <td class="idx">35</td>
+    <td class="name">Digo</td>
+    <td class="phone"><a href="https://wa.me/5511915357106" target="_blank">(11) 91535-7106</a></td>
+    <td class="date">12/07/2025 00:57:46</td>
+    <td class="date">12/07/2025 17:19:35</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, aqui é Carlos Daniel, da Midas Restrições – Limpa Nome Gratuito.
+Estamos chegando ao fim do prazo para a continuidade do seu Processo Limpa Nome Gratuito.
+Precisamos da sua confirmação imediatame">Olá, aqui é Carlos Daniel, da Midas Restrições – Limpa Nome Gratuito.
+Estamos chegando ao fim do prazo para a continuidade do seu Processo Limpa Nome Gratuito.
+Precisamos da sua confirmação imediatame</td>
+  </tr>
+<tr>
+    <td class="idx">36</td>
+    <td class="name">Zilda</td>
+    <td class="phone"><a href="https://wa.me/5514997367695" target="_blank">(14) 99736-7695</a></td>
+    <td class="date">12/07/2025 00:41:33</td>
+    <td class="date">12/07/2025 00:59:19</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se deseja prosseguir com o procedimento, Pois o link está pendente ">Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se deseja prosseguir com o procedimento, Pois o link está pendente </td>
+  </tr>
+<tr>
+    <td class="idx">37</td>
+    <td class="name">Rivelino Souza</td>
+    <td class="phone"><a href="https://wa.me/5519992353091" target="_blank">(19) 99235-3091</a></td>
+    <td class="date">12/07/2025 00:09:40</td>
+    <td class="date">12/07/2025 00:09:46</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">38</td>
+    <td class="name">Miguel angelo da Silva</td>
+    <td class="phone"><a href="https://wa.me/555189384932" target="_blank">(51) 8938-4932</a></td>
+    <td class="date">12/06/2025 23:21:47</td>
+    <td class="date">12/06/2025 23:21:52</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">39</td>
+    <td class="name">Leandro Stefanini</td>
+    <td class="phone"><a href="https://wa.me/5517991586889" target="_blank">(17) 99158-6889</a></td>
+    <td class="date">12/06/2025 23:07:41</td>
+    <td class="date">12/06/2025 23:23:20</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se deseja prosseguir com o procedimento, Pois o link está pendente ">Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se deseja prosseguir com o procedimento, Pois o link está pendente </td>
+  </tr>
+<tr>
+    <td class="idx">40</td>
+    <td class="name">Josi</td>
+    <td class="phone"><a href="https://wa.me/5519981815921" target="_blank">(19) 98181-5921</a></td>
+    <td class="date">12/06/2025 22:55:07</td>
+    <td class="date">12/06/2025 23:01:19</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="a9bf1b7e-b8f4-49bf-b02e-03c3eced2ec7.jpg">a9bf1b7e-b8f4-49bf-b02e-03c3eced2ec7.jpg</td>
+  </tr>
+<tr>
+    <td class="idx">41</td>
+    <td class="name">Thuanne Dayanna facchi</td>
+    <td class="phone"><a href="https://wa.me/554792308170" target="_blank">(47) 9230-8170</a></td>
+    <td class="date">12/06/2025 22:00:22</td>
+    <td class="date">12/06/2025 22:00:27</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">42</td>
+    <td class="name">fatima</td>
+    <td class="phone"><a href="https://wa.me/5511968240825" target="_blank">(11) 96824-0825</a></td>
+    <td class="date">12/06/2025 21:08:09</td>
+    <td class="date">12/07/2025 01:05:47</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Sou Maria de Fátima de jesus  e quero realizar a auditoria das restricoes do CPF 26160993810">Sou Maria de Fátima de jesus  e quero realizar a auditoria das restricoes do CPF 26160993810</td>
+  </tr>
+<tr>
+    <td class="idx">43</td>
+    <td class="name">Michelle Nataly</td>
+    <td class="phone"><a href="https://wa.me/5512982533730" target="_blank">(12) 98253-3730</a></td>
+    <td class="date">12/06/2025 18:22:22</td>
+    <td class="date">12/06/2025 18:22:26</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Esse é o seu">Esse é o seu</td>
+  </tr>
+<tr>
+    <td class="idx">44</td>
+    <td class="name">Alberto</td>
+    <td class="phone"><a href="https://wa.me/5514982098618" target="_blank">(14) 98209-8618</a></td>
+    <td class="date">12/06/2025 00:51:38</td>
+    <td class="date">01/22/2026 18:17:37</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Olá!
+Para sabermos se é possível limpar seu nome, nossos especialistas precisam realizar uma auditoria gratuita, onde analisamos cada uma das suas restrições, buscando irregularidades que permitam a e">Olá!
+Para sabermos se é possível limpar seu nome, nossos especialistas precisam realizar uma auditoria gratuita, onde analisamos cada uma das suas restrições, buscando irregularidades que permitam a e</td>
+  </tr>
+<tr>
+    <td class="idx">45</td>
+    <td class="name">Raquel</td>
+    <td class="phone"><a href="https://wa.me/5511916481880" target="_blank">(11) 91648-1880</a></td>
+    <td class="date">12/05/2025 18:25:05</td>
+    <td class="date">12/05/2025 18:43:07</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ok">Ok</td>
+  </tr>
+<tr>
+    <td class="idx">46</td>
+    <td class="name">Debora Silva</td>
+    <td class="phone"><a href="https://wa.me/5511958710081" target="_blank">(11) 95871-0081</a></td>
+    <td class="date">12/05/2025 17:58:25</td>
+    <td class="date">12/05/2025 17:58:31</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">47</td>
+    <td class="name">Mário César</td>
+    <td class="phone"><a href="https://wa.me/5511967996347" target="_blank">(11) 96799-6347</a></td>
+    <td class="date">12/05/2025 17:11:23</td>
+    <td class="date">12/05/2025 21:23:17</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Muito obrigado e um ótimo final de semana">Muito obrigado e um ótimo final de semana</td>
+  </tr>
+<tr>
+    <td class="idx">48</td>
+    <td class="name">Janaina</td>
+    <td class="phone"><a href="https://wa.me/5511958652331" target="_blank">(11) 95865-2331</a></td>
+    <td class="date">12/05/2025 15:48:09</td>
+    <td class="date">12/05/2025 15:48:14</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">49</td>
+    <td class="name">Volnei</td>
+    <td class="phone"><a href="https://wa.me/554788894034" target="_blank">(47) 8889-4034</a></td>
+    <td class="date">12/04/2025 23:38:32</td>
+    <td class="date">12/05/2025 00:01:36</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Deu certo agora">Deu certo agora</td>
+  </tr>
+<tr>
+    <td class="idx">50</td>
+    <td class="name">Kadu</td>
+    <td class="phone"><a href="https://wa.me/5514991720989" target="_blank">(14) 99172-0989</a></td>
+    <td class="date">12/04/2025 21:55:42</td>
+    <td class="date">12/04/2025 23:46:41</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Desejas continuar com o seu limpa nome ?">Desejas continuar com o seu limpa nome ?</td>
+  </tr>
+<tr>
+    <td class="idx">51</td>
+    <td class="name">Claudete aparecida dos Santos Cunha</td>
+    <td class="phone"><a href="https://wa.me/554792648825" target="_blank">(47) 9264-8825</a></td>
+    <td class="date">12/04/2025 20:16:34</td>
+    <td class="date">12/08/2025 20:20:00</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Tudo bem">Tudo bem</td>
+  </tr>
+<tr>
+    <td class="idx">52</td>
+    <td class="name">Bruno</td>
+    <td class="phone"><a href="https://wa.me/5511958624011" target="_blank">(11) 95862-4011</a></td>
+    <td class="date">12/04/2025 20:03:50</td>
+    <td class="date">12/04/2025 20:03:54</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">53</td>
+    <td class="name">Jesus Cristo Vive</td>
+    <td class="phone"><a href="https://wa.me/5516993484158" target="_blank">(16) 99348-4158</a></td>
+    <td class="date">12/04/2025 18:41:46</td>
+    <td class="date">12/04/2025 23:40:22</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá meu querido ?
+Preciso de uma resposta
+Caos ira continuar
+Seu link ira expirar">Olá meu querido ?
+Preciso de uma resposta
+Caos ira continuar
+Seu link ira expirar</td>
+  </tr>
+<tr>
+    <td class="idx">54</td>
+    <td class="name">Agnaldo Moreira Da Silva</td>
+    <td class="phone"><a href="https://wa.me/5519971179324" target="_blank">(19) 97117-9324</a></td>
+    <td class="date">12/04/2025 18:24:41</td>
+    <td class="date">12/04/2025 23:44:50</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Fala meu querido
+preciso de uma posição
+Não, entrou no link
+Preciso que assine o link ira expirar">Fala meu querido
+preciso de uma posição
+Não, entrou no link
+Preciso que assine o link ira expirar</td>
+  </tr>
+<tr>
+    <td class="idx">55</td>
+    <td class="name">Malvino francisco de erem</td>
+    <td class="phone"><a href="https://wa.me/5511961726882" target="_blank">(11) 96172-6882</a></td>
+    <td class="date">12/04/2025 16:20:18</td>
+    <td class="date">12/04/2025 16:52:25</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Boa tarde meu querido
+Houve algum problema na sua assinatura ?
+Verifiquei que entrou 3x no link e não assinou ?">Boa tarde meu querido
+Houve algum problema na sua assinatura ?
+Verifiquei que entrou 3x no link e não assinou ?</td>
+  </tr>
+<tr>
+    <td class="idx">56</td>
+    <td class="name">Cintia Mara</td>
+    <td class="phone"><a href="https://wa.me/554884948705" target="_blank">(48) 8494-8705</a></td>
+    <td class="date">12/02/2025 22:15:20</td>
+    <td class="date">12/02/2025 22:56:50</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">57</td>
+    <td class="name">⚔️</td>
+    <td class="phone"><a href="https://wa.me/5511964417755" target="_blank">(11) 96441-7755</a></td>
+    <td class="date">12/02/2025 21:59:54</td>
+    <td class="date">12/02/2025 23:31:36</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="??">??</td>
+  </tr>
+<tr>
+    <td class="idx">58</td>
+    <td class="name">Leo</td>
+    <td class="phone"><a href="https://wa.me/5513988255989" target="_blank">(13) 98825-5989</a></td>
+    <td class="date">12/02/2025 20:22:50</td>
+    <td class="date">12/02/2025 21:21:01</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="E esses valores
+Não honorários que a empresa que te negativou paga
+Pelo tempo dos asvogados e etc...">E esses valores
+Não honorários que a empresa que te negativou paga
+Pelo tempo dos asvogados e etc...</td>
+  </tr>
+<tr>
+    <td class="idx">59</td>
+    <td class="name">F.s.n</td>
+    <td class="phone"><a href="https://wa.me/5511942090255" target="_blank">(11) 94209-0255</a></td>
+    <td class="date">12/02/2025 19:48:55</td>
+    <td class="date">12/02/2025 19:48:57</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao ">🖊️Te enviei o link para assinatura.
+Lembrando que ele possui um prazo limitado antes de expirar.
+Peço que realize a assinatura o quanto antes.
+Assim que o documento for assinado, darei prioridade ao </td>
+  </tr>
+<tr>
+    <td class="idx">60</td>
+    <td class="name">Renata Mello</td>
+    <td class="phone"><a href="https://wa.me/5511983906371" target="_blank">(11) 98390-6371</a></td>
+    <td class="date">12/02/2025 17:03:22</td>
+    <td class="date">12/02/2025 23:24:48</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Tudo bem renata ?
+Consegue me dar um retorno por favor ?">Tudo bem renata ?
+Consegue me dar um retorno por favor ?</td>
+  </tr>
+<tr>
+    <td class="idx">61</td>
+    <td class="name">Luis Roberto borba</td>
+    <td class="phone"><a href="https://wa.me/555195968051" target="_blank">(51) 9596-8051</a></td>
+    <td class="date">12/01/2025 20:41:51</td>
+    <td class="date">12/02/2025 18:49:31</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Tudo bem Luis
+Houve algum problema no sistema da sua assinatura ?
+Pois vi que entrou no link e não efetuou a assinatura.
+O link ele tem prazo se não ele expira.
+Preciso saber se realmente ira querer s">Tudo bem Luis
+Houve algum problema no sistema da sua assinatura ?
+Pois vi que entrou no link e não efetuou a assinatura.
+O link ele tem prazo se não ele expira.
+Preciso saber se realmente ira querer s</td>
+  </tr>
+<tr>
+    <td class="idx">62</td>
+    <td class="name">Monica</td>
+    <td class="phone"><a href="https://wa.me/554796817324" target="_blank">(47) 9681-7324</a></td>
+    <td class="date">12/01/2025 19:57:11</td>
+    <td class="date">12/02/2025 23:24:23</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Olá
+Deseja Continuar
+SIM OU NÃO ?">Olá
+Deseja Continuar
+SIM OU NÃO ?</td>
+  </tr>
+<tr>
+    <td class="idx">63</td>
+    <td class="name">Claudia</td>
+    <td class="phone"><a href="https://wa.me/5518991712879" target="_blank">(18) 99171-2879</a></td>
+    <td class="date">12/01/2025 01:32:57</td>
+    <td class="date">12/01/2025 19:12:42</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Claudia De Sant'anna Da Silva
+última visualização 01/12/2025 - 15:18
+Preciso de um retorno, se ira querer ou não seguir com o procedimento jurídico ?">Claudia De Sant'anna Da Silva
+última visualização 01/12/2025 - 15:18
+Preciso de um retorno, se ira querer ou não seguir com o procedimento jurídico ?</td>
+  </tr>
+<tr>
+    <td class="idx">64</td>
+    <td class="name">Fernandes De Lima</td>
+    <td class="phone"><a href="https://wa.me/5517992370220" target="_blank">(17) 99237-0220</a></td>
+    <td class="date">12/01/2025 01:06:29</td>
+    <td class="date">12/01/2025 18:05:00</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej">Olá, tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej</td>
+  </tr>
+<tr>
+    <td class="idx">65</td>
+    <td class="name">Ana Maria</td>
+    <td class="phone"><a href="https://wa.me/5513978281441" target="_blank">(13) 97828-1441</a></td>
+    <td class="date">12/01/2025 00:40:11</td>
+    <td class="date">12/01/2025 18:04:10</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej">Olá, tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej</td>
+  </tr>
+<tr>
+    <td class="idx">66</td>
+    <td class="name">Luciana Teresa martins</td>
+    <td class="phone"><a href="https://wa.me/555196831459" target="_blank">(51) 9683-1459</a></td>
+    <td class="date">12/01/2025 00:23:17</td>
+    <td class="date">12/01/2025 00:23:42</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Acabei de te enviar o link para assinatura. ✉️
+Assim que você assinar, já consigo encaminhar tudo para a advocacia parceira.
+Com a assinatura, consigo distribuir o processo com prioridade, incluindo t">Acabei de te enviar o link para assinatura. ✉️
+Assim que você assinar, já consigo encaminhar tudo para a advocacia parceira.
+Com a assinatura, consigo distribuir o processo com prioridade, incluindo t</td>
+  </tr>
+<tr>
+    <td class="idx">67</td>
+    <td class="name">José Luiz Lopes</td>
+    <td class="phone"><a href="https://wa.me/554899421924" target="_blank">(48) 9942-1924</a></td>
+    <td class="date">11/30/2025 22:55:52</td>
+    <td class="date">12/01/2025 21:06:43</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="???">???</td>
+  </tr>
+<tr>
+    <td class="idx">68</td>
+    <td class="name">Edilson Barros</td>
+    <td class="phone"><a href="https://wa.me/5511930779413" target="_blank">(11) 93077-9413</a></td>
+    <td class="date">11/30/2025 22:45:36</td>
+    <td class="date">12/02/2025 20:35:35</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="amigo já mandei tudo aí para vocês">amigo já mandei tudo aí para vocês</td>
+  </tr>
+<tr>
+    <td class="idx">69</td>
+    <td class="name">Ze Carlos</td>
+    <td class="phone"><a href="https://wa.me/5513996522426" target="_blank">(13) 99652-2426</a></td>
+    <td class="date">11/30/2025 20:59:43</td>
+    <td class="date">12/01/2025 18:03:05</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej">Olá, tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej</td>
+  </tr>
+<tr>
+    <td class="idx">70</td>
+    <td class="name">Deivid B Lanes</td>
+    <td class="phone"><a href="https://wa.me/555192233692" target="_blank">(51) 9223-3692</a></td>
+    <td class="date">11/30/2025 19:29:12</td>
+    <td class="date">12/01/2025 18:02:25</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej">Olá, tudo bem?
+Aqui é o Carlos Daniel, da Midas Restrição.
+Percebi que você acessou o link para realizar o seu Limpa Nome Gratuito, porém a assinatura ainda não foi concluída.
+Quero confirmar se desej</td>
+  </tr>
+<tr>
+    <td class="idx">71</td>
+    <td class="name">Rosangela Campos</td>
+    <td class="phone"><a href="https://wa.me/5511988322636" target="_blank">(11) 98832-2636</a></td>
+    <td class="date">11/30/2025 00:15:18</td>
+    <td class="date">11/30/2025 00:15:24</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Acabei de te enviar o link para assinatura. ✉️
+Assim que você assinar, já consigo encaminhar tudo para a advocacia parceira.
+Com a assinatura, consigo distribuir o processo com prioridade, incluindo t">Acabei de te enviar o link para assinatura. ✉️
+Assim que você assinar, já consigo encaminhar tudo para a advocacia parceira.
+Com a assinatura, consigo distribuir o processo com prioridade, incluindo t</td>
+  </tr>
+<tr>
+    <td class="idx">72</td>
+    <td class="name">Adriano Luis</td>
+    <td class="phone"><a href="https://wa.me/5511972055306" target="_blank">(11) 97205-5306</a></td>
+    <td class="date">11/29/2025 23:47:51</td>
+    <td class="date">11/30/2025 00:59:24</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="/8">/8</td>
+  </tr>
+<tr>
+    <td class="idx">73</td>
+    <td class="name">Eni</td>
+    <td class="phone"><a href="https://wa.me/555492351423" target="_blank">(54) 9235-1423</a></td>
+    <td class="date">11/29/2025 20:55:52</td>
+    <td class="date">11/29/2025 21:10:19</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Só preciso que assine por favor">Só preciso que assine por favor</td>
+  </tr>
+<tr>
+    <td class="idx">74</td>
+    <td class="name">Th</td>
+    <td class="phone"><a href="https://wa.me/5516981015825" target="_blank">(16) 98101-5825</a></td>
+    <td class="date">11/29/2025 20:43:52</td>
+    <td class="date">11/29/2025 20:44:00</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Enviei para assinatura meu querido">Enviei para assinatura meu querido</td>
+  </tr>
+<tr>
+    <td class="idx">75</td>
+    <td class="name">Antônio Marcos Jesus da Silva</td>
+    <td class="phone"><a href="https://wa.me/555192762444" target="_blank">(51) 9276-2444</a></td>
+    <td class="date">11/29/2025 20:01:54</td>
+    <td class="date">11/29/2025 20:01:58</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Acabei de te enviar o link para assinatura. ✉️
+Assim que você assinar, já consigo encaminhar tudo para a advocacia parceira.
+Com a assinatura, consigo distribuir o processo com prioridade, incluindo t">Acabei de te enviar o link para assinatura. ✉️
+Assim que você assinar, já consigo encaminhar tudo para a advocacia parceira.
+Com a assinatura, consigo distribuir o processo com prioridade, incluindo t</td>
+  </tr>
+<tr>
+    <td class="idx">76</td>
+    <td class="name">Lindomar de souza</td>
+    <td class="phone"><a href="https://wa.me/554797813775" target="_blank">(47) 9781-3775</a></td>
+    <td class="date">11/29/2025 19:53:36</td>
+    <td class="date">12/03/2025 09:34:22</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="46a5c7d0-cdf8-464d-a514-d18c930a4636.jpg">46a5c7d0-cdf8-464d-a514-d18c930a4636.jpg</td>
+  </tr>
+<tr>
+    <td class="idx">77</td>
+    <td class="name">José Arnaldo</td>
+    <td class="phone"><a href="https://wa.me/554989007492" target="_blank">(49) 8900-7492</a></td>
+    <td class="date">11/29/2025 17:24:48</td>
+    <td class="date">12/06/2025 16:34:04</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ah você está a mesma pessoa que me falou uma vez pediu todos os documentação minha eu mandei não me deu resposta nenhuma">Ah você está a mesma pessoa que me falou uma vez pediu todos os documentação minha eu mandei não me deu resposta nenhuma</td>
+  </tr>
+<tr>
+    <td class="idx">78</td>
+    <td class="name">sidney lara1982</td>
+    <td class="phone"><a href="https://wa.me/5514998032785" target="_blank">(14) 99803-2785</a></td>
+    <td class="date">11/29/2025 01:19:21</td>
+    <td class="date">12/02/2025 22:29:58</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="👋 Oi! Tudo bem?
+Para seguirmos com a auditoria gratuita e verificarmos se é possível limpar o seu nome sem pagamento das dívidas, vamos realizar uma análise completa das suas restrições, onde iremos:">👋 Oi! Tudo bem?
+Para seguirmos com a auditoria gratuita e verificarmos se é possível limpar o seu nome sem pagamento das dívidas, vamos realizar uma análise completa das suas restrições, onde iremos:</td>
+  </tr>
+<tr>
+    <td class="idx">79</td>
+    <td class="name">Leonicio</td>
+    <td class="phone"><a href="https://wa.me/5511950721215" target="_blank">(11) 95072-1215</a></td>
+    <td class="date">11/28/2025 17:42:36</td>
+    <td class="date">11/28/2025 17:42:49</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Fico no aguardo da sua assinatura para darmos inicio no seu procedimento">Fico no aguardo da sua assinatura para darmos inicio no seu procedimento</td>
+  </tr>
+<tr>
+    <td class="idx">80</td>
+    <td class="name">Neve</td>
+    <td class="phone"><a href="https://wa.me/554896047574" target="_blank">(48) 9604-7574</a></td>
+    <td class="date">11/28/2025 16:23:17</td>
+    <td class="date">11/28/2025 16:39:40</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Fui ve depois">Fui ve depois</td>
+  </tr>
+<tr>
+    <td class="idx">81</td>
+    <td class="name">Cleitão</td>
+    <td class="phone"><a href="https://wa.me/5511940048863" target="_blank">(11) 94004-8863</a></td>
+    <td class="date">11/28/2025 14:44:30</td>
+    <td class="date">12/01/2025 17:01:20</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="👋 Oi! Tudo bem?
+Para seguirmos com a auditoria gratuita e verificarmos se é possível limpar o seu nome sem pagamento das dívidas, vamos realizar uma análise completa das suas restrições, onde iremos:">👋 Oi! Tudo bem?
+Para seguirmos com a auditoria gratuita e verificarmos se é possível limpar o seu nome sem pagamento das dívidas, vamos realizar uma análise completa das suas restrições, onde iremos:</td>
+  </tr>
+<tr>
+    <td class="idx">82</td>
+    <td class="name">Nil</td>
+    <td class="phone"><a href="https://wa.me/5511983275509" target="_blank">(11) 98327-5509</a></td>
+    <td class="date">11/27/2025 15:42:11</td>
+    <td class="date">11/27/2025 16:08:19</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">83</td>
+    <td class="name">Emerson Fabricio</td>
+    <td class="phone"><a href="https://wa.me/5519999777323" target="_blank">(19) 99977-7323</a></td>
+    <td class="date">11/26/2025 20:48:45</td>
+    <td class="date">11/26/2025 20:49:08</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Qualquer duvida, fico a sua disposição!">Qualquer duvida, fico a sua disposição!</td>
+  </tr>
+<tr>
+    <td class="idx">84</td>
+    <td class="name">Zildivania Freitas</td>
+    <td class="phone"><a href="https://wa.me/5511979711247" target="_blank">(11) 97971-1247</a></td>
+    <td class="date">11/26/2025 19:14:38</td>
+    <td class="date">11/26/2025 20:59:42</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Oii tudo bem :?
+Mandei o link pra senhora ?
+E não obtive nenhuma resposta
+o link ira expirar logo
+Preciso saber se ira realmente querer seguir com o lima nome gratuito">Oii tudo bem :?
+Mandei o link pra senhora ?
+E não obtive nenhuma resposta
+o link ira expirar logo
+Preciso saber se ira realmente querer seguir com o lima nome gratuito</td>
+  </tr>
+<tr>
+    <td class="idx">85</td>
+    <td class="name">Bete</td>
+    <td class="phone"><a href="https://wa.me/5511987050717" target="_blank">(11) 98705-0717</a></td>
+    <td class="date">11/25/2025 23:24:24</td>
+    <td class="date">11/26/2025 18:12:36</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá.
+Aqui é o Carlos Daniel, Consultor Especialista em Restrições e Negativações.
+Verifiquei novamente no sistema e o seu link continua pendente, sem a assinatura.
+Sem essa etapa, não existe como cont">Olá.
+Aqui é o Carlos Daniel, Consultor Especialista em Restrições e Negativações.
+Verifiquei novamente no sistema e o seu link continua pendente, sem a assinatura.
+Sem essa etapa, não existe como cont</td>
+  </tr>
+<tr>
+    <td class="idx">86</td>
+    <td class="name">Pr FlavioNeri</td>
+    <td class="phone"><a href="https://wa.me/5519985991541" target="_blank">(19) 98599-1541</a></td>
+    <td class="date">11/25/2025 23:14:25</td>
+    <td class="date">11/26/2025 18:13:05</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá.
+Aqui é o Carlos Daniel, Consultor Especialista em Restrições e Negativações.
+Verifiquei novamente no sistema e o seu link continua pendente, sem a assinatura.
+Sem essa etapa, não existe como cont">Olá.
+Aqui é o Carlos Daniel, Consultor Especialista em Restrições e Negativações.
+Verifiquei novamente no sistema e o seu link continua pendente, sem a assinatura.
+Sem essa etapa, não existe como cont</td>
+  </tr>
+<tr>
+    <td class="idx">87</td>
+    <td class="name">Alexandre Águia</td>
+    <td class="phone"><a href="https://wa.me/5511998046290" target="_blank">(11) 99804-6290</a></td>
+    <td class="date">11/25/2025 22:28:32</td>
+    <td class="date">11/26/2025 18:14:02</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá.
+Aqui é o Carlos Daniel, Consultor Especialista em Restrições e Negativações.
+Verifiquei novamente no sistema e o seu link continua pendente, sem a assinatura.
+Sem essa etapa, não existe como cont">Olá.
+Aqui é o Carlos Daniel, Consultor Especialista em Restrições e Negativações.
+Verifiquei novamente no sistema e o seu link continua pendente, sem a assinatura.
+Sem essa etapa, não existe como cont</td>
+  </tr>
+<tr>
+    <td class="idx">88</td>
+    <td class="name">marcelof0508</td>
+    <td class="phone"><a href="https://wa.me/5511971185278" target="_blank">(11) 97118-5278</a></td>
+    <td class="date">11/25/2025 21:44:49</td>
+    <td class="date">11/25/2025 21:44:58</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Acabei de te enviar o link para assinatura do teu Limpa Nome. Assim que você assinar, já encaminho para a advocacia parceira e damos andamento no procedimento ainda hoje.
+Assina agora pra gente ganhar">Acabei de te enviar o link para assinatura do teu Limpa Nome. Assim que você assinar, já encaminho para a advocacia parceira e damos andamento no procedimento ainda hoje.
+Assina agora pra gente ganhar</td>
+  </tr>
+<tr>
+    <td class="idx">89</td>
+    <td class="name">Antônio</td>
+    <td class="phone"><a href="https://wa.me/5511959393709" target="_blank">(11) 95939-3709</a></td>
+    <td class="date">11/25/2025 18:47:34</td>
+    <td class="date">11/25/2025 23:29:48</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Conseguiu ler o contrato
+Está gerando pendencias em meu sistema a não assinatura do contrato">Conseguiu ler o contrato
+Está gerando pendencias em meu sistema a não assinatura do contrato</td>
+  </tr>
+<tr>
+    <td class="idx">90</td>
+    <td class="name">ALE   ELETRICISTA</td>
+    <td class="phone"><a href="https://wa.me/5511999616514" target="_blank">(11) 99961-6514</a></td>
+    <td class="date">11/25/2025 18:35:35</td>
+    <td class="date">11/25/2025 21:41:39</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Teria algum motivo ?">Teria algum motivo ?</td>
+  </tr>
+<tr>
+    <td class="idx">91</td>
+    <td class="name">.</td>
+    <td class="phone"><a href="https://wa.me/5511916787093" target="_blank">(11) 91678-7093</a></td>
+    <td class="date">11/25/2025 17:34:58</td>
+    <td class="date">11/25/2025 18:02:58</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Fala meu querido ?
+Houve algum problema na sua assinatura ?
+Vi que entrou no link e não assinou ?">Fala meu querido ?
+Houve algum problema na sua assinatura ?
+Vi que entrou no link e não assinou ?</td>
+  </tr>
+<tr>
+    <td class="idx">92</td>
+    <td class="name">Rosangela Zanetti</td>
+    <td class="phone"><a href="https://wa.me/5518996786680" target="_blank">(18) 99678-6680</a></td>
+    <td class="date">11/19/2025 20:40:54</td>
+    <td class="date">11/19/2025 21:34:11</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Pronto
+pode tentar
+Arrumei">Pronto
+pode tentar
+Arrumei</td>
+  </tr>
+<tr>
+    <td class="idx">93</td>
+    <td class="name">Jean Bonifácio da Silva</td>
+    <td class="phone"><a href="https://wa.me/555198258652" target="_blank">(51) 9825-8652</a></td>
+    <td class="date">11/19/2025 17:15:26</td>
+    <td class="date">11/19/2025 17:15:35</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pra Advocacia parceiro e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no proced">Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pra Advocacia parceiro e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no proced</td>
+  </tr>
+<tr>
+    <td class="idx">94</td>
+    <td class="name">Luis Fernando</td>
+    <td class="phone"><a href="https://wa.me/5511987629689" target="_blank">(11) 98762-9689</a></td>
+    <td class="date">11/19/2025 15:53:00</td>
+    <td class="date">11/27/2025 23:26:25</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Pode seguir sim">Pode seguir sim</td>
+  </tr>
+<tr>
+    <td class="idx">95</td>
+    <td class="name">Clelia🥰</td>
+    <td class="phone"><a href="https://wa.me/5511939523422" target="_blank">(11) 93952-3422</a></td>
+    <td class="date">11/18/2025 23:40:47</td>
+    <td class="date">11/19/2025 15:54:42</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Entendi obrigado pelo retorno da sua atenção me explicando sobre minha dúvida 🙂">Entendi obrigado pelo retorno da sua atenção me explicando sobre minha dúvida 🙂</td>
+  </tr>
+<tr>
+    <td class="idx">96</td>
+    <td class="name">Paulo</td>
+    <td class="phone"><a href="https://wa.me/5555920002775" target="_blank">(55) 92000-2775</a></td>
+    <td class="date">11/18/2025 21:44:00</td>
+    <td class="date">11/19/2025 20:10:34</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="E o Paulo">E o Paulo</td>
+  </tr>
+<tr>
+    <td class="idx">97</td>
+    <td class="name">Eliene lia</td>
+    <td class="phone"><a href="https://wa.me/5511977291083" target="_blank">(11) 97729-1083</a></td>
+    <td class="date">11/18/2025 20:53:13</td>
+    <td class="date">11/19/2025 19:17:01</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ok">Ok</td>
+  </tr>
+<tr>
+    <td class="idx">98</td>
+    <td class="name">Maurao</td>
+    <td class="phone"><a href="https://wa.me/5511973700221" target="_blank">(11) 97370-0221</a></td>
+    <td class="date">11/14/2025 20:59:04</td>
+    <td class="date">11/17/2025 12:30:52</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ola bom dia">Ola bom dia</td>
+  </tr>
+<tr>
+    <td class="idx">99</td>
+    <td class="name">Geiciane</td>
+    <td class="phone"><a href="https://wa.me/5511967198085" target="_blank">(11) 96719-8085</a></td>
+    <td class="date">11/14/2025 20:47:47</td>
+    <td class="date">11/15/2025 19:27:21</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Quero sim da o procedimento">Quero sim da o procedimento</td>
+  </tr>
+<tr>
+    <td class="idx">100</td>
+    <td class="name">Angela Mariano</td>
+    <td class="phone"><a href="https://wa.me/5519981796586" target="_blank">(19) 98179-6586</a></td>
+    <td class="date">11/14/2025 20:04:40</td>
+    <td class="date">11/14/2025 20:29:40</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Não fiquei não só achei melhor não mexer com isso agora obg">Não fiquei não só achei melhor não mexer com isso agora obg</td>
+  </tr>
+<tr>
+    <td class="idx">101</td>
+    <td class="name">Maria V Da Silva</td>
+    <td class="phone"><a href="https://wa.me/5511983072124" target="_blank">(11) 98307-2124</a></td>
+    <td class="date">11/14/2025 20:03:55</td>
+    <td class="date">11/14/2025 22:55:27</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Houve algum problema ?">Houve algum problema ?</td>
+  </tr>
+<tr>
+    <td class="idx">102</td>
+    <td class="name">Kelli</td>
+    <td class="phone"><a href="https://wa.me/5519995209375" target="_blank">(19) 99520-9375</a></td>
+    <td class="date">11/14/2025 19:16:41</td>
+    <td class="date">11/14/2025 19:16:51</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="O link é o contrato tá
+Só clicar e ler">O link é o contrato tá
+Só clicar e ler</td>
+  </tr>
+<tr>
+    <td class="idx">103</td>
+    <td class="name">Débora Regina Baracho  💓🫅🏻</td>
+    <td class="phone"><a href="https://wa.me/5511973140908" target="_blank">(11) 97314-0908</a></td>
+    <td class="date">11/14/2025 19:15:40</td>
+    <td class="date">11/15/2025 02:29:18</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="E vc tem noção  de quanto tempo  isto pode acontecer.">E vc tem noção  de quanto tempo  isto pode acontecer.</td>
+  </tr>
+<tr>
+    <td class="idx">104</td>
+    <td class="name">danifusari78</td>
+    <td class="phone"><a href="https://wa.me/5518981038864" target="_blank">(18) 98103-8864</a></td>
+    <td class="date">11/14/2025 17:49:44</td>
+    <td class="date">11/15/2025 01:42:22</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Olá. Desculpa não responder antes. Tive cólica renal. Estava em observação">Olá. Desculpa não responder antes. Tive cólica renal. Estava em observação</td>
+  </tr>
+<tr>
+    <td class="idx">105</td>
+    <td class="name">Doriedson da Silva Medeiros</td>
+    <td class="phone"><a href="https://wa.me/554789105449" target="_blank">(47) 8910-5449</a></td>
+    <td class="date">11/14/2025 17:13:02</td>
+    <td class="date">11/15/2025 13:49:00</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Bom dia meu amigo">Bom dia meu amigo</td>
+  </tr>
+<tr>
+    <td class="idx">106</td>
+    <td class="name">Rodolfo Alves</td>
+    <td class="phone"><a href="https://wa.me/5511985545291" target="_blank">(11) 98554-5291</a></td>
+    <td class="date">11/14/2025 13:12:34</td>
+    <td class="date">11/18/2025 20:18:48</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="👋 Oi! Tudo bem?
+Pra gente saber se é possível limpar o seu nome sem pagar as dívidas, precisamos fazer uma auditoria completa de suas restrições, onde vamos:
+- Analisar individualmente cada um dos se">👋 Oi! Tudo bem?
+Pra gente saber se é possível limpar o seu nome sem pagar as dívidas, precisamos fazer uma auditoria completa de suas restrições, onde vamos:
+- Analisar individualmente cada um dos se</td>
+  </tr>
+<tr>
+    <td class="idx">107</td>
+    <td class="name">Tabata👀</td>
+    <td class="phone"><a href="https://wa.me/5511916511867" target="_blank">(11) 91651-1867</a></td>
+    <td class="date">11/14/2025 12:48:39</td>
+    <td class="date">01/28/2026 15:45:00</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Olá!
+Para sabermos se é possível limpar seu nome, nossos especialistas precisam realizar uma auditoria gratuita, onde analisamos cada uma das suas restrições, buscando irregularidades que permitam a e">Olá!
+Para sabermos se é possível limpar seu nome, nossos especialistas precisam realizar uma auditoria gratuita, onde analisamos cada uma das suas restrições, buscando irregularidades que permitam a e</td>
+  </tr>
+<tr>
+    <td class="idx">108</td>
+    <td class="name">Celia</td>
+    <td class="phone"><a href="https://wa.me/5511943296567" target="_blank">(11) 94329-6567</a></td>
+    <td class="date">11/14/2025 12:35:39</td>
+    <td class="date">11/17/2025 20:54:44</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Boa tarde">Boa tarde</td>
+  </tr>
+<tr>
+    <td class="idx">109</td>
+    <td class="name">Agnes Araújo</td>
+    <td class="phone"><a href="https://wa.me/5513997470725" target="_blank">(13) 99747-0725</a></td>
+    <td class="date">11/14/2025 02:26:59</td>
+    <td class="date">11/14/2025 23:06:27</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">110</td>
+    <td class="name">Bruno Castro</td>
+    <td class="phone"><a href="https://wa.me/5512997931633" target="_blank">(12) 99793-1633</a></td>
+    <td class="date">11/14/2025 02:02:14</td>
+    <td class="date">11/14/2025 02:13:46</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Certo
+Porém o link irá expirar
+Está com dúvida em alguma coisa ?">Certo
+Porém o link irá expirar
+Está com dúvida em alguma coisa ?</td>
+  </tr>
+<tr>
+    <td class="idx">111</td>
+    <td class="name">Cleberson</td>
+    <td class="phone"><a href="https://wa.me/5511916190554" target="_blank">(11) 91619-0554</a></td>
+    <td class="date">11/14/2025 00:44:27</td>
+    <td class="date">11/14/2025 23:16:29</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Aguardo a assinatura.
+Boa noite">Aguardo a assinatura.
+Boa noite</td>
+  </tr>
+<tr>
+    <td class="idx">112</td>
+    <td class="name">Rosilda Baptista</td>
+    <td class="phone"><a href="https://wa.me/5511982358314" target="_blank">(11) 98235-8314</a></td>
+    <td class="date">11/13/2025 23:12:32</td>
+    <td class="date">11/14/2025 17:57:22</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Vou gerar novamente outro link pra senhora">Vou gerar novamente outro link pra senhora</td>
+  </tr>
+<tr>
+    <td class="idx">113</td>
+    <td class="name">Antônio Júnior</td>
+    <td class="phone"><a href="https://wa.me/5511973972846" target="_blank">(11) 97397-2846</a></td>
+    <td class="date">11/13/2025 22:46:03</td>
+    <td class="date">11/13/2025 22:46:10</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no processo e você ">Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no processo e você </td>
+  </tr>
+<tr>
+    <td class="idx">114</td>
+    <td class="name">Ramon</td>
+    <td class="phone"><a href="https://wa.me/5511951920271" target="_blank">(11) 95192-0271</a></td>
+    <td class="date">11/13/2025 22:01:42</td>
+    <td class="date">11/13/2025 22:01:47</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no processo e você ">Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no processo e você </td>
+  </tr>
+<tr>
+    <td class="idx">115</td>
+    <td class="name">Rayane,beh</td>
+    <td class="phone"><a href="https://wa.me/5511949981599" target="_blank">(11) 94998-1599</a></td>
+    <td class="date">11/13/2025 19:52:49</td>
+    <td class="date">11/13/2025 20:00:41</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="De nada, fico a sua disposição!">De nada, fico a sua disposição!</td>
+  </tr>
+<tr>
+    <td class="idx">116</td>
+    <td class="name">Maurício Oliveira</td>
+    <td class="phone"><a href="https://wa.me/5511965039420" target="_blank">(11) 96503-9420</a></td>
+    <td class="date">11/13/2025 17:10:55</td>
+    <td class="date">11/13/2025 17:10:55</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="https://app.zapsign.com.br/verificar/50923dde-3292-4c1a-859c-9b80535773f1">https://app.zapsign.com.br/verificar/50923dde-3292-4c1a-859c-9b80535773f1</td>
+  </tr>
+<tr>
+    <td class="idx">117</td>
+    <td class="name">Alex</td>
+    <td class="phone"><a href="https://wa.me/555591231533" target="_blank">(55) 9123-1533</a></td>
+    <td class="date">11/12/2025 23:46:38</td>
+    <td class="date">11/12/2025 23:46:38</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="https://app.zapsign.com.br/verificar/e4e156fb-2dcb-4788-8828-d381c919ee07">https://app.zapsign.com.br/verificar/e4e156fb-2dcb-4788-8828-d381c919ee07</td>
+  </tr>
+<tr>
+    <td class="idx">118</td>
+    <td class="name">Charles</td>
+    <td class="phone"><a href="https://wa.me/5511949035887" target="_blank">(11) 94903-5887</a></td>
+    <td class="date">11/12/2025 22:36:05</td>
+    <td class="date">12/10/2025 21:18:33</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Tendeu">Tendeu</td>
+  </tr>
+<tr>
+    <td class="idx">119</td>
+    <td class="name">douglasmedici01</td>
+    <td class="phone"><a href="https://wa.me/5511997500638" target="_blank">(11) 99750-0638</a></td>
+    <td class="date">11/12/2025 22:19:14</td>
+    <td class="date">11/12/2025 22:35:33</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Feito">Feito</td>
+  </tr>
+<tr>
+    <td class="idx">120</td>
+    <td class="name">Gisele</td>
+    <td class="phone"><a href="https://wa.me/5511987296955" target="_blank">(11) 98729-6955</a></td>
+    <td class="date">11/12/2025 18:56:39</td>
+    <td class="date">12/02/2025 16:03:47</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="👋 Oi! Tudo bem?
+Para seguirmos com a auditoria gratuita e verificarmos se é possível limpar o seu nome sem pagamento das dívidas, vamos realizar uma análise completa das suas restrições, onde iremos:">👋 Oi! Tudo bem?
+Para seguirmos com a auditoria gratuita e verificarmos se é possível limpar o seu nome sem pagamento das dívidas, vamos realizar uma análise completa das suas restrições, onde iremos:</td>
+  </tr>
+<tr>
+    <td class="idx">121</td>
+    <td class="name">João Fernando</td>
+    <td class="phone"><a href="https://wa.me/5519994301114" target="_blank">(19) 99430-1114</a></td>
+    <td class="date">11/12/2025 18:36:34</td>
+    <td class="date">11/12/2025 18:43:29</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Pronto">Pronto</td>
+  </tr>
+<tr>
+    <td class="idx">122</td>
+    <td class="name">Alex</td>
+    <td class="phone"><a href="https://wa.me/5511959072087" target="_blank">(11) 95907-2087</a></td>
+    <td class="date">11/12/2025 17:39:49</td>
+    <td class="date">11/19/2025 21:21:11</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Sou Alexssandro Lima dos Santos  e quero realizar a auditoria das restricoes do CPF 023.989.115-51">Sou Alexssandro Lima dos Santos  e quero realizar a auditoria das restricoes do CPF 023.989.115-51</td>
+  </tr>
+<tr>
+    <td class="idx">123</td>
+    <td class="name">edilainecristina468</td>
+    <td class="phone"><a href="https://wa.me/5511981788468" target="_blank">(11) 98178-8468</a></td>
+    <td class="date">11/12/2025 16:41:17</td>
+    <td class="date">11/12/2025 16:41:22</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no processo e você ">Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no processo e você </td>
+  </tr>
+<tr>
+    <td class="idx">124</td>
+    <td class="name">Selma</td>
+    <td class="phone"><a href="https://wa.me/5511949738141" target="_blank">(11) 94973-8141</a></td>
+    <td class="date">11/12/2025 15:43:29</td>
+    <td class="date">11/12/2025 15:43:34</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no processo e você ">Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no processo e você </td>
+  </tr>
+<tr>
+    <td class="idx">125</td>
+    <td class="name">Edson</td>
+    <td class="phone"><a href="https://wa.me/5511939422266" target="_blank">(11) 93942-2266</a></td>
+    <td class="date">11/12/2025 14:41:50</td>
+    <td class="date">11/12/2025 17:34:59</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">126</td>
+    <td class="name">Carmen Lima</td>
+    <td class="phone"><a href="https://wa.me/5511987256316" target="_blank">(11) 98725-6316</a></td>
+    <td class="date">11/12/2025 14:39:16</td>
+    <td class="date">11/13/2025 19:36:57</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ok">Ok</td>
+  </tr>
+<tr>
+    <td class="idx">127</td>
+    <td class="name">Adriana Faustino</td>
+    <td class="phone"><a href="https://wa.me/5511959159626" target="_blank">(11) 95915-9626</a></td>
+    <td class="date">11/11/2025 21:42:41</td>
+    <td class="date">11/11/2025 22:04:41</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Primeira vez que vejo isso">Primeira vez que vejo isso</td>
+  </tr>
+<tr>
+    <td class="idx">128</td>
+    <td class="name">©️@®️L🌍💰</td>
+    <td class="phone"><a href="https://wa.me/5519986125795" target="_blank">(19) 98612-5795</a></td>
+    <td class="date">11/11/2025 20:36:07</td>
+    <td class="date">11/12/2025 11:34:38</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Bom dia?">Bom dia?</td>
+  </tr>
+<tr>
+    <td class="idx">129</td>
+    <td class="name">dossantosanderson0215</td>
+    <td class="phone"><a href="https://wa.me/5511972804820" target="_blank">(11) 97280-4820</a></td>
+    <td class="date">11/11/2025 20:02:32</td>
+    <td class="date">11/11/2025 20:16:22</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">130</td>
+    <td class="name">Robson</td>
+    <td class="phone"><a href="https://wa.me/5511953238721" target="_blank">(11) 95323-8721</a></td>
+    <td class="date">11/11/2025 00:11:58</td>
+    <td class="date">11/11/2025 14:38:31</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Fala meu querido
+vi que visualizou o link 5x e não assinou
+Preciso saber se realmente ira querer seguir, caso ao contrato excluo todo as documentações do sistema">Fala meu querido
+vi que visualizou o link 5x e não assinou
+Preciso saber se realmente ira querer seguir, caso ao contrato excluo todo as documentações do sistema</td>
+  </tr>
+<tr>
+    <td class="idx">131</td>
+    <td class="name">Ne Santos</td>
+    <td class="phone"><a href="https://wa.me/5511959769532" target="_blank">(11) 95976-9532</a></td>
+    <td class="date">11/10/2025 23:58:46</td>
+    <td class="date">12/10/2025 00:40:41</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="?">?</td>
+  </tr>
+<tr>
+    <td class="idx">132</td>
+    <td class="name">Franciele Oliveira de Freitas</td>
+    <td class="phone"><a href="https://wa.me/554896859761" target="_blank">(48) 9685-9761</a></td>
+    <td class="date">11/10/2025 20:01:02</td>
+    <td class="date">11/10/2025 20:01:06</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Opa, tudo certo?
+Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no">Opa, tudo certo?
+Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no</td>
+  </tr>
+<tr>
+    <td class="idx">133</td>
+    <td class="name">Natieli Souza ✨</td>
+    <td class="phone"><a href="https://wa.me/5518996877918" target="_blank">(18) 99687-7918</a></td>
+    <td class="date">11/10/2025 17:22:44</td>
+    <td class="date">11/10/2025 19:09:22</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Midas Restrições">Midas Restrições</td>
+  </tr>
+<tr>
+    <td class="idx">134</td>
+    <td class="name">João Júnior</td>
+    <td class="phone"><a href="https://wa.me/5511985345897" target="_blank">(11) 98534-5897</a></td>
+    <td class="date">11/09/2025 20:21:41</td>
+    <td class="date">11/10/2025 10:12:42</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ok">Ok</td>
+  </tr>
+<tr>
+    <td class="idx">135</td>
+    <td class="name">Fabio Costa Da Silva</td>
+    <td class="phone"><a href="https://wa.me/5511913128654" target="_blank">(11) 91312-8654</a></td>
+    <td class="date">11/09/2025 20:08:36</td>
+    <td class="date">11/09/2025 20:19:10</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Certo
+Aguardo">Certo
+Aguardo</td>
+  </tr>
+<tr>
+    <td class="idx">136</td>
+    <td class="name">Aida Abreu</td>
+    <td class="phone"><a href="https://wa.me/5511960585303" target="_blank">(11) 96058-5303</a></td>
+    <td class="date">11/08/2025 22:48:30</td>
+    <td class="date">11/15/2025 23:26:19</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Mandei recado me desculpa">Mandei recado me desculpa</td>
+  </tr>
+<tr>
+    <td class="idx">137</td>
+    <td class="name">Pedro</td>
+    <td class="phone"><a href="https://wa.me/5511984661418" target="_blank">(11) 98466-1418</a></td>
+    <td class="date">11/08/2025 21:36:44</td>
+    <td class="date">11/08/2025 21:58:32</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Olá, o link ira expirar
+Ainda tem interesse ?">Olá, o link ira expirar
+Ainda tem interesse ?</td>
+  </tr>
+<tr>
+    <td class="idx">138</td>
+    <td class="name">Agente Imobiliário Alexsandro Carvalho</td>
+    <td class="phone"><a href="https://wa.me/5511987224830" target="_blank">(11) 98722-4830</a></td>
+    <td class="date">11/08/2025 20:50:15</td>
+    <td class="date">12/03/2025 18:15:47</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Meu CPF 25243858846 já estou no processo">Meu CPF 25243858846 já estou no processo</td>
+  </tr>
+<tr>
+    <td class="idx">139</td>
+    <td class="name">Fabiano</td>
+    <td class="phone"><a href="https://wa.me/5519971083688" target="_blank">(19) 97108-3688</a></td>
+    <td class="date">11/08/2025 20:06:31</td>
+    <td class="date">11/28/2025 12:56:46</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Bom dia , tudo bem eimmm eu já fiz esse procedimento com vcs aí ,estou no aguardo da resposta">Bom dia , tudo bem eimmm eu já fiz esse procedimento com vcs aí ,estou no aguardo da resposta</td>
+  </tr>
+<tr>
+    <td class="idx">140</td>
+    <td class="name">Alisson Assis Pereira</td>
+    <td class="phone"><a href="https://wa.me/5512997663918" target="_blank">(12) 99766-3918</a></td>
+    <td class="date">11/07/2025 23:50:29</td>
+    <td class="date">11/08/2025 17:40:20</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">141</td>
+    <td class="name">Mih🦋</td>
+    <td class="phone"><a href="https://wa.me/5511989469451" target="_blank">(11) 98946-9451</a></td>
+    <td class="date">11/07/2025 23:33:00</td>
+    <td class="date">11/07/2025 23:45:41</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="d9416787-82e1-4488-874a-c7222915645d.jpg">d9416787-82e1-4488-874a-c7222915645d.jpg</td>
+  </tr>
+<tr>
+    <td class="idx">142</td>
+    <td class="name">Kamylla Oliveira</td>
+    <td class="phone"><a href="https://wa.me/5514981580993" target="_blank">(14) 98158-0993</a></td>
+    <td class="date">11/07/2025 22:28:53</td>
+    <td class="date">11/08/2025 17:41:00</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">143</td>
+    <td class="name">Cátia</td>
+    <td class="phone"><a href="https://wa.me/5511939201559" target="_blank">(11) 93920-1559</a></td>
+    <td class="date">11/07/2025 20:45:17</td>
+    <td class="date">11/07/2025 23:24:51</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Conseguisse?">Conseguisse?</td>
+  </tr>
+<tr>
+    <td class="idx">144</td>
+    <td class="name">Marcos Roberto Bombem</td>
+    <td class="phone"><a href="https://wa.me/554797868286" target="_blank">(47) 9786-8286</a></td>
+    <td class="date">11/07/2025 18:40:59</td>
+    <td class="date">11/07/2025 18:41:08</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Desculpa a demora">Desculpa a demora</td>
+  </tr>
+<tr>
+    <td class="idx">145</td>
+    <td class="name">Rogerio Jose</td>
+    <td class="phone"><a href="https://wa.me/5513997236099" target="_blank">(13) 99723-6099</a></td>
+    <td class="date">11/07/2025 17:36:57</td>
+    <td class="date">11/07/2025 17:37:04</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="O link para assinatura
+Assinando já envio pro juridico">O link para assinatura
+Assinando já envio pro juridico</td>
+  </tr>
+<tr>
+    <td class="idx">146</td>
+    <td class="name">🖤</td>
+    <td class="phone"><a href="https://wa.me/5519993676262" target="_blank">(19) 99367-6262</a></td>
+    <td class="date">11/07/2025 15:43:23</td>
+    <td class="date">11/07/2025 15:43:56</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Te mandei o link meu querido
+Assinando já mando pro jurídico para distribuir teu processo.
+E entrar com eliminar dessas dividas.">Te mandei o link meu querido
+Assinando já mando pro jurídico para distribuir teu processo.
+E entrar com eliminar dessas dividas.</td>
+  </tr>
+<tr>
+    <td class="idx">147</td>
+    <td class="name">Luiz Alexandre Hassel</td>
+    <td class="phone"><a href="https://wa.me/554797091093" target="_blank">(47) 9709-1093</a></td>
+    <td class="date">11/06/2025 23:21:28</td>
+    <td class="date">11/07/2025 00:02:42</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">148</td>
+    <td class="name">Patrícia Martins arruda dos Santos</td>
+    <td class="phone"><a href="https://wa.me/555181825922" target="_blank">(51) 8182-5922</a></td>
+    <td class="date">11/06/2025 22:43:11</td>
+    <td class="date">11/06/2025 23:39:44</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">149</td>
+    <td class="name">Simões</td>
+    <td class="phone"><a href="https://wa.me/5511948788516" target="_blank">(11) 94878-8516</a></td>
+    <td class="date">11/06/2025 22:16:16</td>
+    <td class="date">11/06/2025 22:34:42</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Pronto">Pronto</td>
+  </tr>
+<tr>
+    <td class="idx">150</td>
+    <td class="name">❤️</td>
+    <td class="phone"><a href="https://wa.me/5511917452189" target="_blank">(11) 91745-2189</a></td>
+    <td class="date">11/06/2025 21:35:30</td>
+    <td class="date">11/06/2025 22:38:09</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="ok">ok</td>
+  </tr>
+<tr>
+    <td class="idx">151</td>
+    <td class="name">Carlos Eduardo Schults guedes</td>
+    <td class="phone"><a href="https://wa.me/555597217167" target="_blank">(55) 9721-7167</a></td>
+    <td class="date">11/06/2025 21:13:51</td>
+    <td class="date">11/06/2025 21:21:45</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Obrigado">Obrigado</td>
+  </tr>
+<tr>
+    <td class="idx">152</td>
+    <td class="name">Jonas Lima Neves</td>
+    <td class="phone"><a href="https://wa.me/555397044941" target="_blank">(53) 9704-4941</a></td>
+    <td class="date">11/06/2025 20:29:34</td>
+    <td class="date">11/07/2025 12:13:15</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Na hora te tirar a foto vai direto pro drive a câmera do celular não ABRE">Na hora te tirar a foto vai direto pro drive a câmera do celular não ABRE</td>
+  </tr>
+<tr>
+    <td class="idx">153</td>
+    <td class="name">izaias</td>
+    <td class="phone"><a href="https://wa.me/5513996520108" target="_blank">(13) 99652-0108</a></td>
+    <td class="date">11/06/2025 18:59:04</td>
+    <td class="date">11/27/2025 15:25:03</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">154</td>
+    <td class="name">Karina</td>
+    <td class="phone"><a href="https://wa.me/5519986016871" target="_blank">(19) 98601-6871</a></td>
+    <td class="date">11/06/2025 18:36:56</td>
+    <td class="date">11/06/2025 18:42:52</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Consegui">Consegui</td>
+  </tr>
+<tr>
+    <td class="idx">155</td>
+    <td class="name">Jacson da Paz</td>
+    <td class="phone"><a href="https://wa.me/5518981543458" target="_blank">(18) 98154-3458</a></td>
+    <td class="date">11/06/2025 18:11:00</td>
+    <td class="date">11/06/2025 18:11:00</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="https://app.zapsign.com.br/verificar/bfc607aa-b291-4f01-9209-960061f85815">https://app.zapsign.com.br/verificar/bfc607aa-b291-4f01-9209-960061f85815</td>
+  </tr>
+<tr>
+    <td class="idx">156</td>
+    <td class="name">Robson Francisco</td>
+    <td class="phone"><a href="https://wa.me/5511980880216" target="_blank">(11) 98088-0216</a></td>
+    <td class="date">11/06/2025 17:46:40</td>
+    <td class="date">11/08/2025 17:30:30</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">157</td>
+    <td class="name">Natan</td>
+    <td class="phone"><a href="https://wa.me/5512991777076" target="_blank">(12) 99177-7076</a></td>
+    <td class="date">11/06/2025 17:36:01</td>
+    <td class="date">11/12/2025 19:35:36</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="👋 Oi! Tudo bem?
+Pra gente saber se é possível limpar o seu nome sem pagar as dívidas, precisamos fazer uma auditoria completa de suas restrições, onde vamos:
+- Analisar individualmente cada um dos se">👋 Oi! Tudo bem?
+Pra gente saber se é possível limpar o seu nome sem pagar as dívidas, precisamos fazer uma auditoria completa de suas restrições, onde vamos:
+- Analisar individualmente cada um dos se</td>
+  </tr>
+<tr>
+    <td class="idx">158</td>
+    <td class="name">Juliano Martins</td>
+    <td class="phone"><a href="https://wa.me/5511947841556" target="_blank">(11) 94784-1556</a></td>
+    <td class="date">11/05/2025 20:46:19</td>
+    <td class="date">11/05/2025 20:52:08</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="86e8b238-1854-4252-8f1d-4b72b1ee958b.jpg">86e8b238-1854-4252-8f1d-4b72b1ee958b.jpg</td>
+  </tr>
+<tr>
+    <td class="idx">159</td>
+    <td class="name">Odair</td>
+    <td class="phone"><a href="https://wa.me/5518996523193" target="_blank">(18) 99652-3193</a></td>
+    <td class="date">11/05/2025 00:25:02</td>
+    <td class="date">11/05/2025 00:25:23</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">160</td>
+    <td class="name">wemisson</td>
+    <td class="phone"><a href="https://wa.me/5515998552392" target="_blank">(15) 99855-2392</a></td>
+    <td class="date">11/04/2025 22:04:18</td>
+    <td class="date">11/04/2025 23:14:03</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">161</td>
+    <td class="name">sergio Paulo</td>
+    <td class="phone"><a href="https://wa.me/5511969676105" target="_blank">(11) 96967-6105</a></td>
+    <td class="date">11/04/2025 21:37:54</td>
+    <td class="date">11/04/2025 22:10:16</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">162</td>
+    <td class="name">Patricia Oliveira</td>
+    <td class="phone"><a href="https://wa.me/5511992447431" target="_blank">(11) 99244-7431</a></td>
+    <td class="date">11/04/2025 20:35:13</td>
+    <td class="date">11/04/2025 20:44:40</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Ok tudo certo">Ok tudo certo</td>
+  </tr>
+<tr>
+    <td class="idx">163</td>
+    <td class="name">Paulo</td>
+    <td class="phone"><a href="https://wa.me/5515996548956" target="_blank">(15) 99654-8956</a></td>
+    <td class="date">11/04/2025 16:10:57</td>
+    <td class="date">11/04/2025 23:08:02</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">164</td>
+    <td class="name">Carla Silva</td>
+    <td class="phone"><a href="https://wa.me/555192444037" target="_blank">(51) 9244-4037</a></td>
+    <td class="date">11/03/2025 23:49:43</td>
+    <td class="date">11/04/2025 00:26:59</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">165</td>
+    <td class="name">Marco Aurélio Cazuza da Silva</td>
+    <td class="phone"><a href="https://wa.me/555196746947" target="_blank">(51) 9674-6947</a></td>
+    <td class="date">11/03/2025 23:11:59</td>
+    <td class="date">11/03/2025 23:27:52</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Houve algum erro no sistema.">Houve algum erro no sistema.</td>
+  </tr>
+<tr>
+    <td class="idx">166</td>
+    <td class="name">Dirubraga</td>
+    <td class="phone"><a href="https://wa.me/5512997695380" target="_blank">(12) 99769-5380</a></td>
+    <td class="date">11/03/2025 21:26:46</td>
+    <td class="date">11/03/2025 21:26:50</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Opa, tudo certo?
+Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no">Opa, tudo certo?
+Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no</td>
+  </tr>
+<tr>
+    <td class="idx">167</td>
+    <td class="name">Rodrigo Barbosa Gonçalves</td>
+    <td class="phone"><a href="https://wa.me/555391842556" target="_blank">(53) 9184-2556</a></td>
+    <td class="date">11/03/2025 18:38:52</td>
+    <td class="date">11/03/2025 18:38:57</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Opa, tudo certo?
+Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no">Opa, tudo certo?
+Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no</td>
+  </tr>
+<tr>
+    <td class="idx">168</td>
+    <td class="name">Tiago Brito</td>
+    <td class="phone"><a href="https://wa.me/5511915355845" target="_blank">(11) 91535-5845</a></td>
+    <td class="date">11/03/2025 18:20:49</td>
+    <td class="date">11/03/2025 18:20:51</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Opa, tudo certo?
+Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no">Opa, tudo certo?
+Te enviei o link para assinatura do teu Limpa Nome. Assim que você assinar, consigo encaminhar pro jurídico e já distribuir teus documentos ainda hoje.
+Com isso, já damos andamento no</td>
+  </tr>
+<tr>
+    <td class="idx">169</td>
+    <td class="name">JULIANA 🍀🍀🍀🍀🍀🍀🍀</td>
+    <td class="phone"><a href="https://wa.me/555560003031" target="_blank">(55) 6000-3031</a></td>
+    <td class="date">11/03/2025 14:02:05</td>
+    <td class="date">11/06/2025 14:11:48</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="9c00c5ca-3ece-4dac-8e86-4036b1ea8620.jpg Caption: WhatsApp">9c00c5ca-3ece-4dac-8e86-4036b1ea8620.jpg Caption: WhatsApp</td>
+  </tr>
+<tr>
+    <td class="idx">170</td>
+    <td class="name">Rene</td>
+    <td class="phone"><a href="https://wa.me/5511970852068" target="_blank">(11) 97085-2068</a></td>
+    <td class="date">11/03/2025 12:26:31</td>
+    <td class="date">11/03/2025 12:27:21</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Qualquer duvida, entra em contato conosco">Qualquer duvida, entra em contato conosco</td>
+  </tr>
+<tr>
+    <td class="idx">171</td>
+    <td class="name">👮🏻</td>
+    <td class="phone"><a href="https://wa.me/5511970855087" target="_blank">(11) 97085-5087</a></td>
+    <td class="date">11/01/2025 23:26:50</td>
+    <td class="date">11/02/2025 13:00:15</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="96ad3a61-2f6c-4b31-819a-e3d72c26b0c0.jpg">96ad3a61-2f6c-4b31-819a-e3d72c26b0c0.jpg</td>
+  </tr>
+<tr>
+    <td class="idx">172</td>
+    <td class="name">Francielle Silva Alves</td>
+    <td class="phone"><a href="https://wa.me/554888575024" target="_blank">(48) 8857-5024</a></td>
+    <td class="date">11/01/2025 22:55:08</td>
+    <td class="date">11/02/2025 16:05:01</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">173</td>
+    <td class="name">Marcelo Anderson Pilan</td>
+    <td class="phone"><a href="https://wa.me/555184354211" target="_blank">(51) 8435-4211</a></td>
+    <td class="date">11/01/2025 21:45:30</td>
+    <td class="date">11/01/2025 21:56:59</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="👍">👍</td>
+  </tr>
+<tr>
+    <td class="idx">174</td>
+    <td class="name">Van 🥰❤️</td>
+    <td class="phone"><a href="https://wa.me/5511994963602" target="_blank">(11) 99496-3602</a></td>
+    <td class="date">10/31/2025 23:30:19</td>
+    <td class="date">11/06/2025 23:05:15</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Olá, boa noite
+tudo bem ?">Olá, boa noite
+tudo bem ?</td>
+  </tr>
+<tr>
+    <td class="idx">175</td>
+    <td class="name">Ana Prado  😘</td>
+    <td class="phone"><a href="https://wa.me/5519991978057" target="_blank">(19) 99197-8057</a></td>
+    <td class="date">10/31/2025 22:44:56</td>
+    <td class="date">10/31/2025 23:32:04</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Houve algum problema ?">Houve algum problema ?</td>
+  </tr>
+<tr>
+    <td class="idx">176</td>
+    <td class="name">Kleber OZIR VILAVERDE de freitas</td>
+    <td class="phone"><a href="https://wa.me/555597278554" target="_blank">(55) 9727-8554</a></td>
+    <td class="date">10/31/2025 22:01:43</td>
+    <td class="date">11/27/2025 13:08:30</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">177</td>
+    <td class="name">V</td>
+    <td class="phone"><a href="https://wa.me/5511932924321" target="_blank">(11) 93292-4321</a></td>
+    <td class="date">10/31/2025 20:25:54</td>
+    <td class="date">11/03/2025 18:07:33</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Desculpa , mandei mensagem errado..">Desculpa , mandei mensagem errado..</td>
+  </tr>
+<tr>
+    <td class="idx">178</td>
+    <td class="name">só Deus Para Ter Paz</td>
+    <td class="phone"><a href="https://wa.me/5511949033032" target="_blank">(11) 94903-3032</a></td>
+    <td class="date">10/31/2025 19:08:31</td>
+    <td class="date">10/31/2025 19:12:15</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="🙏">🙏</td>
+  </tr>
+<tr>
+    <td class="idx">179</td>
+    <td class="name">Marcelo Bohns Conforti</td>
+    <td class="phone"><a href="https://wa.me/555186041209" target="_blank">(51) 8604-1209</a></td>
+    <td class="date">10/31/2025 13:45:54</td>
+    <td class="date">10/31/2025 21:37:05</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">180</td>
+    <td class="name">We</td>
+    <td class="phone"><a href="https://wa.me/5511996520530" target="_blank">(11) 99652-0530</a></td>
+    <td class="date">10/31/2025 00:21:17</td>
+    <td class="date">10/31/2025 00:36:49</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Blz">Blz</td>
+  </tr>
+<tr>
+    <td class="idx">181</td>
+    <td class="name">Day</td>
+    <td class="phone"><a href="https://wa.me/5511978991238" target="_blank">(11) 97899-1238</a></td>
+    <td class="date">10/30/2025 18:32:07</td>
+    <td class="date">11/06/2025 21:32:48</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Tudo bem.">Tudo bem.</td>
+  </tr>
+<tr>
+    <td class="idx">182</td>
+    <td class="name">⃤ꝂꬸⲘ〇〒〇</td>
+    <td class="phone"><a href="https://wa.me/5511979788952" target="_blank">(11) 97978-8952</a></td>
+    <td class="date">10/30/2025 16:37:00</td>
+    <td class="date">10/30/2025 16:42:01</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Certo, só um minuto">Certo, só um minuto</td>
+  </tr>
+<tr>
+    <td class="idx">183</td>
+    <td class="name">Tufy</td>
+    <td class="phone"><a href="https://wa.me/5513988652562" target="_blank">(13) 98865-2562</a></td>
+    <td class="date">10/29/2025 23:32:04</td>
+    <td class="date">10/29/2025 23:39:08</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Disponha !">Disponha !</td>
+  </tr>
+<tr>
+    <td class="idx">184</td>
+    <td class="name">Ale</td>
+    <td class="phone"><a href="https://wa.me/5511954897478" target="_blank">(11) 95489-7478</a></td>
+    <td class="date">10/29/2025 21:18:16</td>
+    <td class="date">11/03/2025 13:18:32</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">185</td>
+    <td class="name">Maiquel tim</td>
+    <td class="phone"><a href="https://wa.me/555195996019" target="_blank">(51) 9599-6019</a></td>
+    <td class="date">10/29/2025 20:20:42</td>
+    <td class="date">11/07/2025 19:29:11</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="Rio grande do sul.">Rio grande do sul.</td>
+  </tr>
+<tr>
+    <td class="idx">186</td>
+    <td class="name">Francielly</td>
+    <td class="phone"><a href="https://wa.me/555391763649" target="_blank">(53) 9176-3649</a></td>
+    <td class="date">10/29/2025 20:01:37</td>
+    <td class="date">11/18/2025 19:46:02</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Pra limpar meu nome">Pra limpar meu nome</td>
+  </tr>
+<tr>
+    <td class="idx">187</td>
+    <td class="name">Eduardo Sou De Jesus</td>
+    <td class="phone"><a href="https://wa.me/5511948373670" target="_blank">(11) 94837-3670</a></td>
+    <td class="date">10/29/2025 18:07:45</td>
+    <td class="date">11/17/2025 16:22:57</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">188</td>
+    <td class="name">Quirino</td>
+    <td class="phone"><a href="https://wa.me/5511977308932" target="_blank">(11) 97730-8932</a></td>
+    <td class="date">10/29/2025 01:19:41</td>
+    <td class="date">10/29/2025 01:27:23</td>
+    <td class="status nossa">💬 Última msg nossa</td>
+    <td class="preview" title="[audio recorder]">[audio recorder]</td>
+  </tr>
+<tr>
+    <td class="idx">189</td>
+    <td class="name">Will famozinho ...</td>
+    <td class="phone"><a href="https://wa.me/5519984573877" target="_blank">(19) 98457-3877</a></td>
+    <td class="date">10/29/2025 00:48:54</td>
+    <td class="date">10/29/2025 01:00:35</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Isso a Selfie e assinatura">Isso a Selfie e assinatura</td>
+  </tr>
+<tr>
+    <td class="idx">190</td>
+    <td class="name">Segateli</td>
+    <td class="phone"><a href="https://wa.me/5511996622245" target="_blank">(11) 99662-2245</a></td>
+    <td class="date">10/28/2025 23:22:19</td>
+    <td class="date">10/28/2025 23:31:42</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="https://app.zapsign.com.br/verificar/9c6f1f57-adb2-4c15-a0cc-d3d011382474">https://app.zapsign.com.br/verificar/9c6f1f57-adb2-4c15-a0cc-d3d011382474</td>
+  </tr>
+<tr>
+    <td class="idx">191</td>
+    <td class="name">Franciane Brandão ximendes</td>
+    <td class="phone"><a href="https://wa.me/555599951381" target="_blank">(55) 9995-1381</a></td>
+    <td class="date">10/28/2025 22:15:41</td>
+    <td class="date">10/29/2025 15:02:18</td>
+    <td class="status cobranca">📩 Cobrança enviada</td>
+    <td class="preview" title="Bom dia Franciane ?
+Preciso saber se realmente ira segui com o processo ?
+Está pendente a sua assinatura e irá expirar">Bom dia Franciane ?
+Preciso saber se realmente ira segui com o processo ?
+Está pendente a sua assinatura e irá expirar</td>
+  </tr>
+<tr>
+    <td class="idx">192</td>
+    <td class="name">06818083498</td>
+    <td class="phone"><a href="https://wa.me/554991279207" target="_blank">(49) 9127-9207</a></td>
+    <td class="date">10/28/2025 16:35:07</td>
+    <td class="date">11/27/2025 17:17:36</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Sim">Sim</td>
+  </tr>
+<tr>
+    <td class="idx">193</td>
+    <td class="name">Tati Mendonça</td>
+    <td class="phone"><a href="https://wa.me/555199426182" target="_blank">(51) 9942-6182</a></td>
+    <td class="date">10/27/2025 21:36:19</td>
+    <td class="date">10/29/2025 15:22:24</td>
+    <td class="status cliente">🔔 Cliente respondeu</td>
+    <td class="preview" title="Oi Daniel, estou muito insegura, te agradeço imensamente, mas por hora não vou seguir. Obrigada">Oi Daniel, estou muito insegura, te agradeço imensamente, mas por hora não vou seguir. Obrigada</td>
+  </tr>
+</tbody>
+</table>
+</div>
+
+<div class="footer">
+  Total de chats Daniel Atendimento com ZapSign: 646 | Assinados: 423 | Pendentes: 193
+</div>
+
+<script>
+let currentFilter = 'all';
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterTable();
+}
+
+function filterTable() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const rows = document.querySelectorAll('#tbody tr');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const statusCell = row.querySelector('.status');
+    const statusClass = statusCell ? statusCell.className : '';
+    
+    let showByFilter = currentFilter === 'all' || statusClass.includes(currentFilter);
+    let showBySearch = !search || text.includes(search);
+    
+    row.style.display = (showByFilter && showBySearch) ? '' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>
