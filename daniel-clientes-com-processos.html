@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clientes Daniel — Com Processos no MdFlow</title>
+<style>
+  :root {
+    --bg: #12100e; --surface: #1a1714; --card: #211e1a; --border: #3a3530;
+    --fg: #f2efe8; --muted: #9e978a; --primary: #20c997;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', -apple-system, sans-serif; padding: 24px; min-height: 100vh; }
+  .header { max-width: 900px; margin: 0 auto 24px; }
+  .header h1 { font-family: 'Manrope', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .header p { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+  .stats { display: flex; gap: 16px; margin: 20px auto; max-width: 900px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 24px; flex: 1; }
+  .stat-card .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .stat-card .value { font-family: 'Manrope', sans-serif; font-size: 32px; font-weight: 700; color: var(--primary); }
+  .table-wrap { max-width: 900px; margin: 0 auto; overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th { background: var(--card); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: var(--card); }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 10px 16px; }
+  .idx { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; width: 40px; }
+  .name { font-weight: 600; }
+  .cpf { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+  .count { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary); text-align: center; }
+  .footer { max-width: 900px; margin: 16px auto 0; color: var(--muted); font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Clientes Daniel — Com Processos no MdFlow</h1>
+  <p>Clientes atendidos pelo Daniel que não confirmaram assinatura no WhatsApp, mas já possuem processos distribuídos</p>
+  <p style="color: var(--primary); margin-top: 8px;">Gerado em: 02/04/2026, 13:41:28</p>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="label">Clientes</div><div class="value">131</div></div>
+  <div class="stat-card"><div class="label">Processos</div><div class="value">506</div></div>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>#</th><th>Nome</th><th>CPF</th><th>Processos</th></tr></thead>
+<tbody><tr>
+    <td class="idx">1</td>
+    <td class="name">ADRIANA AUGUSTA FAUSTINO</td>
+    <td class="cpf">216.564.978-16</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">2</td>
+    <td class="name">ADRIANO LUIS DA SILVA</td>
+    <td class="cpf">178.863.118-84</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">3</td>
+    <td class="name">AGNALDO MOREIRA DA SILVA</td>
+    <td class="cpf">123.604.828-82</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">4</td>
+    <td class="name">ALBERTO LEANDRO PEREIRA DE SOUZA</td>
+    <td class="cpf">143.186.588-56</td>
+    <td class="count">10</td>
+  </tr>
+<tr>
+    <td class="idx">5</td>
+    <td class="name">ALEF CUNHA GUIMARAES</td>
+    <td class="cpf">410.720.218-62</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">6</td>
+    <td class="name">ALEX SANDRO KUNTZ ALMEIDA</td>
+    <td class="cpf">019.399.450-03</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">7</td>
+    <td class="name">ALEXSANDRO CARVALHO DE OLIVEIRA</td>
+    <td class="cpf">252.438.588-46</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">8</td>
+    <td class="name">ALICE TEREZINHA WUST</td>
+    <td class="cpf">968.038.869-72</td>
+    <td class="count">8</td>
+  </tr>
+<tr>
+    <td class="idx">9</td>
+    <td class="name">ALINE OLSEN</td>
+    <td class="cpf">053.279.281-52</td>
+    <td class="count">7</td>
+  </tr>
+<tr>
+    <td class="idx">10</td>
+    <td class="name">ANA LUCIA DA SILVA MAIA</td>
+    <td class="cpf">029.565.390-60</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">11</td>
+    <td class="name">ANA PAULA APARECIDA DOS SANTOS DOS PASSOS</td>
+    <td class="cpf">301.690.228-11</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">12</td>
+    <td class="name">ANDERSON RUBENS DOS SANTOS</td>
+    <td class="cpf">341.283.818-70</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">13</td>
+    <td class="name">ANDRE ARAUJO VENTURA</td>
+    <td class="cpf">155.964.478-89</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">14</td>
+    <td class="name">ANTONIO JOEL DA SILVEIRA MOURA</td>
+    <td class="cpf">682.359.330-04</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">15</td>
+    <td class="name">ANTONIO MARCOS JESUS DA SILVA</td>
+    <td class="cpf">648.168.340-87</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">16</td>
+    <td class="name">BIANCA CASSIMIRO DE LIMA</td>
+    <td class="cpf">036.319.510-60</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">17</td>
+    <td class="name">BRENDA RAYANE RIBEIRO CAMARGO</td>
+    <td class="cpf">499.905.158-32</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">18</td>
+    <td class="name">BRUNA PESTANA IRIGOGIN</td>
+    <td class="cpf">412.626.158-36</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">19</td>
+    <td class="name">BRUNO LEANDRO DE CASTRO</td>
+    <td class="cpf">366.964.028-29</td>
+    <td class="count">7</td>
+  </tr>
+<tr>
+    <td class="idx">20</td>
+    <td class="name">BRUNO QUIRINO SANTOS BISPO</td>
+    <td class="cpf">382.850.558-92</td>
+    <td class="count">6</td>
+  </tr>
+<tr>
+    <td class="idx">21</td>
+    <td class="name">CARLOS ALEXANDRE CARDOSO SILVA</td>
+    <td class="cpf">010.310.765-73</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">22</td>
+    <td class="name">CARLOS EDUARDO DE OLIVEIRA CAMPOS</td>
+    <td class="cpf">354.906.448-93</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">23</td>
+    <td class="name">CARLOS EDUARDO SCHULTS GUEDES</td>
+    <td class="cpf">042.693.820-82</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">24</td>
+    <td class="name">CARLOS ROBERTO DA SILVA OLIVEIRA</td>
+    <td class="cpf">907.432.960-87</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">25</td>
+    <td class="name">CARMEN CLEIDE NOVAES LIMA</td>
+    <td class="cpf">173.295.008-36</td>
+    <td class="count">11</td>
+  </tr>
+<tr>
+    <td class="idx">26</td>
+    <td class="name">CELIA DIAS</td>
+    <td class="cpf">302.770.538-54</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">27</td>
+    <td class="name">CICERO ANTONIO DA SILVA</td>
+    <td class="cpf">156.516.538-13</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">28</td>
+    <td class="name">CINTIA MARA SOUZA</td>
+    <td class="cpf">013.148.989-57</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">29</td>
+    <td class="name">CLAUDETE APARECIDA DOS SANTOS CUNHA</td>
+    <td class="cpf">389.345.838-78</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">30</td>
+    <td class="name">CLAUDIA DE SANT'ANNA DA SILVA</td>
+    <td class="cpf">582.724.961-00</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">31</td>
+    <td class="name">DAIANE FERREIRA DE LIMA</td>
+    <td class="cpf">006.774.440-01</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">32</td>
+    <td class="name">DAISY NUNES DE ANDRADE</td>
+    <td class="cpf">357.062.188-03</td>
+    <td class="count">6</td>
+  </tr>
+<tr>
+    <td class="idx">33</td>
+    <td class="name">DANIEL VICENTE QUIRINO SANTOS</td>
+    <td class="cpf">338.788.638-10</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">34</td>
+    <td class="name">DANILO FERNANDES SANTANA AKIMOTO</td>
+    <td class="cpf">365.170.658-30</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">35</td>
+    <td class="name">DAVI RAMOS DOS SANTOS</td>
+    <td class="cpf">367.649.098-30</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">36</td>
+    <td class="name">DEBORA DA SILVA</td>
+    <td class="cpf">323.415.878-95</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">37</td>
+    <td class="name">DEBORA REGINA BARACHO GOULART</td>
+    <td class="cpf">151.181.568-07</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">38</td>
+    <td class="name">DORIEDSON DA SILVA MEDEIROS</td>
+    <td class="cpf">440.586.082-34</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">39</td>
+    <td class="name">DOUGLAS MENEZES MEDICI</td>
+    <td class="cpf">263.828.018-60</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">40</td>
+    <td class="name">EDEMAR FRANCA RIBEIRO</td>
+    <td class="cpf">309.037.850-72</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">41</td>
+    <td class="name">EDILAINE CRISTINA DA SILVA SANTOS MENEZES</td>
+    <td class="cpf">296.637.858-10</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">42</td>
+    <td class="name">EDILSON DE BARROS NEVES</td>
+    <td class="cpf">267.200.988-02</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">43</td>
+    <td class="name">EDSON MENDES DOS SANTOS</td>
+    <td class="cpf">297.660.578-50</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">44</td>
+    <td class="name">EDUARDO DOS SANTOS CAMARGO</td>
+    <td class="cpf">157.566.328-75</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">45</td>
+    <td class="name">ELIZANDRA DE MELO</td>
+    <td class="cpf">048.880.169-92</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">46</td>
+    <td class="name">ENI MACEDO DE BRITO DOS SANTOS</td>
+    <td class="cpf">945.691.500-04</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">47</td>
+    <td class="name">FABIANO FERNANDES DO ESPIRITO SANTO</td>
+    <td class="cpf">303.974.538-76</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">48</td>
+    <td class="name">FABIO COSTA DA SILVA</td>
+    <td class="cpf">176.170.478-86</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">49</td>
+    <td class="name">FABRICIO ROCHA GONCALVES</td>
+    <td class="cpf">275.494.898-82</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">50</td>
+    <td class="name">FLAVIO SAMPAIO DO NASCIMENTO</td>
+    <td class="cpf">430.749.128-98</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">51</td>
+    <td class="name">FRANCIELE OLIVEIRA DE FREITAS</td>
+    <td class="cpf">048.221.139-30</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">52</td>
+    <td class="name">FRANCIELLY DOS SANTOS BORBA</td>
+    <td class="cpf">022.242.580-62</td>
+    <td class="count">13</td>
+  </tr>
+<tr>
+    <td class="idx">53</td>
+    <td class="name">GILMAR VIEIRA DOS SANTOS</td>
+    <td class="cpf">018.161.295-00</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">54</td>
+    <td class="name">GISELE DE QUEIROZ LOPES MIRANDA</td>
+    <td class="cpf">155.644.268-86</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">55</td>
+    <td class="name">IGOR FERNANDES DE LIMA</td>
+    <td class="cpf">287.665.868-28</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">56</td>
+    <td class="name">IZAIAS RIBEIRO RAMOS</td>
+    <td class="cpf">125.919.708-58</td>
+    <td class="count">8</td>
+  </tr>
+<tr>
+    <td class="idx">57</td>
+    <td class="name">JANAINA VERONICA DE OLIVEIRA</td>
+    <td class="cpf">354.564.158-95</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">58</td>
+    <td class="name">JEAN CARLO BARBOSA</td>
+    <td class="cpf">213.824.128-94</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">59</td>
+    <td class="name">JOAO FERNANDO MATHEUS</td>
+    <td class="cpf">215.206.918-82</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">60</td>
+    <td class="name">JOCELMA BISPO DE ALENCAR</td>
+    <td class="cpf">347.651.698-98</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">61</td>
+    <td class="name">JONAS LIMA NEVES</td>
+    <td class="cpf">003.545.450-43</td>
+    <td class="count">8</td>
+  </tr>
+<tr>
+    <td class="idx">62</td>
+    <td class="name">JOSE ARNALDO MAGALHAES PROTASIO</td>
+    <td class="cpf">045.877.413-88</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">63</td>
+    <td class="name">JOSE CARLOS DA SILVA</td>
+    <td class="cpf">232.905.208-11</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">64</td>
+    <td class="name">JOSE MARIA DE SOUZA PEREIRA JUNIOR</td>
+    <td class="cpf">585.204.302-87</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">65</td>
+    <td class="name">JOSE NATANAEL DOS SANTOS OLIVEIRA</td>
+    <td class="cpf">163.774.998-84</td>
+    <td class="count">10</td>
+  </tr>
+<tr>
+    <td class="idx">66</td>
+    <td class="name">JOSE NUNES DAS CHAGAS FILHO</td>
+    <td class="cpf">085.240.918-43</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">67</td>
+    <td class="name">JOSIELE DE FREITAS CARREGA PEREIRA</td>
+    <td class="cpf">298.415.978-02</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">68</td>
+    <td class="name">JULIANA REZA DE MORAES</td>
+    <td class="cpf">993.642.550-20</td>
+    <td class="count">9</td>
+  </tr>
+<tr>
+    <td class="idx">69</td>
+    <td class="name">JULIANO MARTINS TELES</td>
+    <td class="cpf">332.605.388-60</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">70</td>
+    <td class="name">JUNIOR ALVES AYRES</td>
+    <td class="cpf">941.164.660-34</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">71</td>
+    <td class="name">JUNIOR MARTIM GRINGS</td>
+    <td class="cpf">983.885.760-20</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">72</td>
+    <td class="name">KAREN FABIANE DE LIMA FERREIRA</td>
+    <td class="cpf">579.476.510-00</td>
+    <td class="count">8</td>
+  </tr>
+<tr>
+    <td class="idx">73</td>
+    <td class="name">KARINA INACIO DIAS</td>
+    <td class="cpf">441.026.098-73</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">74</td>
+    <td class="name">KAUANE SIMOES SILVA</td>
+    <td class="cpf">459.573.618-52</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">75</td>
+    <td class="name">KAUANE SIMÕES SILVA</td>
+    <td class="cpf">459.573.618-52</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">76</td>
+    <td class="name">LEONARDO PEREIRA DO NASCIMENTO</td>
+    <td class="cpf">169.501.888-54</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">77</td>
+    <td class="name">LINDOMAR DE SOUZA</td>
+    <td class="cpf">009.283.639-96</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">78</td>
+    <td class="name">LORECI DOS SANTOS</td>
+    <td class="cpf">635.453.300-87</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">79</td>
+    <td class="name">LUCAS GARCIA TOLEDO</td>
+    <td class="cpf">479.004.598-63</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">80</td>
+    <td class="name">LUCIANA TERESA MARTINS</td>
+    <td class="cpf">613.578.470-68</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">81</td>
+    <td class="name">LUCIANO RODRIGUES FERREIRA</td>
+    <td class="cpf">010.489.500-42</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">82</td>
+    <td class="name">LUIS ROBERTO BORBA</td>
+    <td class="cpf">714.395.870-00</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">83</td>
+    <td class="name">LUIZ ALEXANDRE HASSEL</td>
+    <td class="cpf">082.617.719-03</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">84</td>
+    <td class="name">LUIZ RODRIGO ADÃO</td>
+    <td class="cpf">337.760.418-97</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">85</td>
+    <td class="name">MAIQUEL SOARES CORREA</td>
+    <td class="cpf">974.380.490-00</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">86</td>
+    <td class="name">MALVINO FRANCISCO DE EREMITA SILVA</td>
+    <td class="cpf">268.601.008-85</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">87</td>
+    <td class="name">MARCELO ANDERSON PILAN</td>
+    <td class="cpf">888.501.880-72</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">88</td>
+    <td class="name">MARCELO FERREIRA BENTO</td>
+    <td class="cpf">175.940.098-00</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">89</td>
+    <td class="name">MARCIO MARCELINO DA SILVA</td>
+    <td class="cpf">151.401.938-84</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">90</td>
+    <td class="name">MARCIO ROBERTO FINESSI DA SILVA</td>
+    <td class="cpf">151.401.938-84</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">91</td>
+    <td class="name">MARCOS ROBERTO BOMBEM</td>
+    <td class="cpf">038.071.639-99</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">92</td>
+    <td class="name">MARIA DE FÁTIMA DE JESUS</td>
+    <td class="cpf">261.609.938-10</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">93</td>
+    <td class="name">MARINÉLE PACHECO DE QUADROS DA LUZ</td>
+    <td class="cpf">026.301.620-01</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">94</td>
+    <td class="name">MARIO CESAR OLIVEIRA SILVA</td>
+    <td class="cpf">082.869.608-07</td>
+    <td class="count">16</td>
+  </tr>
+<tr>
+    <td class="idx">95</td>
+    <td class="name">MAURO LUCIO PEREIRA DA SILVA</td>
+    <td class="cpf">168.919.018-39</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">96</td>
+    <td class="name">MICHELLE NATALY RAMOS DE OLIVEIRA</td>
+    <td class="cpf">374.439.168-09</td>
+    <td class="count">9</td>
+  </tr>
+<tr>
+    <td class="idx">97</td>
+    <td class="name">MIGUEL ANGELO DA SILVA</td>
+    <td class="cpf">699.221.520-53</td>
+    <td class="count">6</td>
+  </tr>
+<tr>
+    <td class="idx">98</td>
+    <td class="name">MIRIAM JOSE DA SILVA</td>
+    <td class="cpf">363.831.198-85</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">99</td>
+    <td class="name">NATAN MACHADO ALESSIO</td>
+    <td class="cpf">024.201.970-62</td>
+    <td class="count">11</td>
+  </tr>
+<tr>
+    <td class="idx">100</td>
+    <td class="name">NATIELI DE SOUZA SILVA</td>
+    <td class="cpf">378.398.048-88</td>
+    <td class="count">10</td>
+  </tr>
+<tr>
+    <td class="idx">101</td>
+    <td class="name">NEUZA ROSA DOS SANTOS</td>
+    <td class="cpf">304.942.748-59</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">102</td>
+    <td class="name">NILSON CESAR DA CRUZ</td>
+    <td class="cpf">117.848.408-40</td>
+    <td class="count">6</td>
+  </tr>
+<tr>
+    <td class="idx">103</td>
+    <td class="name">ODAIR JOSE TEIXEIRA DOS SANTOS</td>
+    <td class="cpf">014.418.069-38</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">104</td>
+    <td class="name">PATRICIA OLIVEIRA COIMBRA</td>
+    <td class="cpf">281.919.718-36</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">105</td>
+    <td class="name">PAULO CEZAR GOMES DE OLIVEIRA</td>
+    <td class="cpf">724.898.470-15</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">106</td>
+    <td class="name">PAULO SERGIO ARAUJO</td>
+    <td class="cpf">254.840.488-93</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">107</td>
+    <td class="name">PAULO SERGIO LEANDRO</td>
+    <td class="cpf">128.622.128-57</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">108</td>
+    <td class="name">RENATA DA SILVA MELLO</td>
+    <td class="cpf">313.110.238-10</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">109</td>
+    <td class="name">RENE MARCOS DIAS DE PRADO</td>
+    <td class="cpf">017.790.775-48</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">110</td>
+    <td class="name">RENE MARCOS DIAS DO PRADO</td>
+    <td class="cpf">017.790.775-48</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">111</td>
+    <td class="name">RIVELINO PEREIRA DE SOUZA</td>
+    <td class="cpf">051.978.758-79</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">112</td>
+    <td class="name">ROGERIO JOSE DA SILVA</td>
+    <td class="cpf">228.708.788-50</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">113</td>
+    <td class="name">ROGERIO JOSÉ DA SILVA</td>
+    <td class="cpf">228.708.788-50</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">114</td>
+    <td class="name">RONNY BENTO DE SOUZA</td>
+    <td class="cpf">091.081.778-21</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">115</td>
+    <td class="name">ROSÂNGELA ZANETTI</td>
+    <td class="cpf">289.037.548-08</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">116</td>
+    <td class="name">SELMA RAMOS PIRES</td>
+    <td class="cpf">145.689.498-66</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">117</td>
+    <td class="name">SIDNEY DOS SANTOS</td>
+    <td class="cpf">295.974.538-86</td>
+    <td class="count">7</td>
+  </tr>
+<tr>
+    <td class="idx">118</td>
+    <td class="name">SILVONEI LUIZ VALCARENGHI</td>
+    <td class="cpf">049.958.549-67</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">119</td>
+    <td class="name">TABATA FERREIRA SILVA BORGES</td>
+    <td class="cpf">337.236.298-57</td>
+    <td class="count">4</td>
+  </tr>
+<tr>
+    <td class="idx">120</td>
+    <td class="name">THUANNE DAYANNA FACCHI</td>
+    <td class="cpf">080.011.969-09</td>
+    <td class="count">9</td>
+  </tr>
+<tr>
+    <td class="idx">121</td>
+    <td class="name">TIAGO PEREIRA LIMA</td>
+    <td class="cpf">277.048.198-36</td>
+    <td class="count">1</td>
+  </tr>
+<tr>
+    <td class="idx">122</td>
+    <td class="name">VALDIR DE FREITAS</td>
+    <td class="cpf">118.056.218-66</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">123</td>
+    <td class="name">VALDIRLEY EVALDO BRAGA</td>
+    <td class="cpf">331.352.698-50</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">124</td>
+    <td class="name">VANESSA DA SILVA PAZ DOS SANTOS</td>
+    <td class="cpf">309.488.918-23</td>
+    <td class="count">8</td>
+  </tr>
+<tr>
+    <td class="idx">125</td>
+    <td class="name">VITOR PESTANA IRIGOGIN</td>
+    <td class="cpf">499.956.228-66</td>
+    <td class="count">10</td>
+  </tr>
+<tr>
+    <td class="idx">126</td>
+    <td class="name">VOLNEI DE MEDEIROS</td>
+    <td class="cpf">029.753.159-02</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">127</td>
+    <td class="name">WAGNER SEGATELI GODOY</td>
+    <td class="cpf">178.275.428-83</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">128</td>
+    <td class="name">WELLINGTON CELIO ALVES</td>
+    <td class="cpf">468.341.058-32</td>
+    <td class="count">3</td>
+  </tr>
+<tr>
+    <td class="idx">129</td>
+    <td class="name">WELVIS FRANCIS DOS SANTOS SILVA</td>
+    <td class="cpf">700.792.981-84</td>
+    <td class="count">2</td>
+  </tr>
+<tr>
+    <td class="idx">130</td>
+    <td class="name">WILIAN DE JESUS SANTOS</td>
+    <td class="cpf">489.600.968-14</td>
+    <td class="count">5</td>
+  </tr>
+<tr>
+    <td class="idx">131</td>
+    <td class="name">ZILDA PEREIRA DA SILVA</td>
+    <td class="cpf">068.084.678-62</td>
+    <td class="count">3</td>
+  </tr></tbody>
+</table>
+</div>
+
+<div class="footer">Fonte: cruzamento Wati (Daniel Atendimento) x Supabase MdFlow (clientes + processos)</div>
+
+</body>
+</html>
