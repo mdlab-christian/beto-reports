@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZapSign Cátia — Análise de IPs Suspeitos</title>
+<style>
+  :root { --bg:#12100e;--surface:#1a1714;--card:#211e1a;--border:#3a3530;--fg:#f2efe8;--muted:#9e978a;--primary:#20c997;--warning:#f59e0b;--destructive:#ef4444;--success:#22c55e;--violet:#a78bfa; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:'Inter',-apple-system,sans-serif;padding:24px;min-height:100vh}
+  .container{max-width:1100px;margin:0 auto}
+  h1{font-family:'Manrope',sans-serif;font-size:26px;font-weight:700;margin-bottom:8px}
+  h1 span{color:var(--destructive)}
+  .subtitle{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .alert{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:20px;margin:24px 0}
+  .alert-title{color:var(--destructive);font-weight:700;font-size:15px;margin-bottom:8px}
+  .alert-text{color:var(--muted);font-size:13px;line-height:1.7}
+  .cross-alert{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:20px;margin:24px 0}
+  .cross-alert .alert-title{color:var(--warning)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:24px 0}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+  .stat .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .stat .value{font-family:'Manrope',sans-serif;font-size:28px;font-weight:700}
+  .ip-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin:16px 0;overflow:hidden}
+  .ip-header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .ip-badge{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.5px}
+  .ip-address{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700}
+  .ip-count{color:var(--muted);font-size:13px;margin-left:auto}
+  .cross-badge{background:rgba(245,158,11,0.2);color:var(--warning);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;border:1px solid rgba(245,158,11,0.4)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{background:var(--card);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:10px 16px;text-align:left}
+  td{padding:8px 16px;border-bottom:1px solid var(--border)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(32,201,151,0.03)}
+  .idx{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:12px;width:32px}
+  .name{font-weight:600}
+  .email{color:var(--muted);font-size:12px}
+  .phone{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--primary)}
+  .date{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .method{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:24px 0;font-size:12px;color:var(--muted);line-height:1.7}
+  .method strong{color:var(--fg)}
+  .footer{margin-top:32px;color:var(--muted);font-size:12px;text-align:center;padding-top:16px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>ZapSign Cátia — <span>IPs Suspeitos</span></h1>
+  <p class="subtitle">Análise de 1.697 procurações assinadas — IPs extraídos de cada PDF</p>
+  <p class="subtitle" style="color:var(--primary)">Gerado em: 02/04/2026, 23:16:26</p>
+
+  <div class="alert">
+    <div class="alert-title">Resultado: 4 IPs com múltiplos clientes — 9 clientes afetados</div>
+    <div class="alert-text">
+      Foram analisados <strong>1.697 documentos</strong> (PDFs de procuração) da planilha ZapSign da Cátia.
+      Cada PDF foi baixado e o IP do assinante extraído.<br>
+      <strong>4 endereços IP</strong> aparecem em 2 ou mais clientes diferentes,
+      totalizando <strong>9 clientes com IP compartilhado</strong>.
+    </div>
+  </div>
+
+  <div class="cross-alert">
+    <div class="alert-title">CROSS-MATCH: IP 187.39.119.108 também presente na Cátia</div>
+    <div class="alert-text">
+      O IP principal da investigação do Daniel (<strong>187.39.119.108</strong>) aparece em <strong>3 clientes</strong> da Cátia:
+      <strong>JOÃO PEDRO DE CAMPOS PELICOLI, ALEXSANDER SILVA DE VARGAS, VINICIUS ANTONUCCI PAZ</strong>.<br>
+      Na análise do Daniel, esse IP apareceu em 35 clientes. Isso confirma que o mesmo dispositivo/rede assinou procurações de ambos os atendentes.
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="label">PDFs Analisados</div><div class="value" style="color:var(--fg)">1.697</div></div>
+    <div class="stat"><div class="label">Clientes Únicos</div><div class="value" style="color:var(--primary)">284</div></div>
+    <div class="stat"><div class="label">IPs Únicos</div><div class="value" style="color:var(--primary)">286</div></div>
+    <div class="stat"><div class="label">IPs Suspeitos</div><div class="value" style="color:var(--destructive)">4</div></div>
+    <div class="stat"><div class="label">Clientes Afetados</div><div class="value" style="color:var(--warning)">9</div></div>
+  </div>
+
+  <div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background:var(--violet)20;color:var(--violet);border:1px solid var(--violet)40;">ATENÇÃO</div>
+      <span class="ip-address">187.39.119.108</span>
+      <span class="cross-badge">MESMO IP DO DANIEL</span>
+      <span class="ip-count">3 clientes</span>
+    </div>
+    <table><thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+    <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">JOÃO PEDRO DE CAMPOS PELICOLI</td>
+      <td class="email">jpelicoli2003@gmail.com</td>
+      <td class="phone">+5551997389702</td>
+      <td class="date">2026-02-13 16:27:17</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">ALEXSANDER SILVA DE VARGAS</td>
+      <td class="email">alexsandervargas194@gmail.com</td>
+      <td class="phone">+5551989063855</td>
+      <td class="date">2026-01-27 14:02:59</td>
+    </tr>
+<tr>
+      <td class="idx">3</td>
+      <td class="name">VINICIUS ANTONUCCI PAZ</td>
+      <td class="email">pazvinipaz@gmail.com</td>
+      <td class="phone">+5551995552837</td>
+      <td class="date">2025-09-26 15:42:58</td>
+    </tr></tbody></table>
+  </div>
+<div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background:var(--violet)20;color:var(--violet);border:1px solid var(--violet)40;">ATENÇÃO</div>
+      <span class="ip-address">138.204.46.1</span>
+      
+      <span class="ip-count">2 clientes</span>
+    </div>
+    <table><thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+    <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">CAMILA CORREIA MACEDO</td>
+      <td class="email">camilacmacedo@gmail.com</td>
+      <td class="phone">+5551991629509</td>
+      <td class="date">2025-10-17 20:20:32</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">ADILSON OTTO DE MORAIS</td>
+      <td class="email">adilson.otto1992@gmail.com</td>
+      <td class="phone">+5551981019075</td>
+      <td class="date">2025-10-17 19:16:41</td>
+    </tr></tbody></table>
+  </div>
+<div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background:var(--violet)20;color:var(--violet);border:1px solid var(--violet)40;">ATENÇÃO</div>
+      <span class="ip-address">170.82.48.234</span>
+      
+      <span class="ip-count">2 clientes</span>
+    </div>
+    <table><thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+    <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">LUIS FERNANDO DE MOURA QUINTANA</td>
+      <td class="email">fernandoquintana10@icloud.com</td>
+      <td class="phone">+5551981296897</td>
+      <td class="date">2025-09-30 15:47:18</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">INÁCIO SEIDEL JÚNIOR</td>
+      <td class="email">inacioseideljunior3@gmail.com</td>
+      <td class="phone">+5551984531129</td>
+      <td class="date">2025-09-23 17:38:46</td>
+    </tr></tbody></table>
+  </div>
+<div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background:var(--violet)20;color:var(--violet);border:1px solid var(--violet)40;">ATENÇÃO</div>
+      <span class="ip-address">216.98.214.39</span>
+      
+      <span class="ip-count">2 clientes</span>
+    </div>
+    <table><thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+    <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">TAÍS BRAGA CAMILO LEITE</td>
+      <td class="email">taisbragacontato@gmail.com</td>
+      <td class="phone">+5551933008855</td>
+      <td class="date">2025-09-03 20:14:02</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">FELIPE ANTONIO ROCHA TEIXEIRA</td>
+      <td class="email">felipeantoniort@gmail.com</td>
+      <td class="phone">+5551981796610</td>
+      <td class="date">2025-09-01 11:46:25</td>
+    </tr></tbody></table>
+  </div>
+
+  <div class="method">
+    <strong>Metodologia:</strong> Planilha "zapsign catia.xlsx" → 1.697 URLs de PDFs assinados →
+    download de cada PDF → extração de nome (OUTORGANTE) e IP via <code>pdftotext</code> →
+    agrupamento por IP → filtro: 2+ clientes no mesmo IP = suspeito.<br>
+    <strong>Cross-check:</strong> IP 187.39.119.108 encontrado em 3 clientes da Cátia (35 do Daniel).
+  </div>
+
+  <div class="footer">Relatório gerado por Beto (Claude Code) | MP Advocacia / MdFlow</div>
+</div>
+</body>
+</html>
