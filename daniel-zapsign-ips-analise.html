@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZapSign Daniel — Análise de IPs Suspeitos</title>
+<style>
+  :root {
+    --bg: #12100e; --surface: #1a1714; --card: #211e1a; --border: #3a3530;
+    --fg: #f2efe8; --muted: #9e978a; --primary: #20c997;
+    --warning: #f59e0b; --destructive: #ef4444; --success: #22c55e;
+    --violet: #a78bfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', -apple-system, sans-serif; padding: 24px; min-height: 100vh; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-family: 'Manrope', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  h1 span { color: var(--destructive); }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+
+  .alert { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 12px; padding: 20px; margin: 24px 0; }
+  .alert-title { color: var(--destructive); font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+  .alert-text { color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 24px 0; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
+  .stat .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .stat .value { font-family: 'Manrope', sans-serif; font-size: 28px; font-weight: 700; }
+
+  .ip-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; overflow: hidden; }
+  .ip-header { padding: 16px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+  .ip-badge { padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+  .ip-address { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; }
+  .ip-count { color: var(--muted); font-size: 13px; margin-left: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--card); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; text-align: left; }
+  td { padding: 8px 16px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(32,201,151,0.03); }
+  .idx { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; width: 32px; }
+  .name { font-weight: 600; }
+  .email { color: var(--muted); font-size: 12px; }
+  .phone { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary); }
+  .date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+
+  .summary { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 24px 0; }
+  .summary h3 { font-family: 'Manrope', sans-serif; font-size: 16px; margin-bottom: 12px; }
+  .summary-table { font-size: 13px; }
+  .summary-table td { padding: 6px 16px; }
+  .summary-table .ip-mono { font-family: 'JetBrains Mono', monospace; color: var(--destructive); font-weight: 600; }
+  .summary-table .count { font-weight: 700; }
+
+  .method { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 24px 0; font-size: 12px; color: var(--muted); line-height: 1.7; }
+  .method strong { color: var(--fg); }
+
+  .footer { margin-top: 32px; color: var(--muted); font-size: 12px; text-align: center; padding-top: 16px; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>ZapSign Daniel — <span>IPs Suspeitos</span></h1>
+  <p class="subtitle">Análise de 482 procurações assinadas — IPs extraídos de cada PDF via pdftotext</p>
+  <p class="subtitle" style="color: var(--primary);">Gerado em: 02/04/2026, 22:07:31</p>
+
+  <div class="alert">
+    <div class="alert-title">Resultado: 6 IPs com múltiplos clientes — 46 clientes afetados</div>
+    <div class="alert-text">
+      Foram analisados <strong>482 signatários</strong> da planilha ZapSign do Daniel. 
+      Cada PDF assinado foi baixado e o IP do assinante foi extraído automaticamente.<br>
+      <strong>6 endereços IP</strong> aparecem em 2 ou mais clientes diferentes, 
+      totalizando <strong>46 clientes com IP compartilhado</strong>.
+      Isso indica que a assinatura pode ter sido feita pelo mesmo dispositivo/rede, não pelo próprio cliente.
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="label">Total Analisados</div><div class="value" style="color:var(--fg)">482</div></div>
+    <div class="stat"><div class="label">IPs Únicos</div><div class="value" style="color:var(--primary)">442</div></div>
+    <div class="stat"><div class="label">IPs Suspeitos</div><div class="value" style="color:var(--destructive)">6</div></div>
+    <div class="stat"><div class="label">Clientes Afetados</div><div class="value" style="color:var(--warning)">46</div></div>
+    <div class="stat"><div class="label">Clientes Limpos</div><div class="value" style="color:var(--success)">436</div></div>
+  </div>
+
+  <div class="summary">
+    <h3>Resumo dos IPs Suspeitos</h3>
+    <table class="summary-table">
+      <thead><tr><th>IP</th><th>Clientes</th><th>Severidade</th></tr></thead>
+      <tbody>
+      <tr>
+          <td class="ip-mono">187.39.119.108</td>
+          <td class="count">35</td>
+          <td><span style="color:var(--destructive); font-weight:700;">CRÍTICO</span></td>
+        </tr>
+<tr>
+          <td class="ip-mono">191.209.69.112</td>
+          <td class="count">3</td>
+          <td><span style="color:var(--violet); font-weight:700;">ATENÇÃO</span></td>
+        </tr>
+<tr>
+          <td class="ip-mono">177.75.155.56</td>
+          <td class="count">2</td>
+          <td><span style="color:var(--violet); font-weight:700;">ATENÇÃO</span></td>
+        </tr>
+<tr>
+          <td class="ip-mono">131.196.237.202</td>
+          <td class="count">2</td>
+          <td><span style="color:var(--violet); font-weight:700;">ATENÇÃO</span></td>
+        </tr>
+<tr>
+          <td class="ip-mono">189.40.88.152</td>
+          <td class="count">2</td>
+          <td><span style="color:var(--violet); font-weight:700;">ATENÇÃO</span></td>
+        </tr>
+<tr>
+          <td class="ip-mono">189.45.180.35</td>
+          <td class="count">2</td>
+          <td><span style="color:var(--violet); font-weight:700;">ATENÇÃO</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background: var(--destructive)20; color: var(--destructive); border: 1px solid var(--destructive)40;">
+        CRÍTICO
+      </div>
+      <span class="ip-address">187.39.119.108</span>
+      <span class="ip-count">35 clientes</span>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+      <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">Manoela de Fatima Drebes Mancy</td>
+      <td class="email">cdds2001@gmail.com</td>
+      <td class="phone">+5551920012392</td>
+      <td class="date">2026-03-03 20:05:26</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">Carlos Daniel Dos Santos Dias</td>
+      <td class="email">cddsd030201@gmail.com</td>
+      <td class="phone">+5551920012392</td>
+      <td class="date">2026-03-03 18:54:35</td>
+    </tr>
+<tr>
+      <td class="idx">3</td>
+      <td class="name">Junior Martim Grings</td>
+      <td class="email">juniorgringa@gmail.com</td>
+      <td class="phone">+555182806399</td>
+      <td class="date">2025-12-14 18:06:08</td>
+    </tr>
+<tr>
+      <td class="idx">4</td>
+      <td class="name">Karen Fabiane de Lima Ferreira</td>
+      <td class="email">karrnfanianeferreira200@gmail.com</td>
+      <td class="phone">+5551996027292</td>
+      <td class="date">2025-12-14 16:19:47</td>
+    </tr>
+<tr>
+      <td class="idx">5</td>
+      <td class="name">Janaína da Silva Maciel Gonçalves</td>
+      <td class="email">janainasilvamaciel@gmail.com</td>
+      <td class="phone">+555194531832</td>
+      <td class="date">2025-12-12 14:44:47</td>
+    </tr>
+<tr>
+      <td class="idx">6</td>
+      <td class="name">Fabricio Rocha Goncalves</td>
+      <td class="email">fabriciorocha61@gmail.com</td>
+      <td class="phone">+5518991662656</td>
+      <td class="date">2025-12-11 20:46:53</td>
+    </tr>
+<tr>
+      <td class="idx">7</td>
+      <td class="name">Bianca Cassimiro de Lima</td>
+      <td class="email">biancadelima008@gmail.com</td>
+      <td class="phone">+555591902867</td>
+      <td class="date">2025-12-11 17:55:53</td>
+    </tr>
+<tr>
+      <td class="idx">8</td>
+      <td class="name">Paulo Cezar Gomes de Oliveira</td>
+      <td class="email">paulinhodeoliveiragomes@gmail.com</td>
+      <td class="phone">+555592012588</td>
+      <td class="date">2025-12-11 17:54:33</td>
+    </tr>
+<tr>
+      <td class="idx">9</td>
+      <td class="name">Selma Ramos Pires</td>
+      <td class="email">selmapires1972@outlook.com</td>
+      <td class="phone">+5517996634751</td>
+      <td class="date">2025-12-11 17:04:13</td>
+    </tr>
+<tr>
+      <td class="idx">10</td>
+      <td class="name">Ronny Bento de Souza</td>
+      <td class="email">ronnybentosouza78@hotmail.com</td>
+      <td class="phone">+5511982256211</td>
+      <td class="date">2025-12-11 16:41:42</td>
+    </tr>
+<tr>
+      <td class="idx">11</td>
+      <td class="name">Carla Fernanda Da Concição Paim</td>
+      <td class="email">carlapaim2025@gmail.com</td>
+      <td class="phone">+555192314311</td>
+      <td class="date">2025-12-10 21:20:50</td>
+    </tr>
+<tr>
+      <td class="idx">12</td>
+      <td class="name">Silvonei Luiz Valcarenghi</td>
+      <td class="email">silvoneiluiz.1578@hotmail.com</td>
+      <td class="phone">+554998214175</td>
+      <td class="date">2025-12-10 21:02:10</td>
+    </tr>
+<tr>
+      <td class="idx">13</td>
+      <td class="name">Edemar Franca Ribeiro</td>
+      <td class="email">ed.franca_ribeiro@gmail.com</td>
+      <td class="phone">+555497141235</td>
+      <td class="date">2025-12-11 15:10:25</td>
+    </tr>
+<tr>
+      <td class="idx">14</td>
+      <td class="name">Marcio Roberto Finessi da Silva</td>
+      <td class="email">marciofinessidasilva@outlook.com</td>
+      <td class="phone">+5517997827417</td>
+      <td class="date">2025-12-10 15:04:19</td>
+    </tr>
+<tr>
+      <td class="idx">15</td>
+      <td class="name">Wilton João de Souza</td>
+      <td class="email">wiltonjoaosouza34@gmail.com</td>
+      <td class="phone">+5511972447553</td>
+      <td class="date">2025-12-09 18:33:13</td>
+    </tr>
+<tr>
+      <td class="idx">16</td>
+      <td class="name">Valdir de Freitas</td>
+      <td class="email">valdirdefreitas34@hotmail.com</td>
+      <td class="phone">+5511960205909</td>
+      <td class="date">2025-12-10 19:54:10</td>
+    </tr>
+<tr>
+      <td class="idx">17</td>
+      <td class="name">Tiago Pereira Lima</td>
+      <td class="email">tiagopereiralima50@gmail.com</td>
+      <td class="phone">+5518997686142</td>
+      <td class="date">2025-12-08 19:23:38</td>
+    </tr>
+<tr>
+      <td class="idx">18</td>
+      <td class="name">Ederson Fabricio da Silva Dorneles</td>
+      <td class="email">edfabriciodorneles1789@gmail.com</td>
+      <td class="phone">+555180111058</td>
+      <td class="date">2025-12-08 20:24:51</td>
+    </tr>
+<tr>
+      <td class="idx">19</td>
+      <td class="name">Adir Morera Sutel</td>
+      <td class="email">aadir.morera@gmail.com</td>
+      <td class="phone">+5551995209398</td>
+      <td class="date">2025-12-07 18:53:13</td>
+    </tr>
+<tr>
+      <td class="idx">20</td>
+      <td class="name">Junior Alves Ayres</td>
+      <td class="email">alvesjuniora@gmail.com</td>
+      <td class="phone">+555599947175</td>
+      <td class="date">2025-12-07 16:20:46</td>
+    </tr>
+<tr>
+      <td class="idx">21</td>
+      <td class="name">Emerson Adriano Fabricio</td>
+      <td class="email">emersonadri.farb@gmail.com</td>
+      <td class="phone">+5519999777323</td>
+      <td class="date">2025-12-07 19:32:02</td>
+    </tr>
+<tr>
+      <td class="idx">22</td>
+      <td class="name">Daiane Ferreira de Lima</td>
+      <td class="email">daiferreira_lima@gmail.com</td>
+      <td class="phone">+555496425065</td>
+      <td class="date">2025-12-07 15:45:58</td>
+    </tr>
+<tr>
+      <td class="idx">23</td>
+      <td class="name">Natan Machado Alessio</td>
+      <td class="email">natan.m.alessio@gmail.com</td>
+      <td class="phone">+555180182372</td>
+      <td class="date">2025-12-07 18:19:36</td>
+    </tr>
+<tr>
+      <td class="idx">24</td>
+      <td class="name">Luiz Rodrigo Adão</td>
+      <td class="email">luizaorodrigo.adao@gmail.com</td>
+      <td class="phone">+551191535106</td>
+      <td class="date">2025-12-07 14:52:54</td>
+    </tr>
+<tr>
+      <td class="idx">25</td>
+      <td class="name">Zilda Pereira Da Silva</td>
+      <td class="email">zi_pereira.silva@outlook.com</td>
+      <td class="phone">+5514997367695</td>
+      <td class="date">2025-12-07 13:17:35</td>
+    </tr>
+<tr>
+      <td class="idx">26</td>
+      <td class="name">Carlos Eduardo de Oliveira Campos</td>
+      <td class="email">carlos.eduardooliveiracam@gmail.com</td>
+      <td class="phone">+5519992637373</td>
+      <td class="date">2025-12-06 15:39:20</td>
+    </tr>
+<tr>
+      <td class="idx">27</td>
+      <td class="name">Jean Carlo Barbosa</td>
+      <td class="email">jeancarlo.ba@gmail.com</td>
+      <td class="phone">+5516999348415</td>
+      <td class="date">2025-12-05 15:30:54</td>
+    </tr>
+<tr>
+      <td class="idx">28</td>
+      <td class="name">Malvino Francisco de Eremita Silva</td>
+      <td class="email">malvinofran.silva@gmail.com</td>
+      <td class="phone">+551196176882</td>
+      <td class="date">2025-12-04 14:48:28</td>
+    </tr>
+<tr>
+      <td class="idx">29</td>
+      <td class="name">Welvis Francis Dos Santos Silva</td>
+      <td class="email">welvissantossilva589@gmail.com</td>
+      <td class="phone">+5511964417755</td>
+      <td class="date">2025-12-04 15:37:44</td>
+    </tr>
+<tr>
+      <td class="idx">30</td>
+      <td class="name">Leonardo Pereira do Nascimento</td>
+      <td class="email">leonardonascimento1904@gmail.com</td>
+      <td class="phone">+5513988255989</td>
+      <td class="date">2025-12-06 19:43:08</td>
+    </tr>
+<tr>
+      <td class="idx">31</td>
+      <td class="name">Renata Da silva Mello</td>
+      <td class="email">renatamellosilva@outlook.com</td>
+      <td class="phone">+5511983906371</td>
+      <td class="date">2025-12-08 19:53:42</td>
+    </tr>
+<tr>
+      <td class="idx">32</td>
+      <td class="name">Luis Roberto Borba</td>
+      <td class="email">luizrobertoborba@gmail.com</td>
+      <td class="phone">+5551995968051</td>
+      <td class="date">2025-12-02 19:10:55</td>
+    </tr>
+<tr>
+      <td class="idx">33</td>
+      <td class="name">Igor Fernandes de Lima</td>
+      <td class="email">igordelima1104@gmail.com</td>
+      <td class="phone">+5517992370220</td>
+      <td class="date">2025-12-05 15:15:30</td>
+    </tr>
+<tr>
+      <td class="idx">34</td>
+      <td class="name">Veridiana Leite Facanha Arroio</td>
+      <td class="email">diana.leite1909@gmail.com</td>
+      <td class="phone">+5511978155105</td>
+      <td class="date">2025-12-01 19:32:41</td>
+    </tr>
+<tr>
+      <td class="idx">35</td>
+      <td class="name">Fábio Costa da Silva</td>
+      <td class="email">fabiocostadasilva153@gmail.com</td>
+      <td class="phone">+5511913128654</td>
+      <td class="date">2025-11-09 17:38:26</td>
+    </tr></tbody>
+    </table>
+  </div>
+<div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background: var(--violet)20; color: var(--violet); border: 1px solid var(--violet)40;">
+        ATENÇÃO
+      </div>
+      <span class="ip-address">191.209.69.112</span>
+      <span class="ip-count">3 clientes</span>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+      <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">Debora Gouvea Da Silva</td>
+      <td class="email">deboragouvea2606@gmail.com</td>
+      <td class="phone">+5519982029113</td>
+      <td class="date">2026-01-06 15:32:17</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">Claudia De Sant'anna Da Silva</td>
+      <td class="email">claudiasantana210@gmail.com</td>
+      <td class="phone">+5518991712879</td>
+      <td class="date">2025-12-01 20:52:57</td>
+    </tr>
+<tr>
+      <td class="idx">3</td>
+      <td class="name">Genival Sant' Ana Silva</td>
+      <td class="email">gomesester13@gmail.com</td>
+      <td class="phone">+5511995777193</td>
+      <td class="date">2025-11-13 18:51:37</td>
+    </tr></tbody>
+    </table>
+  </div>
+<div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background: var(--violet)20; color: var(--violet); border: 1px solid var(--violet)40;">
+        ATENÇÃO
+      </div>
+      <span class="ip-address">177.75.155.56</span>
+      <span class="ip-count">2 clientes</span>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+      <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">Loreci Dos Santos</td>
+      <td class="email">lorecisaantos1901@outlook.com</td>
+      <td class="phone">+555499911248</td>
+      <td class="date">2025-12-07 22:44:29</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">Leandro Stefanini</td>
+      <td class="email">leandro_stefanini@gmail.com</td>
+      <td class="phone">+5517991586889</td>
+      <td class="date">2025-12-06 22:14:17</td>
+    </tr></tbody>
+    </table>
+  </div>
+<div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background: var(--violet)20; color: var(--violet); border: 1px solid var(--violet)40;">
+        ATENÇÃO
+      </div>
+      <span class="ip-address">131.196.237.202</span>
+      <span class="ip-count">2 clientes</span>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+      <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">Franciso Vicente Machado</td>
+      <td class="email">lu-zia.dias@outlook.com</td>
+      <td class="phone">+5515991564609</td>
+      <td class="date">2025-11-27 20:30:47</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">Luzia Dias Dos Santos Machado</td>
+      <td class="email">lu-zia.dias@outlook.com</td>
+      <td class="phone">+5515991552435</td>
+      <td class="date">2025-11-27 18:25:30</td>
+    </tr></tbody>
+    </table>
+  </div>
+<div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background: var(--violet)20; color: var(--violet); border: 1px solid var(--violet)40;">
+        ATENÇÃO
+      </div>
+      <span class="ip-address">189.40.88.152</span>
+      <span class="ip-count">2 clientes</span>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+      <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">Celso Antonio Dias</td>
+      <td class="email">celsodias1965@hotmail.com</td>
+      <td class="phone">+5516981766090</td>
+      <td class="date">2025-11-10 15:57:14</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">Robson Ferreira da Silva</td>
+      <td class="email">robinho_ferreira12@yahoo.com</td>
+      <td class="phone">+5511986009060</td>
+      <td class="date">2025-11-10 18:51:08</td>
+    </tr></tbody>
+    </table>
+  </div>
+<div class="ip-section">
+    <div class="ip-header">
+      <div class="ip-badge" style="background: var(--violet)20; color: var(--violet); border: 1px solid var(--violet)40;">
+        ATENÇÃO
+      </div>
+      <span class="ip-address">189.45.180.35</span>
+      <span class="ip-count">2 clientes</span>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Data Assinatura</th></tr></thead>
+      <tbody><tr>
+      <td class="idx">1</td>
+      <td class="name">Alexsandro Carvalho de Oliveira</td>
+      <td class="email">alex.carvalho.361@gmail.com</td>
+      <td class="phone">+5511981429152</td>
+      <td class="date">2025-11-08 17:56:29</td>
+    </tr>
+<tr>
+      <td class="idx">2</td>
+      <td class="name">Zilmeire de Lima Ferreira Oliveira</td>
+      <td class="email">meryferreira296@gmail.com</td>
+      <td class="phone">+5511959136804</td>
+      <td class="date">2025-11-06 18:58:06</td>
+    </tr></tbody>
+    </table>
+  </div>
+
+  <div class="method">
+    <strong>Metodologia:</strong> Planilha "planilha zapsign daniel.xlsx" → 482 signatários com status "Assinou" → 
+    download de 1 PDF por signatário (link S3 ZapSign) → extração de texto via <code>pdftotext</code> → 
+    regex <code>IP: X.X.X.X</code> → agrupamento por IP → filtro: 2+ clientes no mesmo IP = suspeito.<br>
+    <strong>Fonte:</strong> Campo "Documento assinado" da aba Documentos, cruzado por nome com aba Signatarios.<br>
+    <strong>Validação:</strong> IP 187.39.119.108 encontrado em 35 clientes (investigação anterior no Google Drive encontrou 43 — diferença pode ser docs fora desta planilha).
+  </div>
+
+  <div class="footer">
+    Relatório gerado por Beto (Claude Code) | MP Advocacia / MdFlow
+  </div>
+
+</div>
+</body>
+</html>
