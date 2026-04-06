@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework Beto CC — Dev Overview</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface-2: #1e2235;
+    --accent: #7c6dff;
+    --accent-dim: rgba(124,109,255,0.15);
+    --green: #20c997;
+    --green-dim: rgba(32,201,151,0.12);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.12);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.12);
+    --sky: #38bdf8;
+    --sky-dim: rgba(56,189,248,0.12);
+    --text: #e8e6e3;
+    --text-muted: #9e978a;
+    --border: #2a2d3e;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+  }
+
+  h2 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .kpi-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .kpi-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  th {
+    text-align: left;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(42,45,62,0.5);
+    vertical-align: top;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .tag-green { background: var(--green-dim); color: var(--green); }
+  .tag-amber { background: var(--amber-dim); color: var(--amber); }
+  .tag-red { background: var(--red-dim); color: var(--red); }
+  .tag-sky { background: var(--sky-dim); color: var(--sky); }
+  .tag-accent { background: var(--accent-dim); color: var(--accent); }
+
+  .bar-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .bar-label {
+    width: 110px;
+    font-size: 0.82rem;
+    text-align: right;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 22px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #fff;
+    min-width: fit-content;
+  }
+
+  .bar-fill.fix { background: linear-gradient(90deg, #ef4444, #f87171); }
+  .bar-fill.feat { background: linear-gradient(90deg, #7c6dff, #a78bfa); }
+  .bar-fill.docs { background: linear-gradient(90deg, #38bdf8, #7dd3fc); }
+  .bar-fill.front { background: linear-gradient(90deg, #20c997, #34d399); }
+  .bar-fill.polish { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .bar-fill.chore { background: linear-gradient(90deg, #64748b, #94a3b8); }
+  .bar-fill.refactor { background: linear-gradient(90deg, #ec4899, #f472b6); }
+
+  ul { padding-left: 1.25rem; }
+  li { margin-bottom: 0.4rem; font-size: 0.88rem; }
+
+  .priority-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: priority;
+  }
+
+  .priority-list li {
+    counter-increment: priority;
+    padding: 0.75rem 1rem;
+    background: var(--surface-2);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+  }
+
+  .priority-list li::before {
+    content: counter(priority);
+    background: var(--accent);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .skill-card {
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 3px solid var(--accent);
+  }
+
+  .skill-card.high { border-left-color: var(--green); }
+  .skill-card.medium { border-left-color: var(--amber); }
+  .skill-card.low { border-left-color: var(--text-muted); }
+
+  .skill-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .skill-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .skill-usage {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--green);
+    margin-top: 0.35rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  .arch-box {
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+    color: var(--text-muted);
+  }
+
+  .arch-box strong { color: var(--accent); font-weight: 700; }
+  .arch-box em { color: var(--green); font-style: normal; }
+  .arch-box .dim { color: #555; }
+
+  .footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    padding: 2rem 0 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  .highlight-box {
+    background: var(--accent-dim);
+    border: 1px solid rgba(124,109,255,0.3);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .highlight-box p {
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>Framework Beto CC — Dev Overview</h1>
+<p class="subtitle">Snapshot operacional do Claude Code como ferramenta de desenvolvimento no MdFlow &bull; 2026-04-06</p>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-value" style="color: var(--accent);">2.196</div>
+    <div class="kpi-label">Commits (Mar-Abr)</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color: var(--green);">9.193</div>
+    <div class="kpi-label">Arquivos Alterados</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color: var(--amber);">33</div>
+    <div class="kpi-label">Paginas MdFlow</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color: var(--sky);">24</div>
+    <div class="kpi-label">Skills CC</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color: var(--red);">71</div>
+    <div class="kpi-label">Agents CC</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-value" style="color: var(--green);">18</div>
+    <div class="kpi-label">Paginas Revisadas</div>
+  </div>
+</div>
+
+<!-- ARQUITETURA DO CC -->
+<div class="section">
+  <h2>1. Arquitetura Atual do CC como Dev Tool</h2>
+  <div class="arch-box"><strong>Gustavo / Christian</strong>
+    |
+    |  pedido natural ("corrige o drawer", "roda page-loop /mdzap")
+    v
+<strong>Claude Code (Opus 4.6)</strong>
+    |
+    +---> <em>Skills</em> (24) .............. regras especializadas injetadas no prompt
+    |      page-loop, page-qa-tester, page-executor, report, mdflow-frontend...
+    |
+    +---> <em>Agents</em> (71) .............. sub-agentes delegados (Explore, Plan)
+    |      mdflow-db-auditor, mdflow-frontend-auditor, page-orchestrator...
+    |
+    +---> <em>CLAUDE.md</em> ................ 500+ linhas de regras, DS, convenções
+    |
+    +---> <em>Memory</em> ................... 7 memórias persistentes entre sessões
+    |
+    +---> <em>MCP Servers</em>
+    |      Supabase (query/migration direto)
+    |      n8n (workflows API)
+    |      21st.dev (componentes UI)
+    |
+    +---> <em>Ferramentas nativas</em>
+           Read, Edit, Write, Grep, Glob, Bash, WebFetch, agent-browser</div>
+</div>
+
+<!-- DISTRIBUIÇÃO DE TRABALHO -->
+<div class="section">
+  <h2>2. Distribuicao de Trabalho — O que o CC Mais Faz</h2>
+
+  <div style="margin-bottom: 1.5rem;">
+    <div class="bar-container">
+      <span class="bar-label">fix</span>
+      <div class="bar-track"><div class="bar-fill fix" style="width: 100%;">996 (45%)</div></div>
+    </div>
+    <div class="bar-container">
+      <span class="bar-label">feat</span>
+      <div class="bar-track"><div class="bar-fill feat" style="width: 38.7%;">386 (18%)</div></div>
+    </div>
+    <div class="bar-container">
+      <span class="bar-label">docs</span>
+      <div class="bar-track"><div class="bar-fill docs" style="width: 15.2%;">151 (7%)</div></div>
+    </div>
+    <div class="bar-container">
+      <span class="bar-label">front</span>
+      <div class="bar-track"><div class="bar-fill front" style="width: 9.8%;">98 (4.5%)</div></div>
+    </div>
+    <div class="bar-container">
+      <span class="bar-label">polish</span>
+      <div class="bar-track"><div class="bar-fill polish" style="width: 6.2%;">62 (3%)</div></div>
+    </div>
+    <div class="bar-container">
+      <span class="bar-label">chore</span>
+      <div class="bar-track"><div class="bar-fill chore" style="width: 5.5%;">55 (2.5%)</div></div>
+    </div>
+    <div class="bar-container">
+      <span class="bar-label">refactor</span>
+      <div class="bar-track"><div class="bar-fill refactor" style="width: 1.9%;">19 (1%)</div></div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p><strong>Insight:</strong> 45% dos commits sao fixes. O CC opera majoritariamente como <strong>bug-fixer + quality enforcer</strong>, nao como feature builder. Isso e coerente com o page-loop (QA → fix → retest), mas indica que a qualidade na primeira implementacao pode melhorar.</p>
+  </div>
+</div>
+
+<!-- PAGINAS MAIS TRABALHADAS -->
+<div class="section">
+  <h2>3. Paginas Mais Trabalhadas (por commits)</h2>
+  <table>
+    <tr><th>Pagina</th><th>Commits</th><th>Status</th><th>Observacao</th></tr>
+    <tr><td>/olivia</td><td style="font-family: monospace; color: var(--accent);">192</td><td><span class="tag tag-green">Operacional</span></td><td>Maior investimento. V3 + Wizard + Agente.</td></tr>
+    <tr><td>/crm</td><td style="font-family: monospace; color: var(--accent);">159</td><td><span class="tag tag-amber">3 blockers</span></td><td>Kanban, drawer, direcionamento. Ancora do fluxo.</td></tr>
+    <tr><td>/mdzap</td><td style="font-family: monospace; color: var(--accent);">97</td><td><span class="tag tag-green">Revisado</span></td><td>Ciclo completo page-loop. Nina integrada.</td></tr>
+    <tr><td>/controller</td><td style="font-family: monospace; color: var(--accent);">85</td><td><span class="tag tag-green">Operacional</span></td><td>Drawer v2 + prazos + aprendizado IA.</td></tr>
+    <tr><td>/distribuicao</td><td style="font-family: monospace; color: var(--accent);">57</td><td><span class="tag tag-green">Revisado</span></td><td>View + RPCs + cancelar/excluir.</td></tr>
+    <tr><td>/acordos</td><td style="font-family: monospace; color: var(--accent);">55</td><td><span class="tag tag-green">Revisado</span></td><td>CRUD direto + soft delete.</td></tr>
+    <tr><td>/clientes</td><td style="font-family: monospace; color: var(--accent);">51</td><td><span class="tag tag-green">Revisado v2</span></td><td>Nota 9.1/10. Ciclo completo.</td></tr>
+    <tr><td>/configuracoes</td><td style="font-family: monospace; color: var(--accent);">50</td><td><span class="tag tag-green">Revisado</span></td><td>Ciclo 6 completo. Permissoes grid.</td></tr>
+    <tr><td>/audiencias</td><td style="font-family: monospace; color: var(--accent);">50</td><td><span class="tag tag-green">Revisado</span></td><td>Lapidacao V10.</td></tr>
+    <tr><td>/processos</td><td style="font-family: monospace; color: var(--accent);">49</td><td><span class="tag tag-amber">Pendencias</span></td><td>Drawer com bugs confirmados.</td></tr>
+    <tr><td>/execucoes</td><td style="font-family: monospace; color: var(--accent);">49</td><td><span class="tag tag-green">Revisado</span></td><td>4 ciclos. n8n workflows.</td></tr>
+  </table>
+</div>
+
+<!-- SKILLS MAIS USADAS -->
+<div class="section">
+  <h2>4. Skills Mais Utilizadas</h2>
+  <div class="skill-grid">
+    <div class="skill-card high">
+      <div class="skill-name">page-loop</div>
+      <div class="skill-desc">Orquestrador completo — roda todas as sub-skills em sequencia por pagina. O carro-chefe.</div>
+      <div class="skill-usage">USO: MUITO ALTO — base de todo ciclo de qualidade</div>
+    </div>
+    <div class="skill-card high">
+      <div class="skill-name">page-executor</div>
+      <div class="skill-desc">Executa fixes bug a bug com commit individual. Motor de correcao.</div>
+      <div class="skill-usage">USO: MUITO ALTO — ~996 fix commits gerados</div>
+    </div>
+    <div class="skill-card high">
+      <div class="skill-name">page-qa-tester</div>
+      <div class="skill-desc">QA profundo via browser + Supabase. Gera mega-relatorio HTML.</div>
+      <div class="skill-usage">USO: ALTO — cada pagina passa por QA antes de fix</div>
+    </div>
+    <div class="skill-card high">
+      <div class="skill-name">report</div>
+      <div class="skill-desc">Session Audit Report obrigatorio. Fecha toda sessao produtiva.</div>
+      <div class="skill-usage">USO: ALTO — 30+ reports gerados</div>
+    </div>
+    <div class="skill-card high">
+      <div class="skill-name">mdflow-frontend</div>
+      <div class="skill-desc">Padroes React, DS v5, componentes, hooks, modais, tabelas.</div>
+      <div class="skill-usage">USO: ALTO — injetado em toda implementacao frontend</div>
+    </div>
+    <div class="skill-card high">
+      <div class="skill-name">mdflow-migration</div>
+      <div class="skill-desc">Gera e valida SQL migrations no Supabase.</div>
+      <div class="skill-usage">USO: ALTO — RLS, triggers, RPCs, novas tabelas</div>
+    </div>
+    <div class="skill-card medium">
+      <div class="skill-name">page-front</div>
+      <div class="skill-desc">Auditoria UI/UX — codigo + visual. Verifica DS compliance.</div>
+      <div class="skill-usage">USO: MEDIO — rodada dentro do page-loop</div>
+    </div>
+    <div class="skill-card medium">
+      <div class="skill-name">page-deep-explorer</div>
+      <div class="skill-desc">Exploracao exaustiva — cria dados mock, testa tudo.</div>
+      <div class="skill-usage">USO: MEDIO — complementa o QA em paginas complexas</div>
+    </div>
+    <div class="skill-card medium">
+      <div class="skill-name">page-senior-review</div>
+      <div class="skill-desc">Revisao final por "dev senior". Carrega todo contexto.</div>
+      <div class="skill-usage">USO: MEDIO — ultima passagem antes de fechar</div>
+    </div>
+    <div class="skill-card medium">
+      <div class="skill-name">mdflow-backend</div>
+      <div class="skill-desc">Spec do backend — schema, RPCs, policies.</div>
+      <div class="skill-usage">USO: MEDIO — consulta antes de tocar no banco</div>
+    </div>
+    <div class="skill-card low">
+      <div class="skill-name">mdflow-rpc</div>
+      <div class="skill-desc">Gera RPCs PostgreSQL seguindo padroes estritos.</div>
+      <div class="skill-usage">USO: BAIXO-MEDIO — quando precisa criar funcao nova</div>
+    </div>
+    <div class="skill-card low">
+      <div class="skill-name">mdflow-n8n</div>
+      <div class="skill-desc">Cenarios n8n, webhooks, automacoes.</div>
+      <div class="skill-usage">USO: BAIXO — n8n e mais manual hoje</div>
+    </div>
+  </div>
+</div>
+
+<!-- PONTOS FORTES -->
+<div class="two-col">
+  <div class="section">
+    <h2>5. Pontos Fortes Atuais</h2>
+    <ul>
+      <li><strong>Pipeline page-loop maduro</strong> — ciclo QA automatizado que garante nota 8.5-9.1/10 por pagina</li>
+      <li><strong>Consistencia de commits</strong> — tipo(escopo) padronizado, atomico, rastreavel</li>
+      <li><strong>DS enforcement</strong> — tokens CSS, a11y, responsividade verificados por skill</li>
+      <li><strong>Backend-first</strong> — schema verificado antes de qualquer frontend</li>
+      <li><strong>CLAUDE.md robusto</strong> — 500+ linhas de regras previnem drift</li>
+      <li><strong>Reports HTML</strong> — documentacao visual auto-gerada, publicada em GitHub Pages</li>
+      <li><strong>Memory system</strong> — contexto persistente entre sessoes (pipeline, status paginas, bugs)</li>
+      <li><strong>Sub-agents</strong> — delegacao paralela (Explore, auditors) economiza contexto</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>6. Pontos Fracos / Gaps</h2>
+    <ul>
+      <li><strong style="color: var(--red);">Testes automatizados: ZERO</strong> — nenhum test unitario/e2e. Toda validacao e manual via browser</li>
+      <li><strong style="color: var(--red);">Ratio fix/feat = 2.6:1</strong> — muita correcao pos-implementacao. Qualidade na 1a passada e baixa</li>
+      <li><strong style="color: var(--amber);">n8n subutilizado</strong> — skill mdflow-n8n pouco usado. Automacoes criadas mais na mao</li>
+      <li><strong style="color: var(--amber);">Context window burn</strong> — page-loop em pagina grande queima janela rapido, exige /clear</li>
+      <li><strong style="color: var(--amber);">Agents 71 mas poucos usados</strong> — maioria legado/experimental. Falta curadoria</li>
+      <li><strong style="color: var(--amber);">Sem CI/CD</strong> — push direto em main sem build check. Lovable faz rebuild</li>
+      <li><strong style="color: var(--text-muted);">Skills nao-page pouco exercitadas</strong> — mdflow-seed, frontend-design, gerenciador-projetos raramente invocados</li>
+      <li><strong style="color: var(--text-muted);">Memory rasa</strong> — 7 entradas. Poderia capturar mais padroes recorrentes</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SUGESTOES -->
+<div class="section">
+  <h2>7. Sugestoes — Onde Focar Agora</h2>
+  <ol class="priority-list">
+    <li>
+      <div>
+        <strong>Reduzir ratio fix/feat</strong> — O CC gera muito fix porque a primeira implementacao sai com bugs que o page-loop depois encontra. Sugestao: antes de commitar um feat, rodar um <strong>self-review interno</strong> (checklist automatico: DS tokens? org_id? null guards? responsivo?). Criar uma skill <code>pre-commit-check</code> que valida antes de sair.
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Testes E2E minimos</strong> — Pelo menos smoke tests nas 5 rotas criticas (CRM, processos, distribuicao, controller, mdzap). A skill <code>page-qa-tester</code> ja usa browser — reutilizar essa infra pra gerar testes persistentes, nao so relatorios descartaveis.
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Curadoria de Agents</strong> — Dos 71 agents, identificar os 10-15 que realmente agregam. Arquivar o resto. Criar um <code>agent-catalog.md</code> curado com quando usar cada um. Hoje e dificil saber qual invocar.
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>n8n workflow como skill real</strong> — Hoje <code>mdflow-n8n</code> gera cenarios mas nao executa. Integrar com o MCP n8n pra criar/ativar workflows direto. Isso desbloquearia automacoes sem sair do CC.
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Memory mais rica</strong> — Capturar: padroes de bug recorrente (ex: "sempre falta org_id no primeiro commit"), decisoes arquiteturais que impactam futuro, e feedback do Gustavo que ja foi dado mas pode se perder.
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Pre-push build check</strong> — Um hook ou skill que roda <code>tsc --noEmit</code> + lint antes de push. Evita quebrar build no Lovable. Simples e de alto impacto.
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Dashboard de progresso</strong> — Gerar automaticamente (via report ou cron) um HTML com status de todas as 33 paginas: nota, ultimo ciclo, pendencias. Hoje voce precisa lembrar de cabeca ou olhar docs/revisoes/.
+      </div>
+    </li>
+  </ol>
+</div>
+
+<!-- FLUXO IDEAL -->
+<div class="section">
+  <h2>8. Fluxo Ideal (proposto)</h2>
+  <div class="arch-box"><strong>HOJE (real):</strong>
+  Pedido → Implementa → Push → <em>page-loop encontra 15 bugs</em> → Fix → Fix → Fix → Push
+
+<strong>PROPOSTO:</strong>
+  Pedido → Implementa → <em>pre-commit-check (self-review)</em> → Fix preventivo → Push
+         → page-loop encontra <em>3-5 bugs</em> (nao 15) → Fix → Push
+         → <em>smoke-test persiste</em> → regressao detectada automaticamente
+
+<strong>GANHO ESTIMADO:</strong>
+  - 50-60% menos commits de fix
+  - Ciclo page-loop 1 rodada em vez de 2-3
+  - Confianca maior no push (build check)
+  - Historico de testes acumulado</div>
+</div>
+
+<!-- MAPA SKILL → FASE -->
+<div class="section">
+  <h2>9. Mapa: Skill por Fase do Trabalho</h2>
+  <table>
+    <tr><th>Fase</th><th>Skills Usadas</th><th>Gap</th></tr>
+    <tr>
+      <td><span class="tag tag-accent">Planejamento</span></td>
+      <td>Plan agent, frontend-design</td>
+      <td style="color: var(--amber);">frontend-design subutilizado. Nao tem skill de "spec review" antes de comecar.</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-sky">Backend</span></td>
+      <td>mdflow-backend, mdflow-migration, mdflow-rpc</td>
+      <td style="color: var(--green);">Bem coberto. MCP Supabase direto e poderoso.</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-green">Frontend</span></td>
+      <td>mdflow-frontend, 21st.dev</td>
+      <td style="color: var(--amber);">21st.dev pouco usado na pratica. Componentes saem mais "na mao".</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-amber">QA</span></td>
+      <td>page-qa-tester, page-deep-explorer, page-front, page-front-tester, page-backend-tester</td>
+      <td style="color: var(--green);">Arsenal forte. Melhor area coberta do pipeline.</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">Fix</span></td>
+      <td>page-executor, page-front-executor, page-backend-executor, page-senior-executor, page-polisher</td>
+      <td style="color: var(--amber);">5 executors diferentes — possivel sobreposicao. Simplificar?</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-accent">Review</span></td>
+      <td>page-review, page-senior-review, page-finalize</td>
+      <td style="color: var(--green);">Bom. page-finalize agrega tudo.</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-sky">Automacao</span></td>
+      <td>mdflow-n8n</td>
+      <td style="color: var(--red);">Fraco. 1 skill, pouco usada. n8n e tratado como sistema externo.</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-green">Report</span></td>
+      <td>report, html-report</td>
+      <td style="color: var(--green);">Solido. Todo output vira HTML publicavel.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- RESUMO EXECUTIVO -->
+<div class="section" style="border-color: var(--accent); border-width: 2px;">
+  <h2>10. Resumo Executivo</h2>
+  <table>
+    <tr><th>Dimensao</th><th>Nota</th><th>Veredicto</th></tr>
+    <tr><td>Velocidade de entrega</td><td><span class="tag tag-green">9/10</span></td><td>2.196 commits em ~5 semanas. Output altissimo.</td></tr>
+    <tr><td>Qualidade na 1a passada</td><td><span class="tag tag-amber">6/10</span></td><td>Ratio fix/feat de 2.6:1 mostra retrabalho.</td></tr>
+    <tr><td>Pipeline QA</td><td><span class="tag tag-green">8.5/10</span></td><td>page-loop e robusto. Arsenal de 12+ skills.</td></tr>
+    <tr><td>Backend (Supabase)</td><td><span class="tag tag-green">8/10</span></td><td>MCP direto, RLS, RPCs. Bem coberto.</td></tr>
+    <tr><td>n8n / Automacoes</td><td><span class="tag tag-red">4/10</span></td><td>Gap maior. Pouca integracao real com CC.</td></tr>
+    <tr><td>Testes persistentes</td><td><span class="tag tag-red">1/10</span></td><td>Zero testes. Tudo e verificacao one-shot.</td></tr>
+    <tr><td>Organizacao (agents/skills)</td><td><span class="tag tag-amber">6/10</span></td><td>Muitos assets, pouca curadoria.</td></tr>
+    <tr><td>Memory / Contexto</td><td><span class="tag tag-amber">6/10</span></td><td>Funciona mas e raso. Potencial nao explorado.</td></tr>
+    <tr><td>Documentacao</td><td><span class="tag tag-green">8/10</span></td><td>CLAUDE.md + specs + reports. Forte.</td></tr>
+    <tr><td><strong>MEDIA GERAL</strong></td><td><span class="tag tag-amber"><strong>6.5/10</strong></span></td><td><strong>Motor potente, precisa de refinamento.</strong></td></tr>
+  </table>
+</div>
+
+<div class="footer">
+  Framework Beto CC &bull; Gerado em 2026-04-06 &bull; Claude Code (Opus 4.6) &bull; MdFlow / MDX LegalTech
+</div>
+
+</body>
+</html>
