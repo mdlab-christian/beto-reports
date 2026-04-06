@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano Drive v2 — MdFlow Google Drive Integration</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --green: #20c997;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --blue: #38bdf8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  display: flex;
+  min-height: 100vh;
+}
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: #0a0c14;
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 30;
+  padding: 20px 0;
+}
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .logo-icon { font-size: 1.5rem; }
+.sidebar-logo .logo-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  margin-top: 6px;
+}
+.sidebar-logo .logo-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.sidebar-nav { padding: 0 12px; }
+.nav-group-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  padding: 12px 8px 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: rgba(124,109,255,0.15); color: var(--accent); }
+.nav-item .nav-icon { font-size: 0.9rem; min-width: 18px; }
+.nav-item .nav-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.nb-ext { background: rgba(255,107,107,0.15); color: var(--accent2); }
+.nb-n8n { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.nb-fe { background: rgba(79,255,176,0.12); color: var(--accent3); }
+.nb-sql { background: rgba(255,209,102,0.12); color: var(--accent4); }
+/* MAIN */
+.main {
+  margin-left: 260px;
+  flex: 1;
+  max-width: calc(100% - 260px);
+  padding: 32px 40px;
+}
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 48px 24px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 50%;
+  transform: translateX(-50%);
+  width: 500px; height: 300px;
+  background: radial-gradient(ellipse, rgba(124,109,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-emoji { font-size: 2.8rem; display: block; margin-bottom: 14px; }
+.gradient-text {
+  font-size: 2.1rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.hero-sub { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+/* GRID */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; max-width: 100%; padding: 20px; }
+  .g2,.g3,.g4 { grid-template-columns: 1fr; }
+}
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card-accent-purple { border-left: 3px solid var(--accent); }
+.card-accent-green { border-left: 3px solid var(--accent3); }
+.card-accent-blue { border-left: 3px solid var(--accent5); }
+.card-accent-yellow { border-left: 3px solid var(--accent4); }
+.card-accent-red { border-left: 3px solid var(--accent2); }
+.card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  opacity: 0.07;
+}
+.stat-value { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+.stat-value.green { color: var(--accent3); }
+.stat-value.blue { color: var(--accent5); }
+.stat-value.yellow { color: var(--accent4); }
+.stat-value.red { color: var(--accent2); }
+.stat-label { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+/* SECTION */
+.section { margin: 36px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.05rem; font-weight: 700; }
+.section-header .section-tag {
+  margin-left: auto;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+/* CODE */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+}
+.code.ascii {
+  color: #a8b4ff;
+  font-size: 0.74rem;
+}
+.code.typescript { color: #7dd3fc; }
+.code.sql { color: #fda4af; }
+.code.bash { color: var(--accent3); }
+.code .c-comment { color: var(--text-muted); }
+.code .c-key { color: var(--accent4); }
+.code .c-str { color: var(--accent3); }
+.code .c-type { color: var(--accent5); }
+/* TABLE */
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+/* STATUS PILLS */
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-todo { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-ext { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.sp-new { background: rgba(124,109,255,0.12); color: var(--accent); }
+.sp-mod { background: rgba(91,196,245,0.1); color: var(--accent5); }
+/* STEP ITEMS */
+.step {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+.step-num {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(124,109,255,0.18);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+.step-content { flex: 1; }
+.step-title { font-weight: 600; margin-bottom: 2px; font-size: 0.84rem; }
+.step-desc { color: var(--text-muted); font-size: 0.8rem; }
+/* ALERT */
+.alert {
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 0.83rem;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.alert-yellow { background: rgba(255,209,102,0.08); border: 1px solid rgba(255,209,102,0.25); color: var(--accent4); }
+.alert-blue { background: rgba(91,196,245,0.08); border: 1px solid rgba(91,196,245,0.25); color: var(--accent5); }
+.alert-red { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); color: var(--accent2); }
+.alert-green { background: rgba(79,255,176,0.08); border: 1px solid rgba(79,255,176,0.25); color: var(--accent3); }
+/* FLOW DIAGRAM */
+.flow-node {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  display: inline-block;
+  margin: 3px 0;
+}
+.flow-arrow {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 2px 0;
+}
+/* ROADMAP */
+.roadmap-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  align-items: center;
+  transition: border-color 0.15s;
+}
+.roadmap-item:hover { border-color: rgba(124,109,255,0.4); }
+.roadmap-etapa {
+  min-width: 64px;
+  text-align: center;
+}
+.roadmap-etapa .etapa-num {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.roadmap-etapa .etapa-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.roadmap-info { flex: 1; }
+.roadmap-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; }
+.roadmap-sub { color: var(--text-muted); font-size: 0.78rem; }
+.roadmap-meta { text-align: right; min-width: 120px; }
+.roadmap-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--accent4);
+  font-weight: 600;
+}
+.roadmap-tag { margin-top: 4px; }
+/* CHECKLIST */
+.checklist-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(42,47,74,0.5);
+}
+.checklist-item:last-child { border-bottom: none; }
+.check-box {
+  min-width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-radius: 5px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+.checklist-label { font-size: 0.83rem; }
+.checklist-cmd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+/* DECISION TABLE */
+.decision-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.decision-row:last-child { border-bottom: none; }
+.decision-q { padding: 11px 16px; color: var(--text-muted); font-size: 0.82rem; }
+.decision-a {
+  padding: 11px 16px;
+  font-size: 0.82rem;
+  border-left: 1px solid var(--border);
+  font-weight: 500;
+}
+/* DIVIDER */
+.divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+/* INLINE CODE */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8em;
+  background: rgba(124,109,255,0.12);
+  color: var(--accent);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+/* PART HEADER */
+.part-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 14px;
+}
+.part-header h3 { font-size: 0.9rem; font-weight: 700; }
+.part-line { flex: 1; height: 1px; background: var(--border); }
+/* TAG */
+.tag {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">📁</span>
+    <div class="logo-title">PLANO DRIVE v2</div>
+    <div class="logo-sub">MdFlow — MP Advocacia</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-group-label">Visao Geral</div>
+    <a class="nav-item active" href="#s1">
+      <span class="nav-icon">📊</span> Dashboard de Decisoes
+    </a>
+
+    <div class="nav-group-label">Implementacao</div>
+    <a class="nav-item" href="#s2">
+      <span class="nav-icon">🔑</span> Etapa 0: Service Account
+      <span class="nav-badge nb-ext">EXTERNO</span>
+    </a>
+    <a class="nav-item" href="#s3">
+      <span class="nav-icon">🌲</span> Estrutura de Pastas
+    </a>
+    <a class="nav-item" href="#s4">
+      <span class="nav-icon">↔️</span> Fluxo Bidirecional
+    </a>
+    <a class="nav-item" href="#s5">
+      <span class="nav-icon">⚙️</span> Workflows n8n
+      <span class="nav-badge nb-n8n">N8N</span>
+    </a>
+    <a class="nav-item" href="#s6">
+      <span class="nav-icon">⚛️</span> Frontend
+      <span class="nav-badge nb-fe">REACT</span>
+    </a>
+    <a class="nav-item" href="#s7">
+      <span class="nav-icon">🗄️</span> Migration SQL
+      <span class="nav-badge nb-sql">SQL</span>
+    </a>
+
+    <div class="nav-group-label">Planejamento</div>
+    <a class="nav-item" href="#s8">
+      <span class="nav-icon">🗓️</span> Roadmap (~13h)
+    </a>
+    <a class="nav-item" href="#s9">
+      <span class="nav-icon">✅</span> Checklist de Validacao
+    </a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero" id="s1">
+    <span class="hero-emoji">📁</span>
+    <h1 class="gradient-text">Google Drive — Plano Definitivo</h1>
+    <p class="hero-sub">MdFlow × MP Advocacia — Integração completa, decisoes tomadas, execucao pronta</p>
+    <div class="badges">
+      <span class="badge bp">v2.0 DEFINITIVO</span>
+      <span class="badge bg">6 Etapas</span>
+      <span class="badge bb">Bidirecional</span>
+      <span class="badge by">~13h total</span>
+      <span class="badge br">Service Account</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Etapas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value blue">4</div>
+      <div class="stat-label">Workflows n8n</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value green">1</div>
+      <div class="stat-label">Migration SQL</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value yellow">~13h</div>
+      <div class="stat-label">Estimativa</div>
+    </div>
+  </div>
+
+  <!-- SECAO 1: DECISOES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <h2>Decisoes Finais (todas confirmadas)</h2>
+    </div>
+
+    <div class="grid g2" style="gap:20px;">
+      <div>
+        <div class="card card-accent-purple">
+          <div class="card-title">Tabela de Decisoes</div>
+          <div style="border-radius:8px; overflow:hidden; border: 1px solid var(--border);">
+            <div class="decision-row" style="background:var(--surface2);">
+              <div class="decision-q" style="font-weight:600;color:var(--text-muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;">Decisao</div>
+              <div class="decision-a" style="font-weight:600;color:var(--text-muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;">Valor</div>
+            </div>
+            <div class="decision-row">
+              <div class="decision-q">Credential</div>
+              <div class="decision-a"><span class="status-pill sp-new">Service Account</span> (migrar de OAuth2)</div>
+            </div>
+            <div class="decision-row">
+              <div class="decision-q">Raiz Drive</div>
+              <div class="decision-a" style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent5);">1hcncTkVY3PopO0wlkX1DWbZsW9GTu1tj <span class="status-pill sp-done">OK</span></div>
+            </div>
+            <div class="decision-row">
+              <div class="decision-q">Nome pasta cliente</div>
+              <div class="decision-a"><code>{Nome do Cliente}</code></div>
+            </div>
+            <div class="decision-row">
+              <div class="decision-q">Nome pasta restricao</div>
+              <div class="decision-a"><code>{Nome Empresa} — R$ {valor}</code></div>
+            </div>
+            <div class="decision-row">
+              <div class="decision-q">Nome pasta processo</div>
+              <div class="decision-a"><code>{Numero CNJ} — {Empresa}</code></div>
+            </div>
+            <div class="decision-row">
+              <div class="decision-q">Sync Drive → MdFlow</div>
+              <div class="decision-a"><span class="status-pill sp-done">Bidirecional</span> — origem: drive_sync</div>
+            </div>
+            <div class="decision-row">
+              <div class="decision-q">Soft delete</div>
+              <div class="decision-a">Mover para pasta <code>Lixeira/</code></div>
+            </div>
+            <div class="decision-row">
+              <div class="decision-q">ZapSign</div>
+              <div class="decision-a"><span class="status-pill sp-todo">Nao agora</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card card-accent-yellow">
+          <div class="card-title">Estado atual dos campos</div>
+          <table>
+            <thead><tr>
+              <th>Campo</th>
+              <th>Preenchimento</th>
+            </tr></thead>
+            <tbody>
+              <tr><td><code>organizacoes.google_drive_root_id</code></td><td><span class="status-pill sp-done">100% MP OK</span></td></tr>
+              <tr><td><code>clientes.google_drive_folder_id</code></td><td><span class="status-pill sp-todo">28% parcial</span></td></tr>
+              <tr><td><code>processos_documentos.google_drive_id</code></td><td><span class="status-pill sp-ext">0% — GAP P0</span></td></tr>
+              <tr><td><code>leads_restricoes.drive_pasta_id</code></td><td><span class="status-pill sp-ext">0% — nunca usado</span></td></tr>
+              <tr><td><code>leads_restricoes.drive_pasta_url</code></td><td><span class="status-pill sp-ext">0% — nunca usado</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert alert-red">
+          <span class="alert-icon">🚨</span>
+          <div><strong>GAP P0 identificado:</strong> o n8n usa <code>drive_file_id</code> no PATCH mas o campo no banco e <code>google_drive_id</code>. Resultado: campo nunca e preenchido. Corrigir na Etapa 1.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECAO 2: SERVICE ACCOUNT -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <span class="section-icon">🔑</span>
+      <h2>Etapa 0 — Service Account (Google Cloud Console)</h2>
+      <span class="section-tag badge br">EXTERNO — Christian faz</span>
+    </div>
+
+    <div class="alert alert-yellow">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>Por que migrar?</strong> OAuth2 expira periodicamente e requer re-autenticacao manual pelo usuario. Service Account nunca expira e e ideal para automacoes server-side. Nao ha interacao humana necessaria apos configuracao inicial.</div>
+    </div>
+
+    <!-- PARTE A -->
+    <div class="part-header">
+      <span class="tag bp">PARTE A</span>
+      <h3>Google Cloud Console — Criar SA</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-purple">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Acessar o console</div><div class="step-desc">Abrir <code>https://console.cloud.google.com/</code> — fazer login com conta Google da MP Advocacia</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Selecionar ou criar projeto</div><div class="step-desc">Selecionar projeto existente ou criar novo: <strong>"MdFlow Drive"</strong></div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Ativar Google Drive API</div><div class="step-desc">Menu → APIs e Servicos → Biblioteca → buscar "Google Drive API" → <strong>ATIVAR</strong></div></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Criar credencial</div><div class="step-desc">Menu → APIs e Servicos → Credenciais → <strong>+ CRIAR CREDENCIAIS</strong> → Conta de servico</div></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-content">
+        <div class="step-title">Preencher dados da SA</div>
+        <div class="code" style="margin-top:8px;">Nome:        mdflow-drive-sync
+Descricao:   Sync de documentos MdFlow ↔ Google Drive</div>
+      </div></div>
+      <div class="step"><div class="step-num">6</div><div class="step-content"><div class="step-title">CRIAR E CONTINUAR</div><div class="step-desc">Funcao: <strong>"Editor"</strong> (ou "Gerenciador de recursos de armazenamento" para pastas) → CONTINUAR → CONCLUIR</div></div></div>
+      <div class="step"><div class="step-num">7</div><div class="step-content"><div class="step-title">Gerar chave JSON</div><div class="step-desc">Clicar na SA criada → aba <strong>"Chaves"</strong> → ADICIONAR CHAVE → Criar nova chave → <strong>JSON</strong> → Baixar</div></div></div>
+      <div class="step"><div class="step-num">8</div><div class="step-content"><div class="step-title">Salvar o arquivo JSON</div><div class="step-desc">Guardar com seguranca. Contem <code>client_email</code> e <code>private_key</code> — nao commitar em nenhum repositorio</div></div></div>
+    </div>
+
+    <!-- PARTE B -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag bg">PARTE B</span>
+      <h3>Compartilhar pasta raiz com a SA</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-green">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Acessar o Google Drive</div><div class="step-desc"><code>https://drive.google.com</code> — conta da MP Advocacia</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content">
+        <div class="step-title">Localizar a pasta raiz</div>
+        <div class="code" style="margin-top:8px;font-size:0.75rem;">ID: 1hcncTkVY3PopO0wlkX1DWbZsW9GTu1tj
+URL: https://drive.google.com/drive/folders/1hcncTkVY3PopO0wlkX1DWbZsW9GTu1tj</div>
+      </div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Compartilhar com a SA</div><div class="step-desc">Botao direito na pasta → <strong>Compartilhar</strong> → adicionar o email da SA:</div>
+        <div class="code" style="margin-top:6px;color:var(--accent5);">mdflow-drive-sync@{seu-projeto}.iam.gserviceaccount.com</div>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Configurar permissao</div><div class="step-desc">Permissao: <strong>Editor</strong> → desmarcar "Notificar pessoas" → <strong>Compartilhar</strong></div></div></div>
+    </div>
+
+    <!-- PARTE C -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag bb">PARTE C</span>
+      <h3>Configurar no n8n</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-blue">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Acessar n8n</div><div class="step-desc"><code>https://primary-production-e209.up.railway.app</code></div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Criar nova credential</div><div class="step-desc">Menu → Credentials → + New Credential → tipo: <strong>"Google Drive API"</strong> (autenticacao Service Account)</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content">
+        <div class="step-title">Preencher dados do JSON</div>
+        <div class="code" style="margin-top:8px;">Nome:        Google Drive SA - MdFlow
+Email SA:    (do arquivo JSON: campo "client_email")
+Private Key: (do arquivo JSON: campo "private_key")</div>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">SALVAR e TESTAR</div><div class="step-desc">Usar o botao "Test" do n8n para confirmar que a SA consegue listar arquivos. Anotar o ID da nova credential.</div></div></div>
+    </div>
+
+    <!-- PARTE D -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag by">PARTE D</span>
+      <h3>Atualizar workflows n8n existentes</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-yellow">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Abrir WH-SYNC-STORAGE-DRIVE</div><div class="step-desc">Localizar o workflow pelo nome no n8n</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Trocar credential em cada node Drive</div><div class="step-desc">Node "HTTP: Criar pasta Drive" e qualquer outro que usa Google Drive API → trocar de <code>W1vM6djiMMUFil0R</code> (OAuth2) para a nova SA</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Salvar e TESTAR</div><div class="step-desc">Disparar o workflow com um cliente de teste → verificar que a pasta e criada sem erro de autenticacao</div></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Repetir para outros workflows</div><div class="step-desc">Qualquer workflow que use Drive API deve usar a nova SA credential</div></div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECAO 3: ESTRUTURA DE PASTAS -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <span class="section-icon">🌲</span>
+      <h2>Estrutura Definitiva de Pastas</h2>
+    </div>
+
+    <div class="grid g2" style="gap:20px;align-items:start;">
+      <div class="card card-accent-green">
+        <div class="card-title">Arvore completa (ASCII)</div>
+        <div class="code ascii" style="font-size:0.72rem;">Google Drive
+└── 📁 [Raiz MP Advocacia]
+    │   ID: 1hcncTkVY3PopO0wlkX1DWbZsW9GTu1tj
+    │
+    └── 📁 Joao Silva/                         ← Tier 0
+        │   criada: ao criar lead/cliente
+        │   campo:  clientes.google_drive_folder_id
+        │
+        ├── 📁 Documentos Pessoais/            ← Tier 1
+        │   ├── 📄 RG_frente.pdf
+        │   └── 📄 comp_endereco.jpg
+        │
+        ├── 📁 Restricoes/
+        │   ├── 📁 Banco XYZ S.A. — R$ 2.500/ ← Tier 2
+        │   │   │   criada: ao cadastrar restricao
+        │   │   │   campo:  leads_restricoes.drive_pasta_id
+        │   │   ├── 📄 print_bureau.jpg
+        │   │   └── 📄 negativacao.pdf
+        │   └── 📁 Financeira ABC — R$ 890/
+        │
+        ├── 📁 Processos/
+        │   └── 📁 0001234-56.2024.8.21.0001   ← Tier 3
+        │       │   — Banco XYZ S.A./
+        │       │   criada: na distribuicao
+        │       ├── 📁 Iniciais/
+        │       │   ├── 📄 peticao_inicial.pdf
+        │       │   └── 📄 procuracao.pdf
+        │       └── 📁 Tramitacao/
+        │           └── 📄 intimacao_20240315.pdf
+        │
+        └── 📁 Lixeira/
+            └── 📄 doc_deletado.pdf</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card card-accent-blue">
+          <div class="card-title">Quando cada pasta e criada</div>
+          <table>
+            <thead><tr>
+              <th>Pasta</th>
+              <th>Gatilho</th>
+              <th>Campo salvo</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td><code>{Cliente}/</code></td>
+                <td>Criar lead / cliente</td>
+                <td><code>clientes.google_drive_folder_id</code></td>
+              </tr>
+              <tr>
+                <td><code>Documentos Pessoais/</code></td>
+                <td>Junto com pasta cliente</td>
+                <td>subpasta fixe (sem campo)</td>
+              </tr>
+              <tr>
+                <td><code>Restricoes/</code></td>
+                <td>Junto com pasta cliente</td>
+                <td>subpasta fixe (sem campo)</td>
+              </tr>
+              <tr>
+                <td><code>Lixeira/</code></td>
+                <td>Junto com pasta cliente</td>
+                <td>subpasta fixe (sem campo)</td>
+              </tr>
+              <tr>
+                <td><code>{Empresa} — R$ {val}/</code></td>
+                <td>Cadastrar restricao</td>
+                <td><code>leads_restricoes.drive_pasta_id</code></td>
+              </tr>
+              <tr>
+                <td><code>{CNJ} — {Empresa}/</code></td>
+                <td>Distribuicao processo</td>
+                <td>(a mapear)</td>
+              </tr>
+              <tr>
+                <td><code>Iniciais/ + Tramitacao/</code></td>
+                <td>Junto com pasta processo</td>
+                <td>subpastas fixas</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card card-accent-purple">
+          <div class="card-title">Nomenclatura das pastas</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Pasta cliente (Tier 0)</div>
+              <div class="code" style="padding:8px 12px;">{Nome do Cliente}</div>
+              <div style="font-size:0.76rem;color:var(--text-muted);margin-top:4px;">ex: "Joao Silva" ou "Maria Souza Ltda"</div>
+            </div>
+            <div>
+              <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Pasta restricao (Tier 2)</div>
+              <div class="code" style="padding:8px 12px;">{Nome Empresa} — R$ {valor}</div>
+              <div style="font-size:0.76rem;color:var(--text-muted);margin-top:4px;">ex: "Banco XYZ S.A. — R$ 2.500"</div>
+            </div>
+            <div>
+              <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Pasta processo (Tier 3)</div>
+              <div class="code" style="padding:8px 12px;">{Numero CNJ} — {Empresa}</div>
+              <div style="font-size:0.76rem;color:var(--text-muted);margin-top:4px;">ex: "0001234-56.2024.8.21.0001 — Banco XYZ S.A."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECAO 4: FLUXO BIDIRECIONAL -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <span class="section-icon">↔️</span>
+      <h2>Arquitetura Bidirecional Completa</h2>
+    </div>
+
+    <div class="grid g2" style="gap:20px;align-items:start;">
+      <div class="card card-accent-purple">
+        <div class="card-title">MdFlow → Drive (upload)</div>
+        <div class="code ascii" style="font-size:0.72rem;">Frontend
+  usuario faz upload de arquivo
+  INSERT processos_documentos
+    google_drive_id = NULL (pendente)
+  fire-and-forget → WH-SYNC-STORAGE-DRIVE
+        ↓
+  WH-SYNC-STORAGE-DRIVE (n8n)
+  verifica: clientes.google_drive_folder_id existe?
+  NAO → cria pasta cliente no Drive
+          cria subpastas fixas:
+            - Documentos Pessoais/
+            - Restricoes/
+            - Lixeira/
+          PATCH clientes.google_drive_folder_id
+  SIM ↓
+  Supabase Storage → download binario
+  Google Drive API → upload arquivo
+  PATCH processos_documentos
+    google_drive_id = "1ABC...xyz"
+        ↓
+  Google Drive
+  arquivo visivel em:
+    {Cliente}/Documentos Pessoais/
+    ou {Cliente}/Restricoes/{Empresa}/</div>
+      </div>
+
+      <div class="card card-accent-green">
+        <div class="card-title">Drive → MdFlow (bidirecional)</div>
+        <div class="code ascii" style="font-size:0.72rem;">Alguem coloca arquivo no Drive
+(pasta de um cliente)
+        ↓
+  Google Drive Watch API
+  detecta mudanca → envia notificacao
+        ↓
+  mdflow/drive-webhook-entrada (n8n)
+  parse: resourceId, fileId, changeType
+  IF changeType != 'file' → ignorar
+        ↓
+  GET /drive/v3/files/{fileId}
+  obtem: name, parents, mimeType, size
+        ↓
+  Code: resolver entidade
+  qual cliente pertence a esta pasta?
+  buscar em Supabase por:
+    clientes.google_drive_folder_id
+    leads_restricoes.drive_pasta_id
+        ↓
+  CHECK: ja existe em processos_documentos?
+  (por google_drive_id)
+  SIM → ignorar (evita duplicata)
+  NAO ↓
+  INSERT processos_documentos
+    google_drive_id: fileId
+    nome: fileName
+    origem: 'drive_sync'
+    lead_id / restricao_id (resolvidos)
+        ↓
+  Realtime Supabase → frontend
+  badge "☁ Drive Sync" no documento</div>
+      </div>
+    </div>
+
+    <div class="card card-accent-yellow" style="margin-top:16px;">
+      <div class="card-title">Renovacao automatica do Watch (expira em 24h)</div>
+      <div class="code ascii" style="font-size:0.72rem;">Google Drive Watch API expira em 24 horas — precisa renovar diariamente
+        ↓
+  Cron n8n (diario — 00:00)
+  mdflow/drive-renovar-watch
+        ↓
+  SELECT organizacoes WHERE google_drive_root_id IS NOT NULL
+        ↓
+  Para cada org:
+    POST /drive/v3/files/{rootId}/watch
+      channel.id: uuid novo
+      channel.type: "web_hook"
+      channel.address: "https://n8n.railway.app/webhook/mdflow/drive-webhook-entrada"
+    ↓
+    PATCH organizacoes
+      drive_watch_channel_id = channelId
+      drive_watch_expires_at = now() + 23h
+        ↓
+  Respond { done: true, orgs_renovadas: N }</div>
+    </div>
+
+    <div class="alert alert-blue" style="margin-top:16px;">
+      <span class="alert-icon">ℹ️</span>
+      <div><strong>Watch scope:</strong> configurar o watch na pasta raiz do cliente (ou na pasta da org). O Drive notifica mudancas recursivamente em subpastas. Responder HTTP 200 imediatamente — o Drive para de enviar se nao receber resposta em ~30s.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECAO 5: WORKFLOWS N8N -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <h2>Workflows n8n — O que criar e modificar</h2>
+    </div>
+
+    <!-- WF 1: MODIFICAR -->
+    <div class="part-header">
+      <span class="tag sp-mod" style="padding:3px 10px;">MODIFICAR</span>
+      <h3>WH-SYNC-STORAGE-DRIVE</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="grid g2" style="gap:16px;">
+      <div class="card card-accent-blue">
+        <div class="card-title">Fix P0: campo errado</div>
+        <div class="code" style="font-size:0.76rem; margin-top:8px;"><span class="c-comment">// ANTES (errado — nunca preenche o banco)</span>
+PATCH processos_documentos
+  SET drive_file_id = fileId   ← campo nao existe
+
+<span class="c-comment">// DEPOIS (correto)</span>
+PATCH processos_documentos
+  SET google_drive_id = fileId  ← campo real</div>
+      </div>
+      <div class="card card-accent-green">
+        <div class="card-title">Adicionar criacao de subpastas fixas</div>
+        <div class="code ascii" style="font-size:0.72rem;">Criou pasta cliente? (SIM)
+  ↓
+HTTP: Criar "Documentos Pessoais"
+  parents: [clienteFolderId]
+  ↓
+HTTP: Criar "Restricoes"
+  parents: [clienteFolderId]
+  ↓
+HTTP: Criar "Lixeira"
+  parents: [clienteFolderId]
+  ↓
+(salvar IDs se necessario)</div>
+      </div>
+    </div>
+
+    <!-- WF 2: NOVO -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag sp-new" style="padding:3px 10px;">NOVO</span>
+      <h3>mdflow/drive-pasta-restricao (6 nodes)</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-purple">
+      <div class="code ascii" style="font-size:0.72rem;">Webhook (POST /webhook/mdflow/drive-pasta-restricao)
+Header: mdflow: MdL1501@
+Body:   { cliente_id, restricao_id, empresa_nome, valor }
+        ↓
+Supabase: GET clientes
+  WHERE id = cliente_id
+  SELECT google_drive_folder_id
+        ↓
+IF google_drive_folder_id IS NULL
+  → Error: "Criar pasta do cliente primeiro"
+  → Respond { success: false, error_code: "NO_CLIENT_FOLDER" }
+SIM ↓
+HTTP: GET /drive/v3/files
+  q: "'{clienteFolderId}' in parents AND name='Restricoes'"
+  fields: files(id,name)
+        ↓
+IF pasta Restricoes nao existe:
+  HTTP: POST /drive/v3/files
+    name: "Restricoes"
+    mimeType: application/vnd.google-apps.folder
+    parents: [clienteFolderId]
+  → usar novo ID
+SIM → usar ID existente
+        ↓
+HTTP: POST /drive/v3/files  ← pasta da restricao
+  name: "{empresa_nome} — R$ {valor_formatado}"
+  mimeType: application/vnd.google-apps.folder
+  parents: [restricoesFolderId]
+        ↓
+Supabase: PATCH leads_restricoes
+  WHERE id = restricao_id
+  SET drive_pasta_id  = novaFolderId
+      drive_pasta_url = "https://drive.google.com/drive/folders/{id}"
+        ↓
+Respond HTTP 200
+{ success: true, action: "noop",
+  data: { drive_pasta_id, drive_pasta_url } }</div>
+    </div>
+
+    <!-- WF 3: NOVO -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag sp-new" style="padding:3px 10px;">NOVO</span>
+      <h3>mdflow/drive-lixeira (5 nodes)</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-red">
+      <div class="code ascii" style="font-size:0.72rem;">Webhook (POST /webhook/mdflow/drive-lixeira)
+Header: mdflow: MdL1501@
+Body:   { google_drive_id, cliente_id }
+        ↓
+Supabase: GET clientes
+  WHERE id = cliente_id
+  SELECT google_drive_folder_id
+        ↓
+HTTP: GET /drive/v3/files
+  q: "'{clienteFolderId}' in parents AND name='Lixeira'"
+  fields: files(id,name)
+        ↓
+IF pasta Lixeira nao existe:
+  HTTP: POST /drive/v3/files
+    name: "Lixeira"
+    parents: [clienteFolderId]
+  → usar novo ID
+SIM → usar ID existente
+        ↓
+HTTP: PATCH /drive/v3/files/{google_drive_id}
+  addParents: lixeiraFolderId
+  removeParents: (parent atual do arquivo)
+  supportsAllDrives: true
+        ↓
+Supabase: PATCH processos_documentos
+  WHERE google_drive_id = google_drive_id
+  SET drive_deleted_at = NOW()
+        ↓
+Respond { success: true, action: "noop" }</div>
+    </div>
+
+    <!-- WF 4: NOVO -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag sp-new" style="padding:3px 10px;">NOVO</span>
+      <h3>mdflow/drive-webhook-entrada (8 nodes)</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-yellow">
+      <div class="code ascii" style="font-size:0.72rem;">Webhook (POST /webhook/mdflow/drive-webhook-entrada)
+Nao requer header mdflow (chamado pelo Google)
+        ↓
+Code: Parse notification
+  extrai: resourceId, fileId, changeType
+  IF changeType != 'update' → Respond 200 + STOP
+        ↓
+HTTP: GET /drive/v3/files/{fileId}
+  fields: id,name,parents,mimeType,size,modifiedTime
+        ↓
+IF mimeType = application/vnd.google-apps.folder
+  → Ignorar (e uma pasta, nao arquivo)
+        ↓
+Supabase: Resolver entidade
+  SELECT id, tipo FROM (
+    SELECT id, 'cliente' as tipo, google_drive_folder_id as fid
+      FROM clientes WHERE deleted_at IS NULL
+    UNION ALL
+    SELECT id, 'restricao' as tipo, drive_pasta_id as fid
+      FROM leads_restricoes WHERE deleted_at IS NULL
+  ) t WHERE t.fid = ANY(parents)
+        ↓
+Supabase: CHECK duplicata
+  SELECT id FROM processos_documentos
+  WHERE google_drive_id = fileId
+  IF existe → Respond 200 + STOP
+        ↓
+Supabase: INSERT processos_documentos
+  google_drive_id: fileId
+  nome:           fileName
+  origem:         'drive_sync'
+  organizacao_id: (da org associada)
+  lead_id / restricao_id (resolvidos)
+        ↓
+Respond HTTP 200 imediatamente
+(Drive exige resposta em <30s)</div>
+    </div>
+
+    <!-- WF 5: NOVO CRON -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag sp-new" style="padding:3px 10px;">NOVO</span>
+      <h3>mdflow/drive-renovar-watch (cron 00:00 diario)</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-blue">
+      <div class="code ascii" style="font-size:0.72rem;">Trigger: Schedule — todos os dias 00:00
+        ↓
+Supabase: SELECT organizacoes
+  WHERE google_drive_root_id IS NOT NULL
+        ↓
+SplitInBatches (1 por vez)
+        ↓
+HTTP: POST /drive/v3/files/{rootId}/watch
+  {
+    "id": "{uuid-gerado}",
+    "type": "web_hook",
+    "address": "https://primary-production-e209.up.railway.app/webhook/mdflow/drive-webhook-entrada",
+    "expiration": "{now + 23h em ms}"
+  }
+        ↓
+Supabase: PATCH organizacoes
+  WHERE id = org.id
+  SET drive_watch_channel_id = response.id
+      drive_watch_expires_at = now() + interval '23 hours'
+        ↓
+Respond { done: true }</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECAO 6: FRONTEND -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <span class="section-icon">⚛️</span>
+      <h2>Mudancas no Frontend React</h2>
+    </div>
+
+    <!-- D3 -->
+    <div class="part-header">
+      <span class="tag sp-mod" style="padding:3px 10px;">D3</span>
+      <h3>useSalvarRestricao → dispara pasta no Drive</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-purple">
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;">Arquivo: <code>src/hooks/useRestricoes.ts</code></div>
+      <div class="code typescript" style="font-size:0.76rem;"><span class="c-comment">// Adicionar no onSuccess de useSalvarRestricao:</span>
+onSuccess: async (restricao) => {
+  <span class="c-comment">// Fire-and-forget: criar pasta no Drive (nao bloquear o usuario)</span>
+  if (restricao.cliente_id && restricao.empresa_nome) {
+    callWebhook('mdflow/drive-pasta-restricao', {
+      request_id: crypto.randomUUID(),
+      contexto: 'restricoes.criar',
+      organizacao_id,
+      actor_user_id: user?.id,
+      origem_rota: '/clientes',
+      data: {
+        cliente_id:   restricao.cliente_id,
+        restricao_id: restricao.id,
+        empresa_nome: restricao.empresa_nome,
+        valor:        restricao.valor ?? 0,
+      }
+    }).catch(() => {
+      <span class="c-comment">// silencioso — Drive e opcional, nao bloquear UI</span>
+      console.warn('[Drive] Falha ao criar pasta restricao')
+    })
+  }
+  queryClient.invalidateQueries(['restricoes'])
+}</div>
+    </div>
+
+    <!-- D4 -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag sp-mod" style="padding:3px 10px;">D4</span>
+      <h3>DocumentoItem → ao deletar → move para Lixeira</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-red">
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;">Arquivo: <code>src/components/shared/cliente_drawer/tabs/DocumentoItem.tsx</code></div>
+      <div class="code typescript" style="font-size:0.76rem;">const handleDelete = async () => {
+  <span class="c-comment">// 1. Soft delete no banco (comportamento existente)</span>
+  await supabase
+    .from('processos_documentos')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', doc.id)
+
+  <span class="c-comment">// 2. Fire-and-forget: mover para Lixeira no Drive</span>
+  if (doc.google_drive_id && clienteId) {
+    callWebhook('mdflow/drive-lixeira', {
+      request_id: crypto.randomUUID(),
+      contexto: 'documentos.deletar',
+      organizacao_id,
+      actor_user_id: user?.id,
+      origem_rota: window.location.pathname,
+      data: {
+        google_drive_id: doc.google_drive_id,
+        cliente_id: clienteId,
+      }
+    }).catch(() => {
+      console.warn('[Drive] Falha ao mover para Lixeira')
+    })
+  }
+
+  queryClient.invalidateQueries(['lead-docs'])
+}</div>
+    </div>
+
+    <!-- D5 -->
+    <div class="part-header" style="margin-top:24px;">
+      <span class="tag sp-new" style="padding:3px 10px;">D5</span>
+      <h3>Badge "Drive Sync" no DocumentoItem</h3>
+      <div class="part-line"></div>
+    </div>
+    <div class="card card-accent-green">
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;">Exibir badge visual quando <code>origem === 'drive_sync'</code></div>
+      <div class="code typescript" style="font-size:0.76rem;"><span class="c-comment">// No JSX do DocumentoItem, junto ao nome do arquivo:</span>
+{doc.origem === 'drive_sync' && (
+  &lt;span className="inline-flex items-center gap-1 text-xs px-2 py-0.5
+    rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20"&gt;
+    ☁ Drive Sync
+  &lt;/span&gt;
+)}
+
+<span class="c-comment">// Badge adicional para link direto no Drive (se disponivel):</span>
+{doc.google_drive_id && (
+  &lt;a
+    href={`https://drive.google.com/file/d/${doc.google_drive_id}/view`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-xs text-muted-foreground hover:text-primary transition-colors"
+    title="Abrir no Google Drive"
+  &gt;
+    ↗ Drive
+  &lt;/a&gt;
+)}</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECAO 7: MIGRATION SQL -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <span class="section-icon">🗄️</span>
+      <h2>Migration SQL</h2>
+      <span class="section-tag badge by">1 migration</span>
+    </div>
+
+    <div class="alert alert-yellow">
+      <span class="alert-icon">⚠️</span>
+      <div>Aplicar no Supabase de producao: <code>qdivfairxhdihaqqypgb</code> — verificar que todos os campos nao existem antes de rodar (usar <code>IF NOT EXISTS</code> — ja incluido).</div>
+    </div>
+
+    <div class="card card-accent-yellow">
+      <div class="code sql" style="font-size:0.76rem;"><span class="c-comment">-- ===========================================
+-- MdFlow — Google Drive Integration
+-- Migration: drive-integration-v2
+-- Data: 2026-04-06
+-- ===========================================</span>
+
+<span class="c-comment">-- 1. Campo drive_deleted_at em processos_documentos
+-- Registra quando o arquivo foi movido para Lixeira no Drive</span>
+ALTER TABLE processos_documentos
+ADD COLUMN IF NOT EXISTS drive_deleted_at TIMESTAMPTZ;
+
+<span class="c-comment">-- 2. Campos watch do Drive em organizacoes
+-- Necessarios para renovacao automatica diaria</span>
+ALTER TABLE organizacoes
+ADD COLUMN IF NOT EXISTS drive_watch_channel_id TEXT,
+ADD COLUMN IF NOT EXISTS drive_watch_expires_at TIMESTAMPTZ;
+
+<span class="c-comment">-- 3. Indice para busca bidirecional por google_drive_id
+-- Necessario para o webhook de entrada resolver o arquivo rapidamente</span>
+CREATE INDEX IF NOT EXISTS idx_processos_documentos_drive_id
+ON processos_documentos(google_drive_id)
+WHERE deleted_at IS NULL
+  AND google_drive_id IS NOT NULL;
+
+<span class="c-comment">-- 4. Verificar constraint de origem em processos_documentos
+-- Adicionar 'drive_sync' se existir CHECK constraint</span>
+
+<span class="c-comment">-- Verificar constraint atual:</span>
+SELECT conname, pg_get_constraintdef(oid)
+FROM pg_constraint
+WHERE conrelid = 'processos_documentos'::regclass
+  AND conname LIKE '%origem%';
+
+<span class="c-comment">-- Se existir constraint, recriar incluindo drive_sync:
+-- (adaptar nome da constraint ao retorno acima)
+-- ALTER TABLE processos_documentos
+--   DROP CONSTRAINT IF EXISTS processos_documentos_origem_check,
+--   ADD CONSTRAINT processos_documentos_origem_check
+--     CHECK (origem IN ('upload', 'jarbas', 'drive_sync'));
+</span>
+<span class="c-comment">-- ===========================================
+-- Verificacao pos-migration:
+-- ===========================================</span>
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_name IN ('processos_documentos', 'organizacoes')
+  AND column_name IN (
+    'google_drive_id', 'drive_deleted_at',
+    'drive_watch_channel_id', 'drive_watch_expires_at'
+  )
+ORDER BY table_name, column_name;</div>
+    </div>
+
+    <div class="grid g3" style="margin-top:16px; gap:14px;">
+      <div class="stat-card">
+        <div class="stat-value green" style="font-size:1.4rem;">1</div>
+        <div class="stat-label">Campo novo processos_documentos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value blue" style="font-size:1.4rem;">2</div>
+        <div class="stat-label">Campos novos organizacoes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value yellow" style="font-size:1.4rem;">1</div>
+        <div class="stat-label">Indice de performance</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECAO 8: ROADMAP -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <span class="section-icon">🗓️</span>
+      <h2>Roadmap de Implementacao</h2>
+      <span class="section-tag badge by">~13h estimado</span>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-etapa">
+        <div class="etapa-num">0</div>
+        <div class="etapa-label">Etapa</div>
+      </div>
+      <div class="roadmap-info">
+        <div class="roadmap-title">Service Account — Google Cloud Console</div>
+        <div class="roadmap-sub">Christian cria SA, compartilha pasta raiz, configura credential no n8n, atualiza WH-SYNC</div>
+      </div>
+      <div class="roadmap-meta">
+        <div class="roadmap-time">30 min</div>
+        <div class="roadmap-tag"><span class="status-pill sp-ext">EXTERNO</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-etapa">
+        <div class="etapa-num">1</div>
+        <div class="etapa-label">Etapa</div>
+      </div>
+      <div class="roadmap-info">
+        <div class="roadmap-title">Corrigir GAP P0: google_drive_id nunca preenchido</div>
+        <div class="roadmap-sub">No WH-SYNC-STORAGE-DRIVE: renomear <code>drive_file_id</code> para <code>google_drive_id</code> no Code node do PATCH</div>
+      </div>
+      <div class="roadmap-meta">
+        <div class="roadmap-time">30 min</div>
+        <div class="roadmap-tag"><span class="status-pill sp-mod">N8N</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-etapa">
+        <div class="etapa-num">2</div>
+        <div class="etapa-label">Etapa</div>
+      </div>
+      <div class="roadmap-info">
+        <div class="roadmap-title">Subpastas automaticas ao criar pasta do cliente</div>
+        <div class="roadmap-sub">WH-SYNC: apos criar pasta cliente → criar Documentos Pessoais/, Restricoes/, Lixeira/ automaticamente</div>
+      </div>
+      <div class="roadmap-meta">
+        <div class="roadmap-time">2h</div>
+        <div class="roadmap-tag"><span class="status-pill sp-mod">N8N</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-etapa">
+        <div class="etapa-num">3</div>
+        <div class="etapa-label">Etapa</div>
+      </div>
+      <div class="roadmap-info">
+        <div class="roadmap-title">Pasta automatica ao cadastrar restricao</div>
+        <div class="roadmap-sub">Novo webhook <code>drive-pasta-restricao</code> (6 nodes) + ajuste em <code>useSalvarRestricao</code> no frontend</div>
+      </div>
+      <div class="roadmap-meta">
+        <div class="roadmap-time">3h</div>
+        <div class="roadmap-tag"><span class="status-pill sp-new">N8N + FE</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-etapa">
+        <div class="etapa-num">4</div>
+        <div class="etapa-label">Etapa</div>
+      </div>
+      <div class="roadmap-info">
+        <div class="roadmap-title">Soft delete → Lixeira no Drive</div>
+        <div class="roadmap-sub">Novo webhook <code>drive-lixeira</code> (5 nodes) + ajuste no <code>handleDelete</code> do DocumentoItem</div>
+      </div>
+      <div class="roadmap-meta">
+        <div class="roadmap-time">2h</div>
+        <div class="roadmap-tag"><span class="status-pill sp-new">N8N + FE</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-etapa">
+        <div class="etapa-num">5</div>
+        <div class="etapa-label">Etapa</div>
+      </div>
+      <div class="roadmap-info">
+        <div class="roadmap-title">Bidirecional: Drive → MdFlow</div>
+        <div class="roadmap-sub">Webhook entrada (8 nodes) + Watch API + cron renovacao diaria (00:00) + migration SQL</div>
+      </div>
+      <div class="roadmap-meta">
+        <div class="roadmap-time">4h</div>
+        <div class="roadmap-tag"><span class="status-pill sp-new">N8N</span></div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-etapa">
+        <div class="etapa-num">6</div>
+        <div class="etapa-label">Etapa</div>
+      </div>
+      <div class="roadmap-info">
+        <div class="roadmap-title">Auto-criacao de pasta ao criar lead no MdZap</div>
+        <div class="roadmap-sub">No workflow "MDZAP — Lead Sync": apos INSERT lead → se cliente existe → disparar WH-SYNC com arquivos: []</div>
+      </div>
+      <div class="roadmap-meta">
+        <div class="roadmap-time">1h</div>
+        <div class="roadmap-tag"><span class="status-pill sp-mod">N8N</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;background:var(--surface2);">
+      <div class="code ascii" style="font-size:0.76rem;color:var(--text);">RESUMO DE ARTEFATOS
+═══════════════════════════════════════════════════════
+Workflows MODIFICADOS:
+  ├── WH-SYNC-STORAGE-DRIVE   (fix P0 + subpastas)
+  └── MDZAP Lead Sync         (auto-pasta ao criar lead)
+
+Workflows NOVOS:
+  ├── mdflow/drive-pasta-restricao  (6 nodes)
+  ├── mdflow/drive-lixeira          (5 nodes)
+  ├── mdflow/drive-webhook-entrada  (8 nodes)
+  └── mdflow/drive-renovar-watch    (cron diario)
+
+Frontend MODIFICADO:
+  ├── src/hooks/useRestricoes.ts           (D3)
+  └── src/components/.../DocumentoItem.tsx (D4 + D5)
+
+SQL:
+  └── 1 migration (3 colunas + 1 indice)
+═══════════════════════════════════════════════════════
+TOTAL ESTIMADO:  ~13 horas</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECAO 9: CHECKLIST -->
+  <div class="section" id="s9">
+    <div class="section-header">
+      <span class="section-icon">✅</span>
+      <h2>Checklist de Validacao por Etapa</h2>
+    </div>
+
+    <div class="grid g2" style="gap:16px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card card-accent-red">
+          <div class="card-title">Etapa 0 — Service Account</div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">SA criada e arquivo JSON baixado</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Pasta raiz compartilhada com SA</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div>
+              <div class="checklist-label">Testar via curl na Drive API</div>
+              <div class="checklist-cmd">GET /drive/v3/files?q='1hcncTk...' in parents</div>
+            </div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Credential SA funcionando no n8n (botao Test)</div></div>
+          </div>
+        </div>
+
+        <div class="card card-accent-blue">
+          <div class="card-title">Etapa 1 — Fix GAP P0</div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div>
+              <div class="checklist-label">Fazer upload de um doc no CRM</div>
+            </div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div>
+              <div class="checklist-label">Verificar campo preenchido no banco</div>
+              <div class="checklist-cmd">SELECT google_drive_id FROM processos_documentos ORDER BY created_at DESC LIMIT 1</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-accent-green">
+          <div class="card-title">Etapa 2 — Subpastas fixas</div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Criar pasta de novo cliente via MdFlow</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Verificar 3 subpastas no Drive (Docs Pessoais / Restricoes / Lixeira)</div></div>
+          </div>
+        </div>
+
+        <div class="card card-accent-purple">
+          <div class="card-title">Etapa 3 — Pasta restricao</div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Cadastrar nova restricao em cliente existente</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div>
+              <div class="checklist-label">Verificar pasta criada no Drive</div>
+              <div class="checklist-cmd">Formato: "{Empresa} — R$ {valor}"</div>
+            </div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div>
+              <div class="checklist-label">Verificar campo drive_pasta_id preenchido</div>
+              <div class="checklist-cmd">SELECT drive_pasta_id, drive_pasta_url FROM leads_restricoes ORDER BY created_at DESC LIMIT 1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card card-accent-red">
+          <div class="card-title">Etapa 4 — Soft delete / Lixeira</div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Deletar um documento com google_drive_id preenchido</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Verificar arquivo na pasta "Lixeira/" no Drive</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div>
+              <div class="checklist-label">Verificar drive_deleted_at preenchido</div>
+              <div class="checklist-cmd">SELECT drive_deleted_at FROM processos_documentos WHERE id = '{doc_id}'</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-accent-green">
+          <div class="card-title">Etapa 5 — Bidirecional Drive → MdFlow</div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Watch configurado — cron rodou ao menos 1x</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Colocar arquivo manualmente em {Cliente}/Docs Pessoais/</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Documento aparece no MdFlow em ate 60s com badge "Drive Sync"</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div>
+              <div class="checklist-label">Verificar campo origem no banco</div>
+              <div class="checklist-cmd">SELECT origem, google_drive_id FROM processos_documentos WHERE origem = 'drive_sync' LIMIT 5</div>
+            </div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Verificar que arquivos duplicados NAO sao inseridos (idempotencia)</div></div>
+          </div>
+        </div>
+
+        <div class="card card-accent-yellow">
+          <div class="card-title">Etapa 6 — Auto-pasta ao criar lead</div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Criar novo lead pelo MdZap</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div><div class="checklist-label">Verificar pasta criada automaticamente no Drive</div></div>
+          </div>
+          <div class="checklist-item">
+            <div class="check-box"></div>
+            <div>
+              <div class="checklist-label">Verificar clientes.google_drive_folder_id preenchido</div>
+              <div class="checklist-cmd">SELECT google_drive_folder_id FROM clientes WHERE nome ILIKE '%{nome do lead}%'</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Jarbas 2.0 — MdLab LegalTech · Plano Drive v2 · 2026-04-06
+  </div>
+
+</main>
+
+<script>
+  // Scroll spy para sidebar
+  const sections = document.querySelectorAll('.section[id], .hero[id]');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navItems.forEach(item => {
+          item.classList.remove('active');
+          if (item.getAttribute('href') === '#' + id) {
+            item.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+
+  // Smooth scroll
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      const href = item.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
