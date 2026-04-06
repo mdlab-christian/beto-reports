@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Drive Integration — Relatório de Implementação</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } .gradient-text { font-size: 1.6rem; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; vertical-align: top; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; white-space: nowrap; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.sp-fix { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre; word-break: break-all; }
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+.etapa-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+.etapa-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.etapa-num { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); background: rgba(124,109,255,0.12); border: 1px solid rgba(124,109,255,0.25); padding: 3px 10px; border-radius: 20px; }
+.etapa-title { font-size: 1rem; font-weight: 600; flex: 1; }
+.item-list { list-style: none; }
+.item-list li { padding: 5px 0; padding-left: 18px; position: relative; color: var(--text); font-size: 0.85rem; border-bottom: 1px solid rgba(42,47,74,0.4); }
+.item-list li:last-child { border-bottom: none; }
+.item-list li::before { content: '›'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+.item-list li.fix::before { content: '✦'; color: var(--accent4); }
+.item-list li.done::before { content: '✓'; color: var(--accent3); }
+.highlight { color: var(--accent3); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+.highlight-warn { color: var(--accent4); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+.highlight-blue { color: var(--accent5); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+.highlight-purple { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+
+/* Sumário executivo */
+.exec-summary { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 32px; }
+.exec-summary-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.exec-status-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.exec-status-big { font-size: 1.4rem; font-weight: 700; color: var(--accent4); }
+.exec-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+
+/* Fluxo diagram */
+.flow-box { background: var(--surface3); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; text-align: center; font-size: 0.82rem; font-weight: 500; }
+.flow-arrow { text-align: center; color: var(--accent); font-size: 1.1rem; padding: 4px 0; }
+.flow-col { display: flex; flex-direction: column; gap: 0; }
+.flow-grid { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 16px; align-items: center; }
+.flow-mid-arrow { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--accent); font-size: 1.4rem; }
+@media(max-width:768px) { .flow-grid { grid-template-columns: 1fr; } .flow-mid-arrow { transform: rotate(90deg); } }
+
+/* Hierarquia de pastas */
+.tree { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.82rem; line-height: 2; background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; color: var(--text-muted); overflow-x: auto; }
+.tree .root { color: var(--accent5); font-weight: 700; }
+.tree .folder { color: var(--accent4); }
+.tree .subfolder { color: var(--accent3); }
+.tree .file { color: var(--text-muted); }
+.tree .id { color: var(--accent); font-size: 0.72rem; }
+
+/* Checklist */
+.checklist { list-style: none; }
+.checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.checklist li:last-child { border-bottom: none; }
+.check-box { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+.check-label { display: inline-block; background: rgba(124,109,255,0.1); color: var(--accent); font-size: 0.72rem; font-weight: 600; padding: 1px 8px; border-radius: 10px; margin-right: 8px; }
+
+/* Pendencias */
+.pend-card { background: var(--surface); border: 1px solid rgba(255,107,107,0.2); border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; }
+.pend-card-title { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+.pend-card p { color: var(--text-muted); font-size: 0.83rem; line-height: 1.6; }
+.pend-card .reason { margin-top: 6px; background: rgba(255,107,107,0.06); border-left: 3px solid rgba(255,107,107,0.3); padding: 6px 12px; border-radius: 0 6px 6px 0; color: #ff9090; font-size: 0.8rem; }
+
+/* Credenciais */
+.cred-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+.cred-item:last-child { border-bottom: none; }
+.cred-key { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; flex: 0 0 220px; }
+.cred-val { color: var(--text-muted); }
+
+/* Fix card */
+.fix-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.fix-item:last-child { border-bottom: none; }
+.fix-num { font-size: 0.72rem; font-weight: 700; background: rgba(255,209,102,0.12); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); padding: 2px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 2px; }
+.fix-content { flex: 1; }
+.fix-file { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent5); margin-bottom: 3px; }
+.fix-desc { color: var(--text-muted); font-size: 0.83rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">📁</span>
+    <h1 class="gradient-text">Google Drive Integration</h1>
+    <p class="hero-sub">Relatório de Implementação — MdFlow · MP Advocacia</p>
+    <div class="badges">
+      <span class="badge bp">MdFlow v3</span>
+      <span class="badge bb">Google Drive API v3</span>
+      <span class="badge bg">6 Etapas Concluídas</span>
+      <span class="badge by">3 Pendências Externas</span>
+      <span class="badge br">2026-04-06</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4" style="margin-bottom:32px;">
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent3)">6</div>
+      <div class="stat-label">Etapas Concluídas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent)">4</div>
+      <div class="stat-label">Workflows n8n</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent5)">7</div>
+      <div class="stat-label">Arquivos Frontend</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent4)">3</div>
+      <div class="stat-label">Pendências Externas</div>
+    </div>
+  </div>
+
+  <!-- SUMÁRIO EXECUTIVO -->
+  <div class="exec-summary">
+    <div class="exec-summary-title">Sumário Executivo</div>
+    <div class="exec-status-row">
+      <span class="exec-status-big">⚠ PARCIALMENTE OPERACIONAL</span>
+      <span class="status-pill sp-fix">3 pendências externas ao escopo</span>
+    </div>
+    <p class="exec-desc">
+      O sistema de integração bidirecional entre MdFlow e Google Drive foi implementado em sua totalidade nas etapas E1 a E6.
+      A sincronização <strong>MdFlow → Drive</strong> (upload, criação de pastas, lixeira) está operacional. A sincronização
+      <strong>Drive → MdFlow</strong> (push notifications via Watch API) está ativa com renovação automática diária.
+      As 3 pendências remanescentes — E7 (auto-pasta MdZap), BUG-01 (N8N-REL-CONSULTA) e BUG-02 (documentos WhatsApp) —
+      estão fora do escopo desta implementação Drive e aguardam reconstrução da página MdZap ou ciclos separados de correção.
+    </p>
+  </div>
+
+  <!-- ETAPAS E1-E6 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔧</span>
+      <h2>Etapas de Implementação (E1 — E6)</h2>
+    </div>
+
+    <!-- E1 -->
+    <div class="etapa-card">
+      <div class="etapa-header">
+        <span class="etapa-num">E1</span>
+        <span class="etapa-title">Corrigir WH-SYNC-STORAGE-DRIVE</span>
+        <span class="status-pill sp-done">✅ Concluído</span>
+      </div>
+      <ul class="item-list">
+        <li class="done">Workflow n8n pré-existente que sincroniza uploads do Supabase Storage para o Google Drive</li>
+        <li class="fix">Problema identificado: credential OAuth2 expirado + código usava <span class="highlight-warn">https.request</span> diretamente</li>
+        <li class="fix">Fix: nó reescrito para usar <span class="highlight">this.helpers.httpRequest()</span> — gera <span class="highlight">access_token</span> via <span class="highlight">refresh_token</span> inline, sem depender de credential salva</li>
+        <li class="fix">Fix: campo corrigido de <span class="highlight-warn">drive_file_id</span> → <span class="highlight">google_drive_id</span> no PATCH para <span class="highlight-blue">processos_documentos</span></li>
+      </ul>
+    </div>
+
+    <!-- E2 -->
+    <div class="etapa-card">
+      <div class="etapa-header">
+        <span class="etapa-num">E2</span>
+        <span class="etapa-title">Estrutura Hierárquica ao Criar Pasta de Cliente</span>
+        <span class="status-pill sp-done">✅ Concluído</span>
+      </div>
+      <ul class="item-list">
+        <li class="done">Ao criar cliente, gera estrutura completa de pastas no Drive automaticamente via n8n</li>
+        <li class="done">Pasta raiz: <span class="highlight">{Nome Cliente}/</span></li>
+        <li class="done">Subpastas criadas: <span class="highlight">Documentos Pessoais</span>, <span class="highlight">Restrições</span>, <span class="highlight">Processos</span>, <span class="highlight">Lixeira</span></li>
+        <li class="fix">Removido sufixo <span class="highlight-warn">— {id_8char}</span> que poluía os nomes — agora usa nome direto do cliente</li>
+        <li class="done">UPDATE em <span class="highlight-blue">clientes.google_drive_folder_id</span> após criação</li>
+      </ul>
+    </div>
+
+    <!-- E3 -->
+    <div class="etapa-card">
+      <div class="etapa-header">
+        <span class="etapa-num">E3</span>
+        <span class="etapa-title">Webhook drive-pasta-restricao + Frontend</span>
+        <span class="status-pill sp-done">✅ Concluído</span>
+      </div>
+      <div class="grid g2" style="gap:12px; margin-bottom:12px;">
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">Workflow n8n</div>
+          <ul class="item-list">
+            <li class="done">Nome: <span class="highlight">MDFLOW-DRIVE-PASTA-RESTRICAO-v1</span></li>
+            <li class="done">ID: <span class="highlight-purple">goGYZZvliCMRt8ZZ</span></li>
+            <li class="done">Webhook: <span class="highlight">POST /webhook/mdflow/drive-pasta-restricao</span></li>
+            <li class="done">Cria pasta em <span class="highlight">{Cliente}/Restrições/{empresa_nome} — R$ {valor}</span></li>
+            <li class="done">UPDATE em <span class="highlight-blue">restricoes.drive_pasta_id</span></li>
+            <li class="done">UPDATE em <span class="highlight-blue">clientes.google_drive_folder_id</span> se pasta nova</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">Frontend</div>
+          <ul class="item-list">
+            <li class="done">Arquivo: <span class="highlight-blue">src/hooks/useRestricoes.ts</span></li>
+            <li class="done">Padrão fire-and-forget em <span class="highlight">useSalvarRestricao.onSuccess</span></li>
+            <li class="done">Executa apenas para restrições novas (não updates)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- E4 -->
+    <div class="etapa-card">
+      <div class="etapa-header">
+        <span class="etapa-num">E4</span>
+        <span class="etapa-title">Webhook drive-lixeira + Frontend</span>
+        <span class="status-pill sp-done">✅ Concluído</span>
+      </div>
+      <div class="grid g2" style="gap:12px;">
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">Workflow n8n</div>
+          <ul class="item-list">
+            <li class="done">Move arquivo para <span class="highlight">{Cliente}/Lixeira/</span> ao deletar documento no MdFlow</li>
+            <li class="done">Operação não destrutiva — arquivo permanece no Drive</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">DocumentoItem.tsx</div>
+          <ul class="item-list">
+            <li class="done">Props adicionados: <span class="highlight">clienteId?</span>, <span class="highlight">organizacaoId?</span>, <span class="highlight">userId?</span></li>
+            <li class="done">Em <span class="highlight">handleDelete</span>: fire-and-forget para <span class="highlight">mdflow/drive-lixeira</span> quando <span class="highlight">doc.google_drive_id && clienteId</span></li>
+            <li class="done">Badge visual para <span class="highlight">origem === 'drive_sync'</span></li>
+            <li class="done">Interface <span class="highlight">DocumentoItemDoc</span> atualizada com <span class="highlight">google_drive_id</span> e <span class="highlight">origem</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- E5 -->
+    <div class="etapa-card">
+      <div class="etapa-header">
+        <span class="etapa-num">E5</span>
+        <span class="etapa-title">Migration SQL — Schema</span>
+        <span class="status-pill sp-done">✅ Concluído</span>
+      </div>
+      <div class="grid g3" style="gap:12px;">
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">processos_documentos</div>
+          <ul class="item-list">
+            <li class="done">Coluna <span class="highlight">origem TEXT CHECK</span> (upload_manual | whatsapp_chat | gerado_sistema | drive_sync)</li>
+            <li class="done">Coluna <span class="highlight">google_drive_id TEXT</span></li>
+            <li class="done">Coluna <span class="highlight">drive_deleted_at TIMESTAMPTZ</span></li>
+          </ul>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">restricoes</div>
+          <ul class="item-list">
+            <li class="done">Coluna <span class="highlight">drive_pasta_id TEXT</span></li>
+            <li class="done">Index: <span class="highlight">idx_restricoes_drive_pasta</span> em <span class="highlight">(organizacao_id, drive_pasta_id)</span> WHERE não deleted e não null</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">drive_watches (nova)</div>
+          <ul class="item-list">
+            <li class="done">Tabela completa: <span class="highlight">id, organizacao_id, resource_id, channel_id, expiration, created_at, updated_at</span></li>
+            <li class="done">RLS tenant isolation ativa</li>
+            <li class="done"><span class="highlight">clientes</span> já possuía <span class="highlight">google_drive_folder_id TEXT</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- E6 -->
+    <div class="etapa-card">
+      <div class="etapa-header">
+        <span class="etapa-num">E6</span>
+        <span class="etapa-title">Bidirecional Drive → MdFlow (Watch API)</span>
+        <span class="status-pill sp-done">✅ Concluído</span>
+      </div>
+      <div class="grid g2" style="gap:12px;">
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">MDFLOW-DRIVE-WEBHOOK-ENTRADA-v1</div>
+          <ul class="item-list">
+            <li class="done">ID: <span class="highlight-purple">xfqcdSip7La2Qwx8</span></li>
+            <li class="done">Webhook: <span class="highlight">POST /webhook/mdflow/drive/webhook-entrada</span></li>
+            <li class="done">Recebe push notifications do Google Drive Watch API</li>
+            <li class="done">Busca metadados do arquivo (nome, mimeType, pasta pai)</li>
+            <li class="done">UPDATE em <span class="highlight-blue">processos_documentos</span> com <span class="highlight">origem='drive_sync'</span></li>
+          </ul>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:8px;">MDFLOW-DRIVE-RENOVAR-WATCH-v1</div>
+          <ul class="item-list">
+            <li class="done">Cron diário às <span class="highlight">02:00 BRT (05:00 UTC)</span></li>
+            <li class="done">Renova canal de watch antes de expirar (Watch API expira em 24h)</li>
+            <li class="done">Atualiza tabela <span class="highlight-blue">drive_watches</span></li>
+            <li class="done">Watch registrado: pasta raiz MP Advocacia</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:12px; padding: 10px 14px; background: rgba(79,255,176,0.06); border: 1px solid rgba(79,255,176,0.15); border-radius:8px; font-size:0.82rem; color: var(--text-muted);">
+        Watch registrado na pasta raiz: <span class="highlight-blue">1hcncTkVY3PopO0wlkX1DWbZsW9GTu1tj</span> — Permissões confirmadas: canEdit + canAddChildren + canMoveItemWithinDrive = true
+      </div>
+    </div>
+  </div>
+
+  <!-- FIXES PÓS-VALIDAÇÃO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔨</span>
+      <h2>Fixes Pós-Validação</h2>
+    </div>
+    <div class="card">
+      <div class="fix-item">
+        <span class="fix-num">FIX 01</span>
+        <div class="fix-content">
+          <div class="fix-file">MDFLOW-DRIVE-WEBHOOK-ENTRADA-v1 — n8n</div>
+          <div class="fix-desc">Reescrito nó "Buscar Metadados Drive" com <span class="highlight">this.helpers.httpRequest()</span> para evitar falha silenciosa do OAuth2 salvo.</div>
+        </div>
+      </div>
+      <div class="fix-item">
+        <span class="fix-num">FIX 02</span>
+        <div class="fix-content">
+          <div class="fix-file">MDFLOW-DRIVE-PASTA-RESTRICAO-v1 — n8n</div>
+          <div class="fix-desc">Workflow recriado — estava ausente no ambiente de validação, confirmado ativo com ID <span class="highlight-purple">goGYZZvliCMRt8ZZ</span>.</div>
+        </div>
+      </div>
+      <div class="fix-item">
+        <span class="fix-num">FIX 03</span>
+        <div class="fix-content">
+          <div class="fix-file">src/components/shared/cliente_drawer/tabs/RestricaoPastaCard.tsx</div>
+          <div class="fix-desc">Adicionado prop <span class="highlight">userId?</span>, passado <span class="highlight">clienteId</span>, <span class="highlight">organizacaoId</span>, <span class="highlight">userId</span> ao DocumentoItem para habilitar webhook lixeira.</div>
+        </div>
+      </div>
+      <div class="fix-item">
+        <span class="fix-num">FIX 04</span>
+        <div class="fix-content">
+          <div class="fix-file">src/components/shared/cliente_drawer/tabs/ClienteDrawerTabDocumentos.tsx</div>
+          <div class="fix-desc">Adicionado <span class="highlight">useAuth()</span> + passado <span class="highlight">clienteId</span> e <span class="highlight">userId</span> ao RestricaoPastaCard (RestricaoPastaWrapper).</div>
+        </div>
+      </div>
+      <div class="fix-item">
+        <span class="fix-num">FIX 05</span>
+        <div class="fix-content">
+          <div class="fix-file">src/components/shared/cliente_drawer/tabs/ClienteDrawerTabDocumentosLead.tsx</div>
+          <div class="fix-desc">Mesmo fix do FIX 04 — <span class="highlight">useAuth()</span> + <span class="highlight">clienteId</span> e <span class="highlight">userId</span> ao RestricaoPastaWrapper e RestricaoPastaCard.</div>
+        </div>
+      </div>
+      <div class="fix-item">
+        <span class="fix-num">FIX 06</span>
+        <div class="fix-content">
+          <div class="fix-file">src/components/processo/tabs/ProcessoTabDocumentos.tsx</div>
+          <div class="fix-desc">Adicionado <span class="highlight">userId={user?.user_id}</span> ao RestricaoPastaCard para completar propagação de contexto de usuário.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUXOS DE ARQUITETURA -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔁</span>
+      <h2>Arquitetura de Fluxos</h2>
+    </div>
+    <div class="grid g2" style="gap:16px;">
+
+      <!-- Fluxo Upload -->
+      <div class="card">
+        <div class="card-title">MdFlow → Drive (Upload)</div>
+        <div class="flow-col">
+          <div class="flow-box" style="border-color:rgba(91,196,245,0.3); background:rgba(91,196,245,0.06); color:var(--accent5);">Usuário faz upload no MdFlow</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Arquivo salvo no Supabase Storage</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box" style="border-color:rgba(124,109,255,0.3); background:rgba(124,109,255,0.06); color:var(--accent);">WH-SYNC-STORAGE-DRIVE (n8n)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Upload para Google Drive pasta correta</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box" style="border-color:rgba(79,255,176,0.3); background:rgba(79,255,176,0.06); color:var(--accent3);">UPDATE processos_documentos<br>SET google_drive_id, origem = 'upload_manual'</div>
+        </div>
+      </div>
+
+      <!-- Fluxo Drive -> MdFlow -->
+      <div class="card">
+        <div class="card-title">Drive → MdFlow (Sync Bidirecional)</div>
+        <div class="flow-col">
+          <div class="flow-box" style="border-color:rgba(255,209,102,0.3); background:rgba(255,209,102,0.06); color:var(--accent4);">Arquivo adicionado/modificado no Google Drive</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Google Watch API envia push notification</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box" style="border-color:rgba(124,109,255,0.3); background:rgba(124,109,255,0.06); color:var(--accent);">MDFLOW-DRIVE-WEBHOOK-ENTRADA-v1</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Busca metadados (nome, mimeType, pasta pai)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box" style="border-color:rgba(79,255,176,0.3); background:rgba(79,255,176,0.06); color:var(--accent3);">UPDATE processos_documentos<br>SET origem = 'drive_sync'<br>Badge "Drive Sync" aparece no MdFlow</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fluxo Lixeira -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Deleção de Documento (Lixeira Inteligente)</div>
+      <div style="display:flex; gap:0; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div class="flow-box" style="flex:1; min-width:160px;">Usuário deleta documento no MdFlow</div>
+        <div style="color:var(--accent); font-size:1.2rem; padding:0 4px;">→</div>
+        <div class="flow-box" style="flex:1; min-width:160px; border-color:rgba(255,107,107,0.2); background:rgba(255,107,107,0.05); color:var(--accent2);">Verifica doc.google_drive_id<br>&&amp; clienteId</div>
+        <div style="color:var(--accent); font-size:1.2rem; padding:0 4px;">→</div>
+        <div class="flow-box" style="flex:1; min-width:160px; border-color:rgba(124,109,255,0.3); background:rgba(124,109,255,0.06); color:var(--accent);">n8n: mdflow/drive-lixeira<br>(fire-and-forget)</div>
+        <div style="color:var(--accent); font-size:1.2rem; padding:0 4px;">→</div>
+        <div class="flow-box" style="flex:1; min-width:160px; border-color:rgba(255,209,102,0.3); background:rgba(255,209,102,0.06); color:var(--accent4);">Move para {Cliente}/Lixeira/<br>no Google Drive</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIERARQUIA DE PASTAS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗂</span>
+      <h2>Hierarquia de Pastas no Google Drive</h2>
+    </div>
+    <div class="tree">
+<span class="root">MP Advocacia</span>  <span class="id">(raiz: 1hcncTkVY3PopO0wlkX1DWbZsW9GTu1tj)</span>
+└── <span class="folder">{Nome Cliente}/</span>
+    ├── <span class="subfolder">Documentos Pessoais/</span>
+    │   └── <span class="file">CPF, RG, comprovantes, etc.</span>
+    ├── <span class="subfolder">Restrições/</span>
+    │   └── <span class="folder">{Empresa} — R$ {valor}/</span>  <span class="id">← criado em E3</span>
+    │       └── <span class="file">documentos da restrição</span>
+    ├── <span class="subfolder">Processos/</span>
+    │   └── <span class="folder">{CNJ} — {Empresa}/</span>
+    │       ├── <span class="subfolder">Iniciais/</span>
+    │       └── <span class="subfolder">Tramitação/</span>
+    └── <span class="subfolder">Lixeira/</span>  <span class="id">← criado em E2, usado em E4</span>
+        └── <span class="file">documentos deletados do MdFlow</span>
+    </div>
+  </div>
+
+  <!-- WORKFLOWS N8N -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <h2>Workflows n8n</h2>
+    </div>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Workflow</th>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Função</th>
+            <th>Trigger</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="highlight-blue">WH-SYNC-STORAGE-DRIVE</span></td>
+            <td><span class="highlight-warn">existente</span></td>
+            <td><span class="status-pill sp-fix">⚠ Corrigido E1</span></td>
+            <td>Upload Supabase Storage → Google Drive</td>
+            <td>Webhook (evento storage)</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">MDFLOW-DRIVE-PASTA-RESTRICAO-v1</span></td>
+            <td><span class="highlight-purple">goGYZZvliCMRt8ZZ</span></td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td>Criar subpasta ao criar nova restrição</td>
+            <td>POST /webhook/mdflow/drive-pasta-restricao</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">MDFLOW-DRIVE-WEBHOOK-ENTRADA-v1</span></td>
+            <td><span class="highlight-purple">xfqcdSip7La2Qwx8</span></td>
+            <td><span class="status-pill sp-fix">⚠ Corrigido E6+FIX</span></td>
+            <td>Drive → MdFlow sync bidirecional</td>
+            <td>POST /webhook/mdflow/drive/webhook-entrada</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">MDFLOW-DRIVE-RENOVAR-WATCH-v1</span></td>
+            <td><span class="highlight-warn">existente</span></td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td>Renovar canal Watch API diariamente</td>
+            <td>Cron 02:00 BRT (05:00 UTC)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ARQUIVOS FRONTEND -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚛</span>
+      <h2>Arquivos Frontend Modificados</h2>
+    </div>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Etapa</th>
+            <th>Mudanças</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="highlight-blue">src/components/shared/cliente_drawer/tabs/DocumentoItem.tsx</span></td>
+            <td><span class="status-pill sp-run">E4 + FIX</span></td>
+            <td>Props clienteId/organizacaoId/userId adicionados; webhook drive-lixeira (fire-and-forget); badge drive_sync; interface DocumentoItemDoc atualizada com google_drive_id e origem</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">src/components/shared/cliente_drawer/tabs/documentos_lead_hooks.ts</span></td>
+            <td><span class="status-pill sp-run">E4</span></td>
+            <td>Campo origem adicionado em interfaces e queries de busca de documentos</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">src/components/shared/cliente_drawer/tabs/ClienteDrawerTabDocumentos.tsx</span></td>
+            <td><span class="status-pill sp-fix">FIX 04</span></td>
+            <td>useAuth() adicionado ao RestricaoPastaWrapper; clienteId e userId passados ao RestricaoPastaCard</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">src/components/shared/cliente_drawer/tabs/ClienteDrawerTabDocumentosLead.tsx</span></td>
+            <td><span class="status-pill sp-fix">FIX 05</span></td>
+            <td>useAuth() adicionado; clienteId e userId passados ao RestricaoPastaWrapper e RestricaoPastaCard</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">src/components/shared/cliente_drawer/tabs/RestricaoPastaCard.tsx</span></td>
+            <td><span class="status-pill sp-fix">FIX 03</span></td>
+            <td>Prop userId? adicionado; clienteId, organizacaoId e userId propagados ao DocumentoItem para habilitar webhook lixeira</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">src/hooks/useRestricoes.ts</span></td>
+            <td><span class="status-pill sp-run">E3</span></td>
+            <td>Fire-and-forget para drive-pasta-restricao em useSalvarRestricao.onSuccess, executado apenas para restrições novas</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-blue">src/components/processo/tabs/ProcessoTabDocumentos.tsx</span></td>
+            <td><span class="status-pill sp-fix">FIX 06</span></td>
+            <td>userId={user?.user_id} adicionado ao RestricaoPastaCard — completa propagação de contexto de usuário</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CREDENCIAIS OAUTH2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔑</span>
+      <h2>Credenciais OAuth2 Google Drive</h2>
+    </div>
+    <div class="card">
+      <div class="cred-item">
+        <span class="cred-key">GOOGLE_CLIENT_ID</span>
+        <span class="cred-val">Configurada no Railway (env var)</span>
+      </div>
+      <div class="cred-item">
+        <span class="cred-key">GOOGLE_CLIENT_SECRET</span>
+        <span class="cred-val">Configurada no Railway (env var)</span>
+      </div>
+      <div class="cred-item">
+        <span class="cred-key">GOOGLE_REFRESH_TOKEN</span>
+        <span class="cred-val">Configurada no Railway (env var) — gerado via OAuth2 Playground</span>
+      </div>
+      <div class="cred-item">
+        <span class="cred-key">Estratégia de autenticação</span>
+        <span class="cred-val">OAuth2 com refresh_token inline via <span class="highlight">this.helpers.httpRequest()</span> — não depende de credential salva no n8n</span>
+      </div>
+      <div class="cred-item">
+        <span class="cred-key">Permissões confirmadas</span>
+        <span class="cred-val"><span class="highlight">canEdit</span> = true / <span class="highlight">canAddChildren</span> = true / <span class="highlight">canMoveItemWithinDrive</span> = true</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MIGRATION SQL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗄</span>
+      <h2>Migration SQL Aplicada (E5)</h2>
+    </div>
+    <div class="code">-- processos_documentos: novos campos Drive
+ALTER TABLE processos_documentos
+  ADD COLUMN IF NOT EXISTS origem TEXT
+    CHECK (origem IN ('upload_manual','whatsapp_chat','gerado_sistema','drive_sync')),
+  ADD COLUMN IF NOT EXISTS google_drive_id TEXT,
+  ADD COLUMN IF NOT EXISTS drive_deleted_at TIMESTAMPTZ;
+
+-- restricoes: pasta no Drive
+ALTER TABLE restricoes
+  ADD COLUMN IF NOT EXISTS drive_pasta_id TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_restricoes_drive_pasta
+  ON restricoes(organizacao_id, drive_pasta_id)
+  WHERE deleted_at IS NULL AND drive_pasta_id IS NOT NULL;
+
+-- drive_watches: controle de canais Watch API (nova tabela)
+CREATE TABLE IF NOT EXISTS drive_watches (
+  id             UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  organizacao_id UUID NOT NULL REFERENCES organizacoes(id) ON DELETE CASCADE,
+  resource_id    TEXT NOT NULL,
+  channel_id     TEXT NOT NULL,
+  expiration     TIMESTAMPTZ,
+  created_at     TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at     TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+CREATE INDEX ON drive_watches(organizacao_id);
+ALTER TABLE drive_watches ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation" ON drive_watches
+  USING (organizacao_id = public.get_org_id());
+
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON drive_watches
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- clientes já possuía google_drive_folder_id TEXT (sem alteração)</div>
+  </div>
+
+  <!-- COMO TESTAR -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🧪</span>
+      <h2>Como Testar</h2>
+    </div>
+    <div class="card">
+      <ul class="checklist">
+        <li>
+          <div class="check-box" style="border-color:rgba(79,255,176,0.4);"></div>
+          <div>
+            <span class="check-label">E2</span>
+            Criar novo cliente no MdFlow e verificar se pasta foi criada no Google Drive com as 4 subpastas: Documentos Pessoais, Restrições, Processos, Lixeira — e <span class="highlight">google_drive_folder_id</span> preenchido em <span class="highlight-blue">clientes</span>
+          </div>
+        </li>
+        <li>
+          <div class="check-box" style="border-color:rgba(79,255,176,0.4);"></div>
+          <div>
+            <span class="check-label">E3</span>
+            Criar nova restrição em cliente existente e verificar subpasta criada em <span class="highlight">{Cliente}/Restrições/{Empresa} — R$ {valor}</span> e campo <span class="highlight">drive_pasta_id</span> preenchido em <span class="highlight-blue">restricoes</span>
+          </div>
+        </li>
+        <li>
+          <div class="check-box" style="border-color:rgba(79,255,176,0.4);"></div>
+          <div>
+            <span class="check-label">E1</span>
+            Fazer upload de documento no MdFlow e verificar: arquivo aparece na pasta correta no Drive e <span class="highlight">google_drive_id</span> preenchido em <span class="highlight-blue">processos_documentos</span>
+          </div>
+        </li>
+        <li>
+          <div class="check-box" style="border-color:rgba(79,255,176,0.4);"></div>
+          <div>
+            <span class="check-label">E4</span>
+            Deletar documento com google_drive_id no MdFlow e verificar arquivo movido para <span class="highlight">{Cliente}/Lixeira/</span> no Drive (arquivo não excluído, apenas movido)
+          </div>
+        </li>
+        <li>
+          <div class="check-box" style="border-color:rgba(79,255,176,0.4);"></div>
+          <div>
+            <span class="check-label">E6</span>
+            Adicionar arquivo diretamente no Google Drive (dentro de pasta monitorada) e verificar: badge <span class="highlight">Drive Sync</span> aparece no MdFlow e <span class="highlight">origem = 'drive_sync'</span> no banco
+          </div>
+        </li>
+        <li>
+          <div class="check-box" style="border-color:rgba(79,255,176,0.4);"></div>
+          <div>
+            <span class="check-label">E6</span>
+            Verificar tabela <span class="highlight-blue">drive_watches</span> no Supabase com registro ativo e <span class="highlight">expiration</span> futuro — confirmar renovação automática às 02:00 BRT
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PENDÊNCIAS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⏳</span>
+      <h2>Pendências (Fora do Escopo Drive)</h2>
+    </div>
+
+    <div class="pend-card">
+      <div class="pend-card-title">
+        <span class="status-pill sp-block">⛔ Bloqueado</span>
+        E7 — Auto-pasta ao criar lead no MdZap
+      </div>
+      <p>Criar automaticamente a estrutura de pastas no Drive quando um novo lead chega via MdZap, antes mesmo do cadastro formal como cliente.</p>
+      <div class="reason">BLOQUEADO: aguarda reconstrução completa da página MdZap. A página atual está sendo descontinuada e a nova versão é prerequisito para esta automação.</div>
+    </div>
+
+    <div class="pend-card">
+      <div class="pend-card-title">
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+        BUG-01 — N8N-REL-CONSULTA inativo (valores errados nas restrições)
+      </div>
+      <p>Workflow N8N-REL-CONSULTA está retornando valores incorretos ao consultar restrições. Bug identificado durante validação, mas fora do escopo da integração Drive.</p>
+      <div class="reason">Fora do escopo: requer investigação separada do workflow de consulta de restrições. Não impacta o funcionamento da integração Drive.</div>
+    </div>
+
+    <div class="pend-card">
+      <div class="pend-card-title">
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+        BUG-02 — Documentos recebidos pelo WhatsApp não salvam corretamente
+      </div>
+      <p>Documentos enviados via WhatsApp (MdZap) não estão sendo persistidos corretamente em <span class="highlight-blue">processos_documentos</span> com origem <span class="highlight">whatsapp_chat</span>.</p>
+      <div class="reason">Fora do escopo: requer revisão do fluxo MdZap → Supabase. Relacionado ao BUG-01 e à reconstrução do MdZap.</div>
+    </div>
+
+    <div class="pend-card">
+      <div class="pend-card-title">
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+        BUG-03 — Filtro de cartórios na auditoria
+      </div>
+      <p>Filtro por cartório na página de Auditoria não está funcionando corretamente. Bug identificado durante testes mas completamente fora do escopo Drive.</p>
+      <div class="reason">Fora do escopo: requer investigação da query de auditoria. Não tem relação com a integração Google Drive.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · Google Drive Integration Report v1 · 2026-04-06
+  </div>
+
+</div>
+</body>
+</html>
