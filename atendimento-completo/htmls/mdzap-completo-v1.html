@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Documento Mestre v1</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1a1f33;
+  --surface3: #1e2235;
+  --surface4: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --green: #20c997;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --blue: #38bdf8;
+  --purple: #a78bfa;
+  --pink: #f472b6;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --sidebar-w: 260px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: #0a0c14;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 0 0 32px 0;
+}
+.sidebar-logo {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.sidebar-logo .logo-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+.sidebar-logo .logo-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.sidebar-logo .logo-sub { font-size: 0.7rem; color: var(--text-muted); }
+.nav-section { padding: 8px 16px 4px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); font-weight: 600; margin-top: 8px; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 16px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-radius: 0;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.nav-item:hover { background: rgba(124,109,255,0.08); color: var(--text); }
+.nav-item .nav-num { font-size: 0.65rem; color: var(--text-muted); min-width: 18px; font-family: 'JetBrains Mono', monospace; }
+.nav-item .nav-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-green { background: var(--green); }
+.dot-yellow { background: var(--yellow); }
+.dot-red { background: var(--red); }
+.dot-blue { background: var(--blue); }
+.dot-purple { background: var(--purple); }
+.dot-gray { background: var(--text-muted); }
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  padding: 32px 40px 80px;
+  max-width: 1100px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 56px 24px 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+.hero-icon { font-size: 3.5rem; display: block; margin-bottom: 16px; }
+.hero h1 {
+  font-size: 2.4rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  font-family: 'Inter', sans-serif;
+}
+.hero-sub { font-size: 1rem; color: var(--text-muted); margin-bottom: 20px; }
+.hero-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+/* BADGES */
+.badge {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.3px;
+}
+.b-purple { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.b-green { background: rgba(32,201,151,0.1); color: var(--green); border: 1px solid rgba(32,201,151,0.25); }
+.b-yellow { background: rgba(245,158,11,0.1); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+.b-red { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+.b-blue { background: rgba(56,189,248,0.1); color: var(--blue); border: 1px solid rgba(56,189,248,0.25); }
+.b-gray { background: rgba(122,130,168,0.1); color: var(--text-muted); border: 1px solid rgba(122,130,168,0.2); }
+
+/* STATUS PILLS */
+.pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 12px;
+  font-size: 0.72rem; font-weight: 500;
+}
+.pill-ok { background: rgba(32,201,151,0.1); color: var(--green); }
+.pill-pending { background: rgba(245,158,11,0.1); color: var(--yellow); }
+.pill-bug { background: rgba(239,68,68,0.1); color: var(--red); }
+.pill-info { background: rgba(56,189,248,0.1); color: var(--blue); }
+.pill-later { background: rgba(122,130,168,0.1); color: var(--text-muted); }
+
+/* SECTIONS */
+.section { margin-bottom: 56px; scroll-margin-top: 24px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.section-icon { font-size: 1.3rem; }
+.section-header h2 { font-size: 1.15rem; font-weight: 700; }
+.section-num {
+  font-size: 0.7rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 6px;
+  background: rgba(124,109,255,0.15); color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: auto;
+}
+
+/* CALLOUTS */
+.callout {
+  border-radius: 10px; padding: 14px 18px;
+  margin-bottom: 16px;
+  border-left: 3px solid;
+  font-size: 0.84rem;
+}
+.callout-green { background: rgba(32,201,151,0.06); border-color: var(--green); }
+.callout-yellow { background: rgba(245,158,11,0.06); border-color: var(--yellow); }
+.callout-red { background: rgba(239,68,68,0.06); border-color: var(--red); }
+.callout-blue { background: rgba(56,189,248,0.06); border-color: var(--blue); }
+.callout-purple { background: rgba(124,109,255,0.06); border-color: var(--accent); }
+.callout-title { font-weight: 700; margin-bottom: 4px; font-size: 0.82rem; }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.card.border-green { border-left: 3px solid var(--green); }
+.card.border-yellow { border-left: 3px solid var(--yellow); }
+.card.border-red { border-left: 3px solid var(--red); }
+.card.border-blue { border-left: 3px solid var(--blue); }
+.card.border-purple { border-left: 3px solid var(--accent); }
+.card-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
+.card-heading { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+
+/* GRID */
+.grid { display: grid; gap: 14px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width: 900px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } }
+
+/* STATS */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+}
+.stat-val { font-size: 2rem; font-weight: 800; color: var(--accent); font-family: 'Inter', sans-serif; }
+.stat-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+/* TABLE */
+.tbl-wrap { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.83rem; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* CODE */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  color: var(--green);
+  overflow-x: auto;
+  white-space: pre;
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+.code .c-comment { color: var(--text-muted); }
+.code .c-key { color: var(--blue); }
+.code .c-val { color: var(--yellow); }
+.code .c-str { color: var(--green); }
+.code .c-head { color: var(--accent); font-weight: 700; }
+
+/* FLOW DIAGRAM */
+.flow {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+}
+.flow-step {
+  background: var(--surface4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.flow-step.green { border-color: var(--green); color: var(--green); background: rgba(32,201,151,0.08); }
+.flow-step.blue { border-color: var(--blue); color: var(--blue); background: rgba(56,189,248,0.08); }
+.flow-step.yellow { border-color: var(--yellow); color: var(--yellow); background: rgba(245,158,11,0.08); }
+.flow-step.purple { border-color: var(--accent); color: var(--accent); background: rgba(124,109,255,0.08); }
+.flow-arrow { color: var(--text-muted); font-size: 1rem; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+/* TAG */
+.tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: rgba(124,109,255,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(124,109,255,0.2);
+  margin: 1px;
+}
+.tag.tag-file { background: rgba(56,189,248,0.1); color: var(--blue); border-color: rgba(56,189,248,0.2); }
+.tag.tag-hook { background: rgba(32,201,151,0.1); color: var(--green); border-color: rgba(32,201,151,0.2); }
+.tag.tag-wh { background: rgba(245,158,11,0.1); color: var(--yellow); border-color: rgba(245,158,11,0.2); }
+.tag.tag-bug { background: rgba(239,68,68,0.1); color: var(--red); border-color: rgba(239,68,68,0.2); }
+
+/* LIST */
+ul.list { list-style: none; padding: 0; }
+ul.list li { padding: 5px 0; display: flex; align-items: flex-start; gap: 8px; font-size: 0.84rem; }
+ul.list li::before { content: '›'; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+/* PHASE TIMELINE */
+.phase-row {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.phase-row:last-child { border-bottom: none; }
+.phase-num {
+  min-width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.ph-done { background: rgba(32,201,151,0.15); color: var(--green); border: 2px solid var(--green); }
+.ph-active { background: rgba(239,68,68,0.15); color: var(--red); border: 2px solid var(--red); }
+.ph-pending { background: rgba(245,158,11,0.1); color: var(--yellow); border: 2px solid var(--yellow); }
+.ph-future { background: rgba(122,130,168,0.08); color: var(--text-muted); border: 2px solid var(--border); }
+.phase-content { flex: 1; }
+.phase-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+.phase-items { font-size: 0.82rem; color: var(--text-muted); }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* INLINE CODE */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  background: rgba(124,109,255,0.1);
+  color: var(--accent);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* HIGHLIGHT ROW */
+.hl-green td { background: rgba(32,201,151,0.04) !important; }
+.hl-red td { background: rgba(239,68,68,0.04) !important; }
+.hl-yellow td { background: rgba(245,158,11,0.04) !important; }
+
+p { margin-bottom: 10px; font-size: 0.84rem; color: var(--text-muted); }
+h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; margin-top: 20px; color: var(--text); }
+h4 { font-size: 0.84rem; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">💬</span>
+    <div class="logo-title">MdZap — Mestre v1</div>
+    <div class="logo-sub">MdFlow · 06/04/2026</div>
+  </div>
+
+  <div class="nav-section">Introdução</div>
+  <a href="#s0" class="nav-item"><span class="nav-num">00</span><span class="nav-dot dot-blue"></span>Como usar</a>
+
+  <div class="nav-section">Estado atual</div>
+  <a href="#s1" class="nav-item"><span class="nav-num">01</span><span class="nav-dot dot-green"></span>Estado atual</a>
+
+  <div class="nav-section">Decisões</div>
+  <a href="#s2" class="nav-item"><span class="nav-num">02</span><span class="nav-dot dot-green"></span>Decisões Christian</a>
+  <a href="#s3" class="nav-item"><span class="nav-num">03</span><span class="nav-dot dot-purple"></span>Lead Panel v2</a>
+  <a href="#s4" class="nav-item"><span class="nav-num">04</span><span class="nav-dot dot-blue"></span>3 Tiers de Docs</a>
+  <a href="#s5" class="nav-item"><span class="nav-num">05</span><span class="nav-dot dot-purple"></span>3 SDRs — Multi-agente</a>
+  <a href="#s6" class="nav-item"><span class="nav-num">06</span><span class="nav-dot dot-yellow"></span>Google Drive</a>
+
+  <div class="nav-section">Problemas</div>
+  <a href="#s7" class="nav-item"><span class="nav-num">07</span><span class="nav-dot dot-red"></span>Bugs P0</a>
+
+  <div class="nav-section">Roadmap</div>
+  <a href="#s8" class="nav-item"><span class="nav-num">08</span><span class="nav-dot dot-yellow"></span>Roadmap F1→F7</a>
+  <a href="#s9" class="nav-item"><span class="nav-num">09</span><span class="nav-dot dot-blue"></span>Componentes shared</a>
+  <a href="#s10" class="nav-item"><span class="nav-num">10</span><span class="nav-dot dot-yellow"></span>Webhooks n8n</a>
+
+  <div class="nav-section">Referências</div>
+  <a href="#s11" class="nav-item"><span class="nav-num">11</span><span class="nav-dot dot-yellow"></span>Perguntas abertas</a>
+  <a href="#s12" class="nav-item"><span class="nav-num">12</span><span class="nav-dot dot-blue"></span>Arquivos críticos</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-icon">💬</span>
+    <h1>MdZap — Documento Mestre v1</h1>
+    <div class="hero-sub">Referência completa para desenvolvimento · MdFlow SaaS Jurídico</div>
+    <div class="hero-badges">
+      <span class="badge b-purple">MdFlow</span>
+      <span class="badge b-blue">06/04/2026</span>
+      <span class="badge b-green">34 componentes</span>
+      <span class="badge b-green">14 hooks</span>
+      <span class="badge b-yellow">9 webhooks</span>
+      <span class="badge b-red">4 bugs P0</span>
+      <span class="badge b-gray">Fases F1→F7</span>
+    </div>
+  </div>
+
+  <!-- STATS GRID -->
+  <div class="grid g4" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-val">34</div>
+      <div class="stat-lbl">Componentes React</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">14</div>
+      <div class="stat-lbl">Hooks customizados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--yellow)">9</div>
+      <div class="stat-lbl">Webhooks n8n</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--red)">4</div>
+      <div class="stat-lbl">Bugs P0 abertos</div>
+    </div>
+  </div>
+
+  <!-- S0: COMO USAR -->
+  <section class="section" id="s0">
+    <div class="section-header">
+      <span class="section-icon">📖</span>
+      <h2>Como usar este documento</h2>
+      <span class="section-num">§00</span>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">Instrucao para nova conversa CC</div>
+      Cole o bloco abaixo no inicio de uma nova conversa do Claude Code para carregar todo o contexto do MdZap:
+    </div>
+
+    <div class="code">Leia ~/beto-reports/atendimento-completo/htmls/mdzap-completo-v1.html
+Esse e nosso documento de referencia completo do MdZap.
+Vamos trabalhar exclusivamente no MdZap agora.
+Comece pela FASE 1 (bugs) ou pelo que eu indicar.</div>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">Hierarquia de specs</div>
+      Este documento e de referencia operacional. Para specs oficiais de backend, consultar sempre:<br>
+      <code>~/beta-mdflow/docs/_resumido___mdzap.txt</code> (SSOT por rota) &gt;
+      <code>~/beta-mdflow/docs/Revisa_o_BACKEND.txt</code> (schema completo)
+    </div>
+
+    <div class="grid g3">
+      <div class="card border-green">
+        <div class="card-title">Verde = Confirmado</div>
+        Cards e itens com borda ou badge verde estao 100% decididos pelo Christian e podem ser implementados sem consulta adicional.
+      </div>
+      <div class="card border-yellow">
+        <div class="card-title">Amarelo = Pendente / Decisao</div>
+        Ainda precisa de definicao, investigacao ou aprovacao do Christian antes de implementar.
+      </div>
+      <div class="card border-red">
+        <div class="card-title">Vermelho = Bug / Critico</div>
+        Bugs confirmados ou blockers P0 que precisam ser corrigidos com prioridade maxima.
+      </div>
+    </div>
+  </section>
+
+  <!-- S1: ESTADO ATUAL -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-icon">🗺</span>
+      <h2>Estado atual do MdZap</h2>
+      <span class="section-num">§01</span>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">O MdZap ja existe e funciona</div>
+      O sistema esta operacional. Esta sessao documenta o que foi construido. As proximas secoes descrevem o que sera expandido.
+    </div>
+
+    <h3>Arquitetura e layout</h3>
+    <div class="grid g2">
+      <div class="card border-green">
+        <div class="card-title">Layout desktop (≥1024px)</div>
+        <div class="code" style="font-size:0.72rem; padding:10px;">┌────────────┬───────────────┬──────────────┐
+│ Lista      │   Thread      │  Lead Panel  │
+│ 320px fixo │   flex-1      │  320px toggle│
+└────────────┴───────────────┴──────────────┘</div>
+        Rotas: <code>/mdzap</code> (desktop) · <code>/mdzap/app</code> (mobile standalone)
+      </div>
+      <div class="card border-green">
+        <div class="card-title">5 Tabs no ChatPanel</div>
+        <ul class="list">
+          <li>Conversas — lista principal</li>
+          <li>Dashboard — KPIs e charts</li>
+          <li>Julia Lab — sandbox chat IA</li>
+          <li>Templates — CRUD whatsapp_templates</li>
+          <li>Gestao — configuracoes</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Componentes principais (34 total)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Componente</th><th>Funcao</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag tag-file">MdzapChatPanel.tsx</span></td><td>Orquestrador principal — 5 tabs</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapConversaList.tsx</span></td><td>Lista + filtros + bulk (320px fixo)</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapMsgThread.tsx</span></td><td>Thread de mensagens (flex-1)</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapLeadPanel.tsx</span></td><td>Painel lead — 4 tabs (sera substituido v2)</td><td><span class="pill pill-pending">refatorar v2</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapMsgInput.tsx</span></td><td>Composicao — Enter envia, Shift+Enter quebra</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapMsgBubble.tsx</span></td><td>Bubble (text/image/video/audio/doc/link)</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapAIComposer.tsx</span></td><td>IA: Reescrever/Completar/Formal/Traduzir</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapSmartReplies.tsx</span></td><td>Sugestoes IA — 3 tons (formal/friendly/direct)</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapAudioRecorder.tsx</span></td><td>Gravacao com MediaRecorder</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapAttachmentMenu.tsx</span></td><td>Menu 📎 (img/video/doc/audio/link)</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapDragOverlay.tsx</span></td><td>Overlay visual drag-and-drop</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapDashboard.tsx</span></td><td>KPIs + charts</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapJuliaLab.tsx</span></td><td>Sandbox chat Julia</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapTransferModal.tsx</span></td><td>Modal transferir conversa</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapConnectionIndicator</span></td><td>Indicador WA conectado</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr><td><span class="tag tag-file">MdzapSendButton.tsx</span></td><td>Botao envio rapido embeddable no CRM</td><td><span class="pill pill-ok">operacional</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Hooks existentes (14 total)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Hook</th><th>Funcao</th><th>Detalhes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag tag-hook">useMdzapConversas</span></td><td>RPC fn_mdzap_conversas</td><td>3 canais RT</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapMensagens</span></td><td>Query + RT por conversa</td><td>debounce 300ms</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapSendMessage</span></td><td>sendText/sendFile/sendLink</td><td>INSERT otimista</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapDragDrop</span></td><td>Drag &amp; drop de arquivos</td><td>—</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapSmartReplies</span></td><td>RPC fn_mdzap_smart_replies</td><td>3 tons</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapTyping</span></td><td>Broadcast typing indicator</td><td>canal broadcast</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapTemplates</span></td><td>CRUD whatsapp_templates</td><td>—</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapStatus</span></td><td>whatsapp_numeros + heartbeat</td><td>—</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapKeyboardShortcuts</span></td><td>Ctrl+/, j/k, Esc</td><td>—</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapFaviconBadge</span></td><td>Badge no favicon</td><td>—</td></tr>
+          <tr><td><span class="tag tag-hook">useMdzapNewMessageToast</span></td><td>Toast nova msg + som notificacao</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Status de conversa — 9 niveis</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Status</th><th>Condicao</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>📵 WA Invalido</td><td><code>metadata.wa_blocked = true</code></td></tr>
+          <tr><td>2</td><td>💬 Sem conversa</td><td><code>status = 'sem_conversa'</code></td></tr>
+          <tr><td>3</td><td>⬛ Encerrada</td><td><code>status = 'encerrada'</code></td></tr>
+          <tr><td>4</td><td>🟡 Aguard. Humano</td><td><code>awaiting = true AND assigned IS NULL</code></td></tr>
+          <tr><td>5</td><td>🔴 Humano (atendendo)</td><td><code>awaiting = true AND assigned IS NOT NULL</code></td></tr>
+          <tr><td>6</td><td>🟢 Julia Ativa</td><td><code>status = 'ativa' AND awaiting = false</code></td></tr>
+          <tr><td>7</td><td>🔄 Follow-up</td><td><code>metadata.follow_up = true</code></td></tr>
+          <tr><td>8</td><td>⚡ Pronto Handoff</td><td><code>metadata.handoff_ready = true</code></td></tr>
+          <tr><td>9</td><td>📱 WhatsApp</td><td>fallback generico</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Canais Realtime (8 canais)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Canal</th><th>Tabela</th><th>Funcao</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>mdzap-conversas-rt-{orgId}</code></td><td>whatsapp_conversas</td><td>UPDATE/INSERT lista</td></tr>
+          <tr><td><code>mdzap-mensagens-preview-{orgId}</code></td><td>whatsapp_mensagens</td><td>atualiza preview INSERT</td></tr>
+          <tr><td><code>mdzap-leads-rt-{orgId}</code></td><td>leads</td><td>awaiting_human mudou</td></tr>
+          <tr><td><code>mdzap-thread:{conversaId}</code></td><td>whatsapp_mensagens</td><td>INSERT → debounce 300ms refetch</td></tr>
+          <tr><td><code>mdzap-new-msg-toast-{orgId}</code></td><td>—</td><td>toast + som (conversa != ativa)</td></tr>
+          <tr><td><code>mdzap-typing:{conversaId}</code></td><td>—</td><td>broadcast typing indicator</td></tr>
+          <tr><td><code>mdzap-numeros-rt</code></td><td>whatsapp_numeros</td><td>UPDATE → heartbeat</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Lead Panel ATUAL (4 tabs — sera substituido)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Tab atual</th><th>Conteudo</th><th>Destino</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl-red"><td>Lead</td><td>Avatar, nome, numero, score, coluna CRM, botoes, notas</td><td>Substituir por Tab Dados (v2)</td></tr>
+          <tr class="hl-red"><td>Memoria</td><td>client_memory JSONB da conversa</td><td>Mover para posicao 5 ou 6</td></tr>
+          <tr class="hl-red"><td>Tom (Sentimento)</td><td>SentimentPanel: badge emoji, 11 sentimentos, timeline</td><td>Mover para posicao 5 ou 6</td></tr>
+          <tr class="hl-red"><td>Historico</td><td>MdzapConversaTimeline — timeline de eventos</td><td>Substituir por Tab Historico (v2)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">Envio otimista de mensagens</div>
+      Mensagem aparece IMEDIATAMENTE (status: pending, tick de relogio). O webhook recebe <code>mensagem_id</code> e faz UPDATE (nao INSERT) — evita duplicacao. Status evolui via realtime: pending → sent → delivered → read.
+    </div>
+  </section>
+
+  <!-- S2: DECISOES -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-icon">✅</span>
+      <h2>Decisoes do Christian</h2>
+      <span class="section-num">§02</span>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">Fonte: audio 06/04/2026</div>
+      Decisoes abaixo sao confirmadas e podem ser implementadas sem consulta adicional.
+    </div>
+
+    <h3>Fluxo geral — confirmado</h3>
+    <div class="flow">
+      <div class="flow-step green">Cliente WA + CPF</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step blue">MdZap (Julia atende)</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step purple">Lead cai em CRM 'novos'</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step yellow">Auditoria MANUAL (botao)</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step blue">Distribuicao</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step green">Processos</div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card border-green">
+        <div class="card-title">Confirmado — Julia</div>
+        <ul class="list">
+          <li>Julia e a SDR principal — atende leads pelo WhatsApp</li>
+          <li>Julia NAO dispara auditoria automaticamente</li>
+          <li>Auditoria e MANUAL — botao no Lead Panel</li>
+          <li>Elaboracao completa da Julia sera feita DEPOIS do MdZap pronto</li>
+          <li>Por enquanto: infraestrutura que Julia vai usar</li>
+        </ul>
+      </div>
+      <div class="card border-green">
+        <div class="card-title">Confirmado — CRM</div>
+        <ul class="list">
+          <li>Lead criado pelo MdZap cai em <code>coluna_crm = 'novos'</code></li>
+          <li>5 colunas: novos → em_atendimento → ag_documentos → ag_assinatura → triagem</li>
+          <li>Movimentacao manual prioritaria agora</li>
+          <li>Julia pode mover lead no pipeline (implementar depois)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card border-green">
+        <div class="card-title">Confirmado — Boa Vista</div>
+        <ul class="list">
+          <li>SOMENTE Boa Vista (sem Serasa / SPC / Quod)</li>
+          <li>Retorna: credores, valores, datas, contrato, tipo, tudo da restricao</li>
+          <li>Match fuzzy: empresa bureau → empresa banco</li>
+          <li>Auto-save variacao: editar nome empresa → salva em <code>empresas.nome_variacoes</code></li>
+          <li>Excluir cartorios: "cartorio", "tabelionato", "registro" no nome → nao processavel</li>
+          <li>Restricoes manuais: atendente pode criar no MdZap E no CRM</li>
+        </ul>
+      </div>
+      <div class="card border-green">
+        <div class="card-title">Confirmado — Conversao Lead → Cliente</div>
+        <ul class="list">
+          <li>Opcao A: mesmo registro, apenas preenche <code>cliente_id</code></li>
+          <li>Docs Tier 1 e Tier 2 permanecem vinculados</li>
+          <li>Docs ganham <code>cliente_id</code> quando lead vira cliente</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card border-yellow">
+      <div class="card-title">Deprecado — nao implementar</div>
+      <div class="card-heading">⚠️ JARBAS protocolar no EPROC esta desatualizado</div>
+      Ignorar qualquer referencia a JARBAS protocolando no EPROC para o MdZap. Esta funcionalidade esta fora do escopo atual.
+    </div>
+  </section>
+
+  <!-- S3: LEAD PANEL V2 -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-icon">🗂</span>
+      <h2>Lead Panel v2 — spec detalhada</h2>
+      <span class="section-num">§03</span>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">Comportamento global do panel</div>
+      Panel FECHADO por default. Toggle abre/fecha. Botao de auditoria DENTRO do panel (igual CRM drawer).
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Pos</th><th>Tab</th><th>Conteudo</th><th>Prio</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl-green"><td>1</td><td><strong>Dados</strong></td><td>Edicao completa: nome, CPF, email, telefone, endereco, score, advogado responsavel</td><td><span class="pill pill-ok">F3</span></td></tr>
+          <tr class="hl-green"><td>2</td><td><strong>Restricoes</strong></td><td>Lista restricoes com badges (credor, valor, data) + botao Auditoria Boa Vista + criar restricao manual</td><td><span class="pill pill-ok">F3</span></td></tr>
+          <tr class="hl-green"><td>3</td><td><strong>Documentos</strong></td><td>Upload D&D, docs do chat auto-salvos, rename inline. Secao "Docs Pessoais" (Tier 1) + pasta por restricao (Tier 2)</td><td><span class="pill pill-ok">F3</span></td></tr>
+          <tr class="hl-green"><td>4</td><td><strong>Historico</strong></td><td>Timeline: mudancas CRM, auditorias, docs enviados, notas</td><td><span class="pill pill-ok">F3</span></td></tr>
+          <tr><td>5</td><td>Memoria</td><td>client_memory JSONB (mantida, pos. 5)</td><td><span class="pill pill-later">manter</span></td></tr>
+          <tr><td>6</td><td>Tom</td><td>SentimentPanel — 11 sentimentos (mantida, pos. 6)</td><td><span class="pill pill-later">manter</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tab Restricoes — detalhe</h3>
+    <div class="card border-green">
+      <div class="card-heading">Lista de restricoes</div>
+      <ul class="list">
+        <li>Cada restricao exibe: nome credor, valor, data, tipo, status (processavel/nao-processavel)</li>
+        <li>Badge vermelho para cartorios/nao-processaveis</li>
+        <li>Botao "Auditoria Boa Vista" no topo da lista — dispara WH-13</li>
+        <li>Botao "+ Adicionar restricao manual" — dispara WH-14</li>
+        <li>Inline edit de nome empresa → auto-save em <code>empresas.nome_variacoes</code></li>
+      </ul>
+    </div>
+
+    <h3>Tab Documentos — detalhe</h3>
+    <div class="card border-green">
+      <div class="card-heading">Estrutura da aba</div>
+      <div class="code" style="font-size:0.72rem;">📁 Documentos Pessoais        ← Tier 1 (restricao_id = null)
+  📄 RG_frente.jpg
+  📄 comprovante_endereco.pdf
+  [+ Upload D&D]
+
+📁 Restricoes
+  📂 Banco Itau S/A              ← pasta por restricao (Tier 2)
+    📄 print_negativacao.png
+    📄 comprovante_pagamento.pdf
+    [+ Upload D&D nesta restricao]
+  📂 Lojas Americanas            ← outra pasta
+    [vazia]
+  [+ Nova restricao manual]</div>
+      <ul class="list">
+        <li>Docs recebidos pelo WhatsApp → salvos automaticamente como Tier 1 (atendente categoriza depois)</li>
+        <li>Rename inline em qualquer documento</li>
+        <li>Delete = soft delete no MdFlow + move para "Lixeira" no Drive</li>
+        <li>Preview disponivel para imagens e PDFs</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- S4: 3 TIERS -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-icon">📂</span>
+      <h2>Sistema de 3 Tiers de documentos</h2>
+      <span class="section-num">§04</span>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Tier</th><th>Descricao</th><th>FK principal</th><th>Onde aparece</th><th>Origem</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl-green">
+            <td><span class="badge b-blue">Tier 1</span></td>
+            <td>Docs do lead (RG, CNH, comp. endereco)</td>
+            <td><code>restricao_id = null</code></td>
+            <td>MdZap Lead Panel → aba Docs → "Docs Pessoais"</td>
+            <td>Upload manual, WhatsApp auto-save</td>
+          </tr>
+          <tr class="hl-green">
+            <td><span class="badge b-yellow">Tier 2</span></td>
+            <td>Docs de restricao especifica (prints, comprovantes)</td>
+            <td><code>restricao_id = UUID</code></td>
+            <td>MdZap Lead Panel → aba Docs → pasta de restricao</td>
+            <td>Upload manual, WH-17 (doc WA)</td>
+          </tr>
+          <tr>
+            <td><span class="badge b-purple">Tier 3</span></td>
+            <td>Docs gerados pos-distribuicao (tramitacao)</td>
+            <td><code>processo_id = UUID</code></td>
+            <td>Pagina Processo → aba Tramitacao</td>
+            <td>Advogado via pagina processo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-title">Atencao: Documentos Iniciais vs Tramitacao</div>
+      Peticao inicial, procuracoes e comprovantes gerados ANTES da distribuicao sao Tier 2 (por restricao) mas vao em "Documentos Iniciais" — nao em "Tramitacao". Tramitacao = exclusivamente pos-protocolo.
+    </div>
+
+    <h3>Fluxo de docs recebidos pelo WhatsApp</h3>
+    <div class="flow">
+      <div class="flow-step blue">Cliente manda foto/PDF no chat</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step yellow">Webhook WH-17 acionado</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step green">Salvo como Tier 1 (lead geral)</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step blue">Atendente categoriza depois</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step purple">Julia le docs pendentes (sub-agente)</div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card border-green">
+        <div class="card-title">Regra de persistencia</div>
+        <ul class="list">
+          <li>Todos os docs ficam no Supabase Storage</li>
+          <li>Todos os docs ficam no Google Drive (sync obrigatorio)</li>
+          <li>Delete no MdFlow = soft delete + move para "Lixeira" no Drive</li>
+          <li>Nunca deletar do Drive fisicamente</li>
+        </ul>
+      </div>
+      <div class="card border-blue">
+        <div class="card-title">Estrutura de pastas no Drive</div>
+        <div class="code" style="font-size:0.7rem; padding:8px;">MP Advocacia/
+└── Clientes/
+    └── {CPF} - {Nome}/
+        ├── Documentos Pessoais/   ← Tier 1
+        ├── Restricoes/
+        │   ├── {Empresa 1}/       ← Tier 2
+        │   └── {Empresa 2}/
+        └── Processos/
+            └── {CNJ}/
+                ├── Iniciais/
+                └── Tramitacao/    ← Tier 3</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S5: 3 SDRs -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <h2>3 SDRs — Arquitetura multi-agente</h2>
+      <span class="section-num">§05</span>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">Roteamento por numero WhatsApp</div>
+      Cada SDR tem seu proprio numero de WhatsApp. O roteamento de qual SDR atende depende do numero de origem da mensagem recebida.
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>SDR</th><th>Nome</th><th>Numero WA</th><th>Pagina vinculada</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl-green">
+            <td><span class="badge b-green">SDR 1</span></td>
+            <td><strong>Julia</strong></td>
+            <td>Proprio (definido)</td>
+            <td>Atendimento geral (restricoes de credito)</td>
+            <td><span class="pill pill-ok">implementar agora</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge b-yellow">SDR 2</span></td>
+            <td>A definir</td>
+            <td>Proprio</td>
+            <td><code>/documentos_pendentes</code></td>
+            <td><span class="pill pill-later">implementar depois</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge b-yellow">SDR 3</span></td>
+            <td>A definir</td>
+            <td>Proprio</td>
+            <td><code>/acordos</code></td>
+            <td><span class="pill pill-later">implementar depois</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid g3">
+      <div class="card border-green">
+        <div class="card-title">Julia — SDR 1 (agora)</div>
+        <ul class="list">
+          <li>Recebe leads via WhatsApp</li>
+          <li>Solicita CPF do lead</li>
+          <li>Cria lead no CRM (coluna 'novos')</li>
+          <li>Informa sobre processo de analise</li>
+          <li>Aguarda humano para auditoria</li>
+          <li>Prompt/sistema: elaborar depois</li>
+        </ul>
+      </div>
+      <div class="card border-yellow">
+        <div class="card-title">SDR 2 — Documentos (depois)</div>
+        <ul class="list">
+          <li>Cobra documentos pendentes</li>
+          <li>Integrado com /documentos_pendentes</li>
+          <li>Nomes e tom: a definir</li>
+        </ul>
+      </div>
+      <div class="card border-yellow">
+        <div class="card-title">SDR 3 — Acordos (depois)</div>
+        <ul class="list">
+          <li>Gerencia propostas de acordo</li>
+          <li>Integrado com /acordos</li>
+          <li>Nomes e tom: a definir</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-title">Scaffolding SDR 2 e SDR 3</div>
+      As estruturas de SDR 2 e SDR 3 devem ser criadas como scaffolding (schema de roteamento) mas sem implementacao de comportamento. O comportamento sera definido em iteracoes futuras.
+    </div>
+  </section>
+
+  <!-- S6: GOOGLE DRIVE -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-icon">📁</span>
+      <h2>Google Drive — integracao</h2>
+      <span class="section-num">§06</span>
+    </div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-title">Pendente de investigacao</div>
+      Detalhes de autenticacao (Service Account vs OAuth) e configuracao ainda nao foram definidos. Ver Secao 11 — Perguntas abertas.
+    </div>
+
+    <div class="grid g2">
+      <div class="card border-green">
+        <div class="card-title">Requisitos confirmados</div>
+        <ul class="list">
+          <li>OBRIGATORIO: docs no Supabase Storage E no Google Drive</li>
+          <li>Sync bidirecional: Drive ↔ MdFlow</li>
+          <li>Arquivo no Drive → aparece no MdFlow</li>
+          <li>Arquivo no MdFlow → aparece no Drive</li>
+        </ul>
+      </div>
+      <div class="card border-green">
+        <div class="card-title">Criacao de pastas</div>
+        <ul class="list">
+          <li>Trigger: ao cadastrar restricoes do lead</li>
+          <li>Criacao instantanea no momento do cadastro</li>
+          <li>Estrutura: ver Tier Docs (Secao 4)</li>
+          <li>Pasta "Lixeira" para soft deletes</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Webhook de sync</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Acao</th><th>Trigger</th><th>Webhook</th><th>Comportamento</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Upload no MdFlow</td><td>POST /mdzap/sync-drive</td><td>WH-15</td><td>Envia para pasta correta no Drive</td></tr>
+          <tr><td>Upload no Drive</td><td>Push notification Drive API</td><td>—</td><td>Importa para Supabase Storage + registra</td></tr>
+          <tr><td>Delete no MdFlow</td><td>soft delete hook</td><td>WH-15</td><td>Move para pasta "Lixeira" no Drive</td></tr>
+          <tr><td>Restricao cadastrada</td><td>INSERT restricao</td><td>WH-15</td><td>Cria estrutura de pastas no Drive</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- S7: BUGS P0 -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-icon">🐛</span>
+      <h2>Bugs P0 — correcao prioritaria</h2>
+      <span class="section-num">§07</span>
+    </div>
+
+    <div class="callout callout-red">
+      <div class="callout-title">FASE 1 — executar ANTES de qualquer feature nova</div>
+      Estes 4 bugs foram confirmados. Sao blockers P0 que devem ser corrigidos na primeira sessao de desenvolvimento.
+    </div>
+
+    <div class="card border-red" style="margin-bottom:14px;">
+      <div class="card-heading"><span class="tag tag-bug">BUG-01</span> Valores de restricoes errados na auditoria</div>
+      <p><strong>Sintoma:</strong> Valores financeiros exibidos incorretamente na auditoria Boa Vista.</p>
+      <p><strong>Causa provavel:</strong> Parsing JSON bureau OU conversao de centavos (INT8 banco vs float display).</p>
+      <p><strong>Investigar:</strong> Funcao que faz parsing da resposta Boa Vista. Checar se banco usa centavos e UI divide por 100.</p>
+    </div>
+
+    <div class="card border-red" style="margin-bottom:14px;">
+      <div class="card-heading"><span class="tag tag-bug">BUG-02</span> Comprovante Tier 2 nao persiste apos upload</div>
+      <p><strong>Sintoma:</strong> Apos fazer upload de comprovante de restricao (Tier 2), o arquivo nao aparece na listagem.</p>
+      <p><strong>Causa provavel:</strong> <code>restricao_id</code> nao esta sendo passado no upload. Upload salva como Tier 1 (sem FK de restricao).</p>
+      <p><strong>Investigar:</strong> Hook de upload, verificar se <code>restricao_id</code> esta no payload do webhook WH-17.</p>
+    </div>
+
+    <div class="card border-red" style="margin-bottom:14px;">
+      <div class="card-heading"><span class="tag tag-bug">BUG-03</span> Boa Vista inclui cartorios como processaveis</div>
+      <p><strong>Sintoma:</strong> Restricoes de cartorios / tabelionatos aparecem na lista de processaveis.</p>
+      <p><strong>Causa provavel:</strong> Filtro de exclusao nao implementado ou nao esta sendo aplicado apos parsing.</p>
+      <p><strong>Correcao:</strong> Filtrar qualquer empresa com "cartorio", "tabelionato", "registro de imoveis" no nome. Marcar como nao-processavel, nao excluir fisicamente.</p>
+    </div>
+
+    <div class="card border-red" style="margin-bottom:14px;">
+      <div class="card-heading"><span class="tag tag-bug">BUG-04</span> Historico inconsistente no drawer</div>
+      <p><strong>Sintoma:</strong> Restricoes excluidas ainda aparecem no historico. Valores divergentes entre auditoria e historico.</p>
+      <p><strong>Causa provavel:</strong> Query de historico nao filtra por <code>deleted_at IS NULL</code> OU usa snapshot desatualizado.</p>
+      <p><strong>Investigar:</strong> Query do <code>MdzapConversaTimeline</code>. Checar se soft delete esta sendo aplicado corretamente.</p>
+    </div>
+  </section>
+
+  <!-- S8: ROADMAP -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-icon">🗓</span>
+      <h2>Roadmap de fases F1 → F7</h2>
+      <span class="section-num">§08</span>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-num ph-active">F1</div>
+      <div class="phase-content">
+        <div class="phase-title">Bugs criticos P0 <span class="badge b-red" style="font-size:0.65rem;">AGORA</span></div>
+        <div class="phase-items">
+          BUG-01: parsing valores restricoes ·
+          BUG-02: upload comprovante Tier 2 nao persiste ·
+          BUG-03: excluir cartorios da lista ·
+          BUG-04: historico inconsistente
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-num ph-pending">F2</div>
+      <div class="phase-content">
+        <div class="phase-title">Infraestrutura de componentes shared</div>
+        <div class="phase-items">
+          Extrair para <code>src/components/shared/</code>:
+          TabDados, TabRestricoes, TabDocumentosLead, RestricaoPastaCard, DocumentoItem, DocumentosUploadCentral, BotaoAuditoria
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-num ph-pending">F3</div>
+      <div class="phase-content">
+        <div class="phase-title">Lead Panel v2</div>
+        <div class="phase-items">
+          Reconstituir MdzapLeadPanel com 4 novas abas (Dados/Restricoes/Documentos/Historico) ·
+          Usar componentes shared ·
+          Panel fechado por default ·
+          Botao auditoria integrado ·
+          Webhooks WH-13 e WH-14
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-num ph-future">F4</div>
+      <div class="phase-content">
+        <div class="phase-title">Webhook criar lead pelo MdZap</div>
+        <div class="phase-items">
+          Novo webhook WH-12: <code>mdzap/criar-lead</code> ·
+          n8n cria lead + seta <code>coluna_crm = 'novos'</code> ·
+          Integracao com auditoria Boa Vista ao criar lead ·
+          Webhook WH-17: salvar doc recebido no WA como Tier 1
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-num ph-future">F5</div>
+      <div class="phase-content">
+        <div class="phase-title">Multi-SDR</div>
+        <div class="phase-items">
+          Roteamento por numero WhatsApp → SDR (Julia, SDR-docs, SDR-acordos) ·
+          SDR 2 e SDR 3: apenas scaffolding de schema ·
+          Julia: infraestrutura completa (prompt depois)
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-num ph-future">F6</div>
+      <div class="phase-content">
+        <div class="phase-title">Google Drive</div>
+        <div class="phase-items">
+          Investigar: service account vs OAuth ·
+          Webhook WH-15: <code>mdzap/sync-drive</code> ·
+          Criar pastas ao cadastrar restricoes ·
+          Sync bidirecional Drive ↔ MdFlow
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-num ph-future">F7</div>
+      <div class="phase-content">
+        <div class="phase-title">ZapSign — assinatura digital</div>
+        <div class="phase-items">
+          Webhook WH-16: <code>mdzap/gerar-contrato-zapsign</code> ·
+          Link de assinatura no Lead Panel ·
+          Atendente acessa e gerencia assinatura
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S9: COMPONENTES SHARED -->
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-icon">🧩</span>
+      <h2>Componentes shared — lista completa</h2>
+      <span class="section-num">§09</span>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">Destino</div>
+      Todos em <code>src/components/shared/</code>. Esses componentes sao usados tanto pelo MdZap quanto pelo CRM drawer (/clientes, /pagina-cliente), garantindo DRY.
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Componente</th><th>Props principais</th><th>Usado em</th><th>Fase</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>TabDados</code></td><td>leadId, clienteId, readOnly, onSave</td><td>MdZap Lead Panel, CRM Drawer</td><td><span class="pill pill-pending">F2</span></td></tr>
+          <tr><td><code>TabRestricoes</code></td><td>leadId, onAuditoriaClick, onAddManual</td><td>MdZap Lead Panel, CRM Drawer</td><td><span class="pill pill-pending">F2</span></td></tr>
+          <tr><td><code>TabDocumentosLead</code></td><td>leadId, restricoes[], onUpload</td><td>MdZap Lead Panel, CRM Drawer</td><td><span class="pill pill-pending">F2</span></td></tr>
+          <tr><td><code>RestricaoPastaCard</code></td><td>restricao, documentos[], onUpload</td><td>TabDocumentosLead</td><td><span class="pill pill-pending">F2</span></td></tr>
+          <tr><td><code>DocumentoItem</code></td><td>doc, onRename, onDelete, onDownload</td><td>TabDocumentosLead, RestricaoPastaCard</td><td><span class="pill pill-pending">F2</span></td></tr>
+          <tr><td><code>DocumentosUploadCentral</code></td><td>leadId, restricaoId?, onComplete</td><td>TabDocumentosLead, RestricaoPastaCard</td><td><span class="pill pill-pending">F2</span></td></tr>
+          <tr><td><code>BotaoAuditoria</code></td><td>leadId, disabled, onDispatch</td><td>TabRestricoes, CRM Drawer</td><td><span class="pill pill-pending">F2</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid g2">
+      <div class="card border-blue">
+        <div class="card-title">Principio DRY — compartilhamento</div>
+        O mesmo <code>TabRestricoes</code> e <code>BotaoAuditoria</code> devem funcionar identicamente no Lead Panel do MdZap e no drawer do CRM. Zero duplicacao de logica. Diferente apenas em <code>leadId</code> vs <code>clienteId</code>.
+      </div>
+      <div class="card border-green">
+        <div class="card-title">Convencoes de codigo</div>
+        <ul class="list">
+          <li>Arquivo: <code>src/components/shared/TabDados.tsx</code></li>
+          <li>Hook associado: <code>src/hooks/shared/useLeadDados.ts</code></li>
+          <li>Max 500 linhas por arquivo .tsx</li>
+          <li>Props tipadas em <code>src/types/lead.types.ts</code></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- S10: WEBHOOKS -->
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-icon">🔗</span>
+      <h2>Webhooks n8n — existentes e planejados</h2>
+      <span class="section-num">§10</span>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">Prefixo obrigatorio</div>
+      Webhooks do MdZap usam prefixo <code>mdzap/</code> (SEM prefixo <code>mdflow/</code>). Auth header: <code>mdflow: MdL1501@</code>.
+    </div>
+
+    <h3>Webhooks existentes (operacionais)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Endpoint</th><th>Funcao</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl-green"><td><span class="badge b-green">WH-01</span></td><td><code>mdzap/enviar-mensagem</code></td><td>Envio texto/midia</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr class="hl-green"><td><span class="badge b-green">WH-02</span></td><td><code>mdzap/enviar-template</code></td><td>Templates WhatsApp</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr class="hl-green"><td><span class="badge b-green">WH-03</span></td><td><code>mdzap/enviar-audio</code></td><td>Audio base64</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr class="hl-green"><td><span class="badge b-green">WH-04</span></td><td><code>mdzap/ai-composer</code></td><td>IA transformacao texto</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr class="hl-green"><td><span class="badge b-green">WH-05</span></td><td><code>mdzap/assumir-conversa</code></td><td>Assumir atendimento</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr class="hl-green"><td><span class="badge b-green">WH-06</span></td><td><code>mdzap/devolver-julia</code></td><td>Devolver para IA</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr class="hl-green"><td><span class="badge b-green">WH-07</span></td><td><code>mdzap/transferir-conversa</code></td><td>Transferir para membro</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr class="hl-green"><td><span class="badge b-green">WH-10</span></td><td><code>mdzap/bulk-negociacoes</code></td><td>Envio propostas em lote</td><td><span class="pill pill-ok">operacional</span></td></tr>
+          <tr class="hl-green"><td><span class="badge b-green">WH-11</span></td><td><code>mdzap/bulk-documentos</code></td><td>Cobrar docs pendentes lote</td><td><span class="pill pill-ok">operacional</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Novos webhooks planejados</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Endpoint</th><th>Funcao</th><th>Fase</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl-yellow"><td><span class="badge b-yellow">WH-12</span></td><td><code>mdzap/criar-lead</code></td><td>Cria lead + seta <code>coluna_crm = 'novos'</code></td><td><span class="pill pill-pending">F4</span></td></tr>
+          <tr class="hl-yellow"><td><span class="badge b-yellow">WH-13</span></td><td><code>mdzap/disparar-auditoria</code></td><td>Dispara auditoria Boa Vista manual</td><td><span class="pill pill-pending">F3</span></td></tr>
+          <tr class="hl-yellow"><td><span class="badge b-yellow">WH-14</span></td><td><code>mdzap/criar-restricao</code></td><td>Cria restricao manual no lead</td><td><span class="pill pill-pending">F3</span></td></tr>
+          <tr class="hl-yellow"><td><span class="badge b-yellow">WH-15</span></td><td><code>mdzap/sync-drive</code></td><td>Sincroniza documento com Google Drive</td><td><span class="pill pill-pending">F6</span></td></tr>
+          <tr class="hl-yellow"><td><span class="badge b-yellow">WH-16</span></td><td><code>mdzap/gerar-contrato-zapsign</code></td><td>Gera link ZapSign para assinatura digital</td><td><span class="pill pill-pending">F7</span></td></tr>
+          <tr class="hl-yellow"><td><span class="badge b-yellow">WH-17</span></td><td><code>mdzap/salvar-doc-chat</code></td><td>Salva doc recebido no WhatsApp como Tier 1</td><td><span class="pill pill-pending">F3</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Envelope canonico n8n (obrigatorio em todos)</h3>
+    <div class="code"><span class="c-comment">// REQUEST frontend → n8n</span>
+{
+  <span class="c-key">"request_id"</span>: <span class="c-str">"uuid"</span>,
+  <span class="c-key">"contexto"</span>: <span class="c-str">"mdzap.criar-lead"</span>,
+  <span class="c-key">"organizacao_id"</span>: <span class="c-str">"uuid"</span>,
+  <span class="c-key">"actor_user_id"</span>: <span class="c-str">"uuid"</span>,
+  <span class="c-key">"origem_rota"</span>: <span class="c-str">"/mdzap"</span>,
+  <span class="c-key">"data"</span>: {}
+}
+
+<span class="c-comment">// RESPONSE n8n → frontend (SEMPRE HTTP 200, mesmo em erro)</span>
+{
+  <span class="c-key">"success"</span>: <span class="c-val">true</span>,
+  <span class="c-key">"message"</span>: <span class="c-str">"Lead criado com sucesso"</span>,
+  <span class="c-key">"action"</span>: <span class="c-str">"toast_refresh"</span>,
+  <span class="c-key">"data"</span>: {},
+  <span class="c-key">"error_code"</span>: <span class="c-val">null</span>
+}</div>
+  </section>
+
+  <!-- S11: PERGUNTAS ABERTAS -->
+  <section class="section" id="s11">
+    <div class="section-header">
+      <span class="section-icon">❓</span>
+      <h2>Perguntas abertas para Christian</h2>
+      <span class="section-num">§11</span>
+    </div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-title">Bloqueantes de implementacao</div>
+      Estas perguntas precisam ser respondidas ANTES de iniciar as fases correspondentes.
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Pergunta</th><th>Bloqueia</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl-yellow">
+            <td>Q1</td>
+            <td><strong>Julia — treinamento:</strong> Qual e o prompt/sistema da Julia? Existe um n8n workflow dela que precisa ser atualizado?</td>
+            <td>F5 (Julia)</td>
+            <td><span class="pill pill-pending">aguardando</span></td>
+          </tr>
+          <tr class="hl-yellow">
+            <td>Q2</td>
+            <td><strong>SDR 2 e 3:</strong> Nomes? Tom? Primeiros passos quando recebem mensagem?</td>
+            <td>F5 (SDR 2/3)</td>
+            <td><span class="pill pill-pending">aguardando</span></td>
+          </tr>
+          <tr class="hl-yellow">
+            <td>Q3</td>
+            <td><strong>Boa Vista API:</strong> Onde esta sendo consumida hoje? Edge Function? n8n? Quem acessa? Qual endpoint/credencial?</td>
+            <td>F1 (BUG-01), F3 (WH-13)</td>
+            <td><span class="pill pill-pending">aguardando</span></td>
+          </tr>
+          <tr class="hl-yellow">
+            <td>Q4</td>
+            <td><strong>ZapSign:</strong> Ja tem conta? API key disponivel? Qual versao da API?</td>
+            <td>F7 (ZapSign)</td>
+            <td><span class="pill pill-pending">aguardando</span></td>
+          </tr>
+          <tr class="hl-yellow">
+            <td>Q5</td>
+            <td><strong>Google Drive:</strong> Service account ou OAuth? Pasta raiz "MP Advocacia" ja existe? Credenciais disponíveis?</td>
+            <td>F6 (Drive)</td>
+            <td><span class="pill pill-pending">aguardando</span></td>
+          </tr>
+          <tr class="hl-yellow">
+            <td>Q6</td>
+            <td><strong>Tabela de documentos:</strong> Existe <code>leads_documentos</code> separada ou tudo vai para <code>processos_documentos</code>? Schema atual?</td>
+            <td>F2 (shared), F3 (panel)</td>
+            <td><span class="pill pill-pending">aguardando</span></td>
+          </tr>
+          <tr class="hl-yellow">
+            <td>Q7</td>
+            <td><strong>Lead Panel atual:</strong> As 4 tabs novas SUBSTITUEM totalmente (Memoria/Sentimento) ou ADICIONAM antes delas?</td>
+            <td>F3 (Lead Panel v2)</td>
+            <td><span class="pill pill-ok">respondido: adicionar, pos. 5 e 6</span></td>
+          </tr>
+          <tr class="hl-yellow">
+            <td>Q8</td>
+            <td><strong>Match fuzzy:</strong> O mecanismo de match empresa esta funcionando hoje? Qual algoritmo (pg_trgm? similarity?)?</td>
+            <td>F1 (BUG-03), F3 (restricoes)</td>
+            <td><span class="pill pill-pending">aguardando</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- S12: ARQUIVOS CRITICOS -->
+  <section class="section" id="s12">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>Arquivos criticos para leitura</h2>
+      <span class="section-num">§12</span>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">Ordem de leitura recomendada</div>
+      Ler nesta sequencia antes de iniciar qualquer implementacao no MdZap.
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Ordem</th><th>Arquivo</th><th>Motivo</th><th>Tipo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge b-red">1</span></td>
+            <td><code>src/components/mdzap/MdzapLeadPanel.tsx</code></td>
+            <td>Panel atual — entender o que sera refatorado</td>
+            <td><span class="tag tag-file">componente</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge b-red">2</span></td>
+            <td><code>src/components/mdzap/MdzapChatPanel.tsx</code></td>
+            <td>Orquestrador — entender estrutura de tabs</td>
+            <td><span class="tag tag-file">componente</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge b-red">3</span></td>
+            <td><code>src/hooks/mdzap/useMdzapSendMessage.ts</code></td>
+            <td>Padrao de envio com INSERT otimista</td>
+            <td><span class="tag tag-hook">hook</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge b-red">4</span></td>
+            <td><code>src/types/mdzap.types.ts</code></td>
+            <td>Todos os tipos TypeScript do MdZap</td>
+            <td><span class="tag tag-file">tipos</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge b-yellow">5</span></td>
+            <td><code>docs/_resumido___mdzap.txt</code></td>
+            <td>Spec oficial da rota /mdzap — SSOT</td>
+            <td><span class="tag">spec</span></td>
+          </tr>
+          <tr>
+            <td><span class="badge b-yellow">6</span></td>
+            <td><code>docs/Revisa_o_BACKEND.txt</code></td>
+            <td>Schema completo do banco — verificar tabelas relevantes</td>
+            <td><span class="tag">schema</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Paths absolutos (copiar direto)</h3>
+    <div class="code">~/beta-mdflow/src/components/mdzap/MdzapLeadPanel.tsx
+~/beta-mdflow/src/components/mdzap/MdzapChatPanel.tsx
+~/beta-mdflow/src/hooks/mdzap/useMdzapSendMessage.ts
+~/beta-mdflow/src/types/mdzap.types.ts
+~/beta-mdflow/docs/_resumido___mdzap.txt
+~/beta-mdflow/docs/Revisa_o_BACKEND.txt</div>
+
+    <h3>Queries uteis para investigacao de bugs</h3>
+    <div class="code"><span class="c-comment">-- Verificar schema tabelas MdZap</span>
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_name IN ('whatsapp_conversas', 'whatsapp_mensagens', 'leads', 'restricoes')
+ORDER BY table_name, ordinal_position;
+
+<span class="c-comment">-- Verificar restricoes de um lead (BUG-04)</span>
+SELECT r.*, e.nome as empresa_nome
+FROM restricoes r
+LEFT JOIN empresas e ON e.id = r.empresa_id
+WHERE r.lead_id = '...' AND r.deleted_at IS NULL;
+
+<span class="c-comment">-- Verificar documentos de um lead (BUG-02)</span>
+SELECT * FROM leads_documentos
+WHERE lead_id = '...' AND deleted_at IS NULL
+ORDER BY restricao_id NULLS FIRST, created_at;</div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    MdZap — Documento Mestre v1 · MdFlow SaaS Juridico · MP Advocacia · 06/04/2026<br>
+    Gerado por Beto (Claude Code) · Briefing audio Christian 06/04/2026
+  </div>
+
+</main>
+
+<script>
+// Smooth scroll para links do sidebar
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Highlight nav item ativo
+const sections = document.querySelectorAll('.section[id]');
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navItems.forEach(n => n.style.color = '');
+      const active = document.querySelector('.nav-item[href="#' + entry.target.id + '"]');
+      if (active) active.style.color = 'var(--accent)';
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
