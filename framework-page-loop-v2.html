@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework Page-Loop v2 — Plano Definitivo MdFlow</title>
+<style>
+:root {
+  --bg: #0d0f18; --surface: #161926; --surface-2: #1e2235; --surface-3: #252840;
+  --accent: #7c6dff; --accent-dim: rgba(124,109,255,0.15);
+  --green: #20c997; --green-dim: rgba(32,201,151,0.12);
+  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
+  --red: #ef4444; --red-dim: rgba(239,68,68,0.12);
+  --sky: #38bdf8; --sky-dim: rgba(56,189,248,0.12);
+  --rose: #f472b6; --rose-dim: rgba(244,114,182,0.12);
+  --text: #e8e6e3; --text-muted: #9e978a; --border: #2a2d3e;
+  --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,sans-serif; line-height:1.6; padding:2rem; max-width:1400px; margin:0 auto; }
+h1 { font-family:'Manrope',sans-serif; font-size:2.2rem; font-weight:800; margin-bottom:.25rem; }
+h2 { font-family:'Manrope',sans-serif; font-size:1.4rem; font-weight:700; margin-bottom:1rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+h3 { font-family:'Manrope',sans-serif; font-size:1.05rem; font-weight:600; margin-bottom:.75rem; color:var(--accent); }
+h4 { font-size:.9rem; font-weight:600; margin-bottom:.5rem; color:var(--green); }
+.subtitle { color:var(--text-muted); font-size:.9rem; margin-bottom:2.5rem; }
+.section { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.5rem; }
+.section.highlight { border-color:var(--accent); border-width:2px; }
+.section.critical { border-color:var(--red); border-width:2px; background:linear-gradient(135deg, var(--surface), rgba(239,68,68,0.03)); }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+.three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+@media(max-width:900px) { .two-col,.three-col { grid-template-columns:1fr; } }
+table { width:100%; border-collapse:collapse; font-size:.85rem; }
+th { text-align:left; color:var(--text-muted); font-weight:600; padding:.5rem .75rem; border-bottom:1px solid var(--border); font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; }
+td { padding:.5rem .75rem; border-bottom:1px solid rgba(42,45,62,.5); vertical-align:top; }
+.tag { display:inline-block; padding:.15rem .6rem; border-radius:20px; font-size:.72rem; font-weight:600; }
+.tag-green { background:var(--green-dim); color:var(--green); }
+.tag-amber { background:var(--amber-dim); color:var(--amber); }
+.tag-red { background:var(--red-dim); color:var(--red); }
+.tag-sky { background:var(--sky-dim); color:var(--sky); }
+.tag-accent { background:var(--accent-dim); color:var(--accent); }
+.tag-rose { background:var(--rose-dim); color:var(--rose); }
+.arch { background:var(--surface-2); border-radius:8px; padding:1.25rem; font-family:'JetBrains Mono',monospace; font-size:.78rem; line-height:1.9; white-space:pre; overflow-x:auto; color:var(--text-muted); }
+.arch strong { color:var(--accent); font-weight:700; }
+.arch em { color:var(--green); font-style:normal; }
+.arch .red { color:var(--red); }
+.arch .amber { color:var(--amber); }
+.arch .sky { color:var(--sky); }
+ul,ol { padding-left:1.25rem; }
+li { margin-bottom:.4rem; font-size:.86rem; }
+.check { color:var(--green); } .cross { color:var(--red); } .warn { color:var(--amber); }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; margin-bottom:2rem; }
+.kpi { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center; }
+.kpi-value { font-family:'JetBrains Mono',monospace; font-size:1.8rem; font-weight:700; line-height:1; margin-bottom:.25rem; }
+.kpi-label { font-size:.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; }
+.flow-box { background:var(--surface-2); border-radius:8px; padding:1rem; margin:.75rem 0; border-left:3px solid var(--accent); }
+.flow-box.new { border-left-color:var(--green); }
+.flow-box.remove { border-left-color:var(--red); opacity:.7; }
+.flow-box.improve { border-left-color:var(--amber); }
+.conn-map { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:.75rem; }
+.conn-card { background:var(--surface-2); border-radius:8px; padding:.75rem; font-size:.82rem; }
+.conn-card strong { color:var(--green); }
+.conn-card .link { color:var(--sky); font-size:.75rem; }
+.priority-list { list-style:none; padding:0; counter-reset:p; }
+.priority-list li { counter-increment:p; padding:.75rem 1rem; background:var(--surface-2); border-radius:8px; margin-bottom:.5rem; display:flex; align-items:flex-start; gap:.75rem; font-size:.86rem; }
+.priority-list li::before { content:counter(p); background:var(--accent); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; flex-shrink:0; margin-top:2px; }
+.phase-header { display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem; }
+.phase-num { background:var(--accent); color:#fff; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Manrope',sans-serif; font-weight:800; font-size:1rem; flex-shrink:0; }
+.phase-title { font-family:'Manrope',sans-serif; font-size:1.1rem; font-weight:700; }
+.phase-time { color:var(--text-muted); font-size:.8rem; margin-left:auto; font-family:'JetBrains Mono',monospace; }
+.checklist { list-style:none; padding:0; }
+.checklist li { padding:.35rem 0; font-size:.84rem; display:flex; align-items:flex-start; gap:.5rem; }
+.checklist li::before { content:'□'; color:var(--text-muted); font-size:1rem; line-height:1; flex-shrink:0; }
+.checklist li.done::before { content:'■'; color:var(--green); }
+.checklist li.fail::before { content:'✗'; color:var(--red); }
+.checklist li.new::before { content:'★'; color:var(--amber); }
+.footer { text-align:center; color:var(--text-muted); font-size:.75rem; padding:2rem 0 1rem; border-top:1px solid var(--border); margin-top:2rem; }
+.divider { height:1px; background:var(--border); margin:2rem 0; }
+.badge-row { display:flex; gap:.5rem; flex-wrap:wrap; margin:.5rem 0; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>Framework Page-Loop v2 — Plano Definitivo</h1>
+<p class="subtitle">Investigacao completa: 6 agentes paralelos, 19 skills analisadas, 6 specs lidos, todas conexoes mapeadas &bull; 2026-04-06</p>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 1: ESTADO ATUAL -->
+<!-- ============================================ -->
+
+<div class="section">
+<h2>1. Estado Atual — Scorecard das 6 Paginas Prioritarias</h2>
+<table>
+<tr><th>Pagina</th><th>Nota</th><th>Ciclos</th><th>P0</th><th>P1</th><th>P2</th><th>Status</th><th>Maior Risco</th></tr>
+<tr><td><strong>/crm</strong></td><td style="color:var(--green)">9.1</td><td>v2</td><td>0</td><td>0</td><td>1</td><td><span class="tag tag-green">Pronta</span></td><td>7/8 webhooks nao testados (bureau APIs)</td></tr>
+<tr><td><strong>/clientes</strong></td><td style="color:var(--green)">8.5</td><td>v3</td><td>0</td><td>0</td><td>5</td><td><span class="tag tag-green">Pronta</span></td><td>Paginacao client-side, KPI 3/4 cards</td></tr>
+<tr><td><strong>/distribuicao</strong></td><td style="color:var(--text-muted)">—</td><td>0</td><td>?</td><td>?</td><td>?</td><td><span class="tag tag-red">Nunca revisada</span></td><td>Sem QA. Fluxo critico de negocio.</td></tr>
+<tr><td><strong>/processos</strong></td><td style="color:var(--green)">9.3</td><td>Final</td><td>0</td><td>0</td><td>3</td><td><span class="tag tag-green">Pronta</span></td><td>Audiencias sem dados, Insights 49/50 erro</td></tr>
+<tr><td><strong>/mdzap</strong></td><td style="color:var(--green)">8.6</td><td>Loop</td><td>0</td><td>3</td><td>4</td><td><span class="tag tag-amber">3 P1 n8n</span></td><td>2 webhooks HTTP 500, token expirado</td></tr>
+<tr><td><strong>/empresas</strong></td><td style="color:var(--text-muted)">TBD</td><td>v1</td><td>?</td><td>?</td><td>?</td><td><span class="tag tag-amber">Em andamento</span></td><td>Primeiro ciclo page-loop</td></tr>
+</table>
+
+<div style="margin-top:1rem; padding:1rem; background:var(--surface-2); border-radius:8px;">
+<strong style="color:var(--amber)">ALERTA:</strong> /distribuicao nunca passou por page-loop e e o coracao do fluxo CRM→Processo. E a maior lacuna atual.
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 2: MAPA DE CONEXÕES -->
+<!-- ============================================ -->
+
+<div class="section">
+<h2>2. Mapa de Conexoes — O Fluxo de Atendimento Completo</h2>
+<div class="arch"><strong>FLUXO PRINCIPAL (Lead-to-Processo):</strong>
+
+  <em>/crm</em> ──────────────────→ <em>/distribuicao</em> ──────────────→ <em>/processos</em>
+   │ Lead criado               │ Restricao selecionada      │ Processo criado
+   │ Restricoes adicionadas    │ Docs preparados            │ CNJ atribuido
+   │ Advogado vinculado        │ Peticao gerada (OlivIA)    │ Movimentacoes
+   ▼                           │ Distribuido no tribunal     │ Decisoes
+  <em>/clientes</em>                   ▼                           ▼
+   │ Lead vira Cliente        <em>/empresas</em>                   <em>/pagina_processo</em>
+   │ (WH-CRM-03)              │ Credores (empresas)         │ 9 abas completas
+   ▼                           │ Orgaos (Serasa, SPC)       │ Docs Inicial/Tramitacao
+  <em>/pagina_cliente</em>             │ Categorias                 │
+   │ Restricoes + Processos   ▼                             │
+   │ Docs por restricao      <span class="sky">/mdzap</span>                       │
+   │                           │ WhatsApp + Julia IA        │
+   │                           │ Lead panel ↔ CRM stage     │
+   ▼                           ▼                             ▼
+
+<strong>COMPONENTES COMPARTILHADOS (impacto cruzado):</strong>
+
+  <em>ClienteDrawer</em> ────── usado em: /crm, /clientes, /distribuicao
+   ├── context='crm'          → 7 abas (Follow-up, MDZap, Atividades)
+   ├── context='clientes'     → 6 abas (Juridico, Pendentes)
+   └── context='distribuicao' → abas minimas + restricaoId filtro
+
+  <em>RestricaoPastaCard</em> ── usado em: ClienteDrawer (3 contextos), ProcessoDrawer
+   └── Accordion + multi-select + bulk delete + DnD
+
+  <em>ProcessoDrawer</em> ───── usado em: /processos, /distribuicao
+   └── 9 abas: Dados, Restricoes, Movimentacoes, Decisoes, Docs, Audiencias, Historico, Insights, OlivIA
+
+  <em>Documentos (3 Tiers)</em>:
+   ├── Tier 1: documento_lead      (restricao_id=null) → CRM/Clientes
+   ├── Tier 2: documento_restricao (restricao_id=ID)   → CRM/Clientes/Distribuicao
+   └── Tier 3: generated           (processo_id=ID)    → Processos (Inicial/Tramitacao)</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 3: DIAGNÓSTICO PAGE-LOOP v1 -->
+<!-- ============================================ -->
+
+<div class="section critical">
+<h2>3. Diagnostico do Page-Loop v1 — Por Que as Paginas Saem com Bugs</h2>
+
+<div class="two-col">
+<div>
+<h3>12 Gaps Criticos Identificados</h3>
+<ol>
+<li><strong style="color:var(--red)">Sem pre-flight</strong> — nao verifica git limpo, server rodando, spec existente, Supabase conectado. Loop pode falhar apos 2h.</li>
+<li><strong style="color:var(--red)">TypeScript nao obrigatorio</strong> — page-qa-tester e page-deep-explorer NAO rodam <code>tsc --noEmit</code>. Type drift = data loss silencioso.</li>
+<li><strong style="color:var(--red)">Silent-drop audit incompleto</strong> — frontend envia param X que RPC nao aceita. Dado desaparece sem erro.</li>
+<li><strong style="color:var(--red)">Multi-tenant NAO testado</strong> — nenhuma skill testa org_A acessando dados de org_B.</li>
+<li><strong style="color:var(--amber)">Async webhook fraco</strong> — "Gerando..." pode persistir forever sem detecao de falha.</li>
+<li><strong style="color:var(--amber)">Performance nao testada</strong> — paginacao com 100K rows, memory leaks, N+1 queries.</li>
+<li><strong style="color:var(--amber)">Accessibility nao sistematica</strong> — aria-labels verificados parcialmente, Tab order nunca.</li>
+<li><strong style="color:var(--amber)">Spec drift detection fraco</strong> — spec diz campo obrigatorio, codigo faz opcional.</li>
+<li><strong style="color:var(--amber)">Loops podem bloat</strong> — max 3 ciclos × 2 skills × 30min = +3h extras.</li>
+<li><strong style="color:var(--amber)">Report existence nao validada</strong> — page-finalize procede com reports faltando.</li>
+<li><strong style="color:var(--text-muted)">Redundancias</strong> — spec lido 4x, code audit 4x, visual audit 3x, dirty state 3x.</li>
+<li><strong style="color:var(--text-muted)">Componentes compartilhados</strong> — fix em ClienteDrawer pode quebrar 3 paginas sem cross-check real.</li>
+</ol>
+</div>
+<div>
+<h3>Redundancias (desperdicam contexto/tempo)</h3>
+<table>
+<tr><th>O que</th><th>Skills que repetem</th><th>Vezes</th></tr>
+<tr><td>Leitura do spec</td><td>review, qa-tester, deep-explorer, senior-review</td><td>4x</td></tr>
+<tr><td>Code audit (hardcodes)</td><td>qa-tester, deep-explorer, page-front, senior-review</td><td>4x</td></tr>
+<tr><td>Visual audit (screenshots)</td><td>deep-explorer, page-front, senior-review</td><td>3x</td></tr>
+<tr><td>Dirty state check</td><td>deep-explorer, page-front, front-tester</td><td>3x</td></tr>
+<tr><td>Responsividade</td><td>deep-explorer, page-front, front-tester</td><td>3x</td></tr>
+<tr><td>Empty states</td><td>deep-explorer, page-front, front-tester</td><td>3x</td></tr>
+<tr><td>Webhook testing</td><td>qa-tester, backend-tester, senior-review</td><td>3x</td></tr>
+<tr><td>RLS validation</td><td>qa-tester, backend-tester, senior-review</td><td>3x</td></tr>
+</table>
+
+<h3 style="margin-top:1.5rem">Custo Atual (v1)</h3>
+<table>
+<tr><th>Metrica</th><th>Valor</th></tr>
+<tr><td>Tempo total</td><td style="color:var(--red)">~4-7 horas/pagina</td></tr>
+<tr><td>Tokens consumidos</td><td style="color:var(--red)">~220K tokens/ciclo</td></tr>
+<tr><td>Commits gerados</td><td>30-60 por ciclo</td></tr>
+<tr><td>Fix/feat ratio</td><td style="color:var(--red)">2.6:1</td></tr>
+<tr><td>Skills executadas</td><td>13 sequenciais</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 4: PAGE-LOOP v2 REDESENHADO -->
+<!-- ============================================ -->
+
+<div class="section highlight">
+<h2>4. Page-Loop v2 — Arquitetura Redesenhada</h2>
+
+<p style="margin-bottom:1.5rem; color:var(--text-muted)">Objetivo: rodar page-loop em qualquer pagina e ela sair <strong style="color:var(--green)">100% pronta para uso</strong>. Zero bugs bloqueantes. Nota >= 9.5/10.</p>
+
+<!-- FASE 0 -->
+<div style="margin-bottom:2rem">
+<div class="phase-header">
+  <div class="phase-num" style="background:var(--text-muted)">0</div>
+  <div class="phase-title">Pre-Flight (NOVO)</div>
+  <div class="phase-time">~2 min</div>
+</div>
+<div class="flow-box new">
+<strong>NOVO — Validacao antes de comecar:</strong>
+<ul class="checklist" style="margin-top:.5rem">
+<li class="new">Git status limpo (sem uncommitted changes)</li>
+<li class="new">Dev server rodando (curl localhost:8080 → 200)</li>
+<li class="new">Supabase MCP conectado (test query → OK)</li>
+<li class="new">Spec da pagina existe e e valido (docs/_resumido___PAGINA.txt)</li>
+<li class="new">Reports dir existe (~/jarbas-reports/beto/PAGINA/)</li>
+<li class="new">TypeScript compila (npx tsc --noEmit → 0 errors) — se falhar, corrige ANTES</li>
+<li class="new">Conta de teste logada no browser (agent-browser → auth OK)</li>
+</ul>
+<p style="margin-top:.5rem;font-size:.82rem;color:var(--red)"><strong>FAIL FAST:</strong> Se qualquer check falhar, PARA. Nao desperdicar 4h pra falhar na fase 3.</p>
+</div>
+</div>
+
+<!-- FASE 1 -->
+<div style="margin-bottom:2rem">
+<div class="phase-header">
+  <div class="phase-num">1</div>
+  <div class="phase-title">Funcional + Backend</div>
+  <div class="phase-time">~60 min</div>
+</div>
+<div class="flow-box improve">
+<strong>MELHORIA — Fundir QA funcional + Backend audit numa unica fase:</strong>
+<p style="font-size:.84rem;margin-top:.5rem">Antes: QA-tester → Executor → (depois) Backend-tester → Backend-executor<br>
+Agora: Backend-tester PRIMEIRO → Backend-executor → QA-tester → Executor</p>
+<p style="font-size:.82rem;margin-top:.5rem;color:var(--amber)"><strong>Por que:</strong> 40% dos bugs que o QA encontra sao causados por schema drift. Corrigir backend primeiro elimina bugs na raiz.</p>
+</div>
+
+<div class="arch">  <strong>FASE 1A — Backend Audit</strong> (page-backend-tester melhorado)
+  ├── Schema audit: colunas, tipos, constraints, indices
+  ├── RPC audit: SECURITY DEFINER, silent-drop, type-drift
+  ├── <em>NOVO: Multi-tenant test</em> (org_A query org_B → 0 rows)
+  ├── <em>NOVO: Soft-delete enforcement</em> (deleted_at IS NULL em TODA query)
+  ├── <em>NOVO: Spec-to-schema validation</em> (campo no spec existe no DB?)
+  ├── Webhook envelope validation
+  └── Gera: backend-test-v{N}.html
+
+  <strong>FASE 1B — Backend Fix</strong> (page-backend-executor)
+  ├── Aplica migrations P0→P1→P2
+  ├── Valida cada migration
+  ├── <em>NOVO: TypeScript check apos cada migration</em>
+  └── Max 2 ciclos (nao 3)
+
+  <strong>FASE 1C — QA Funcional</strong> (page-qa-tester melhorado)
+  ├── 10 grupos (A-J) + browser automation
+  ├── <em>NOVO: TypeScript check obrigatorio</em>
+  ├── <em>NOVO: Componentes compartilhados cross-check</em>
+  │    (se ClienteDrawer e usado, testar nos 3 contextos)
+  ├── <em>NOVO: Documento tiers validation</em>
+  │    (Tier 1/2/3 corretos por contexto?)
+  └── Gera: qa-report-v{N}.html
+
+  <strong>FASE 1D — Bug Fix</strong> (page-executor)
+  ├── Fix P0→P1→P2 (1 commit/bug)
+  ├── <em>NOVO: Silent-drop check antes de cada fix RPC</em>
+  ├── <em>NOVO: Cross-page impact check</em>
+  │    (se editou ClienteDrawer, verificar /crm + /clientes + /distribuicao)
+  └── Gera: execution-log-v{N}.html</div>
+</div>
+
+<!-- FASE 2 -->
+<div style="margin-bottom:2rem">
+<div class="phase-header">
+  <div class="phase-num">2</div>
+  <div class="phase-title">Profundidade + UI/UX (Fundido)</div>
+  <div class="phase-time">~60 min</div>
+</div>
+<div class="flow-box improve">
+<strong>MELHORIA — Fundir deep-explorer + page-front numa unica skill hibrida:</strong>
+<p style="font-size:.84rem;margin-top:.5rem">Antes: Deep-explorer → Polisher → Page-front → Front-executor (4 skills, muita redundancia)<br>
+Agora: Deep-front-audit (1 skill hibrida) → Deep-front-executor (1 executor unificado)</p>
+<p style="font-size:.82rem;margin-top:.5rem;color:var(--amber)"><strong>Por que:</strong> Elimina 3 redundancias (visual audit, dirty state, responsividade). Economiza ~40min e ~50K tokens.</p>
+</div>
+
+<div class="arch">  <strong>FASE 2A — Deep + Front Audit Unificado</strong> (NOVO: page-deep-front-audit)
+  ├── Cria mock data [AUDIT] no browser
+  ├── 6 breakpoints screenshots (375, 640, 768, 1024, 1280, 1440)
+  ├── 13 categorias do deep-explorer (nav, tabs, filters, table, cards, drawers, forms, upload, DnD, buttons, states, responsive, reuse)
+  ├── 12 code checks do page-front (hardcodes, icons, fonts, z-index, glass, tooltips, hover, toasts, dirty, empty, staleTime, file size)
+  ├── 9 notas por categoria (hierarchy, DS, cards, drawers, buttons, typography, states, responsive, forms)
+  ├── <em>NOVO: Documento tiers (Inicial vs Tramitacao) verificacao explicita</em>
+  ├── <em>NOVO: Restricoes tab cross-context check</em>
+  ├── <em>NOVO: A11Y basico</em> (aria-labels, Tab order, focus visible)
+  ├── Cleanup [AUDIT] data
+  └── Gera: deep-front-audit-v{N}.html (UNICO report, nao 2)
+
+  <strong>FASE 2B — Fix Unificado</strong> (NOVO: page-deep-front-executor)
+  ├── Prioridade: FUNC → STATE → FORM → RESP → CSS → A11Y
+  ├── CSS-only → JSX → Hook (nao skip automatico)
+  ├── <em>NOVO: Cross-page check se componente compartilhado</em>
+  ├── Loop max 2 ciclos ate nota >= 9.0
+  └── Gera: deep-front-exec-v{N}.html</div>
+</div>
+
+<!-- FASE 3 -->
+<div style="margin-bottom:2rem">
+<div class="phase-header">
+  <div class="phase-num">3</div>
+  <div class="phase-title">Cobertura Total</div>
+  <div class="phase-time">~45 min</div>
+</div>
+<div class="flow-box">
+<strong>MANTIDA — Front-tester funciona bem, so adicionar checks:</strong>
+</div>
+
+<div class="arch">  <strong>FASE 3 — Interaction Coverage</strong> (page-front-tester melhorado)
+  ├── 10 grupos × ~15 testes = ~150 testes
+  ├── Cria [TESTE] mock data
+  ├── Matriz ✅/❌/⚠️ por interacao
+  ├── <em>NOVO: Grupo K (webhooks async) OBRIGATORIO se pagina tem webhooks</em>
+  ├── <em>NOVO: Grupo L (keyboard) — Tab, Esc, Enter em modais/drawers</em>
+  ├── <em>NOVO: Grupo M (cross-context) — testar componentes em todos contextos</em>
+  │    Ex: ClienteDrawer testado como context=crm E context=clientes
+  ├── <em>NOVO: Edge cases</em> — string vazia, 500 chars, chars especiais, datas futuras
+  ├── Cleanup [TESTE] data
+  └── Gera: front-test-v{N}.html com score % cobertura
+
+  <span class="red">REMOVIDO: page-front-executor loop aqui (ja feito na Fase 2)</span></div>
+</div>
+
+<!-- FASE 4 -->
+<div style="margin-bottom:2rem">
+<div class="phase-header">
+  <div class="phase-num">4</div>
+  <div class="phase-title">Senior Review + Lapidacao Final</div>
+  <div class="phase-time">~60 min</div>
+</div>
+<div class="flow-box improve">
+<strong>MELHORIA — Senior com checklist mais rigido + veredicto enforcement:</strong>
+</div>
+
+<div class="arch">  <strong>FASE 4A — Senior Review</strong> (page-senior-review melhorado)
+  ├── Carrega MAXIMO contexto (core KB + spec + DS + schema + ALL reports)
+  ├── Investigation map (pendencias + spec features + fluxos + n8n + states + frageis + seguranca)
+  ├── <em>NOVO: Checklist explicito de 80 checks (8 areas × 10 checks)</em>
+  │    [BK] [SEC] [FUNC] [UX] [PERF] [N8N] [A11Y] [CODE]
+  ├── <em>NOVO: Documento tiers final check</em>
+  ├── <em>NOVO: Restricoes cross-context final check</em>
+  ├── <em>NOVO: Spec compliance check (todo campo do spec implementado?)</em>
+  ├── P0/P1/P2 por 8 areas
+  └── Veredicto: Aprovado? Sim/Nao — condicao
+
+  <strong>FASE 4B — Senior Executor</strong> (page-senior-executor melhorado)
+  ├── Contrato de execucao (todos findings)
+  ├── Backend → Frontend → n8n
+  ├── Reconciliacao (nenhum finding esquecido)
+  ├── Lapidation loop (max 2 ciclos, 8 areas >= 9.0)
+  ├── <em>NOVO: Veredicto enforcement</em>
+  │    Se veredicto = "NAO" → NAO procede para finalize
+  │    Reporta condicao ao usuario → aguarda resolucao
+  └── Gera: senior-exec-log-v{N}.html
+
+  <strong>FASE 4C — Finalize</strong> (page-finalize melhorado)
+  ├── <em>NOVO: Report existence check (todos 6 reports devem existir)</em>
+  ├── Coleta todos reports
+  ├── Atualiza docs/revisoes/PAGINA.md
+  ├── Atualiza core HTML
+  ├── Commit + push ambos repos
+  └── Gera: loop-report-v{N}.html (abre no browser)</div>
+</div>
+
+<!-- COMPARATIVO -->
+<div style="margin-top:2rem; background:var(--surface-2); border-radius:8px; padding:1.25rem;">
+<h3 style="margin-bottom:.75rem">Comparativo v1 vs v2</h3>
+<table>
+<tr><th>Metrica</th><th>v1 (atual)</th><th>v2 (proposto)</th><th>Melhoria</th></tr>
+<tr><td>Fases</td><td>5 + encerramento</td><td>4 + encerramento</td><td>-1 fase (fundiu 2+3)</td></tr>
+<tr><td>Skills executadas</td><td>13 sequenciais</td><td>8 (5 melhoradas + 3 novas)</td><td>-5 skills (menos overhead)</td></tr>
+<tr><td>Tempo estimado</td><td>4-7 horas</td><td>3-4 horas</td><td>~40% mais rapido</td></tr>
+<tr><td>Tokens estimados</td><td>~220K/ciclo</td><td>~150K/ciclo</td><td>~30% economia</td></tr>
+<tr><td>Max loops internos</td><td>3 por executor</td><td>2 por executor</td><td>-1 ciclo max</td></tr>
+<tr><td>Pre-flight</td><td style="color:var(--red)">Nenhum</td><td style="color:var(--green)">7 checks</td><td>Fail fast</td></tr>
+<tr><td>TypeScript check</td><td style="color:var(--red)">Parcial</td><td style="color:var(--green)">Em TODA skill</td><td>Zero type drift</td></tr>
+<tr><td>Multi-tenant test</td><td style="color:var(--red)">Ausente</td><td style="color:var(--green)">Fase 1A</td><td>Security</td></tr>
+<tr><td>Silent-drop audit</td><td style="color:var(--red)">Parcial</td><td style="color:var(--green)">Fase 1C + 1D</td><td>Zero data loss</td></tr>
+<tr><td>Cross-page check</td><td style="color:var(--red)">Nenhum</td><td style="color:var(--green)">Fase 1D + 2B</td><td>Nao quebra outra pagina</td></tr>
+<tr><td>Documento tiers</td><td style="color:var(--red)">Nao verifica</td><td style="color:var(--green)">Fase 2A + 4A</td><td>Inicial/Tramitacao correto</td></tr>
+<tr><td>Restricoes cross-ctx</td><td style="color:var(--red)">Nao verifica</td><td style="color:var(--green)">Fase 2A + 4A</td><td>3 contextos testados</td></tr>
+<tr><td>Veredicto enforcement</td><td style="color:var(--red)">Nao</td><td style="color:var(--green)">Fase 4B</td><td>Nao finaliza quebrado</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 5: CHECKLIST UNIVERSAL -->
+<!-- ============================================ -->
+
+<div class="section">
+<h2>5. Checklist Universal — O Que o Page-Loop v2 DEVE Verificar em TODA Pagina</h2>
+
+<div class="three-col">
+<div>
+<h4>[BK] Backend (10 checks)</h4>
+<ul class="checklist">
+<li class="new">organizacao_id em TODA query</li>
+<li class="new">deleted_at IS NULL em TODA query</li>
+<li class="new">RLS habilitado + policy correta</li>
+<li class="new">RPCs com SECURITY DEFINER</li>
+<li class="new">SET search_path = public</li>
+<li class="new">TEXT CHECK (nunca ENUM nativo)</li>
+<li class="new">BIGINT centavos (nunca FLOAT)</li>
+<li class="new">TIMESTAMPTZ (nunca DATE)</li>
+<li class="new">Trigger updated_at</li>
+<li class="new">Indices: org_id, org_id WHERE deleted_at IS NULL</li>
+</ul>
+
+<h4 style="margin-top:1rem">[SEC] Seguranca (10 checks)</h4>
+<ul class="checklist">
+<li class="new">Multi-tenant: org_A nao ve org_B</li>
+<li class="new">Soft delete: registros deletados nao aparecem</li>
+<li class="new">Silent-drop: todo param enviado e aceito</li>
+<li class="new">Type-drift: tipo do param = tipo da coluna</li>
+<li class="new">Secrets em .env (zero hardcode)</li>
+<li class="new">anon role nao acessa dados protegidos</li>
+<li class="new">Mascaramento financeiro (acesso_financeiro)</li>
+<li class="new">CPF redacted em logs</li>
+<li class="new">Webhook auth header presente</li>
+<li class="new">CORS correto</li>
+</ul>
+</div>
+
+<div>
+<h4>[FUNC] Funcional (10 checks)</h4>
+<ul class="checklist">
+<li class="new">CRUD completo funciona</li>
+<li class="new">Filtros aplicam corretamente</li>
+<li class="new">Busca com unaccent funciona</li>
+<li class="new">Paginacao server-side</li>
+<li class="new">Empty states em toda lista</li>
+<li class="new">Loading states (skeleton, nao spinner)</li>
+<li class="new">Error states com mensagem</li>
+<li class="new">Toast apos toda acao</li>
+<li class="new">Dirty state em modais/drawers</li>
+<li class="new">Realtime funciona (INSERT/UPDATE/DELETE)</li>
+</ul>
+
+<h4 style="margin-top:1rem">[UX] UI/UX (10 checks)</h4>
+<ul class="checklist">
+<li class="new">Zero hardcode hex (so tokens CSS)</li>
+<li class="new">Fonts: Inter body, Manrope H1/H2, JetBrains Mono CNJ/CPF</li>
+<li class="new">Responsivo: 375, 768, 1024, 1440px</li>
+<li class="new">Hover states em elementos interativos</li>
+<li class="new">Tooltip em botoes icone</li>
+<li class="new">Badges com tokens (nao Tailwind named colors)</li>
+<li class="new">Glassmorphism so em cards/modais/popovers</li>
+<li class="new">Z-index correto (modal=50, toast=60, tooltip=70)</li>
+<li class="new">Truncate com tooltip em texto longo</li>
+<li class="new">Touch targets >= 44px mobile</li>
+</ul>
+</div>
+
+<div>
+<h4>[PERF] Performance (10 checks)</h4>
+<ul class="checklist">
+<li class="new">staleTime: 30_000 em todo useQuery</li>
+<li class="new">Sem JSON.stringify em deps arrays</li>
+<li class="new">Sem key={index} em listas</li>
+<li class="new">select() especifico (nao select('*'))</li>
+<li class="new">Sem console.log em producao</li>
+<li class="new">Arquivos < 500 linhas</li>
+<li class="new">Sem import * as</li>
+<li class="new">Sem transition-all (usar especifico)</li>
+<li class="new">Paginacao limit(500) em queries grandes</li>
+<li class="new">Realtime com filtro organizacao_id</li>
+</ul>
+
+<h4 style="margin-top:1rem">[A11Y] Acessibilidade (6 checks)</h4>
+<ul class="checklist">
+<li class="new">aria-label em todo botao icone</li>
+<li class="new">htmlFor em todo label de form</li>
+<li class="new">Sem outline-none sem alternativa focus</li>
+<li class="new">role=tablist/tab em tabs</li>
+<li class="new">Esc fecha modal/drawer</li>
+<li class="new">Focus auto no primeiro campo do modal</li>
+</ul>
+
+<h4 style="margin-top:1rem">[CODE] Qualidade (6 checks)</h4>
+<ul class="checklist">
+<li class="new">Zero TODO/FIXME</li>
+<li class="new">Zero any TypeScript</li>
+<li class="new">Zero console.log/warn</li>
+<li class="new">Zero hardcode URL/secret</li>
+<li class="new">Zero button-in-button</li>
+<li class="new">Imports limpos (sem dead imports)</li>
+</ul>
+</div>
+</div>
+
+<p style="margin-top:1rem;font-size:.84rem;color:var(--text-muted)"><strong>Total: 72 checks universais</strong> — aplicados em TODA pagina, TODA vez. Nenhum check e "opcional".</p>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 6: VERIFICAÇÕES ESPECÍFICAS -->
+<!-- ============================================ -->
+
+<div class="section">
+<h2>6. Verificacoes Especificas por Contexto — O Que o v1 NAO Cobria</h2>
+
+<div class="two-col">
+<div>
+<h3>Documentos — 3 Tiers</h3>
+<table>
+<tr><th>Check</th><th>O que verificar</th></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Tier 1 (documento_lead) aparece SO em CRM/Clientes, nunca em Processos</td></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Tier 2 (documento_restricao) filtrado por restricao_id correto</td></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Tier 3 (generated) SO aparece em Processos com processo_id</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>INICIAL_CATS (9 categorias) nunca aparecem em Tramitacao</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>isTramitacaoDoc usa <code>categoria</code> (NAO entidade_tipo)</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>google_drive_id incluido em TODOS os SELECTs</td></tr>
+<tr><td><span class="tag tag-sky">P2</span></td><td>DnD habilitado SO em Docs Inicial</td></tr>
+<tr><td><span class="tag tag-sky">P2</span></td><td>Storage path: {org_id}/{tipo}/{id}/filename</td></tr>
+</table>
+
+<h3 style="margin-top:1.5rem">Restricoes — Cross-Context</h3>
+<table>
+<tr><th>Check</th><th>O que verificar</th></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>CRM: mostra SO restricoes sem processo (apenasSemProcesso=true)</td></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Clientes: mostra TODAS restricoes com badge de status processo</td></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Distribuicao: mostra SO a restricao sendo distribuida (restricaoId filter)</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>tipo = TEXT ('comprador','devedor','fiador','avalista'), nunca integer</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>valor = BIGINT centavos, formatado como R$ X.XXX,XX</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>RestricaoPastaCard: bulk select + delete funciona</td></tr>
+<tr><td><span class="tag tag-sky">P2</span></td><td>Accordion expand/collapse preserva estado</td></tr>
+</table>
+</div>
+
+<div>
+<h3>ClienteDrawer — 3 Contextos</h3>
+<table>
+<tr><th>Context</th><th>Abas obrigatorias</th><th>Abas PROIBIDAS</th></tr>
+<tr><td><span class="tag tag-accent">crm</span></td><td>Dados, Restricoes, Docs, Follow-up, Atividades, MDZap, Historico</td><td>Juridico, Pendentes</td></tr>
+<tr><td><span class="tag tag-green">clientes</span></td><td>Dados, Restricoes, Juridico, Documentos, Pendentes, Historico</td><td>Follow-up, Atividades, MDZap</td></tr>
+<tr><td><span class="tag tag-sky">distribuicao</span></td><td>Dados, Restricoes (filtrada), Docs</td><td>Follow-up, Atividades, MDZap, Juridico</td></tr>
+</table>
+
+<h3 style="margin-top:1.5rem">Webhooks — Action-Driven UI</h3>
+<table>
+<tr><th>Check</th><th>O que verificar</th></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Frontend NUNCA decide (if success navigate). Sempre switch(action)</td></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>n8n SEMPRE retorna HTTP 200 (mesmo erro = success:false)</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>Envelope canonico: request_id, contexto, organizacao_id, actor_user_id, data</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>Async webhooks: polling via pollWebhookRequest (nao fire-and-forget)</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>Timeout em async: detecta falha apos 90-120s</td></tr>
+<tr><td><span class="tag tag-sky">P2</span></td><td>webhook_requests log criado com request_id</td></tr>
+</table>
+
+<h3 style="margin-top:1.5rem">Fluxo CRM → Distribuicao → Processo</h3>
+<table>
+<tr><th>Check</th><th>O que verificar</th></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Lead distribuido vira Processo com restricao_id linkado</td></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Docs do lead migram para processo (Tier 1/2 → Tier 3)</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>CNJ preenchido na distribuicao persiste no processo</td></tr>
+<tr><td><span class="tag tag-amber">P1</span></td><td>Advogado vinculado persiste</td></tr>
+<tr><td><span class="tag tag-sky">P2</span></td><td>Peticao gerada via OlivIA aparece em Docs Inicial do processo</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 7: PLANO DE EXECUÇÃO -->
+<!-- ============================================ -->
+
+<div class="section highlight">
+<h2>7. Plano de Execucao — Ordem das Paginas</h2>
+
+<div style="margin-bottom:1rem; padding:1rem; background:var(--surface-2); border-radius:8px;">
+<strong>Criterio de prioridade:</strong> Fluxo de atendimento (CRM→Distribuicao→Processos) precisa funcionar ponta-a-ponta primeiro. Depois expansao (MdZap, Empresas).
+</div>
+
+<ol class="priority-list">
+<li>
+<div>
+<strong>/distribuicao</strong> — <span class="tag tag-red">NUNCA REVISADA</span><br>
+<span style="font-size:.82rem;color:var(--text-muted)">Coracao do fluxo. Sem QA nenhuma. Precisa de page-loop completo do zero. 5 webhooks (2 OK, 3 nao testados). 7 modais. 4 tabs. Conexao critica com CRM e Processos.</span>
+</div>
+</li>
+<li>
+<div>
+<strong>/empresas</strong> — <span class="tag tag-amber">v1 em andamento</span><br>
+<span style="font-size:.82rem;color:var(--text-muted)">Primeiro ciclo page-loop acontecendo agora. 5 tabs, 5 modais, 4 webhooks. Dependencia: toda restricao aponta para uma empresa.</span>
+</div>
+</li>
+<li>
+<div>
+<strong>/crm</strong> — <span class="tag tag-green">9.1/10</span> <span class="tag tag-amber">Re-test</span><br>
+<span style="font-size:.82rem;color:var(--text-muted)">Nota alta mas 7/8 webhooks nao testados. Re-rodar com page-loop v2 focando em: webhooks, cross-context ClienteDrawer, documento tiers. NÃO recriar do zero — so validar gaps.</span>
+</div>
+</li>
+<li>
+<div>
+<strong>/clientes</strong> — <span class="tag tag-green">8.5/10</span> <span class="tag tag-amber">Re-test</span><br>
+<span style="font-size:.82rem;color:var(--text-muted)">Nota boa mas 5 P2 abertos. Re-rodar v2 focando em: ClienteDrawer context=clientes, aba Pendentes (nova), paginacao. NÃO recriar — validar gaps.</span>
+</div>
+</li>
+<li>
+<div>
+<strong>/processos</strong> — <span class="tag tag-green">9.3/10</span> <span class="tag tag-sky">Validar</span><br>
+<span style="font-size:.82rem;color:var(--text-muted)">Melhor nota. Validar: docs Inicial/Tramitacao (INICIAL_CATS correto?), ProcessoDrawer 9 abas, restricao_tipo TEXT. Mais rapido.</span>
+</div>
+</li>
+<li>
+<div>
+<strong>/mdzap</strong> — <span class="tag tag-green">8.6/10</span> <span class="tag tag-red">3 P1 n8n</span><br>
+<span style="font-size:.82rem;color:var(--text-muted)">3 webhooks HTTP 500 (token expirado). Precisa renovar token no Railway ANTES de rodar page-loop. Depois: validar Julia IA, soft delete, realtime.</span>
+</div>
+</li>
+</ol>
+
+<div style="margin-top:1.5rem; padding:1rem; background:var(--accent-dim); border:1px solid rgba(124,109,255,.3); border-radius:8px;">
+<strong>Pendencias que NAO entram no page-loop (excluidas conforme instrucao):</strong>
+<ul style="margin-top:.5rem">
+<li>Geracao de contratos e procuracoes do CRM (pendencia manual)</li>
+<li>Peticao inicial da distribuicao (depende OlivIA — excluida)</li>
+<li>/olivia inteira (excluida)</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 8: MELHORIAS CONCRETAS NAS SKILLS -->
+<!-- ============================================ -->
+
+<div class="section">
+<h2>8. Melhorias Concretas nas Skills — O Que Mudar</h2>
+
+<div class="two-col">
+<div>
+<h3>Skills a MELHORAR</h3>
+
+<div class="flow-box improve" style="margin-bottom:.75rem">
+<strong>page-loop</strong> (orquestrador)
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>Adicionar FASE 0 (pre-flight)</li>
+<li>Reordenar: Backend ANTES de QA funcional</li>
+<li>Fundir Fase 2+3 (deep + front) numa fase so</li>
+<li>Max 2 loops internos (nao 3)</li>
+<li>Veredicto enforcement (nao finaliza se "NAO")</li>
+<li>Report existence check antes do finalize</li>
+</ul>
+</div>
+
+<div class="flow-box improve" style="margin-bottom:.75rem">
+<strong>page-backend-tester</strong>
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>Adicionar multi-tenant test (org cruzado)</li>
+<li>Adicionar spec-to-schema validation</li>
+<li>Melhorar silent-drop methodology</li>
+<li>Adicionar soft-delete enforcement check</li>
+</ul>
+</div>
+
+<div class="flow-box improve" style="margin-bottom:.75rem">
+<strong>page-qa-tester</strong>
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>TypeScript check OBRIGATORIO</li>
+<li>Adicionar cross-context ClienteDrawer test</li>
+<li>Adicionar documento tiers validation</li>
+<li>Adicionar restricoes cross-context check</li>
+<li>Webhook Grupo J: verificar execucao no n8n (nao so request log)</li>
+</ul>
+</div>
+
+<div class="flow-box improve" style="margin-bottom:.75rem">
+<strong>page-executor</strong>
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>Silent-drop check antes de cada fix RPC</li>
+<li>Cross-page impact check se componente compartilhado</li>
+<li>TypeScript check apos cada fix</li>
+</ul>
+</div>
+
+<div class="flow-box improve" style="margin-bottom:.75rem">
+<strong>page-senior-review</strong>
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>Checklist rigido: 80 checks (8 areas × 10)</li>
+<li>Spec compliance check explicito</li>
+<li>Documento tiers final verification</li>
+<li>Restricoes cross-context final check</li>
+</ul>
+</div>
+
+<div class="flow-box improve" style="margin-bottom:.75rem">
+<strong>page-finalize</strong>
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>Report existence check (TODOS devem existir)</li>
+<li>Backup core HTML antes de atualizar</li>
+<li>Validar HTML bem-formado</li>
+</ul>
+</div>
+</div>
+
+<div>
+<h3>Skills a CRIAR (novas)</h3>
+
+<div class="flow-box new" style="margin-bottom:.75rem">
+<strong>page-preflight</strong> (NOVA)
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>7 checks: git, server, supabase, spec, reports dir, tsc, auth</li>
+<li>Fail fast se qualquer falhar</li>
+<li>Gera: preflight-check.log</li>
+<li>Modelo: haiku (rapido)</li>
+</ul>
+</div>
+
+<div class="flow-box new" style="margin-bottom:.75rem">
+<strong>page-deep-front-audit</strong> (NOVA — funde deep-explorer + page-front)
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>Um unico audit: 13 categorias + 12 code checks + 9 notas</li>
+<li>Elimina 3 redundancias (visual, dirty state, responsive)</li>
+<li>Adiciona: documento tiers, restricoes cross-ctx, A11Y basico</li>
+<li>Gera: deep-front-audit.html (UNICO report)</li>
+<li>Modelo: opus (analise visual + codigo)</li>
+</ul>
+</div>
+
+<div class="flow-box new" style="margin-bottom:.75rem">
+<strong>page-deep-front-executor</strong> (NOVA — funde polisher + front-executor)
+<ul style="margin-top:.5rem;font-size:.82rem">
+<li>Um unico executor para todos achados visuais + codigo</li>
+<li>Prioridade: FUNC → STATE → FORM → RESP → CSS → A11Y</li>
+<li>Cross-page check integrado</li>
+<li>Loop max 2 ciclos</li>
+<li>Gera: deep-front-exec.html</li>
+<li>Modelo: opus</li>
+</ul>
+</div>
+
+<h3 style="margin-top:1.5rem">Skills a REMOVER (redundantes)</h3>
+
+<div class="flow-box remove" style="margin-bottom:.75rem">
+<strong>page-deep-explorer</strong> — fundido em page-deep-front-audit
+</div>
+<div class="flow-box remove" style="margin-bottom:.75rem">
+<strong>page-polisher</strong> — fundido em page-deep-front-executor
+</div>
+<div class="flow-box remove" style="margin-bottom:.75rem">
+<strong>page-front</strong> — fundido em page-deep-front-audit
+</div>
+<div class="flow-box remove" style="margin-bottom:.75rem">
+<strong>page-front-executor</strong> — fundido em page-deep-front-executor
+</div>
+
+<h3 style="margin-top:1.5rem">Skills MANTIDAS (sem mudanca)</h3>
+<div style="font-size:.84rem;color:var(--text-muted)">
+<p>page-review — funciona bem como entry point</p>
+<p>page-front-tester — cobertura de interacao e unica</p>
+<p>report — session audit obrigatorio</p>
+<p>html-report — template CSS base</p>
+<p>mdflow-frontend / mdflow-backend / mdflow-migration — regras injetadas</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 9: WEBHOOK STATUS COMPLETO -->
+<!-- ============================================ -->
+
+<div class="section">
+<h2>9. Webhooks — Status por Pagina (Bloqueios p/ Atendimento)</h2>
+<table>
+<tr><th>Pagina</th><th>Total</th><th>OK</th><th>Crash</th><th>N.Testado</th><th>Bloqueio?</th></tr>
+<tr><td>/crm</td><td>8</td><td style="color:var(--green)">1</td><td>0</td><td style="color:var(--amber)">7</td><td>Bureau APIs faltam (SERASA/SPC/BOAVISTA)</td></tr>
+<tr><td>/clientes</td><td>8</td><td style="color:var(--green)">3</td><td>0</td><td style="color:var(--amber)">5</td><td>Google Service Account falta</td></tr>
+<tr><td>/distribuicao</td><td>5</td><td style="color:var(--green)">2</td><td>0</td><td style="color:var(--amber)">3</td><td>Nao (peticao funciona via PETICAO-V3)</td></tr>
+<tr><td>/processos</td><td>3</td><td>0</td><td>0</td><td style="color:var(--amber)">3</td><td>Google Service Account</td></tr>
+<tr><td>/mdzap</td><td>10+</td><td style="color:var(--green)">5</td><td style="color:var(--red)">2</td><td style="color:var(--amber)">3+</td><td><strong style="color:var(--red)">TOKEN EXPIRADO</strong> — ai-composer + julia-prompt-save HTTP 500</td></tr>
+<tr><td>/empresas</td><td>4</td><td>0</td><td>0</td><td style="color:var(--amber)">4</td><td>Webhook CRUD sem workflow no n8n</td></tr>
+</table>
+
+<div style="margin-top:1rem; padding:1rem; background:var(--red-dim); border:1px solid rgba(239,68,68,.3); border-radius:8px;">
+<strong>Acao ANTES de rodar page-loop:</strong>
+<ul style="margin-top:.5rem;font-size:.84rem">
+<li><strong>MdZap:</strong> Renovar MDZap token no Railway (MDZAP-ASSUMIR + MDZAP-DEVOLVER + ai-composer + julia-prompt-save)</li>
+<li><strong>Empresas:</strong> Criar workflow n8n para empresas/crud OU mudar para Supabase direto</li>
+<li><strong>Google Drive:</strong> NAO bloqueante — geracao de docs via Drive e enhancement, nao core</li>
+<li><strong>Bureau APIs:</strong> NAO bloqueante — consulta de restricoes e enhancement</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 10: BRIEFING POR PÁGINA -->
+<!-- ============================================ -->
+
+<div class="section">
+<h2>10. Briefing por Pagina — O Que Investigar Antes do Page-Loop</h2>
+
+<div style="margin-bottom:1.5rem; padding:1.25rem; background:var(--surface-2); border-radius:8px; border-left:4px solid var(--red);">
+<h3 style="color:var(--red)">/distribuicao — Prioridade #1</h3>
+<div class="badge-row">
+<span class="tag tag-red">Nunca revisada</span>
+<span class="tag tag-amber">Fluxo critico</span>
+<span class="tag tag-sky">5 webhooks</span>
+<span class="tag tag-accent">7 modais</span>
+</div>
+<p style="font-size:.84rem;margin-top:.5rem"><strong>Investigar:</strong></p>
+<ul style="font-size:.82rem">
+<li>4 tabs (Dashboard, Preparacao, Aguardando, Agendados) — todas funcionam?</li>
+<li>ModalEfetuarDistribuicao — CNJ, advogado, estado, cidade, vara — campos persistem?</li>
+<li>ModalGerarPeticao — state machine (idle→gerando→sucesso/falhou) funciona com timeout?</li>
+<li>DistribuicaoDrawerRestricao — docs section visivel?</li>
+<li>ClienteDrawer context=distribuicao — abas corretas?</li>
+<li>view_processos_distribuicao — ignora soft-deleted agendamentos?</li>
+<li>Fluxo end-to-end: CRM lead → seleciona restricao → prepara docs → distribui → processo criado</li>
+<li>Webhook comprovante: mdflow/doc/gerar-comprovante (NAO no inventario — undocumented)</li>
+</ul>
+</div>
+
+<div style="margin-bottom:1.5rem; padding:1.25rem; background:var(--surface-2); border-radius:8px; border-left:4px solid var(--amber);">
+<h3 style="color:var(--amber)">/empresas — Prioridade #2</h3>
+<div class="badge-row">
+<span class="tag tag-amber">Primeiro ciclo</span>
+<span class="tag tag-sky">5 tabs</span>
+<span class="tag tag-accent">5 modais</span>
+</div>
+<p style="font-size:.84rem;margin-top:.5rem"><strong>Investigar:</strong></p>
+<ul style="font-size:.82rem">
+<li>5 tabs (Dashboard, Empresas, Orgaos, Categorias, Escritorios) — CRUD completo?</li>
+<li>ModalMergeEmpresa — merge mantem processos linkados?</li>
+<li>Status approval flow: pendente → aprovada → descartada_tecnico</li>
+<li>criado_por: 'humano' vs 'ia' — visual diferente?</li>
+<li>processavel toggle — afeta distribuicao?</li>
+<li>4 webhooks sem workflow n8n — decidir: criar ou Supabase direto?</li>
+</ul>
+</div>
+
+<div style="margin-bottom:1.5rem; padding:1.25rem; background:var(--surface-2); border-radius:8px; border-left:4px solid var(--green);">
+<h3 style="color:var(--green)">/crm — Re-test (Prioridade #3)</h3>
+<div class="badge-row">
+<span class="tag tag-green">9.1/10</span>
+<span class="tag tag-amber">7 webhooks NT</span>
+</div>
+<p style="font-size:.84rem;margin-top:.5rem"><strong>Focar em:</strong></p>
+<ul style="font-size:.82rem">
+<li>ClienteDrawer context=crm — 7 abas corretas? (Dados, Restricoes, Docs, Follow-up, Atividades, MDZap, Historico)</li>
+<li>Restricoes: mostra SO sem processo (apenasSemProcesso=true)?</li>
+<li>Docs: RestricaoPastaCard por restricao, google_drive_id em SELECTs</li>
+<li>Kanban DnD funciona mobile (TouchSensor)?</li>
+<li>documentos_pendentes coluna OCULTA no kanban (intencional)</li>
+<li>Fluxo: ModalDistribuirLead → navega para /distribuicao</li>
+</ul>
+</div>
+
+<div style="margin-bottom:1.5rem; padding:1.25rem; background:var(--surface-2); border-radius:8px; border-left:4px solid var(--green);">
+<h3 style="color:var(--green)">/clientes — Re-test (Prioridade #4)</h3>
+<div class="badge-row">
+<span class="tag tag-green">8.5/10</span>
+<span class="tag tag-amber">5 P2 abertos</span>
+</div>
+<p style="font-size:.84rem;margin-top:.5rem"><strong>Focar em:</strong></p>
+<ul style="font-size:.82rem">
+<li>ClienteDrawer context=clientes — 6 abas? (Dados, Restricoes, Juridico, Documentos, Pendentes, Historico)</li>
+<li>Aba Pendentes (NOVA v3) — funciona?</li>
+<li>Paginacao: 50/page, client-side OK < 200, migrar .range() se > 200</li>
+<li>Filtros URL-synced (q, estados, advogados, engajamento, de, ate, carteira, ordem)</li>
+<li>KPI cards: 3 ou 4? (F04 aberto)</li>
+<li>Import CSV modal funciona?</li>
+</ul>
+</div>
+
+<div style="margin-bottom:1.5rem; padding:1.25rem; background:var(--surface-2); border-radius:8px; border-left:4px solid var(--green);">
+<h3 style="color:var(--green)">/processos — Validar (Prioridade #5)</h3>
+<div class="badge-row">
+<span class="tag tag-green">9.3/10</span>
+</div>
+<p style="font-size:.84rem;margin-top:.5rem"><strong>Focar em:</strong></p>
+<ul style="font-size:.82rem">
+<li>ProcessoDrawer 9 abas — todas renderizam?</li>
+<li>Docs: Inicial (9 INICIAL_CATS) vs Tramitacao (resto) — separacao correta?</li>
+<li>restricao_tipo = TEXT (nao integer)</li>
+<li>valor_causa = centavos formatado como R$</li>
+<li>fn_restricoes_listar inclui leads arquivados</li>
+<li>Export síncrono pattern</li>
+</ul>
+</div>
+
+<div style="padding:1.25rem; background:var(--surface-2); border-radius:8px; border-left:4px solid var(--sky);">
+<h3 style="color:var(--sky)">/mdzap — Pos-token (Prioridade #6)</h3>
+<div class="badge-row">
+<span class="tag tag-green">8.6/10</span>
+<span class="tag tag-red">3 P1 n8n</span>
+</div>
+<p style="font-size:.84rem;margin-top:.5rem"><strong>PRE-REQUISITO: renovar token MDZap no Railway</strong></p>
+<ul style="font-size:.82rem">
+<li>Pos-token: re-testar MDZAP-ASSUMIR, MDZAP-DEVOLVER, ai-composer, julia-prompt-save</li>
+<li>Soft delete: todas tabelas usam deleted_at</li>
+<li>Realtime: conversas status updates propagam</li>
+<li>aguardando_humano: propaga via UPDATE?</li>
+<li>MdzapMsgThread: refatorado (useMdzapDragDrop extraido)</li>
+<li>Lead panel ↔ CRM stage mapping bidirecional</li>
+</ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO 11: RESUMO EXECUTIVO -->
+<!-- ============================================ -->
+
+<div class="section" style="border-color:var(--green); border-width:2px;">
+<h2>11. Resumo Executivo — O Que Fazer Agora</h2>
+
+<div class="three-col">
+<div style="padding:1rem; background:var(--red-dim); border-radius:8px;">
+<h4 style="color:var(--red)">ANTES do Page-Loop</h4>
+<ol style="font-size:.82rem">
+<li>Renovar token MDZap no Railway</li>
+<li>Decidir empresas webhooks (n8n ou Supabase direto)</li>
+<li>Criar/melhorar 3 skills novas (preflight, deep-front-audit, deep-front-executor)</li>
+<li>Melhorar 6 skills existentes conforme Secao 8</li>
+<li>Atualizar CLAUDE.md com checklist universal (72 checks)</li>
+</ol>
+</div>
+
+<div style="padding:1rem; background:var(--amber-dim); border-radius:8px;">
+<h4 style="color:var(--amber)">DURANTE o Page-Loop</h4>
+<ol style="font-size:.82rem">
+<li>/distribuicao (do zero — mais critico)</li>
+<li>/empresas (completar v1)</li>
+<li>/crm (re-test gaps)</li>
+<li>/clientes (re-test gaps)</li>
+<li>/processos (validar)</li>
+<li>/mdzap (pos-token)</li>
+</ol>
+</div>
+
+<div style="padding:1rem; background:var(--green-dim); border-radius:8px;">
+<h4 style="color:var(--green)">RESULTADO ESPERADO</h4>
+<ul style="font-size:.82rem">
+<li>6 paginas com nota >= 9.5/10</li>
+<li>Zero P0/P1 abertos</li>
+<li>Fluxo CRM→Distribuicao→Processo testado E2E</li>
+<li>Docs, Restricoes, ClienteDrawer funcionando em todos contextos</li>
+<li>Webhooks criticos testados e funcionando</li>
+<li>~40% menos tempo por pagina (v2 vs v1)</li>
+<li>~30% menos tokens por ciclo</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="footer">
+Framework Page-Loop v2 &bull; Gerado 2026-04-06 &bull; 6 agentes paralelos, 19 skills analisadas, 6 specs completos &bull; Claude Code (Opus 4.6) &bull; MdFlow / MDX LegalTech
+</div>
+
+</body>
+</html>
