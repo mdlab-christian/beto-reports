@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Drive — Plano de Integração MdFlow</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --green: #20c997;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --blue: #38bdf8;
+  --orange: #fb923c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: #0b0d15;
+  border-right: 1px solid var(--border);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  padding: 24px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.sidebar-logo .logo-icon { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+.sidebar-logo .logo-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.sidebar-logo .logo-sub { font-size: 0.72rem; color: var(--text-muted); }
+
+.sidebar-section-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  padding: 12px 20px 6px;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.82rem;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  color: var(--text);
+  background: rgba(124,109,255,0.08);
+  border-left-color: var(--accent);
+}
+
+.sidebar-nav a .nav-icon { font-size: 0.9rem; width: 18px; text-align: center; }
+
+.sidebar-badge {
+  margin-left: auto;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.sb-red { background: rgba(239,68,68,0.15); color: var(--red); }
+.sb-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
+.sb-green { background: rgba(32,201,151,0.12); color: var(--green); }
+.sb-blue { background: rgba(56,189,248,0.1); color: var(--blue); }
+
+/* MAIN */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px;
+  max-width: 1100px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 48px 24px 36px;
+  background: linear-gradient(135deg, rgba(124,109,255,0.06) 0%, rgba(56,189,248,0.04) 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  margin-bottom: 40px;
+}
+
+.hero-emoji { font-size: 3.2rem; display: block; margin-bottom: 14px; }
+
+.gradient-text {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 20px; }
+
+.badges {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* SECTIONS */
+.section { margin: 40px 0; scroll-margin-top: 20px; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.section-icon { font-size: 1.3rem; }
+.section-header h2 { font-size: 1.15rem; font-weight: 700; }
+
+.section-num {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 8px;
+  margin-left: auto;
+  letter-spacing: 0.5px;
+}
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* GRID */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+
+@media(max-width: 900px) {
+  body { display: block; }
+  .sidebar { display: none; }
+  .main { padding: 20px; }
+  .g2, .g3, .g4 { grid-template-columns: 1fr; }
+}
+
+/* STATS */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-value { font-size: 2rem; font-weight: 800; color: var(--accent); }
+.stat-value.sv-red { color: var(--red); }
+.stat-value.sv-green { color: var(--green); }
+.stat-value.sv-yellow { color: var(--yellow); }
+.stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* TABLE */
+.tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+
+table { width: 100%; border-collapse: collapse; }
+
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(42,47,74,0.5);
+  font-size: 0.83rem;
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* STATUS PILLS */
+.sp {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sp-ok { background: rgba(32,201,151,0.1); color: var(--green); border: 1px solid rgba(32,201,151,0.2); }
+.sp-warn { background: rgba(245,158,11,0.1); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+.sp-err { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+.sp-info { background: rgba(56,189,248,0.1); color: var(--blue); border: 1px solid rgba(56,189,248,0.2); }
+
+/* PRIORITY BADGES */
+.prio {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.p0 { background: rgba(239,68,68,0.18); color: var(--red); border: 1px solid rgba(239,68,68,0.35); }
+.p1 { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+.p2 { background: rgba(56,189,248,0.1); color: var(--blue); border: 1px solid rgba(56,189,248,0.2); }
+.p3 { background: rgba(124,109,255,0.1); color: var(--accent); border: 1px solid rgba(124,109,255,0.2); }
+
+/* CODE BLOCKS */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+}
+
+.code.code-blue { color: var(--accent5); }
+.code.code-yellow { color: var(--accent4); }
+.code.code-white { color: var(--text); }
+
+/* GAP CARDS */
+.gap-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.gap-card.gap-p0 { border-left: 4px solid var(--red); }
+.gap-card.gap-p1 { border-left: 4px solid var(--yellow); }
+.gap-card.gap-p2 { border-left: 4px solid var(--blue); }
+
+.gap-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.gap-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.gap-title { font-size: 1rem; font-weight: 700; flex: 1; }
+
+.gap-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.gap-meta-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+}
+
+.gap-meta-item strong { color: var(--text-muted); }
+
+.gap-body { color: var(--text-muted); line-height: 1.7; }
+.gap-body p { margin-bottom: 10px; }
+.gap-body .highlight { color: var(--text); font-weight: 500; }
+
+/* PHASE CARDS */
+.phase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.phase-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.phase-title { font-size: 0.95rem; font-weight: 700; flex: 1; }
+
+.phase-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 8px;
+}
+
+.phase-body { padding: 20px; }
+
+.step-list { list-style: none; }
+.step-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(42,47,74,0.4);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.step-list li:last-child { border-bottom: none; }
+.step-list li .step-icon { margin-top: 1px; font-size: 0.9rem; flex-shrink: 0; }
+.step-list li .step-text { color: var(--text); }
+.step-list li .step-sub { font-size: 0.78rem; color: var(--text-muted); display: block; margin-top: 2px; }
+
+/* DIAGRAM BLOCK */
+.diagram {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.diagram pre {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre;
+  margin: 0;
+}
+
+.diagram pre .dim { color: var(--text-muted); }
+.diagram pre .hi-green { color: var(--green); font-weight: 600; }
+.diagram pre .hi-blue { color: var(--blue); }
+.diagram pre .hi-purple { color: var(--accent); }
+.diagram pre .hi-red { color: var(--red); }
+.diagram pre .hi-yellow { color: var(--yellow); }
+
+/* INFO BOX */
+.info-box {
+  background: rgba(56,189,248,0.06);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.info-box.warn { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.2); }
+.info-box.err { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); }
+.info-box.ok { background: rgba(32,201,151,0.06); border-color: rgba(32,201,151,0.2); }
+
+.info-box strong { color: var(--text); }
+
+/* CONTRADICTION BOX */
+.contradiction {
+  background: rgba(251,146,60,0.07);
+  border: 1px solid rgba(251,146,60,0.25);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 20px 0;
+}
+
+.contradiction-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--orange);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+/* QUESTION CARDS */
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.q-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.q-text { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.q-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; }
+
+/* FIELD TABLE */
+.field-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 5px;
+  color: var(--accent3);
+}
+
+.table-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent5);
+}
+
+/* MIGRATION BOX */
+.migration-box {
+  background: #060810;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent4);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin: 16px 0;
+}
+
+.migration-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent4);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+}
+
+/* DIVIDER */
+.divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+/* LIST */
+ul.plain { list-style: none; padding: 0; }
+ul.plain li {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(42,47,74,0.35);
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+ul.plain li:last-child { border-bottom: none; }
+ul.plain li .li-icon { flex-shrink: 0; }
+
+/* SCROLL SPY highlight */
+:target { scroll-margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">📂</span>
+    <div class="logo-title">Google Drive</div>
+    <div class="logo-sub">Plano de Integração MdFlow</div>
+  </div>
+
+  <div class="sidebar-section-label">Diagnóstico</div>
+  <div class="sidebar-nav">
+    <a href="#s1"><span class="nav-icon">🔍</span> Estado atual <span class="sidebar-badge sb-blue">12 itens</span></a>
+  </div>
+
+  <div class="sidebar-section-label">Arquitetura</div>
+  <div class="sidebar-nav">
+    <a href="#s2"><span class="nav-icon">🗺</span> O que funciona</a>
+  </div>
+
+  <div class="sidebar-section-label">Gaps</div>
+  <div class="sidebar-nav">
+    <a href="#s3"><span class="nav-icon">⛔</span> GAP-01 google_drive_id <span class="sidebar-badge sb-red">P0</span></a>
+    <a href="#s3"><span class="nav-icon">⛔</span> GAP-02 subpasta restrição <span class="sidebar-badge sb-red">P0</span></a>
+    <a href="#s3"><span class="nav-icon">⚠️</span> GAP-03 hierarquia <span class="sidebar-badge sb-yellow">P1</span></a>
+    <a href="#s3"><span class="nav-icon">⚠️</span> GAP-04 soft delete <span class="sidebar-badge sb-yellow">P1</span></a>
+    <a href="#s3"><span class="nav-icon">🔵</span> GAP-05 auto-criação <span class="sidebar-badge sb-blue">P2</span></a>
+  </div>
+
+  <div class="sidebar-section-label">Estrutura</div>
+  <div class="sidebar-nav">
+    <a href="#s4"><span class="nav-icon">📁</span> Pastas planejadas</a>
+  </div>
+
+  <div class="sidebar-section-label">Execução</div>
+  <div class="sidebar-nav">
+    <a href="#s5"><span class="nav-icon">🚀</span> Fases D1 → D5</a>
+    <a href="#s6"><span class="nav-icon">⚙️</span> Mudanças n8n</a>
+    <a href="#s7"><span class="nav-icon">⚛️</span> Mudanças frontend</a>
+    <a href="#s8"><span class="nav-icon">🗄️</span> Campos do banco</a>
+    <a href="#s9"><span class="nav-icon">❓</span> Perguntas Christian</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">📂</span>
+    <h1 class="gradient-text">Google Drive — Plano de Integração</h1>
+    <p class="hero-sub">MdFlow · Análise completa do estado atual, gaps identificados e roadmap de execução</p>
+    <div class="badges">
+      <span class="badge bp">v1.0</span>
+      <span class="badge bg">✅ INVESTIGAÇÃO CONCLUÍDA</span>
+      <span class="badge br">⛔ 2 GAPS P0</span>
+      <span class="badge by">⚠️ 2 GAPS P1</span>
+      <span class="badge bb">🔑 CREDENTIAL OAUTH2 ATIVA</span>
+      <span class="badge bp">06/04/2026</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4" style="margin-bottom:40px;">
+    <div class="stat-card">
+      <div class="stat-value sv-green">8</div>
+      <div class="stat-label">Nodes n8n implementados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-yellow">28%</div>
+      <div class="stat-label">Clientes com pasta Drive</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-red">0%</div>
+      <div class="stat-label">processos_documentos com Drive ID</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Fases de execução</div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 1: DIAGNÓSTICO RÁPIDO -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-icon">🔍</span>
+      <h2>Diagnóstico Rápido</h2>
+      <span class="section-num">SEÇÃO 1</span>
+    </div>
+
+    <div class="contradiction">
+      <div class="contradiction-title">⚠️ Contradição identificada — ação necessária</div>
+      <p style="color: var(--text); font-size:0.85rem; margin-bottom:8px;">
+        Há dois workflows com nomes similares no n8n:
+      </p>
+      <ul class="plain" style="margin-left:0;">
+        <li><span class="li-icon">🟢</span> <span><strong>0QxdwlNqJ1zBy7T6</strong> — versão com 8 nodes (provavelmente ativo)</span></li>
+        <li><span class="li-icon">⚪</span> <span><strong>g4GnqDLWzv_jrXJjyNELI</strong> — versão stub/placeholder (provavelmente inativo)</span></li>
+      </ul>
+      <p style="color: var(--text-muted); font-size:0.82rem; margin-top:8px;">
+        Confirmar qual está recebendo chamadas do frontend antes de qualquer alteração. Verificar qual workflow responde ao path <code style="background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;font-family:monospace;">sync-storage-drive</code>.
+      </p>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Status</th>
+            <th>Detalhe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Credential OAuth2 Drive</strong></td>
+            <td><span class="sp sp-ok">✅ Ativa</span></td>
+            <td style="color:var(--text-muted);">ID <span class="field-tag">W1vM6djiMMUFil0R</span> — "Google Drive account"</td>
+          </tr>
+          <tr>
+            <td><strong>WH-SYNC-STORAGE-DRIVE (n8n)</strong></td>
+            <td><span class="sp sp-ok">✅ Implementado</span></td>
+            <td style="color:var(--text-muted);">8 nodes — cria pasta, faz upload, PATCH Storage</td>
+          </tr>
+          <tr>
+            <td><strong>Botão "Criar Pasta" (frontend)</strong></td>
+            <td><span class="sp sp-ok">✅ Funciona</span></td>
+            <td style="color:var(--text-muted);">DrivePanel em DocumentosLeadPaineis</td>
+          </tr>
+          <tr>
+            <td><strong>Botão "Abrir Drive" (frontend)</strong></td>
+            <td><span class="sp sp-ok">✅ Funciona</span></td>
+            <td style="color:var(--text-muted);">Usa <span class="field-tag">google_drive_folder_id</span></td>
+          </tr>
+          <tr>
+            <td><strong>Upload Tier 1 → Drive sync</strong></td>
+            <td><span class="sp sp-warn">⚠️ Parcial</span></td>
+            <td style="color:var(--text-muted);">Chama webhook mas <span class="field-tag">google_drive_id</span> nunca é salvo no banco</td>
+          </tr>
+          <tr>
+            <td><strong>Upload Tier 2 → Drive sync</strong></td>
+            <td><span class="sp sp-warn">⚠️ Parcial</span></td>
+            <td style="color:var(--text-muted);">Idem — RestricaoPastaCard dispara mas sem retroalimentação</td>
+          </tr>
+          <tr>
+            <td><strong>Subpasta por restrição</strong></td>
+            <td><span class="sp sp-err">❌ Não existe</span></td>
+            <td style="color:var(--text-muted);"><span class="field-tag">leads_restricoes.drive_pasta_id</span> sempre NULL</td>
+          </tr>
+          <tr>
+            <td><strong>Hierarquia de pastas</strong></td>
+            <td><span class="sp sp-err">❌ Não existe</span></td>
+            <td style="color:var(--text-muted);">Pasta flat hoje — sem Doc Pessoais / Restrições / Processos</td>
+          </tr>
+          <tr>
+            <td><strong>Soft delete → Lixeira Drive</strong></td>
+            <td><span class="sp sp-err">❌ Não existe</span></td>
+            <td style="color:var(--text-muted);">Arquivo permanece na pasta quando deletado no MdFlow</td>
+          </tr>
+          <tr>
+            <td><strong>google_drive_id em processos_documentos</strong></td>
+            <td><span class="sp sp-err">❌ Nunca preenchido</span></td>
+            <td style="color:var(--text-muted);">0 de N registros — documentos ficam "órfãos" do Drive</td>
+          </tr>
+          <tr>
+            <td><strong>Sync Drive → MdFlow (bidirecional)</strong></td>
+            <td><span class="sp sp-err">❌ Não existe</span></td>
+            <td style="color:var(--text-muted);">Fluxo unidirecional apenas (MdFlow → Drive)</td>
+          </tr>
+          <tr>
+            <td><strong>Auto-criação pasta ao criar lead</strong></td>
+            <td><span class="sp sp-err">❌ Não existe</span></td>
+            <td style="color:var(--text-muted);">Criação manual via botão — não automática</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 2: ARQUITETURA ATUAL -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-icon">🗺</span>
+      <h2>Arquitetura Atual — O Que Funciona</h2>
+      <span class="section-num">SEÇÃO 2</span>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">Fluxo 1 — Botão "Criar Pasta" (criação explícita)</div>
+      <div class="diagram">
+        <pre>
+FRONTEND                           N8N (WH-SYNC-STORAGE-DRIVE)         GOOGLE DRIVE
+────────                           ──────────────────────────           ────────────
+
+Botão "Criar Pasta" clicado
+          │
+          ▼
+callWebhook('mdflow/sync-storage-drive')
+{
+  entidade_tipo: "cliente",
+  entidade_id:   "uuid",
+  entidade_nome: "João Silva",
+  arquivos:      []               ← lista vazia = só criar pasta
+}
+          │
+          └──────────────────────► <span class="hi-purple">Parse &amp; Auth</span>
+                                      │ valida header mdflow
+                                      │ busca organizacoes.google_drive_root_id
+                                      │ busca clientes.google_drive_folder_id
+                                      │
+                                      ▼
+                                   <span class="hi-blue">IF: entityFolderId vazio?</span>
+                                      │
+                                      │ SIM ──────────────────────────► <span class="hi-green">POST /drive/v3/files</span>
+                                      │                                   name: "{Nome} — {id_8char}"
+                                      │                                   parents: [orgRootId]
+                                      │                                   mimeType: folder
+                                      │ ◄────────────────────────────── { id: "folderXYZ" }
+                                      │
+                                      ▼
+                                   <span class="hi-green">PATCH clientes</span>
+                                   SET google_drive_folder_id = "folderXYZ"
+                                      │
+                                      ▼
+                                   Respond { success: true, action: "refresh" }
+          │
+          ◄────────────────────────
+          │
+          ▼
+invalidateQuery('cliente-drawer-dados')
+useClienteDados → google_drive_folder_id = "folderXYZ"
+Botão muda para "Abrir Drive" ✓</pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">Fluxo 2 — Upload de documento (Tier 1 ou Tier 2)</div>
+      <div class="diagram">
+        <pre>
+FRONTEND                           N8N                              SUPABASE STORAGE    GOOGLE DRIVE
+────────                           ───                              ────────────────    ────────────
+
+1. INSERT processos_documentos
+   arquivo_url   = "org/leads/.../ts_nome.pdf"
+   google_drive_id = <span class="hi-red">NULL</span>  ← problema aqui
+          │
+          ▼
+2. callWebhook('mdflow/sync-storage-drive')
+{
+  entidade_tipo: "cliente",
+  entidade_id:   "uuid",
+  entidade_nome: "João Silva",
+  arquivos: [{
+    path:   "org/leads/lead-uuid/ts_nome.pdf",
+    bucket: "leads-docs",
+    nome:   "RG Frente",
+    doc_id: "uuid"
+  }]
+}
+          │
+          └──────────────────────► Parse &amp; Auth
+                                      │
+                                      ▼
+                                   entityFolderId já existe?
+                                      │ SIM → não cria pasta
+                                      │
+                                      ▼
+                                   Para cada arquivo:
+                                      │
+                                      ├──────────────────────────────► <span class="hi-blue">GET Storage URL</span>
+                                      │ ◄──────────────────────────── binário do arquivo
+                                      │
+                                      ├──────────────────────────────────────────────► <span class="hi-green">POST /upload/drive/v3/files</span>
+                                      │                                                  multipart: metadata + binário
+                                      │ ◄────────────────────────────────────────────── { id: "fileABC" }
+                                      │
+                                      ▼
+                                   <span class="hi-yellow">PATCH processos_documentos</span>    ← campo correto?
+                                   SET drive_file_id = "fileABC"   ← <span class="hi-red">SUSPEITO: pode ser campo errado</span>
+                                      │
+                                      ▼
+                                   Respond { success: true }
+          │
+          ◄────────────────────────
+          │
+          ▼
+(fire-and-forget — frontend não usa o retorno)</pre>
+      </div>
+    </div>
+
+    <div class="info-box warn">
+      <strong>Ponto de atenção:</strong> O n8n faz PATCH com <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;">drive_file_id</code> mas o campo no banco é <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;">google_drive_id</code>. Esta discrepância é a causa provável do GAP-01. Confirmar abrindo o Code node no n8n.
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">Payload canônico do webhook (frontend → n8n)</div>
+      <div class="grid g2" style="gap:14px;">
+        <div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Criar pasta (arquivos vazio)</div>
+          <div class="code" style="font-size:0.75rem;">{
+  "organizacao_id": "uuid",
+  "entidade_tipo":  "cliente",
+  "entidade_id":    "cliente-uuid",
+  "entidade_nome":  "João Silva",
+  "arquivos":       []
+}</div>
+        </div>
+        <div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Sync arquivo</div>
+          <div class="code" style="font-size:0.75rem;">{
+  "organizacao_id": "uuid",
+  "entidade_tipo":  "cliente",
+  "entidade_id":    "cliente-uuid",
+  "entidade_nome":  "João Silva",
+  "arquivos": [{
+    "path":   "org/leads/uuid/ts_rg.pdf",
+    "bucket": "leads-docs",
+    "nome":   "RG Frente",
+    "doc_id": "uuid"
+  }]
+}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 3: GAPS -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-icon">⛔</span>
+      <h2>O Que Falta — 5 Gaps Identificados</h2>
+      <span class="section-num">SEÇÃO 3</span>
+    </div>
+
+    <!-- GAP-01 -->
+    <div class="gap-card gap-p0">
+      <div class="gap-header">
+        <span class="gap-id">GAP-01</span>
+        <span class="gap-title">google_drive_id nunca é preenchido em processos_documentos</span>
+        <span class="prio p0">P0 CRÍTICO</span>
+      </div>
+      <div class="gap-meta">
+        <div class="gap-meta-item"><strong>Tabela:</strong> processos_documentos</div>
+        <div class="gap-meta-item"><strong>Campo afetado:</strong> google_drive_id</div>
+        <div class="gap-meta-item"><strong>Situação:</strong> 0% preenchido</div>
+        <div class="gap-meta-item" style="color:var(--green);border-color:rgba(32,201,151,0.2);background:rgba(32,201,151,0.06)"><strong>Esforço:</strong> 30 min</div>
+      </div>
+      <div class="gap-body">
+        <p><span class="highlight">Impacto:</span> Não há rastreamento de qual arquivo no Google Drive corresponde a qual documento do MdFlow. Impossível deletar, mover ou referenciar arquivos Drive de forma programática.</p>
+        <p><span class="highlight">Causa provável:</span> O Code node do n8n faz PATCH usando o campo <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">drive_file_id</code> mas o campo real no banco é <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">google_drive_id</code>. Nome errado → PATCH silencioso sem erro mas sem efeito.</p>
+        <p><span class="highlight">Solução:</span> Abrir o workflow <strong>0QxdwlNqJ1zBy7T6</strong> no n8n → Code node "Salvar pasta + upload arquivos" → localizar a linha do PATCH → corrigir o nome do campo para <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">google_drive_id</code>.</p>
+      </div>
+    </div>
+
+    <!-- GAP-02 -->
+    <div class="gap-card gap-p0">
+      <div class="gap-header">
+        <span class="gap-id">GAP-02</span>
+        <span class="gap-title">Subpasta de restrição nunca é criada</span>
+        <span class="prio p0">P0 CRÍTICO</span>
+      </div>
+      <div class="gap-meta">
+        <div class="gap-meta-item"><strong>Tabela:</strong> leads_restricoes</div>
+        <div class="gap-meta-item"><strong>Campos afetados:</strong> drive_pasta_id + drive_pasta_url</div>
+        <div class="gap-meta-item"><strong>Situação:</strong> 0% preenchido (campos existem)</div>
+        <div class="gap-meta-item" style="color:var(--yellow);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.06)"><strong>Esforço:</strong> 2–3 horas</div>
+      </div>
+      <div class="gap-body">
+        <p><span class="highlight">Impacto:</span> Todos os documentos Tier 2 (prints, comprovantes de restrição) vão para a pasta raiz do cliente, sem organização por credor. Pasta do cliente vira bagunça com dezenas de arquivos misturados.</p>
+        <p><span class="highlight">Situação:</span> Os campos <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">drive_pasta_id</code> e <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">drive_pasta_url</code> já existem no banco mas nunca foram populados. A infraestrutura está pronta — falta o fluxo que os preenche.</p>
+        <p><span class="highlight">Solução (3 partes):</span></p>
+        <ul style="list-style:none;padding:0;margin:8px 0;">
+          <li style="padding:4px 0;color:var(--text-muted);"><span style="color:var(--accent);">1.</span> Novo endpoint n8n: <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">mdflow/drive-criar-pasta-restricao</code></li>
+          <li style="padding:4px 0;color:var(--text-muted);"><span style="color:var(--accent);">2.</span> Lógica: verificar pasta do cliente → buscar/criar <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">Restrições/</code> → criar <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">{empresa_nome}/</code> dentro</li>
+          <li style="padding:4px 0;color:var(--text-muted);"><span style="color:var(--accent);">3.</span> Frontend: no hook <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">useSalvarRestricao</code> → after success → fire-and-forget novo webhook</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GAP-03 -->
+    <div class="gap-card gap-p1">
+      <div class="gap-header">
+        <span class="gap-id">GAP-03</span>
+        <span class="gap-title">Hierarquia de subpastas não existe — pasta flat</span>
+        <span class="prio p1">P1 IMPORTANTE</span>
+      </div>
+      <div class="gap-meta">
+        <div class="gap-meta-item"><strong>Componente:</strong> WH-SYNC-STORAGE-DRIVE (n8n)</div>
+        <div class="gap-meta-item"><strong>Afeta:</strong> toda criação nova de pasta</div>
+        <div class="gap-meta-item" style="color:var(--yellow);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.06)"><strong>Esforço:</strong> 1–2 horas</div>
+      </div>
+      <div class="gap-body">
+        <p><span class="highlight">Situação atual:</span> Cria pasta flat <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">{Nome} — {id_8char}/</code> diretamente no root da org.</p>
+        <p><span class="highlight">Desejado:</span> Na criação da pasta do cliente, criar também 3 subpastas fixas: <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">Documentos Pessoais/</code>, <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">Restrições/</code> e <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">Lixeira/</code>.</p>
+        <p><span class="highlight">Solução:</span> Adicionar 3 chamadas HTTP em sequência no WH-SYNC-STORAGE-DRIVE após criar a pasta principal. Nenhuma mudança de banco necessária para esta fase (os IDs das subpastas fixas não precisam ser salvos — serão buscados por nome quando necessário).</p>
+      </div>
+    </div>
+
+    <!-- GAP-04 -->
+    <div class="gap-card gap-p1">
+      <div class="gap-header">
+        <span class="gap-id">GAP-04</span>
+        <span class="gap-title">Soft delete não move arquivo para Lixeira no Drive</span>
+        <span class="prio p1">P1 IMPORTANTE</span>
+      </div>
+      <div class="gap-meta">
+        <div class="gap-meta-item"><strong>Tabela:</strong> processos_documentos</div>
+        <div class="gap-meta-item"><strong>Trigger:</strong> soft delete (deleted_at)</div>
+        <div class="gap-meta-item" style="color:var(--yellow);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.06)"><strong>Esforço:</strong> 2 horas</div>
+      </div>
+      <div class="gap-body">
+        <p><span class="highlight">Impacto:</span> Quando atendente exclui um documento no MdFlow, o arquivo permanece na pasta Drive do cliente sem qualquer indicação de exclusão. Acumula lixo no Drive com o tempo.</p>
+        <p><span class="highlight">Opção A (recomendada):</span> Novo endpoint <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">mdflow/drive-mover-lixeira</code> — recebe <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">google_drive_id</code> + <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">cliente_id</code> → busca/cria pasta <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">Lixeira/</code> → move arquivo (PATCH parents no Drive).</p>
+        <p><span class="highlight">Opção B:</span> Usar a lixeira nativa do Google Drive via <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">PATCH /drive/v3/files/{id}</code> com <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">trashed: true</code>. Mais simples mas retenção é apenas 30 dias (Google deleta automaticamente).</p>
+        <p><span class="highlight">Requer:</span> Migration para adicionar <span class="field-tag">drive_deleted_at</span> em processos_documentos (ver Seção 8).</p>
+      </div>
+    </div>
+
+    <!-- GAP-05 -->
+    <div class="gap-card gap-p2">
+      <div class="gap-header">
+        <span class="gap-id">GAP-05</span>
+        <span class="gap-title">Pasta não criada automaticamente ao criar lead</span>
+        <span class="prio p2">P2 DESEJÁVEL</span>
+      </div>
+      <div class="gap-meta">
+        <div class="gap-meta-item"><strong>Workflow n8n:</strong> MDZAP — Lead Sync</div>
+        <div class="gap-meta-item"><strong>Trigger:</strong> criação de lead via MdZap</div>
+        <div class="gap-meta-item" style="color:var(--blue);border-color:rgba(56,189,248,0.2);background:rgba(56,189,248,0.06)"><strong>Esforço:</strong> 1 hora</div>
+      </div>
+      <div class="gap-body">
+        <p><span class="highlight">Situação atual:</span> Atendente precisa clicar manualmente no botão "Criar Pasta" para cada novo cliente.</p>
+        <p><span class="highlight">Solução:</span> No workflow <strong>MDZAP — Lead Sync</strong> → após INSERT do lead → verificar se cliente já tem pasta Drive → se não tem, disparar WH-SYNC-STORAGE-DRIVE com <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:4px;font-size:0.8rem;">arquivos: []</code>.</p>
+        <p><span class="highlight">Dependência:</span> Requer que GAP-03 (hierarquia) já esteja implementado para criar a estrutura correta desde o início.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 4: ESTRUTURA DE PASTAS -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-icon">📁</span>
+      <h2>Estrutura de Pastas Planejada</h2>
+      <span class="section-num">SEÇÃO 4</span>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:24px;">
+      <div class="card">
+        <div class="card-title" style="color:var(--red);">Atual (flat — problemático)</div>
+        <div class="diagram" style="margin:0;">
+          <pre>
+Google Drive (Org Root)
+└── [orgRootId]/
+    ├── João Silva — abc12345/
+    │   ├── RG Frente.pdf
+    │   ├── RG Verso.pdf
+    │   ├── Extrato Banco XYZ.pdf
+    │   └── Comprovante Endereço.pdf
+    ├── Maria Santos — def67890/
+    │   └── ...
+    └── Pedro Costa — ghi11223/
+        └── ...</pre>
+        </div>
+        <div class="info-box err" style="margin:12px 0 0;">
+          Todos os arquivos na raiz do cliente — sem organização por tipo ou credor.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--green);">Desejado (hierárquico)</div>
+        <div class="diagram" style="margin:0;">
+          <pre>
+Google Drive (Org Root)
+└── MP Advocacia/
+    └── Clientes/
+        └── <span class="hi-green">123.456.789-00 — João Silva/</span>
+            ├── <span class="hi-blue">Documentos Pessoais/</span>   ← Tier 1
+            │   ├── RG Frente.pdf
+            │   └── RG Verso.pdf
+            ├── <span class="hi-yellow">Restrições/</span>
+            │   ├── <span class="hi-purple">Banco XYZ S.A./</span>
+            │   │   ├── print_negativacao.png
+            │   │   └── extrato.pdf
+            │   └── <span class="hi-purple">Financeira ABC Ltda/</span>
+            │       └── comprovante.pdf
+            ├── <span class="hi-blue">Processos/</span>
+            │   └── 0001234-56.2024.8.21.0001/
+            │       ├── Iniciais/
+            │       └── Tramitação/
+            └── <span class="dim">Lixeira/</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pasta</th>
+            <th>Quando é criada</th>
+            <th>Quem cria</th>
+            <th>Campo salvo no banco</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="field-tag">{CPF} — {Nome}/</span></td>
+            <td>Ao criar lead ou ao clicar "Criar Pasta"</td>
+            <td>WH-SYNC / botão frontend</td>
+            <td><span class="field-tag">clientes.google_drive_folder_id</span></td>
+          </tr>
+          <tr>
+            <td><span class="field-tag">Documentos Pessoais/</span></td>
+            <td>Junto com a pasta do cliente (D2)</td>
+            <td>WH-SYNC expandido</td>
+            <td style="color:var(--text-muted);">— (não salvo, busca por nome)</td>
+          </tr>
+          <tr>
+            <td><span class="field-tag">Restrições/</span></td>
+            <td>Junto com a pasta do cliente (D2)</td>
+            <td>WH-SYNC expandido</td>
+            <td style="color:var(--text-muted);">— (não salvo, busca por nome)</td>
+          </tr>
+          <tr>
+            <td><span class="field-tag">Restrições/{Empresa}/</span></td>
+            <td>Ao cadastrar restrição (D3)</td>
+            <td>Novo webhook drive-criar-pasta-restricao</td>
+            <td><span class="field-tag">leads_restricoes.drive_pasta_id</span> + <span class="field-tag">drive_pasta_url</span></td>
+          </tr>
+          <tr>
+            <td><span class="field-tag">Processos/</span></td>
+            <td>Na distribuição</td>
+            <td>Workflow distribuição (fase futura)</td>
+            <td style="color:var(--text-muted);">— (não salvo)</td>
+          </tr>
+          <tr>
+            <td><span class="field-tag">Processos/{CNJ}/</span></td>
+            <td>Na distribuição</td>
+            <td>Workflow distribuição (fase futura)</td>
+            <td><span class="field-tag">processos.google_drive_folder_id</span></td>
+          </tr>
+          <tr>
+            <td><span class="field-tag">Iniciais/</span> e <span class="field-tag">Tramitação/</span></td>
+            <td>Com o processo (distribuição)</td>
+            <td>Workflow distribuição (fase futura)</td>
+            <td style="color:var(--text-muted);">— (não salvo)</td>
+          </tr>
+          <tr>
+            <td><span class="field-tag">Lixeira/</span></td>
+            <td>Primeiro soft delete (D4)</td>
+            <td>WH drive-mover-lixeira</td>
+            <td style="color:var(--text-muted);">— (não salvo)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 5: PLANO DE EXECUÇÃO -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-icon">🚀</span>
+      <h2>Plano de Execução — Fases D1 a D5</h2>
+      <span class="section-num">SEÇÃO 5</span>
+    </div>
+
+    <!-- D1 -->
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-id">D1</span>
+        <span class="phase-title">Verificar e corrigir GAP-01 — google_drive_id</span>
+        <span class="prio p0">P0</span>
+        <span class="phase-time">~30 min</span>
+      </div>
+      <div class="phase-body">
+        <div class="grid g2" style="gap:16px;">
+          <div>
+            <ul class="step-list">
+              <li>
+                <span class="step-icon">1️⃣</span>
+                <div>
+                  <span class="step-text">Abrir n8n → workflow <strong>0QxdwlNqJ1zBy7T6</strong></span>
+                  <span class="step-sub">Confirmar qual workflow está ativo (vs. stub g4GnqDLWzv_jrXJjyNELI)</span>
+                </div>
+              </li>
+              <li>
+                <span class="step-icon">2️⃣</span>
+                <div>
+                  <span class="step-text">Abrir Code node "Salvar pasta + upload arquivos"</span>
+                  <span class="step-sub">Localizar trecho do PATCH processos_documentos</span>
+                </div>
+              </li>
+              <li>
+                <span class="step-icon">3️⃣</span>
+                <div>
+                  <span class="step-text">Verificar o nome do campo sendo atualizado</span>
+                  <span class="step-sub">Correto: <code style="font-family:monospace;font-size:0.8rem;">google_drive_id</code> — Errado: <code style="font-family:monospace;font-size:0.8rem;">drive_file_id</code></span>
+                </div>
+              </li>
+              <li>
+                <span class="step-icon">4️⃣</span>
+                <div>
+                  <span class="step-text">Corrigir o nome do campo se necessário</span>
+                  <span class="step-sub">Salvar e ativar o workflow</span>
+                </div>
+              </li>
+              <li>
+                <span class="step-icon">5️⃣</span>
+                <div>
+                  <span class="step-text">Testar: fazer upload de um doc pela UI</span>
+                  <span class="step-sub">Verificar no Supabase se processos_documentos.google_drive_id foi preenchido</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Query de validação</div>
+            <div class="code" style="font-size:0.76rem;">SELECT id, nome_arquivo,
+       google_drive_id,
+       created_at
+FROM processos_documentos
+ORDER BY created_at DESC
+LIMIT 5;</div>
+            <div class="info-box ok" style="margin-top:12px;">
+              <strong>Critério de sucesso:</strong> depois do fix, próximo upload deve ter <code style="font-family:monospace;font-size:0.8rem;">google_drive_id</code> não-nulo com o ID do arquivo no Drive.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D2 -->
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-id">D2</span>
+        <span class="phase-title">Criar subpastas fixas na criação do cliente</span>
+        <span class="prio p1">P1</span>
+        <span class="phase-time">~2 horas</span>
+      </div>
+      <div class="phase-body">
+        <ul class="step-list">
+          <li>
+            <span class="step-icon">1️⃣</span>
+            <div>
+              <span class="step-text">Abrir WH-SYNC-STORAGE-DRIVE → bloco de criação de pasta</span>
+              <span class="step-sub">Identificar o nó HTTP que faz POST /drive/v3/files para criar pasta principal</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">2️⃣</span>
+            <div>
+              <span class="step-text">Adicionar 3 HTTP nodes em sequência após a criação</span>
+              <span class="step-sub">POST /drive/v3/files para "Documentos Pessoais", "Restrições" e "Lixeira" — parents: [folderIdCriado]</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">3️⃣</span>
+            <div>
+              <span class="step-text">Usar o ID retornado da pasta principal como parent das subpastas</span>
+              <span class="step-sub">Encadear via expression: <code style="font-family:monospace;font-size:0.8rem;">{{ $node["HTTP Criar Pasta"].json.id }}</code></span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">4️⃣</span>
+            <div>
+              <span class="step-text">Testar: clicar "Criar Pasta" para um novo cliente</span>
+              <span class="step-sub">Verificar no Google Drive se as 3 subpastas foram criadas dentro da pasta do cliente</span>
+            </div>
+          </li>
+        </ul>
+        <div class="info-box" style="margin-top:12px;">
+          <strong>Sem mudanças no banco</strong> para esta fase. Os IDs das subpastas fixas não precisam ser persistidos — quando necessário, serão buscados por nome via Drive API (<code style="font-family:monospace;font-size:0.8rem;">name='Restrições' and '{parentId}' in parents</code>).
+        </div>
+      </div>
+    </div>
+
+    <!-- D3 -->
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-id">D3</span>
+        <span class="phase-title">Subpasta automática ao cadastrar restrição</span>
+        <span class="prio p0">P0</span>
+        <span class="phase-time">~3 horas</span>
+      </div>
+      <div class="phase-body">
+        <div class="grid g2" style="gap:16px;">
+          <div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;">Novo endpoint n8n</div>
+            <ul class="step-list">
+              <li>
+                <span class="step-icon">⚙️</span>
+                <div>
+                  <span class="step-text">Criar novo workflow: <code style="font-family:monospace;font-size:0.8rem;">mdflow/drive-criar-pasta-restricao</code></span>
+                  <span class="step-sub">6–8 nodes: Webhook → Auth → Busca pasta cliente → Busca/cria "Restrições/" → Cria subpasta empresa → PATCH banco → Respond</span>
+                </div>
+              </li>
+              <li>
+                <span class="step-icon">📥</span>
+                <div>
+                  <span class="step-text">Payload de entrada esperado:</span>
+                  <span class="step-sub"><code style="font-family:monospace;font-size:0.78rem;">{ cliente_id, restricao_id, empresa_nome, organizacao_id }</code></span>
+                </div>
+              </li>
+              <li>
+                <span class="step-icon">🔍</span>
+                <div>
+                  <span class="step-text">Buscar pasta "Restrições/" por nome dentro da pasta do cliente</span>
+                  <span class="step-sub">Drive API: <code style="font-family:monospace;font-size:0.78rem;">q=name='Restrições' and '{folderId}' in parents</code></span>
+                </div>
+              </li>
+              <li>
+                <span class="step-icon">📂</span>
+                <div>
+                  <span class="step-text">Criar subpasta <code style="font-family:monospace;font-size:0.8rem;">{empresa_nome}/</code> dentro de "Restrições/"</span>
+                  <span class="step-sub">POST /drive/v3/files com name e parent</span>
+                </div>
+              </li>
+              <li>
+                <span class="step-icon">💾</span>
+                <div>
+                  <span class="step-text">PATCH leads_restricoes.drive_pasta_id + drive_pasta_url</span>
+                  <span class="step-sub">URL: <code style="font-family:monospace;font-size:0.78rem;">https://drive.google.com/drive/folders/{id}</code></span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;">Frontend — hook useSalvarRestricao</div>
+            <div class="code code-blue" style="font-size:0.76rem;">// após mutation.onSuccess
+onSuccess: (data) => {
+  // fire-and-forget — não bloquear UI
+  callWebhook('drive-criar-pasta-restricao', {
+    cliente_id:     clienteId,
+    restricao_id:   data.id,
+    empresa_nome:   restricaoData.empresa_nome,
+    organizacao_id: orgId,
+  }).catch(console.warn);
+
+  // invalidar dados normalmente
+  queryClient.invalidateQueries(
+    ['cliente-restricoes', clienteId]
+  );
+}</div>
+            <div class="info-box" style="margin-top:12px;">
+              Fire-and-forget: criação da pasta Drive não bloqueia o cadastro da restrição. Se falhar, o atendente pode criar manualmente depois.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D4 -->
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-id">D4</span>
+        <span class="phase-title">Soft delete → mover arquivo para Lixeira Drive</span>
+        <span class="prio p1">P1</span>
+        <span class="phase-time">~2 horas</span>
+      </div>
+      <div class="phase-body">
+        <ul class="step-list">
+          <li>
+            <span class="step-icon">🗄️</span>
+            <div>
+              <span class="step-text">Rodar migration: adicionar <code style="font-family:monospace;font-size:0.8rem;">drive_deleted_at</code> em processos_documentos</span>
+              <span class="step-sub">Ver script exato na Seção 8</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">⚙️</span>
+            <div>
+              <span class="step-text">Criar novo workflow n8n: <code style="font-family:monospace;font-size:0.8rem;">mdflow/drive-mover-lixeira</code></span>
+              <span class="step-sub">5–6 nodes: Webhook → Auth → Busca pasta Lixeira (cria se não existe) → Move arquivo via PATCH parents → PATCH drive_deleted_at → Respond</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">⚛️</span>
+            <div>
+              <span class="step-text">Frontend — em DocumentoItem → handler de delete</span>
+              <span class="step-sub">Após PATCH deleted_at no banco → fire-and-forget webhook com google_drive_id + cliente_id</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">✅</span>
+            <div>
+              <span class="step-text">Testar: deletar documento → verificar se apareceu na pasta Lixeira/ no Drive</span>
+              <span class="step-sub">E verificar se desapareceu da pasta Documentos Pessoais/</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- D5 -->
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-id">D5</span>
+        <span class="phase-title">Auto-criação de pasta ao criar lead via MdZap</span>
+        <span class="prio p2">P2</span>
+        <span class="phase-time">~1 hora</span>
+      </div>
+      <div class="phase-body">
+        <ul class="step-list">
+          <li>
+            <span class="step-icon">🔍</span>
+            <div>
+              <span class="step-text">Abrir workflow "MDZAP — Lead Sync" no n8n</span>
+              <span class="step-sub">Localizar o ponto após INSERT do cliente</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">❓</span>
+            <div>
+              <span class="step-text">Adicionar IF: cliente já tem google_drive_folder_id?</span>
+              <span class="step-sub">Se não tem → chamar WH-SYNC-STORAGE-DRIVE com arquivos: []</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">⚙️</span>
+            <div>
+              <span class="step-text">Adicionar HTTP Request node apontando para o webhook de sync</span>
+              <span class="step-sub">Payload: entidade_tipo=cliente, entidade_id, entidade_nome, arquivos:[]</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-icon">📝</span>
+            <div>
+              <span class="step-text">Dependência: D2 deve estar pronto</span>
+              <span class="step-sub">Para que a pasta já seja criada com a estrutura hierárquica correta</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 6: MUDANÇAS N8N -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <h2>Mudanças no n8n — Detalhado</h2>
+      <span class="section-num">SEÇÃO 6</span>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">D1 — Correção no workflow existente (WH-SYNC-STORAGE-DRIVE)</div>
+      <div class="diagram">
+        <pre>
+Workflow: 0QxdwlNqJ1zBy7T6 — WH-SYNC-STORAGE-DRIVE
+─────────────────────────────────────────────────
+
+Nó a editar: Code node "Salvar pasta + upload arquivos"
+
+ANTES (presumido com erro):
+────────────────────────────
+await supabase
+  .from('processos_documentos')
+  .update({ <span class="hi-red">drive_file_id</span>: fileId })   ← campo errado
+  .eq('id', doc_id);
+
+DEPOIS (correto):
+────────────────
+await supabase
+  .from('processos_documentos')
+  .update({ <span class="hi-green">google_drive_id</span>: fileId })  ← campo correto
+  .eq('id', doc_id);</pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">D2 — Adicionar criação de subpastas ao WH-SYNC-STORAGE-DRIVE</div>
+      <div class="diagram">
+        <pre>
+Nodes a adicionar (em sequência após "HTTP Request: POST /drive/v3/files"):
+
+[HTTP: Criar pasta cliente]
+        │ retorna { id: "folderABC" }
+        ▼
+[HTTP: Criar "Documentos Pessoais"]    POST /drive/v3/files
+│ body: { name: "Documentos Pessoais",  │
+│         mimeType: "application/vnd.google-apps.folder",
+│         parents: ["folderABC"] }      │
+│                                       │
+▼                                       │
+[HTTP: Criar "Restrições"]             │
+│ body: { name: "Restrições",          │
+│         mimeType: folder,            │
+│         parents: ["folderABC"] }      │
+│                                       │
+▼                                       │
+[HTTP: Criar "Lixeira"]               │
+  body: { name: "Lixeira",             │
+          mimeType: folder,            │
+          parents: ["folderABC"] }     │
+        │                              │
+        ▼                              │
+[Code: PATCH clientes] ←──────────────┘
+SET google_drive_folder_id = "folderABC"
+        │
+        ▼
+[Respond Done]</pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">D3 — Novo workflow: drive-criar-pasta-restricao</div>
+      <div class="diagram">
+        <pre>
+Webhook POST /webhook/mdflow/drive-criar-pasta-restricao
+  │ header: mdflow: MdL1501@
+  │ body: { cliente_id, restricao_id, empresa_nome, organizacao_id }
+  │
+  ▼
+[Code: Auth + Busca cliente]
+  │ valida header
+  │ SELECT google_drive_folder_id FROM clientes WHERE id = cliente_id
+  │ SE pasta não existe → Respond { success: false, error: "sem_pasta_cliente" }
+  │
+  ▼
+[HTTP: Buscar pasta "Restrições"]
+  │ GET /drive/v3/files
+  │ q: "name='Restrições' and '{folderClienteId}' in parents and trashed=false"
+  │ SE não encontrou → criar pasta "Restrições/"
+  │
+  ▼
+[IF: pasta "Restrições" existe?]
+  │ NÃO: [HTTP: Criar "Restrições"] → POST /drive/v3/files
+  │ SIM: usar ID encontrado
+  │
+  ▼
+[HTTP: Criar pasta empresa]
+  │ POST /drive/v3/files
+  │ name: empresa_nome (sanitizado)
+  │ parents: [restricoesFolderId]
+  │ retorna { id: "empresaFolderXYZ" }
+  │
+  ▼
+[Code: PATCH banco]
+  │ UPDATE leads_restricoes SET
+  │   drive_pasta_id  = "empresaFolderXYZ",
+  │   drive_pasta_url = "https://drive.google.com/drive/folders/empresaFolderXYZ"
+  │ WHERE id = restricao_id
+  │
+  ▼
+[Respond]
+  { success: true, action: "refresh",
+    data: { drive_pasta_id: "...", drive_pasta_url: "..." } }</pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">D4 — Novo workflow: drive-mover-lixeira</div>
+      <div class="diagram">
+        <pre>
+Webhook POST /webhook/mdflow/drive-mover-lixeira
+  │ body: { google_drive_id, cliente_id, organizacao_id }
+  │
+  ▼
+[Code: Auth + Busca pasta Lixeira]
+  │ SELECT google_drive_folder_id FROM clientes WHERE id = cliente_id
+  │ GET /drive/v3/files?q=name='Lixeira' and '{folderClienteId}' in parents
+  │ SE não existe → criar pasta "Lixeira/"
+  │
+  ▼
+[HTTP: Mover arquivo]
+  │ PATCH /drive/v3/files/{google_drive_id}
+  │ body: { addParents: [lixeiraFolderId], removeParents: [folderClienteId] }
+  │
+  ▼
+[Code: PATCH banco]
+  │ UPDATE processos_documentos
+  │ SET drive_deleted_at = now()
+  │ WHERE google_drive_id = google_drive_id
+  │
+  ▼
+[Respond]
+  { success: true, action: "noop" }</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">D5 — Adição ao MDZAP Lead Sync</div>
+      <div class="diagram">
+        <pre>
+... workflow MDZAP Lead Sync existente ...
+
+[INSERT lead/cliente no Supabase]
+        │
+        ▼
+[Code: Verificar pasta Drive]
+  │ SE cliente.google_drive_folder_id IS NULL:
+  │
+  ▼
+[HTTP: Chamar WH-SYNC-STORAGE-DRIVE]  ← nó adicionado
+  POST /webhook/mdflow/sync-storage-drive
+  {
+    organizacao_id: orgId,
+    entidade_tipo:  "cliente",
+    entidade_id:    clienteId,
+    entidade_nome:  clienteNome,
+    arquivos:       []
+  }
+  (fire-and-forget — não bloquear o fluxo principal)
+        │
+        ▼
+... continua fluxo normal Lead Sync ...</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 7: MUDANÇAS FRONTEND -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-icon">⚛️</span>
+      <h2>Mudanças no Frontend — Detalhado</h2>
+      <span class="section-num">SEÇÃO 7</span>
+    </div>
+
+    <div class="tbl-wrap" style="margin-bottom:20px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Fase</th>
+            <th>Mudança frontend</th>
+            <th>Arquivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="prio p0">D1</span></td>
+            <td style="color:var(--text-muted);">Nenhuma — só n8n</td>
+            <td style="color:var(--text-muted);">—</td>
+          </tr>
+          <tr>
+            <td><span class="prio p1">D2</span></td>
+            <td style="color:var(--text-muted);">Nenhuma — só n8n</td>
+            <td style="color:var(--text-muted);">—</td>
+          </tr>
+          <tr>
+            <td><span class="prio p0">D3</span></td>
+            <td>Adicionar fire-and-forget após salvar restrição</td>
+            <td><span class="field-tag">hooks/useSalvarRestricao.ts</span></td>
+          </tr>
+          <tr>
+            <td><span class="prio p1">D4</span></td>
+            <td>Botão deletar documento → chamar webhook drive-mover-lixeira</td>
+            <td><span class="field-tag">components/clientes/DocumentoItem.tsx</span></td>
+          </tr>
+          <tr>
+            <td><span class="prio p2">D5</span></td>
+            <td style="color:var(--text-muted);">Nenhuma — só n8n</td>
+            <td style="color:var(--text-muted);">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">D3 — useSalvarRestricao.ts — trecho a alterar</div>
+      <div class="code code-blue" style="font-size:0.77rem;">// Localizar: onSuccess do useMutation de salvar restrição
+// Adicionar APÓS invalidateQueries existente:
+
+onSuccess: async (data, variables) => {
+  // Invalidações normais (já existem — não alterar)
+  queryClient.invalidateQueries(['cliente-restricoes', clienteId]);
+  queryClient.invalidateQueries(['cliente-drawer-dados', clienteId]);
+
+  // ▼ ADICIONAR BLOCO ABAIXO
+  // Fire-and-forget: criar pasta Drive para a restrição
+  // Não bloqueia UI — falha silenciosa com warn
+  if (data?.id && data?.empresa_nome) {
+    callWebhook('drive-criar-pasta-restricao', {
+      organizacao_id: orgId,
+      cliente_id:     clienteId,
+      restricao_id:   data.id,
+      empresa_nome:   data.empresa_nome,
+    }).catch((err) => {
+      console.warn('[Drive] Falha ao criar pasta restrição:', err);
+    });
+  }
+  // ▲ FIM DO BLOCO ADICIONADO
+},</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">D4 — DocumentoItem.tsx — trecho a alterar no handler de delete</div>
+      <div class="code code-blue" style="font-size:0.77rem;">// Localizar: função handleDeleteDocumento (ou similar)
+// Após o PATCH deleted_at no banco, adicionar:
+
+const handleDeleteDocumento = async (doc: Documento) => {
+  // Soft delete no banco (já existe — não alterar)
+  await supabase
+    .from('processos_documentos')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', doc.id);
+
+  // ▼ ADICIONAR BLOCO ABAIXO
+  // Fire-and-forget: mover arquivo para Lixeira no Drive
+  if (doc.google_drive_id) {
+    callWebhook('drive-mover-lixeira', {
+      organizacao_id:  orgId,
+      cliente_id:      clienteId,
+      google_drive_id: doc.google_drive_id,
+    }).catch((err) => {
+      console.warn('[Drive] Falha ao mover para lixeira:', err);
+    });
+  }
+  // ▲ FIM DO BLOCO ADICIONADO
+
+  // Invalidar queries (já existe — não alterar)
+  queryClient.invalidateQueries(['documentos', clienteId]);
+  toast.success('Documento excluído');
+};</div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 8: CAMPOS DO BANCO -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-icon">🗄️</span>
+      <h2>Campos do Banco — Estado e Alvo</h2>
+      <span class="section-num">SEÇÃO 8</span>
+    </div>
+
+    <div class="tbl-wrap" style="margin-bottom:24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Tabela</th>
+            <th>Campo</th>
+            <th>Tipo</th>
+            <th>Estado atual</th>
+            <th>Após implementação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="table-tag">organizacoes</span></td>
+            <td><span class="field-tag">google_drive_root_id</span></td>
+            <td style="color:var(--text-muted);">TEXT</td>
+            <td><span class="sp sp-warn">Alguns preenchidos</span></td>
+            <td>Obrigatório para criar pastas</td>
+          </tr>
+          <tr>
+            <td><span class="table-tag">clientes</span></td>
+            <td><span class="field-tag">google_drive_folder_id</span></td>
+            <td style="color:var(--text-muted);">TEXT</td>
+            <td><span class="sp sp-warn">28% preenchido</span></td>
+            <td>100% após D2+D5</td>
+          </tr>
+          <tr>
+            <td><span class="table-tag">clientes</span></td>
+            <td><span class="field-tag">drive_cliente</span></td>
+            <td style="color:var(--text-muted);">TEXT</td>
+            <td><span class="sp sp-info">Legacy</span></td>
+            <td>Deprecar — mapear para google_drive_folder_id</td>
+          </tr>
+          <tr>
+            <td><span class="table-tag">leads_restricoes</span></td>
+            <td><span class="field-tag">drive_pasta_id</span></td>
+            <td style="color:var(--text-muted);">TEXT</td>
+            <td><span class="sp sp-err">0% (nunca preenchido)</span></td>
+            <td>100% após D3</td>
+          </tr>
+          <tr>
+            <td><span class="table-tag">leads_restricoes</span></td>
+            <td><span class="field-tag">drive_pasta_url</span></td>
+            <td style="color:var(--text-muted);">TEXT</td>
+            <td><span class="sp sp-err">0%</span></td>
+            <td>100% após D3</td>
+          </tr>
+          <tr>
+            <td><span class="table-tag">processos_documentos</span></td>
+            <td><span class="field-tag">google_drive_id</span></td>
+            <td style="color:var(--text-muted);">TEXT</td>
+            <td><span class="sp sp-err">0% (nunca preenchido)</span></td>
+            <td>100% após D1</td>
+          </tr>
+          <tr>
+            <td><span class="table-tag">processos_documentos</span></td>
+            <td><span class="field-tag">drive_deleted_at</span></td>
+            <td style="color:var(--text-muted);">TIMESTAMPTZ</td>
+            <td><span class="sp sp-err">Campo não existe</span></td>
+            <td>Criar migration (D4)</td>
+          </tr>
+          <tr>
+            <td><span class="table-tag">processos</span></td>
+            <td><span class="field-tag">google_drive_folder_id</span></td>
+            <td style="color:var(--text-muted);">TEXT</td>
+            <td><span class="sp sp-err">0%</span></td>
+            <td>100% após implementação da distribuição</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="migration-box">
+      <div class="migration-title">Migration necessária para D4</div>
+      <div class="code code-yellow" style="font-size:0.78rem;">-- Migration: add drive_deleted_at to processos_documentos
+-- Executar no Supabase SQL Editor
+
+ALTER TABLE processos_documentos
+ADD COLUMN IF NOT EXISTS drive_deleted_at TIMESTAMPTZ;
+
+COMMENT ON COLUMN processos_documentos.drive_deleted_at IS
+  'Data/hora em que o arquivo foi movido para a Lixeira no Google Drive. '
+  'NULL = arquivo ativo no Drive. NOT NULL = na pasta Lixeira/.';</div>
+    </div>
+
+    <div class="info-box warn" style="margin-top:16px;">
+      <strong>Observação sobre drive_cliente:</strong> O campo <code style="font-family:monospace;font-size:0.8rem;">clientes.drive_cliente</code> é legado. Antes de deprecar, verificar se há referência no frontend que usa este campo em vez de <code style="font-family:monospace;font-size:0.8rem;">google_drive_folder_id</code>. Se sim, corrigir as referências primeiro.
+    </div>
+  </section>
+
+  <!-- SEÇÃO 9: PERGUNTAS PARA CHRISTIAN -->
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-icon">❓</span>
+      <h2>Perguntas para Christian — Decisões Pendentes</h2>
+      <span class="section-num">SEÇÃO 9</span>
+    </div>
+
+    <div class="info-box" style="margin-bottom:20px;">
+      Estas decisões impactam a implementação. Precisam de resposta antes de avançar em D2, D3 e D4.
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Pergunta 1 — Nomenclatura de pastas</div>
+      <div class="q-text">Usar <code style="font-family:monospace;font-size:0.9rem;">{CPF} — {Nome}</code> ou <code style="font-family:monospace;font-size:0.9rem;">{Nome} — {id_8char}</code> como nome da pasta do cliente?</div>
+      <div class="q-desc">CPF no nome da pasta expõe dado sensível (LGPD) para qualquer pessoa com acesso ao Google Drive da org. <strong>Recomendação: usar só {Nome} — {id_8char}</strong>, que é identificável sem expor dados pessoais. Ou usar {Nome} sem ID caso não haja clientes com nome idêntico.</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Pergunta 2 — Credential: OAuth2 vs Service Account</div>
+      <div class="q-text">Manter OAuth2 atual (W1vM6djiMMUFil0R) ou migrar para Service Account?</div>
+      <div class="q-desc">OAuth2 pode expirar (refresh token vence se ficar +6 meses sem uso, ou se a conta Google revogar). Service Account é mais estável para automação headless e não depende de sessão de usuário. <strong>Recomendação: migrar para Service Account</strong> se houver acesso à Google Cloud Console do MP Advocacia. Menos urgente agora, mas importante no médio prazo.</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Pergunta 3 — Root ID da org MP Advocacia</div>
+      <div class="q-text">O campo <code style="font-family:monospace;font-size:0.9rem;">organizacoes.google_drive_root_id</code> está preenchido para MP Advocacia?</div>
+      <div class="q-desc">Sem o root_id, o n8n não sabe onde criar as pastas. Verificar no Supabase: <code style="font-family:monospace;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;">SELECT nome, google_drive_root_id FROM organizacoes WHERE nome ILIKE '%midas%' OR nome ILIKE '%mp%'</code>. Se vazio, precisamos definir qual pasta do Drive será a raiz e cadastrar o ID.</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Pergunta 4 — Bidirecional Drive → MdFlow</div>
+      <div class="q-text">Confirmar que F6 (Drive → MdFlow) está fora do escopo por agora?</div>
+      <div class="q-desc">A implementação bidirecional exigiria Google Drive push notifications (watch API), um endpoint público para receber os eventos e lógica de dedup/mapeamento de arquivos. Complexidade alta, valor baixo a curto prazo. <strong>Recomendação: deixar para uma fase futura</strong> quando o fluxo MdFlow → Drive estiver maduro e estável.</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Pergunta 5 — Lixeira: pasta manual vs lixeira nativa Google</div>
+      <div class="q-text">Preferir pasta <code style="font-family:monospace;font-size:0.9rem;">Lixeira/</code> manual dentro da pasta do cliente, ou usar a lixeira nativa do Google Drive?</div>
+      <div class="q-desc">
+        <strong>Opção A — pasta Lixeira/ manual:</strong> arquivo continua visível no Drive em uma subpasta, fácil de recuperar, sem prazo de expiração automático.<br><br>
+        <strong>Opção B — lixeira nativa Google:</strong> mais simples de implementar (só setar <code style="font-family:monospace;font-size:0.8rem;">trashed: true</code>), mas Google deleta automaticamente após 30 dias. Arquivo some do Drive sem ação manual.<br><br>
+        <strong>Recomendação: Opção A (pasta Lixeira/)</strong> — mais controle, sem risco de perda automática de arquivos jurídicos.
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · Plano Integração Google Drive · 06/04/2026
+  </div>
+
+</main>
+
+<script>
+// Scroll spy simples para sidebar
+(function() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+  function onScroll() {
+    let current = '';
+    sections.forEach(s => {
+      const top = s.getBoundingClientRect().top;
+      if (top <= 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.remove('active');
+      if (a.getAttribute('href') === '#' + current) {
+        a.classList.add('active');
+      }
+    });
+  }
+
+  const mainEl = document.querySelector('.main');
+  if (mainEl) mainEl.addEventListener('scroll', onScroll);
+  else window.addEventListener('scroll', onScroll);
+})();
+</script>
+
+</body>
+</html>
