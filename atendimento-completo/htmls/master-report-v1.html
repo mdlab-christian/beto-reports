@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdFlow — Atendimento Completo | Master Report v1</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --blue: #3b82f6;
+  --orange: #f97316;
+  --green: #10b981;
+  --red: #ef4444;
+  --yellow: #eab308;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 24px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; }
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 56px 24px 40px;
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(124,109,255,0.12) 0%, transparent 70%);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 14px; }
+.gradient-text {
+  font-size: 2.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 20px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* ── GRIDS ── */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width: 768px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } }
+
+/* ── STAT CARDS ── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.stat-card:hover { border-color: var(--accent); }
+.stat-value { font-size: 2.2rem; font-weight: 700; color: var(--accent); line-height: 1; }
+.stat-value.green { color: var(--accent3); }
+.stat-value.yellow { color: var(--accent4); }
+.stat-value.orange { color: var(--orange); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
+
+/* ── SECTION ── */
+.section { margin: 40px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+.section-icon { font-size: 1.3rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+.section-header .section-tag {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* ── TABLES ── */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 20px; }
+.table-group-title {
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface3);
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(42,47,74,0.6);
+  font-size: 0.84rem;
+}
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+tr:hover td { background: rgba(124,109,255,0.05); }
+
+.code-cell {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  color: var(--accent3);
+}
+
+/* ── STATUS PILLS ── */
+.sp { padding: 3px 10px; border-radius: 12px; font-size: 0.73rem; font-weight: 500; white-space: nowrap; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.2); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.2); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.2); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.2); }
+.sp-skip { background: rgba(122,130,168,0.1); color: var(--text-muted); border: 1px solid rgba(122,130,168,0.2); }
+
+/* ── FLUXOGRAMA ── */
+.flow-container {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+  padding: 20px 0;
+}
+.flow-step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 16px;
+  min-width: 150px;
+  flex: 1;
+  text-align: center;
+  position: relative;
+  transition: border-color 0.3s, transform 0.2s;
+  animation: fadeSlideIn 0.4s ease both;
+}
+.flow-step:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.flow-step.done { border-color: rgba(79,255,176,0.4); }
+.flow-step.partial { border-color: rgba(255,209,102,0.4); }
+.flow-step.pending { border-color: rgba(255,107,107,0.3); }
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.flow-step:nth-child(1) { animation-delay: 0.05s; }
+.flow-step:nth-child(3) { animation-delay: 0.1s; }
+.flow-step:nth-child(5) { animation-delay: 0.15s; }
+.flow-step:nth-child(7) { animation-delay: 0.2s; }
+.flow-step:nth-child(9) { animation-delay: 0.25s; }
+.flow-step:nth-child(11) { animation-delay: 0.3s; }
+
+.flow-step-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+.flow-step-name { font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; }
+.flow-step-sub { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px; }
+.flow-step-tag { font-size: 0.7rem; color: var(--text-muted); font-style: italic; }
+
+.flow-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+/* ── TIER CARDS ── */
+.tier-card {
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid;
+}
+.tier-blue { background: rgba(59,130,246,0.07); border-color: rgba(59,130,246,0.3); }
+.tier-orange { background: rgba(249,115,22,0.07); border-color: rgba(249,115,22,0.3); }
+.tier-green { background: rgba(16,185,129,0.07); border-color: rgba(16,185,129,0.3); }
+.tier-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.tier-blue .tier-title { color: #60a5fa; }
+.tier-orange .tier-title { color: #fb923c; }
+.tier-green .tier-title { color: #34d399; }
+.tier-sub { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; }
+.tier-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.83rem;
+}
+.tier-item:last-child { border-bottom: none; }
+.tier-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+/* ── DRIVE TREE ── */
+.drive-tree {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.82rem;
+  line-height: 1.9;
+  overflow-x: auto;
+}
+.dt-root { color: var(--accent4); font-weight: 600; }
+.dt-folder { color: var(--accent5); }
+.dt-subfolder { color: var(--accent3); }
+.dt-file { color: var(--text-muted); }
+.dt-comment { color: #4a5180; font-style: italic; }
+.dt-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  margin-left: 8px;
+  font-style: normal;
+}
+.dt-badge-green { background: rgba(79,255,176,0.12); color: var(--accent3); }
+.dt-badge-yellow { background: rgba(255,209,102,0.12); color: var(--accent4); }
+
+/* ── MOCKUP SCREENS ── */
+.mockup-screen {
+  background: #0a0c14;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 0.82rem;
+}
+.mockup-titlebar {
+  background: var(--surface3);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.mockup-dots { display: flex; gap: 5px; }
+.mockup-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+}
+.mockup-dot.red { background: #ff5f57; }
+.mockup-dot.yellow { background: #ffbd2e; }
+.mockup-dot.green { background: #28c840; }
+.mockup-title { font-size: 0.78rem; color: var(--text-muted); margin-left: 8px; }
+
+.mockup-header {
+  background: var(--surface2);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mockup-name { font-weight: 600; font-size: 0.95rem; }
+.mockup-sub { font-size: 0.78rem; color: var(--text-muted); }
+
+.mockup-tabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.mockup-tab {
+  padding: 10px 18px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  cursor: default;
+}
+.mockup-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: rgba(124,109,255,0.05);
+}
+
+.mockup-body { padding: 20px; }
+
+.mockup-section-title {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  margin-top: 16px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.mockup-section-title:first-child { margin-top: 0; }
+
+.mockup-upload {
+  border: 1.5px dashed var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-bottom: 14px;
+  background: rgba(124,109,255,0.03);
+}
+
+.mockup-file-list { display: flex; flex-direction: column; gap: 2px; }
+.mockup-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+}
+.mockup-file:hover { background: rgba(124,109,255,0.05); }
+.mockup-file-name { flex: 1; font-size: 0.82rem; }
+.mockup-file-badge {
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.fb-drive { background: rgba(91,196,245,0.12); color: var(--accent5); }
+.fb-gen { background: rgba(124,109,255,0.12); color: var(--accent); }
+.mockup-file-actions { display: flex; gap: 4px; }
+.mockup-btn {
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  cursor: default;
+}
+.mockup-btn:hover { background: rgba(124,109,255,0.1); color: var(--accent); }
+
+.mockup-restricao-group {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.mockup-restricao-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  cursor: default;
+}
+.mockup-restricao-header:hover { background: var(--surface3); }
+.mockup-restricao-name { font-weight: 500; }
+.mockup-restricao-val { margin-left: auto; font-size: 0.78rem; color: var(--accent4); font-family: 'JetBrains Mono', monospace; }
+.mockup-restricao-cnj { font-size: 0.7rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.mockup-restricao-body {
+  padding: 14px;
+  background: rgba(0,0,0,0.2);
+  border-top: 1px solid var(--border);
+}
+.mockup-restricao-upload {
+  border: 1.5px dashed rgba(249,115,22,0.3);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  color: #fb923c;
+  font-size: 0.75rem;
+  margin-top: 10px;
+  background: rgba(249,115,22,0.03);
+}
+
+/* ── PROC TABS ── */
+.proc-subtabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.proc-subtab {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  cursor: default;
+}
+.proc-subtab.active { color: var(--accent3); border-bottom-color: var(--accent3); }
+
+.mockup-note {
+  background: rgba(255,209,102,0.07);
+  border: 1px solid rgba(255,209,102,0.2);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  color: var(--accent4);
+  margin-top: 14px;
+}
+
+/* ── FLOWS SIDE BY SIDE ── */
+.flow-chart {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.flow-chart-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.flow-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.flow-node {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.82rem;
+  transition: border-color 0.2s;
+}
+.flow-node:hover { border-color: var(--accent); }
+.flow-node.green { border-color: rgba(79,255,176,0.4); color: var(--accent3); }
+.flow-node.blue { border-color: rgba(91,196,245,0.4); color: var(--accent5); }
+.flow-node.orange { border-color: rgba(249,115,22,0.4); color: #fb923c; }
+.flow-node.purple { border-color: rgba(124,109,255,0.4); color: var(--accent); }
+.flow-vline {
+  width: 2px;
+  height: 22px;
+  background: var(--border);
+  position: relative;
+}
+.flow-vline::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: -4px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--border);
+}
+
+/* ── PENDENCIAS ── */
+.pendencia-card {
+  border-radius: 12px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-left-width: 4px;
+  margin-bottom: 12px;
+}
+.pendencia-card.p-critical { border-left-color: var(--accent2); }
+.pendencia-card.p-blocked { border-left-color: var(--accent4); }
+.pendencia-card.p-skipped { border-left-color: var(--text-muted); }
+.pendencia-card.p-future { border-left-color: var(--accent); }
+.pendencia-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pendencia-desc { font-size: 0.82rem; color: var(--text-muted); }
+
+/* ── CODE BLOCK ── */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ── INICIAL_CATS ── */
+.cats-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.cat-pill {
+  background: rgba(124,109,255,0.1);
+  border: 1px solid rgba(124,109,255,0.25);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.73rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  padding: 36px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 56px;
+}
+
+/* ── GLOW EFFECTS ── */
+.glow-accent { box-shadow: 0 0 20px rgba(124,109,255,0.12); }
+.glow-green { box-shadow: 0 0 20px rgba(79,255,176,0.08); }
+
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* ── WORKFLOW TABLE WORKFLOW-ID ── */
+.wf-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ══ HERO ══ -->
+  <div class="hero">
+    <span class="hero-emoji">🐙</span>
+    <h1 class="gradient-text">MdFlow — Atendimento Completo</h1>
+    <p class="hero-sub">Planejamento × Execução | MP Advocacia | 2026-04-06</p>
+    <div class="badges">
+      <span class="badge bp">Google Drive Integration</span>
+      <span class="badge bg">Sistema 3-Tiers Docs</span>
+      <span class="badge bb">Watch API Bidirecional</span>
+      <span class="badge by">MdZap Lead Panel v2</span>
+      <span class="badge br">6 Workflows n8n</span>
+    </div>
+    <div class="grid g4">
+      <div class="stat-card glow-accent">
+        <span class="stat-icon">📋</span>
+        <div class="stat-value">47</div>
+        <div class="stat-label">Planejado</div>
+      </div>
+      <div class="stat-card glow-green">
+        <span class="stat-icon">✅</span>
+        <div class="stat-value green">31</div>
+        <div class="stat-label">Executado</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">🔄</span>
+        <div class="stat-value" style="color:var(--accent5)">3</div>
+        <div class="stat-label">Em andamento</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">⏳</span>
+        <div class="stat-value yellow">13</div>
+        <div class="stat-label">Pendente</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 2: JORNADA DO LEAD — FLUXOGRAMA ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗺️</span>
+      <h2>Jornada do Lead — Fluxograma Horizontal</h2>
+      <span class="section-tag">Lead-to-Cash completo</span>
+    </div>
+    <div class="flow-container">
+      <div class="flow-step done">
+        <span class="flow-step-icon">💬</span>
+        <div class="flow-step-name">Primeiro Contato</div>
+        <div class="flow-step-sub">MdZap</div>
+        <div class="flow-step-tag">SDR Julia recebe CPF<br>via WhatsApp</div>
+        <br>
+        <span class="sp sp-done">✅ Planejado</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step done">
+        <span class="flow-step-icon">🔍</span>
+        <div class="flow-step-name">Auditoria</div>
+        <div class="flow-step-sub">Boa Vista</div>
+        <div class="flow-step-tag">Consulta automática<br>match fuzzy empresas</div>
+        <br>
+        <span class="sp sp-done">✅ Executado</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step partial">
+        <span class="flow-step-icon">📂</span>
+        <div class="flow-step-name">Qualificação</div>
+        <div class="flow-step-sub">MdZap + CRM</div>
+        <div class="flow-step-tag">Coleta docs<br>move kanban</div>
+        <br>
+        <span class="sp sp-pend">⚠️ Parcial</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step done">
+        <span class="flow-step-icon">✍️</span>
+        <div class="flow-step-name">Assinatura</div>
+        <div class="flow-step-sub">CRM</div>
+        <div class="flow-step-tag">Contrato gerado<br>aguardando assinatura</div>
+        <br>
+        <span class="sp sp-done">✅ Planejado</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step done">
+        <span class="flow-step-icon">⚖️</span>
+        <div class="flow-step-name">Distribuição</div>
+        <div class="flow-step-sub">OlivIA + JARBAS</div>
+        <div class="flow-step-tag">OlivIA gera petição<br>JARBAS protocola EPROC</div>
+        <br>
+        <span class="sp sp-done">✅ Executado</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step done">
+        <span class="flow-step-icon">📁</span>
+        <div class="flow-step-name">Tramitação</div>
+        <div class="flow-step-sub">Processos</div>
+        <div class="flow-step-tag">Controller, Decisões<br>Acordos</div>
+        <br>
+        <span class="sp sp-run">🔄 Pendente MdZap</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 3: PLANEJADO vs EXECUTADO ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <h2>Planejado vs Executado — Tabela Comparativa</h2>
+    </div>
+
+    <!-- Google Drive -->
+    <div class="table-wrap">
+      <div class="table-group-title">☁️ Google Drive — E1 a E7 + Fixes</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Descrição</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="code-cell">E1</td><td>Corrigir WH-SYNC-STORAGE-DRIVE (this.helpers)</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">E2</td><td>Estrutura hierárquica de pastas do cliente no Drive</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">E3</td><td>Webhook drive-pasta-restricao + frontend</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">E4</td><td>Webhook drive-lixeira + frontend (soft delete)</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">E5</td><td>Migration SQL — drive_deleted_at, watch API</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">E6</td><td>Bidirecional Drive→MdFlow (Watch API + cron renovação)</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">E7</td><td>Auto-pasta ao criar lead MdZap</td><td><span class="sp sp-block">⏳ Bloqueado — aguarda MdZap</span></td></tr>
+          <tr><td class="code-cell">Fix</td><td>RestricaoPastaCard props clienteId/userId propagados</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">Fix</td><td>WEBHOOK-ENTRADA reescrito com this.helpers correto</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">Fix</td><td>PASTA-RESTRICAO recriado e testado end-to-end</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">SQL</td><td>Índice idx_restricoes_drive_pasta</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">SQL</td><td>Índice idx_processos_documentos_drive_id</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bugs -->
+    <div class="table-wrap">
+      <div class="table-group-title">🐛 Bugs</div>
+      <table>
+        <thead>
+          <tr><th>Bug ID</th><th>Descrição</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="code-cell">BUG-01</td><td>N8N-REL-CONSULTA inativo (auditoria Boa Vista)</td><td><span class="sp sp-done">✅ Corrigido</span></td></tr>
+          <tr><td class="code-cell">BUG-02</td><td>Document Received — 3 nodes WhatsApp</td><td><span class="sp sp-skip">⏳ Excluído do escopo</span></td></tr>
+          <tr><td class="code-cell">BUG-03</td><td>Protestos de cartório aparecendo incorretamente</td><td><span class="sp sp-done">✅ Corrigido (filtro adicionado)</span></td></tr>
+          <tr><td class="code-cell">BUG-04</td><td>Histórico inconsistente (MdzapConversaTimeline + eventos_operacionais)</td><td><span class="sp sp-block">⏳ Pendente investigação</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MdZap Lead Panel v2 -->
+    <div class="table-wrap">
+      <div class="table-group-title">📱 MdZap Lead Panel v2</div>
+      <table>
+        <thead>
+          <tr><th>Item</th><th>Descrição</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="code-cell">F1-A</td><td>Aba Dados — edição completa do lead</td><td><span class="sp sp-pend">⏳ Aguarda reconstrução MdZap</span></td></tr>
+          <tr><td class="code-cell">F1-B</td><td>Aba Restrições com count badge dinâmico</td><td><span class="sp sp-pend">⏳ Aguarda reconstrução MdZap</span></td></tr>
+          <tr><td class="code-cell">F1-C</td><td>Aba Documentos (Tier 1 + Tier 2)</td><td><span class="sp sp-pend">⏳ Aguarda reconstrução MdZap</span></td></tr>
+          <tr><td class="code-cell">F1-D</td><td>Aba Histórico timeline de eventos</td><td><span class="sp sp-pend">⏳ Aguarda reconstrução MdZap</span></td></tr>
+          <tr><td class="code-cell">F1-E</td><td>Panel fechado por default (toggle 320px width)</td><td><span class="sp sp-pend">⏳ Aguarda reconstrução MdZap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Backend / SQL -->
+    <div class="table-wrap">
+      <div class="table-group-title">🗄️ Backend / SQL — Migrations</div>
+      <table>
+        <thead>
+          <tr><th>Campo / Tabela</th><th>Mudança</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="code-cell">processos_documentos.origem</td><td>TEXT CHECK — 'upload', 'gerado', 'drive_sync', etc.</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">processos_documentos.google_drive_id</td><td>TEXT — ID do arquivo no Drive</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">processos_documentos.drive_deleted_at</td><td>TIMESTAMPTZ — soft delete Drive</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">restricoes.drive_pasta_id</td><td>TEXT — ID da pasta da restrição no Drive</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">drive_watches</td><td>Nova tabela — controle Watch API channels</td><td><span class="sp sp-done">✅ Executado</span></td></tr>
+          <tr><td class="code-cell">3 Tiers documentos</td><td>Schema de documentos com Tier 1/2/3</td><td><span class="sp sp-done">✅ Já existia</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Componentes Shared -->
+    <div class="table-wrap">
+      <div class="table-group-title">⚛️ Componentes Shared — React</div>
+      <table>
+        <thead>
+          <tr><th>Componente</th><th>Mudança</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="code-cell">DocumentoItem.tsx</td><td>+clienteId/organizacaoId/userId props; webhook drive-lixeira; badge ☁ drive_sync</td><td><span class="sp sp-done">✅ Atualizado</span></td></tr>
+          <tr><td class="code-cell">RestricaoPastaCard.tsx</td><td>+prop userId; passa clienteId+organizacaoId+userId ao DocumentoItem</td><td><span class="sp sp-done">✅ Atualizado</span></td></tr>
+          <tr><td class="code-cell">ClienteDrawerTabDocumentos.tsx</td><td>RestricaoPastaWrapper: +useAuth(), passa clienteId+userId</td><td><span class="sp sp-done">✅ Atualizado</span></td></tr>
+          <tr><td class="code-cell">ClienteDrawerTabDocumentosLead.tsx</td><td>RestricaoPastaWrapper: +useAuth(), passa userId</td><td><span class="sp sp-done">✅ Atualizado</span></td></tr>
+          <tr><td class="code-cell">ProcessoTabDocumentos.tsx</td><td>+userId={user?.user_id} ao RestricaoPastaCard</td><td><span class="sp sp-done">✅ Atualizado</span></td></tr>
+          <tr><td class="code-cell">useRestricoes.ts</td><td>+fire-and-forget drive-pasta-restricao em onSuccess</td><td><span class="sp sp-done">✅ Atualizado</span></td></tr>
+          <tr><td class="code-cell">documentos_lead_hooks.ts</td><td>+origem e google_drive_id nas interfaces e queries</td><td><span class="sp sp-done">✅ Atualizado</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 4: SISTEMA DE DOCUMENTOS 3 TIERS ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗂️</span>
+      <h2>Sistema de Documentos — 3 Tiers</h2>
+    </div>
+    <div class="grid g3">
+      <div class="tier-card tier-blue">
+        <div class="tier-title">Tier 1 — Docs do Lead</div>
+        <div class="tier-sub">Documentos pessoais do cliente, sem vínculo com restrição</div>
+        <div class="tier-label">restricao_id</div>
+        <div class="tier-item">🔗 restricao_id = NULL</div>
+        <div class="tier-label">Tipos de documentos</div>
+        <div class="tier-item">📄 RG, CNH, comprovante de endereço</div>
+        <div class="tier-item">📄 Documentos gerais do cliente</div>
+        <div class="tier-label">Storage</div>
+        <div class="tier-item">🪣 Bucket: <span style="color:#60a5fa;font-family:monospace">leads-docs</span></div>
+        <div class="tier-label">Contextos de uso</div>
+        <div class="tier-item">📌 CRM drawer — aba Documentos</div>
+        <div class="tier-item">📌 MdZap Lead Panel</div>
+        <div class="tier-label">Pasta no Drive</div>
+        <div class="tier-item" style="font-family:monospace;font-size:0.75rem;color:#60a5fa">{Cliente}/Documentos Pessoais/</div>
+      </div>
+      <div class="tier-card tier-orange">
+        <div class="tier-title">Tier 2 — Docs da Restrição</div>
+        <div class="tier-sub">Documentos vinculados a uma restrição específica de crédito</div>
+        <div class="tier-label">restricao_id</div>
+        <div class="tier-item">🔗 restricao_id = UUID</div>
+        <div class="tier-label">Tipos de documentos</div>
+        <div class="tier-item">📄 Comprovante de restrição</div>
+        <div class="tier-item">📄 Prints do bureau (Boa Vista, SPC)</div>
+        <div class="tier-label">Storage</div>
+        <div class="tier-item">🪣 Bucket: <span style="color:#fb923c;font-family:monospace">leads-docs</span></div>
+        <div class="tier-label">Contextos de uso</div>
+        <div class="tier-item">📌 RestricaoPastaCard</div>
+        <div class="tier-item">📌 Aba Restrições do CRM</div>
+        <div class="tier-label">Pasta no Drive</div>
+        <div class="tier-item" style="font-family:monospace;font-size:0.75rem;color:#fb923c">{Cliente}/Restrições/{Empresa} — R$ {valor}/</div>
+      </div>
+      <div class="tier-card tier-green">
+        <div class="tier-title">Tier 3 — Docs Gerados</div>
+        <div class="tier-sub">Documentos jurídicos gerados pela plataforma</div>
+        <div class="tier-label">processo_id</div>
+        <div class="tier-item">🔗 processo_id = UUID</div>
+        <div class="tier-label">Tipos de documentos</div>
+        <div class="tier-item">📄 Petição inicial, procuração</div>
+        <div class="tier-item">📄 Comprovantes gerados</div>
+        <div class="tier-label">Storage</div>
+        <div class="tier-item">🪣 Bucket: <span style="color:#34d399;font-family:monospace">documentos</span></div>
+        <div class="tier-label">Contextos de uso</div>
+        <div class="tier-item">📌 /distribuicao — aba Documentos</div>
+        <div class="tier-item">📌 /processos — aba Inicial + Tramitação</div>
+        <div class="tier-label">Pastas no Drive</div>
+        <div class="tier-item" style="font-family:monospace;font-size:0.72rem;color:#34d399">{Cliente}/Processos/{CNJ}/Iniciais/</div>
+        <div class="tier-item" style="font-family:monospace;font-size:0.72rem;color:#34d399">{Cliente}/Processos/{CNJ}/Tramitação/</div>
+      </div>
+    </div>
+
+    <!-- INICIAL_CATS -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">🔒 INICIAL_CATS — 9 categorias que NUNCA aparecem na aba Tramitação</div>
+      <div class="cats-grid">
+        <span class="cat-pill">peticao_inicial</span>
+        <span class="cat-pill">procuracao_orgao</span>
+        <span class="cat-pill">procuracao</span>
+        <span class="cat-pill">comprovante_restricao</span>
+        <span class="cat-pill">documento_restricao</span>
+        <span class="cat-pill">banco</span>
+        <span class="cat-pill">cartao</span>
+        <span class="cat-pill">documento_lead</span>
+        <span class="cat-pill">negativacao</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 5: HIERARQUIA GOOGLE DRIVE ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📁</span>
+      <h2>Hierarquia Google Drive</h2>
+    </div>
+    <div class="drive-tree">
+<span class="dt-root">MP Advocacia</span>  <span class="dt-comment">← pasta raiz [1hcncTk...]</span>
+<span class="dt-folder">└── {Nome do Cliente}/</span>
+    <span class="dt-folder">├── Documentos Pessoais/</span>          <span class="dt-comment">← Tier 1</span>
+    <span class="dt-folder">│   ├── RG_cliente.pdf</span>
+    <span class="dt-folder">│   └── CNH_frente.jpg</span>
+    <span class="dt-folder">│</span>
+    <span class="dt-folder">├── Restrições/</span>
+    <span class="dt-subfolder">│   ├── Banco do Brasil — R$ 4.359,61/</span>   <span class="dt-comment">← Tier 2</span>
+    <span class="dt-subfolder">│   │   ├── comprovante_bv.pdf</span>
+    <span class="dt-subfolder">│   │   └── print_app.jpg</span>
+    <span class="dt-subfolder">│   └── Nubank — R$ 1.200,00/</span>
+    <span class="dt-folder">│</span>
+    <span class="dt-folder">├── Processos/</span>
+    <span class="dt-subfolder">│   └── 0001234-56.2026.8.21.0001 — Banco do Brasil/</span>   <span class="dt-comment">← Tier 3</span>
+    <span class="dt-subfolder">│       ├── Iniciais/</span>              <span class="dt-comment">← Tier 1+2 copiados + petição/procuração</span>
+    <span class="dt-subfolder">│       │   ├── peticao_inicial.pdf</span>
+    <span class="dt-subfolder">│       │   ├── procuracao.pdf</span>
+    <span class="dt-subfolder">│       │   └── comprovante_bv.pdf  (cópia)</span>
+    <span class="dt-subfolder">│       └── Tramitação/</span>            <span class="dt-comment">← docs novos gerados durante o processo</span>
+    <span class="dt-subfolder">│           ├── intimacao_01.pdf</span>
+    <span class="dt-subfolder">│           └── manifestacao_01.pdf</span>
+    <span class="dt-folder">│</span>
+    <span class="dt-file">└── Lixeira/</span>                             <span class="dt-comment">← soft delete (drive_deleted_at = now())</span>
+    </div>
+
+    <!-- Status badges drive -->
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:14px;">
+      <div class="card" style="flex:1;min-width:200px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:1.1rem;">📡</span>
+          <div>
+            <div style="font-weight:600;font-size:0.85rem;">Watch API</div>
+            <div style="font-size:0.75rem;color:var(--accent3);">Ativo — renovação diária 02:00 BRT</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="flex:1;min-width:200px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:1.1rem;">🔄</span>
+          <div>
+            <div style="font-weight:600;font-size:0.85rem;">Sync Bidirecional</div>
+            <div style="font-size:0.75rem;color:var(--accent3);">MdFlow ↔ Drive — ativo</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="flex:1;min-width:200px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:1.1rem;">🔐</span>
+          <div>
+            <div style="font-weight:600;font-size:0.85rem;">OAuth2</div>
+            <div style="font-size:0.75rem;color:var(--accent3);">Configurado (Railway)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 6: MOCKUP CRM ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🖥️</span>
+      <h2>Mockup CRM — Drawer Documentos</h2>
+      <span class="section-tag">Sheet lateral ~480px</span>
+    </div>
+    <div class="mockup-screen" style="max-width:540px;">
+      <div class="mockup-titlebar">
+        <div class="mockup-dots">
+          <div class="mockup-dot red"></div>
+          <div class="mockup-dot yellow"></div>
+          <div class="mockup-dot green"></div>
+        </div>
+        <span class="mockup-title">/crm — Drawer Cliente</span>
+      </div>
+      <div class="mockup-header">
+        <div>
+          <div class="mockup-name">João Silva</div>
+          <div class="mockup-sub">Banco do Brasil — R$ 4.359,61</div>
+        </div>
+        <span class="sp sp-pend" style="margin-left:auto;">⏳ aguardando_documentos</span>
+      </div>
+      <div class="mockup-tabs">
+        <div class="mockup-tab">Dados</div>
+        <div class="mockup-tab">Restrições</div>
+        <div class="mockup-tab active">Documentos</div>
+        <div class="mockup-tab">Follow-up</div>
+        <div class="mockup-tab">Observações</div>
+        <div class="mockup-tab">MdZap</div>
+        <div class="mockup-tab">Histórico</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-section-title">Documentos do Cliente</div>
+        <div class="mockup-upload">⬆ Arraste arquivos ou clique para fazer upload</div>
+        <div class="mockup-file-list">
+          <div class="mockup-file">
+            <span>📄</span>
+            <span class="mockup-file-name">RG_joao.pdf</span>
+            <span class="mockup-file-badge fb-drive">☁ Drive</span>
+            <div class="mockup-file-actions">
+              <span class="mockup-btn">⬇</span>
+              <span class="mockup-btn">🗑</span>
+            </div>
+          </div>
+          <div class="mockup-file">
+            <span>📄</span>
+            <span class="mockup-file-name">Comprovante_residencia.jpg</span>
+            <div class="mockup-file-actions">
+              <span class="mockup-btn">⬇</span>
+              <span class="mockup-btn">🗑</span>
+            </div>
+          </div>
+          <div class="mockup-file">
+            <span>📄</span>
+            <span class="mockup-file-name">CNH_frente.jpg</span>
+            <div class="mockup-file-actions">
+              <span class="mockup-btn">⬇</span>
+              <span class="mockup-btn">🗑</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mockup-section-title" style="margin-top:20px;">Pastas por Restrição</div>
+
+        <div class="mockup-restricao-group">
+          <div class="mockup-restricao-header">
+            <span>▼</span>
+            <span>🏦</span>
+            <span class="mockup-restricao-name">Banco do Brasil</span>
+            <span class="mockup-restricao-val">R$ 4.359,61</span>
+            <span class="mockup-restricao-cnj" style="margin-left:8px;">CNJ: 0001234</span>
+          </div>
+          <div class="mockup-restricao-body">
+            <div class="mockup-file-list">
+              <div class="mockup-file">
+                <span>📄</span>
+                <span class="mockup-file-name">comprovante_bv.pdf</span>
+                <span class="mockup-file-badge fb-drive">☁ Drive</span>
+                <div class="mockup-file-actions">
+                  <span class="mockup-btn">⬇</span>
+                  <span class="mockup-btn">🗑</span>
+                </div>
+              </div>
+              <div class="mockup-file">
+                <span>📄</span>
+                <span class="mockup-file-name">print_app.jpg</span>
+                <div class="mockup-file-actions">
+                  <span class="mockup-btn">⬇</span>
+                  <span class="mockup-btn">🗑</span>
+                </div>
+              </div>
+            </div>
+            <div class="mockup-restricao-upload">⬆ Arraste arquivos nesta restrição</div>
+          </div>
+        </div>
+
+        <div class="mockup-restricao-group">
+          <div class="mockup-restricao-header">
+            <span>▶</span>
+            <span>💳</span>
+            <span class="mockup-restricao-name">Nubank</span>
+            <span class="mockup-restricao-val">R$ 1.200,00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 7: MOCKUP CLIENTES ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">👥</span>
+      <h2>Mockup Clientes — Drawer Documentos</h2>
+      <span class="section-tag">Tier 1 + Tier 2 apenas — sem gerador</span>
+    </div>
+    <div class="mockup-screen" style="max-width:540px;">
+      <div class="mockup-titlebar">
+        <div class="mockup-dots">
+          <div class="mockup-dot red"></div>
+          <div class="mockup-dot yellow"></div>
+          <div class="mockup-dot green"></div>
+        </div>
+        <span class="mockup-title">/clientes — Drawer Cliente</span>
+      </div>
+      <div class="mockup-header">
+        <div>
+          <div class="mockup-name">Maria Santos</div>
+          <div class="mockup-sub">3 restrições processáveis</div>
+        </div>
+        <span class="sp sp-done" style="margin-left:auto;">✅ cliente</span>
+      </div>
+      <div class="mockup-tabs">
+        <div class="mockup-tab">Dados</div>
+        <div class="mockup-tab">Restrições</div>
+        <div class="mockup-tab active">Documentos</div>
+        <div class="mockup-tab">Histórico</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-section-title">Documentos Pessoais</div>
+        <div class="mockup-upload">⬆ Arraste arquivos ou clique para fazer upload</div>
+        <div class="mockup-file-list">
+          <div class="mockup-file">
+            <span>📄</span>
+            <span class="mockup-file-name">RG_maria.pdf</span>
+            <span class="mockup-file-badge fb-drive">☁ Drive</span>
+            <div class="mockup-file-actions">
+              <span class="mockup-btn">⬇</span>
+              <span class="mockup-btn">🗑</span>
+            </div>
+          </div>
+          <div class="mockup-file">
+            <span>📄</span>
+            <span class="mockup-file-name">procuracao_assinada.pdf</span>
+            <div class="mockup-file-actions">
+              <span class="mockup-btn">⬇</span>
+              <span class="mockup-btn">🗑</span>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-section-title" style="margin-top:20px;">Pastas por Restrição</div>
+        <div class="mockup-restricao-group">
+          <div class="mockup-restricao-header">
+            <span>▶</span>
+            <span>🏦</span>
+            <span class="mockup-restricao-name">Banco do Brasil</span>
+            <span class="mockup-restricao-val">R$ 4.359,61</span>
+          </div>
+        </div>
+        <div class="mockup-restricao-group">
+          <div class="mockup-restricao-header">
+            <span>▶</span>
+            <span>💳</span>
+            <span class="mockup-restricao-name">Nubank</span>
+            <span class="mockup-restricao-val">R$ 1.200,00</span>
+          </div>
+        </div>
+        <div class="mockup-restricao-group">
+          <div class="mockup-restricao-header">
+            <span>▶</span>
+            <span>🏛️</span>
+            <span class="mockup-restricao-name">Serasa / Credilink</span>
+            <span class="mockup-restricao-val">R$ 890,00</span>
+          </div>
+        </div>
+        <div class="mockup-note">
+          ℹ️ Sem botões de "Gerar Petição" ou "Gerar Contrato" — contexto /clientes mostra apenas Tier 1 e Tier 2.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 8: MOCKUP DISTRIBUIÇÃO ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚖️</span>
+      <h2>Mockup Distribuição — Drawer Documentos</h2>
+      <span class="section-tag">1 restrição específica + docs gerados</span>
+    </div>
+    <div class="mockup-screen" style="max-width:540px;">
+      <div class="mockup-titlebar">
+        <div class="mockup-dots">
+          <div class="mockup-dot red"></div>
+          <div class="mockup-dot yellow"></div>
+          <div class="mockup-dot green"></div>
+        </div>
+        <span class="mockup-title">/distribuicao — Drawer Distribuição</span>
+      </div>
+      <div class="mockup-header">
+        <div>
+          <div class="mockup-name">Maria Santos</div>
+          <div class="mockup-sub">Distribuindo: Banco do Brasil — R$ 4.359,61</div>
+        </div>
+        <span class="sp sp-run" style="margin-left:auto;">🔄 em_distribuicao</span>
+      </div>
+      <div class="mockup-tabs">
+        <div class="mockup-tab">Dados (readonly)</div>
+        <div class="mockup-tab">Restrição</div>
+        <div class="mockup-tab active">Documentos</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-section-title">Documentos Iniciais</div>
+        <div class="mockup-file-list">
+          <div class="mockup-file">
+            <span>📄</span>
+            <span class="mockup-file-name">peticao_inicial.pdf</span>
+            <span class="mockup-file-badge fb-gen">⚙ Gerado</span>
+            <div class="mockup-file-actions">
+              <span class="mockup-btn">⬇</span>
+            </div>
+          </div>
+          <div class="mockup-file">
+            <span>📄</span>
+            <span class="mockup-file-name">procuracao.pdf</span>
+            <span class="mockup-file-badge fb-gen">⚙ Gerado</span>
+            <div class="mockup-file-actions">
+              <span class="mockup-btn">⬇</span>
+            </div>
+          </div>
+          <div class="mockup-file">
+            <span>📄</span>
+            <span class="mockup-file-name">comprovante_bv.pdf</span>
+            <span class="mockup-file-badge fb-drive">☁ Drive</span>
+            <div class="mockup-file-actions">
+              <span class="mockup-btn">⬇</span>
+              <span class="mockup-btn">🗑</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px;">
+          <button class="mockup-btn" style="padding:8px 14px;font-size:0.8rem;color:var(--accent);border-color:var(--accent);">+ Gerar Petição</button>
+          <button class="mockup-btn" style="padding:8px 14px;font-size:0.8rem;color:var(--accent3);border-color:var(--accent3);">+ Gerar Comprovante</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 9: MOCKUP PROCESSOS ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>Mockup Processos — Abas Inicial + Tramitação</h2>
+      <span class="section-tag">INICIAL_CATS nunca aparecem em Tramitação</span>
+    </div>
+    <div class="mockup-screen" style="max-width:600px;">
+      <div class="mockup-titlebar">
+        <div class="mockup-dots">
+          <div class="mockup-dot red"></div>
+          <div class="mockup-dot yellow"></div>
+          <div class="mockup-dot green"></div>
+        </div>
+        <span class="mockup-title">/processos — Aba Documentos</span>
+      </div>
+      <div class="mockup-header">
+        <div>
+          <div class="mockup-name" style="font-family:'JetBrains Mono',monospace;font-size:0.9rem;">0001234-56.2026.8.21.0001</div>
+          <div class="mockup-sub">Banco do Brasil | Heloísa | RS</div>
+        </div>
+        <span class="sp sp-run" style="margin-left:auto;">🔄 em_tramitacao</span>
+      </div>
+      <div class="mockup-tabs">
+        <div class="mockup-tab">Dados</div>
+        <div class="mockup-tab active">Documentos</div>
+        <div class="mockup-tab">Timeline</div>
+        <div class="mockup-tab">Financeiro</div>
+      </div>
+      <div class="mockup-body">
+
+        <!-- Sub-abas Inicial / Tramitação -->
+        <div class="proc-subtabs">
+          <div class="proc-subtab active">Inicial ▼</div>
+          <div class="proc-subtab">Tramitação</div>
+        </div>
+
+        <!-- Aba Inicial -->
+        <div id="aba-inicial" style="margin-top:16px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="font-size:0.8rem;color:var(--text-muted);">Banco do Brasil — R$ 4.359,61</span>
+          </div>
+          <div class="mockup-file-list">
+            <div class="mockup-file">
+              <span>📄</span>
+              <span class="mockup-file-name">peticao_inicial.pdf</span>
+              <span class="mockup-file-badge fb-gen">⚙ Gerado</span>
+              <div class="mockup-file-actions"><span class="mockup-btn">⬇</span></div>
+            </div>
+            <div class="mockup-file">
+              <span>📄</span>
+              <span class="mockup-file-name">procuracao_orgao.pdf</span>
+              <span class="mockup-file-badge fb-gen">⚙ Gerado</span>
+              <div class="mockup-file-actions"><span class="mockup-btn">⬇</span></div>
+            </div>
+            <div class="mockup-file">
+              <span>📄</span>
+              <span class="mockup-file-name">procuracao.pdf</span>
+              <span class="mockup-file-badge fb-gen">⚙ Gerado</span>
+              <div class="mockup-file-actions"><span class="mockup-btn">⬇</span></div>
+            </div>
+            <div class="mockup-file">
+              <span>📄</span>
+              <span class="mockup-file-name">comprovante_bv.pdf</span>
+              <span class="mockup-file-badge fb-drive">☁ Drive</span>
+              <div class="mockup-file-actions">
+                <span class="mockup-btn">⬇</span>
+                <span class="mockup-btn">🗑</span>
+              </div>
+            </div>
+            <div class="mockup-file">
+              <span>📄</span>
+              <span class="mockup-file-name">rg_maria.pdf</span>
+              <div class="mockup-file-actions">
+                <span class="mockup-btn">⬇</span>
+                <span class="mockup-btn">🗑</span>
+              </div>
+            </div>
+          </div>
+          <div class="mockup-upload" style="margin-top:12px;">⬆ Arraste documentos aqui</div>
+        </div>
+
+        <!-- Preview da aba Tramitação (colapsada) -->
+        <div style="margin-top:20px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+          <div style="background:var(--surface2);padding:10px 14px;font-size:0.75rem;color:var(--text-muted);border-bottom:1px solid var(--border);">
+            PREVIEW — Aba Tramitação
+          </div>
+          <div style="padding:14px;">
+            <div class="mockup-file-list">
+              <div class="mockup-file">
+                <span>📄</span>
+                <span class="mockup-file-name">intimacao_01.pdf</span>
+                <span style="margin-left:auto;font-size:0.72rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">2026-03-15</span>
+                <div class="mockup-file-actions">
+                  <span class="mockup-btn">⬇</span>
+                  <span class="mockup-btn">🗑</span>
+                </div>
+              </div>
+              <div class="mockup-file">
+                <span>📄</span>
+                <span class="mockup-file-name">manifestacao_01.pdf</span>
+                <span style="margin-left:auto;font-size:0.72rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">2026-03-20</span>
+                <div class="mockup-file-actions">
+                  <span class="mockup-btn">⬇</span>
+                  <span class="mockup-btn">🗑</span>
+                </div>
+              </div>
+              <div class="mockup-file">
+                <span>📄</span>
+                <span class="mockup-file-name">despacho_02.pdf</span>
+                <span style="margin-left:auto;font-size:0.72rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">2026-04-01</span>
+                <div class="mockup-file-actions">
+                  <span class="mockup-btn">⬇</span>
+                  <span class="mockup-btn">🗑</span>
+                </div>
+              </div>
+            </div>
+            <div class="mockup-upload" style="margin-top:12px;">⬆ Adicionar documento de tramitação</div>
+            <div class="mockup-note">
+              Nota: INICIAL_CATS (petição, procuração, comprovante, etc.) NUNCA aparecem nesta aba. A separação é automática pelo campo <span style="font-family:monospace;color:var(--accent);">categoria</span>.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 10: WORKFLOWS N8N ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <h2>Workflows n8n — Status Atual</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Workflow</th>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Função</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="code-cell">WH-SYNC-STORAGE-DRIVE</td>
+            <td class="wf-id">existente</td>
+            <td><span class="sp sp-done">✅ Ativo (corrigido E1)</span></td>
+            <td>Upload MdFlow → Drive (this.helpers corrigido)</td>
+          </tr>
+          <tr>
+            <td class="code-cell">MDFLOW-DRIVE-PASTA-RESTRICAO-v1</td>
+            <td class="wf-id">goGYZZvliCMRt8ZZ</td>
+            <td><span class="sp sp-done">✅ Ativo</span></td>
+            <td>Cria pasta no Drive ao criar nova restrição</td>
+          </tr>
+          <tr>
+            <td class="code-cell">MDFLOW-DRIVE-WEBHOOK-ENTRADA-v1</td>
+            <td class="wf-id">xfqcdSip7La2Qwx8</td>
+            <td><span class="sp sp-done">✅ Ativo (corrigido)</span></td>
+            <td>Drive → MdFlow sync bidirecional (Watch API push)</td>
+          </tr>
+          <tr>
+            <td class="code-cell">MDFLOW-DRIVE-RENOVAR-WATCH-v1</td>
+            <td class="wf-id">existente</td>
+            <td><span class="sp sp-done">✅ Ativo (cron 02:00 BRT)</span></td>
+            <td>Renova Watch API channels diariamente</td>
+          </tr>
+          <tr>
+            <td class="code-cell">N8N-REL-CONSULTA</td>
+            <td class="wf-id">86F1yHKNlR80MBlR</td>
+            <td><span class="sp sp-done">✅ Ativo (corrigido BUG-01)</span></td>
+            <td>Auditoria Boa Vista — consulta crédito</td>
+          </tr>
+          <tr>
+            <td class="code-cell">WH-AUD-01 — Auditorias Disparar</td>
+            <td class="wf-id">BKLW2Egnxd1xCnjL</td>
+            <td><span class="sp sp-done">✅ Atualizado (protestos filtrados)</span></td>
+            <td>Dispara auditoria — protestos de cartório filtrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 11: FLUXO DRIVE BIDIRECIONAL ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔄</span>
+      <h2>Google Drive — Arquitetura Bidirecional</h2>
+    </div>
+    <div class="grid g3">
+      <!-- MdFlow → Drive -->
+      <div class="flow-chart">
+        <div class="flow-chart-title">MdFlow → Drive</div>
+        <div class="flow-vertical">
+          <div class="flow-node purple">Upload no MdFlow</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node blue">Storage (Supabase bucket)</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node purple">WH-SYNC-STORAGE-DRIVE</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node blue">API Google Drive</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node green">Pasta correta no Drive</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node green">UPDATE google_drive_id</div>
+        </div>
+      </div>
+      <!-- Drive → MdFlow -->
+      <div class="flow-chart">
+        <div class="flow-chart-title">Drive → MdFlow</div>
+        <div class="flow-vertical">
+          <div class="flow-node blue">Arquivo adicionado no Drive</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node blue">Watch API push notification</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node purple">WEBHOOK-ENTRADA</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node purple">Busca metadados do arquivo</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node green">UPDATE origem='drive_sync'</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node green">Badge ☁ aparece no frontend</div>
+        </div>
+      </div>
+      <!-- Lixeira -->
+      <div class="flow-chart">
+        <div class="flow-chart-title">Lixeira (Soft Delete)</div>
+        <div class="flow-vertical">
+          <div class="flow-node orange">Usuário deleta no MdFlow</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node orange">drive-lixeira webhook</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node blue">API Google Drive</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node orange">Mover para {Cliente}/Lixeira/</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node orange">drive_deleted_at = now()</div>
+          <div class="flow-vline"></div>
+          <div class="flow-node" style="color:var(--text-muted);">Arquivo oculto na UI</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 12: PENDÊNCIAS ABERTAS ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🚨</span>
+      <h2>Pendências Abertas</h2>
+    </div>
+
+    <div class="pendencia-card p-critical">
+      <div class="pendencia-title">
+        <span style="color:var(--accent2);">🔴 CRÍTICO</span>
+        <span class="sp sp-block">BUG-04</span>
+      </div>
+      <div class="pendencia-desc">
+        Histórico inconsistente — MdzapConversaTimeline + eventos_operacionais apresentam dados divergentes. Não foi investigado nesta etapa. Impacto: timeline incorreta no Lead Panel e no drawer de histórico.
+      </div>
+    </div>
+
+    <div class="pendencia-card p-blocked">
+      <div class="pendencia-title">
+        <span style="color:var(--accent4);">🟡 BLOQUEADO</span>
+        <span class="sp sp-pend">E7</span>
+      </div>
+      <div class="pendencia-desc">
+        Auto-pasta ao criar lead MdZap — o hook useLeads.onSuccess não aciona drive-pasta-restricao porque a página MdZap ainda não foi reconstruída. Aguarda reconstrução completa da página.
+      </div>
+    </div>
+
+    <div class="pendencia-card p-blocked">
+      <div class="pendencia-title">
+        <span style="color:var(--accent4);">🟡 BLOQUEADO</span>
+        <span class="sp sp-pend">F2 — Lead Panel v2</span>
+      </div>
+      <div class="pendencia-desc">
+        4 abas do Lead Panel (Dados, Restrições, Documentos, Histórico) + toggle 320px. Depende da reconstrução completa da página MdZap. Arquitetura definida, implementação pendente.
+      </div>
+    </div>
+
+    <div class="pendencia-card p-skipped">
+      <div class="pendencia-title">
+        <span style="color:var(--text-muted);">⚪ EXCLUÍDO</span>
+        <span class="sp sp-skip">BUG-02</span>
+      </div>
+      <div class="pendencia-desc">
+        Document Received WhatsApp — 3 nodes com comportamento inconsistente. Excluído do escopo desta etapa por impacto baixo e complexidade alta.
+      </div>
+    </div>
+
+    <div class="pendencia-card p-future">
+      <div class="pendencia-title">
+        <span style="color:var(--accent);">⚪ FUTURO</span>
+        <span class="sp sp-pend">F5 — ZapSign</span>
+      </div>
+      <div class="pendencia-desc">
+        Assinatura eletrônica (ZapSign) — aguarda decisão de fornecedor. Christian precisa definir entre ZapSign, D4Sign e assine.online antes de prosseguir.
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px; border-color: rgba(124,109,255,0.3);">
+      <div class="card-title">❓ Perguntas em aberto com Christian</div>
+      <div style="color:var(--text-muted);font-size:0.83rem;line-height:1.8;">
+        Q1-Q8: Framework de atendimento geral — definições de fluxo, responsabilidades SDR, critérios de qualificação.<br>
+        D1-D8: Documentos obrigatórios por tipo de restrição, tierização de docs, política de lixeira, retenção Drive.<br>
+        <span style="color:var(--accent);">Ver framework-atendimento-v2.html para lista completa.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEÇÃO 13: ARQUIVOS MODIFICADOS ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📝</span>
+      <h2>Arquivos Modificados</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Mudança Principal</th>
+            <th>Etapa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="code-cell" style="font-size:0.75rem;">src/components/shared/cliente_drawer/tabs/<br><strong>DocumentoItem.tsx</strong></td>
+            <td>+clienteId/organizacaoId/userId props; webhook drive-lixeira; badge ☁ drive_sync</td>
+            <td><span class="sp sp-done">E4 + Fix</span></td>
+          </tr>
+          <tr>
+            <td class="code-cell" style="font-size:0.75rem;">src/components/shared/cliente_drawer/tabs/<br><strong>documentos_lead_hooks.ts</strong></td>
+            <td>+origem e google_drive_id nas interfaces e queries</td>
+            <td><span class="sp sp-done">E4</span></td>
+          </tr>
+          <tr>
+            <td class="code-cell" style="font-size:0.75rem;">src/components/shared/cliente_drawer/tabs/<br><strong>ClienteDrawerTabDocumentos.tsx</strong></td>
+            <td>RestricaoPastaWrapper: +useAuth(), passa clienteId+userId</td>
+            <td><span class="sp sp-done">Fix</span></td>
+          </tr>
+          <tr>
+            <td class="code-cell" style="font-size:0.75rem;">src/components/shared/cliente_drawer/tabs/<br><strong>ClienteDrawerTabDocumentosLead.tsx</strong></td>
+            <td>RestricaoPastaWrapper: +useAuth(), passa userId</td>
+            <td><span class="sp sp-done">Fix</span></td>
+          </tr>
+          <tr>
+            <td class="code-cell" style="font-size:0.75rem;">src/components/shared/cliente_drawer/tabs/<br><strong>RestricaoPastaCard.tsx</strong></td>
+            <td>+prop userId; passa clienteId+organizacaoId+userId ao DocumentoItem</td>
+            <td><span class="sp sp-done">Fix</span></td>
+          </tr>
+          <tr>
+            <td class="code-cell" style="font-size:0.75rem;">src/hooks/<br><strong>useRestricoes.ts</strong></td>
+            <td>+fire-and-forget drive-pasta-restricao em onSuccess</td>
+            <td><span class="sp sp-done">E3</span></td>
+          </tr>
+          <tr>
+            <td class="code-cell" style="font-size:0.75rem;">src/components/processo/tabs/<br><strong>ProcessoTabDocumentos.tsx</strong></td>
+            <td>+userId={user?.user_id} ao RestricaoPastaCard</td>
+            <td><span class="sp sp-done">Fix</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · MP Advocacia · 2026-04-06
+  </div>
+
+</div>
+</body>
+</html>
