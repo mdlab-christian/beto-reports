@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap / Docs / Restrições — Investigação Técnica v1</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --card: #1a1f33;
+  --border: #2a2f45;
+  --text: #e8e6f0;
+  --muted: #8a8699;
+  --accent: #7c6dff;
+  --green: #20c997;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --blue: #38bdf8;
+  --orange: #fb923c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: #0a0c14;
+  border-right: 1px solid var(--border);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.sidebar-logo .logo-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.sidebar-logo .logo-sub {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0 8px;
+}
+
+.sidebar-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.78rem;
+  transition: all 0.15s;
+  line-height: 1.3;
+}
+
+.sidebar-nav li a:hover,
+.sidebar-nav li a.active {
+  background: rgba(124,109,255,0.12);
+  color: var(--text);
+}
+
+.sidebar-nav li a.active {
+  color: var(--accent);
+}
+
+.sidebar-nav .nav-icon {
+  font-size: 0.9rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-nav .nav-num {
+  font-size: 0.65rem;
+  background: var(--surface3);
+  color: var(--muted);
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 10px 20px;
+}
+
+.sidebar-section-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  padding: 6px 20px;
+  font-weight: 600;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0 80px;
+  min-width: 0;
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #0d0f18 0%, #161926 40%, #1a1535 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 32px 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(124,109,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  background: rgba(124,109,255,0.1);
+  border: 1px solid rgba(124,109,255,0.25);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c6dff, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.hero-sub {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.b-green  { background: rgba(32,201,151,0.1); color: var(--green); border: 1px solid rgba(32,201,151,0.25); }
+.b-red    { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+.b-yellow { background: rgba(245,158,11,0.1); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+.b-blue   { background: rgba(56,189,248,0.1); color: var(--blue); border: 1px solid rgba(56,189,248,0.25); }
+.b-purple { background: rgba(124,109,255,0.12); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.b-orange { background: rgba(251,146,60,0.1); color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+/* SECTIONS */
+.section {
+  margin: 40px 0;
+  scroll-margin-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-num {
+  width: 28px;
+  height: 28px;
+  background: rgba(124,109,255,0.15);
+  border: 1px solid rgba(124,109,255,0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+
+.section-icon { font-size: 1.2rem; }
+
+.section-header h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.section-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* CARD */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.card-sm {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.card-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* GRID */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 900px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+/* TABLES */
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(42,47,69,0.6);
+  font-size: 0.83rem;
+  vertical-align: top;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* STATUS PILLS */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.p-green  { background: rgba(32,201,151,0.12); color: var(--green); }
+.p-red    { background: rgba(239,68,68,0.12); color: var(--red); }
+.p-yellow { background: rgba(245,158,11,0.12); color: var(--yellow); }
+.p-blue   { background: rgba(56,189,248,0.12); color: var(--blue); }
+.p-purple { background: rgba(124,109,255,0.12); color: var(--accent); }
+.p-orange { background: rgba(251,146,60,0.12); color: var(--orange); }
+.p-muted  { background: rgba(138,134,153,0.12); color: var(--muted); }
+
+/* CODE */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: var(--green);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+}
+
+.code .c-muted  { color: var(--muted); }
+.code .c-yellow { color: var(--yellow); }
+.code .c-blue   { color: var(--blue); }
+.code .c-red    { color: var(--red); }
+.code .c-green  { color: var(--green); }
+.code .c-accent { color: var(--accent); }
+.code .c-orange { color: var(--orange); }
+
+/* ASCII WIREFRAME */
+.wireframe {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  color: #b8b4cc;
+  white-space: pre;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.wireframe .w-accent { color: var(--accent); }
+.wireframe .w-green  { color: var(--green); }
+.wireframe .w-yellow { color: var(--yellow); }
+.wireframe .w-red    { color: var(--red); }
+.wireframe .w-blue   { color: var(--blue); }
+.wireframe .w-muted  { color: var(--muted); }
+
+/* BUG CARD */
+.bug-card {
+  background: var(--card);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-left: 4px solid var(--red);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.bug-card.p0 { border-left-color: var(--red); }
+.bug-card.p1 { border-left-color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); border-left: 4px solid var(--yellow); }
+.bug-card.p2 { border-left-color: var(--blue); border: 1px solid rgba(56,189,248,0.25); border-left: 4px solid var(--blue); }
+
+.bug-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: 6px;
+}
+
+.bug-card.p1 .bug-id { color: var(--yellow); }
+.bug-card.p2 .bug-id { color: var(--blue); }
+
+.bug-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.bug-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+}
+
+.bug-label {
+  color: var(--muted);
+  min-width: 130px;
+  flex-shrink: 0;
+}
+
+.bug-val { color: var(--text); }
+
+/* PHASE CARD */
+.phase-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.phase-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+
+.ph-red    { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.ph-blue   { background: rgba(56,189,248,0.12); color: var(--blue); border: 1px solid rgba(56,189,248,0.25); }
+.ph-green  { background: rgba(32,201,151,0.12); color: var(--green); border: 1px solid rgba(32,201,151,0.25); }
+.ph-yellow { background: rgba(245,158,11,0.12); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+.ph-purple { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.ph-orange { background: rgba(251,146,60,0.12); color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+
+.phase-title { font-size: 0.95rem; font-weight: 700; }
+.phase-sub   { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+.phase-items { list-style: none; }
+.phase-items li {
+  padding: 5px 0;
+  font-size: 0.82rem;
+  border-bottom: 1px solid rgba(42,47,69,0.4);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.phase-items li:last-child { border-bottom: none; }
+.phase-items .pi-icon { margin-top: 1px; flex-shrink: 0; }
+.phase-items .pi-note { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+
+/* QUESTION CARD */
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.q-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.q-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.q-why {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* COMPONENT TREE */
+.tree {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: #b8b4cc;
+  line-height: 1.8;
+}
+
+.tree .t-file   { color: var(--blue); }
+.tree .t-ok     { color: var(--green); }
+.tree .t-warn   { color: var(--yellow); }
+.tree .t-miss   { color: var(--red); }
+.tree .t-accent { color: var(--accent); }
+.tree .t-muted  { color: var(--muted); }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+/* HIGHLIGHT BOX */
+.highlight {
+  background: rgba(124,109,255,0.06);
+  border: 1px solid rgba(124,109,255,0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.highlight.hl-green  { background: rgba(32,201,151,0.06); border-color: rgba(32,201,151,0.2); }
+.highlight.hl-red    { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); }
+.highlight.hl-yellow { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.2); }
+.highlight.hl-blue   { background: rgba(56,189,248,0.06); border-color: rgba(56,189,248,0.2); }
+
+/* FLOW DIAGRAM */
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.flow-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+.flow-box.fb-green  { border-color: rgba(32,201,151,0.4); color: var(--green); }
+.flow-box.fb-red    { border-color: rgba(239,68,68,0.4); color: var(--red); }
+.flow-box.fb-yellow { border-color: rgba(245,158,11,0.4); color: var(--yellow); }
+.flow-box.fb-blue   { border-color: rgba(56,189,248,0.35); color: var(--blue); }
+.flow-box.fb-purple { border-color: rgba(124,109,255,0.4); color: var(--accent); }
+
+.flow-arrow { color: var(--muted); font-size: 0.9rem; }
+
+/* KPI ROW */
+.kpi-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+
+.kpi {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  text-align: center;
+  min-width: 90px;
+}
+
+.kpi-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.kpi-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+
+/* TABS VISUAL */
+.tab-strip {
+  display: flex;
+  gap: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.tab-item {
+  padding: 6px 14px;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.tab-item.active { background: var(--accent); color: white; font-weight: 600; }
+.tab-item.new    { background: rgba(32,201,151,0.15); color: var(--green); border: 1px solid rgba(32,201,151,0.3); }
+.tab-item.exists { background: var(--surface3); color: var(--muted); }
+
+/* SCHEMA FIELD */
+.schema-wrap {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.schema-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(42,47,69,0.5);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+}
+
+.schema-row:last-child { border-bottom: none; }
+.schema-row:hover { background: rgba(255,255,255,0.02); }
+
+.sf-name  { color: var(--blue); min-width: 180px; }
+.sf-type  { color: var(--accent); min-width: 120px; }
+.sf-note  { color: var(--muted); font-size: 0.72rem; flex: 1; }
+.sf-badge { margin-left: auto; }
+
+/* REUSE DIAGRAM */
+.reuse-diagram {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.reuse-col { display: flex; flex-direction: column; gap: 8px; }
+
+.reuse-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  padding: 6px 0;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.reuse-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.reuse-item.ri-green  { border-color: rgba(32,201,151,0.35); color: var(--green); background: rgba(32,201,151,0.05); }
+.reuse-item.ri-blue   { border-color: rgba(56,189,248,0.3); color: var(--blue); background: rgba(56,189,248,0.05); }
+.reuse-item.ri-yellow { border-color: rgba(245,158,11,0.3); color: var(--yellow); background: rgba(245,158,11,0.05); }
+
+.reuse-arrow-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 32px;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+/* COLLAPSIBLE (visual only) */
+.accordion-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: default;
+}
+
+.accordion-body {
+  padding: 0 16px 14px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* PROGRESS BAR */
+.progress-bar {
+  height: 6px;
+  background: var(--surface3);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progress-fill { height: 100%; border-radius: 3px; }
+.pf-green  { background: var(--green); }
+.pf-yellow { background: var(--yellow); }
+.pf-red    { background: var(--red); }
+.pf-blue   { background: var(--blue); }
+
+/* SCROLL INDICATOR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">MdFlow InvestTech</div>
+    <div class="logo-sub">MdZap / Docs / Restrições</div>
+  </div>
+  <ul class="sidebar-nav">
+    <li><a href="#s0" class="active"><span class="nav-icon">🎯</span> Visão Geral</a></li>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Diagnóstico</div>
+
+    <li><a href="#s1"><span class="nav-icon">📊</span> Diagnóstico Geral <span class="nav-num">S1</span></a></li>
+    <li><a href="#s7"><span class="nav-icon">🐛</span> Bugs P0 <span class="nav-num">S7</span></a></li>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Frontend</div>
+
+    <li><a href="#s2"><span class="nav-icon">📱</span> MdZap Lead Panel <span class="nav-num">S2</span></a></li>
+    <li><a href="#s3"><span class="nav-icon">🗂</span> CRM Drawer <span class="nav-num">S3</span></a></li>
+    <li><a href="#s9"><span class="nav-icon">♻️</span> Arquitetura Reutilização <span class="nav-num">S9</span></a></li>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Backend</div>
+
+    <li><a href="#s4"><span class="nav-icon">📁</span> Sistema Documentos <span class="nav-num">S4</span></a></li>
+    <li><a href="#s5"><span class="nav-icon">🔒</span> Sistema Restrições <span class="nav-num">S5</span></a></li>
+    <li><a href="#s6"><span class="nav-icon">⚡</span> n8n Workflows <span class="nav-num">S6</span></a></li>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Execução</div>
+
+    <li><a href="#s8"><span class="nav-icon">🗺</span> Plano de Execução <span class="nav-num">S8</span></a></li>
+    <li><a href="#s10"><span class="nav-icon">❓</span> Perguntas Christian <span class="nav-num">S10</span></a></li>
+  </ul>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- HERO -->
+<div class="hero" id="s0">
+  <div class="hero-inner">
+    <div class="hero-tag">🔬 Investigação Técnica Pré-Dev</div>
+    <h1>MdZap / Docs / Restrições</h1>
+    <p class="hero-sub">Levantamento completo do estado atual — o que existe, o que está quebrado e o que precisa ser criado antes de escrever qualquer código</p>
+    <div class="hero-badges">
+      <span class="badge b-purple">Investigação Técnica v1</span>
+      <span class="badge b-blue">06/04/2026</span>
+      <span class="badge b-green">Investigação Completa</span>
+      <span class="badge b-red">Zero Código Até Aprovação</span>
+      <span class="badge b-yellow">4 Bugs P0 Identificados</span>
+      <span class="badge b-orange">6 Fases de Execução</span>
+    </div>
+    <div class="hero-meta">
+      <span>📦 100 workflows n8n mapeados</span>
+      <span>⚛️ 5 componentes prontos para reutilizar</span>
+      <span>🗄 3 tabelas de schema validadas</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 1 — DIAGNÓSTICO GERAL -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <span class="section-icon">📊</span>
+    <h2>Diagnóstico Geral</h2>
+    <span class="badge b-blue section-badge">Estado Real do Sistema</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--green)">18</div>
+      <div class="kpi-label">Componentes OK</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--red)">4</div>
+      <div class="kpi-label">Bugs P0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--yellow)">7</div>
+      <div class="kpi-label">Gaps Principais</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--blue)">69</div>
+      <div class="kpi-label">Workflows Ativos</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--orange)">31</div>
+      <div class="kpi-label">Workflows Inativos</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--accent)">80%</div>
+      <div class="kpi-label">Reutilizável</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>O que existe / OK</th>
+          <th>O que está quebrado</th>
+          <th>O que falta criar</th>
+          <th>Reutilizável</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Schema BD</strong></td>
+          <td>
+            <span class="pill p-green">processos_documentos</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">leads_restricoes</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">google_drive_id ✓</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">drive_pasta_id ✓</span>
+          </td>
+          <td><span class="pill p-muted">Sem issues no schema</span></td>
+          <td><span class="pill p-muted">Nenhum novo campo necessário</span></td>
+          <td style="color:var(--green)">100% pronto</td>
+        </tr>
+        <tr>
+          <td><strong>Componentes Frontend</strong></td>
+          <td>
+            <span class="pill p-green">RestricaoPastaCard (494L)</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">DocumentoItem (195L)</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">DocumentosUploadCentral</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">ClienteDrawerTabRestricoes</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">ClienteDrawerTabDocumentos</span>
+          </td>
+          <td><span class="pill p-muted">Nenhum bug identificado</span></td>
+          <td>
+            <span class="pill p-yellow">MdZap Lead Panel v2</span><br>
+            <span class="pill p-yellow" style="margin-top:4px;display:inline-flex">Abas Dados/Restr/Docs no MdZap</span>
+          </td>
+          <td style="color:var(--green)">80% pronto para reutilizar</td>
+        </tr>
+        <tr>
+          <td><strong>Hooks React</strong></td>
+          <td>
+            <span class="pill p-green">useRestricoes</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">useLeadDocs</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">useRestricaoDocs</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">useSalvarRestricao</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">useClienteDados</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">useGerarContrato</span>
+          </td>
+          <td><span class="pill p-muted">Nenhum bug identificado</span></td>
+          <td><span class="pill p-muted">Nenhum novo hook necessário</span></td>
+          <td style="color:var(--green)">100% prontos</td>
+        </tr>
+        <tr>
+          <td><strong>n8n Workflows</strong></td>
+          <td>
+            <span class="pill p-green">MDZAP — Enviar Msg FE</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">MDZAP — Lead Sync</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">MDZAP — AI Composer</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">MDZAP — Triagem</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">WH-SYNC-STORAGE-DRIVE</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">Gerador Petições (61 nodes)</span>
+          </td>
+          <td>
+            <span class="pill p-red">N8N-REL-CONSULTA INATIVO</span><br>
+            <span class="pill p-yellow" style="margin-top:4px;display:inline-flex">Doc Received (3 nodes só)</span><br>
+            <span class="pill p-yellow" style="margin-top:4px;display:inline-flex">Sem filtro cartórios</span>
+          </td>
+          <td>
+            <span class="pill p-red">ZapSign — do zero</span><br>
+            <span class="pill p-yellow" style="margin-top:4px;display:inline-flex">Drive bidirecional</span><br>
+            <span class="pill p-yellow" style="margin-top:4px;display:inline-flex">Auto pasta por restrição</span>
+          </td>
+          <td style="color:var(--yellow)">60% OK — 3 precisam expandir</td>
+        </tr>
+        <tr>
+          <td><strong>RPCs / Backend</strong></td>
+          <td>
+            <span class="pill p-green">fn_restricoes_listar</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">rpc_disparar_auditoria</span>
+          </td>
+          <td>
+            <span class="pill p-red">Auditoria sem filtro cartórios</span>
+          </td>
+          <td>
+            <span class="pill p-yellow">rpc_criar_pasta_restricao (Drive)</span>
+          </td>
+          <td style="color:var(--yellow)">75% OK</td>
+        </tr>
+        <tr>
+          <td><strong>Integrações Externas</strong></td>
+          <td>
+            <span class="pill p-green">Google Drive (upload)</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">Boa Vista (3 bureaus)</span><br>
+            <span class="pill p-green" style="margin-top:4px;display:inline-flex">WhatsApp via MdZap</span>
+          </td>
+          <td>
+            <span class="pill p-yellow">Drive unidirecional só</span>
+          </td>
+          <td>
+            <span class="pill p-red">ZapSign — zero implementação</span><br>
+            <span class="pill p-yellow" style="margin-top:4px;display:inline-flex">Drive bidirecional</span>
+          </td>
+          <td style="color:var(--yellow)">50% OK</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 2 — MDZAP LEAD PANEL -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <span class="section-icon">📱</span>
+    <h2>MdZap Lead Panel — Antes vs Depois</h2>
+    <span class="badge b-green section-badge">Wireframes Detalhados</span>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:24px">
+    <div class="card">
+      <div class="card-title">Panel ATUAL — v1 (4 abas)</div>
+      <div class="tab-strip">
+        <span class="tab-item active">Lead</span>
+        <span class="tab-item exists">Memória</span>
+        <span class="tab-item exists">Tom</span>
+        <span class="tab-item exists">Histórico</span>
+      </div>
+      <div class="highlight hl-yellow" style="font-size:0.78rem">
+        Apenas dados da conversa WhatsApp. Sem acesso a restrições, documentos ou dados estruturados do lead.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Panel NOVO — v2 (6 abas)</div>
+      <div class="tab-strip">
+        <span class="tab-item new">Dados</span>
+        <span class="tab-item new">Restrições</span>
+        <span class="tab-item new">Documentos</span>
+        <span class="tab-item exists">Histórico</span>
+        <span class="tab-item exists">Memória</span>
+        <span class="tab-item exists">Tom</span>
+      </div>
+      <div class="highlight hl-green" style="font-size:0.78rem">
+        Acesso completo ao lead sem sair do MdZap. 80% dos componentes são reutilizados do CRM Drawer existente.
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA DADOS -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span class="badge b-green">NOVA</span>
+      <strong>Aba: Dados do Lead</strong>
+      <span style="color:var(--muted);font-size:0.78rem;margin-left:auto">Reutiliza campos do CRM drawer contexto=lead</span>
+    </div>
+    <div class="wireframe">┌─────────────────────────────────────────────────────────────┐
+│  📋 DADOS DO LEAD                              [✏ Editar]   │
+│ ─────────────────────────────────────────────────────────── │
+│  Nome          [João Silva                              ]   │
+│  CPF           [•••.456.789-••                          ]   │
+│  WhatsApp      [+55 51 99999-9999                       ]   │
+│  Email         [joao@email.com                          ]   │
+│  Endereço      [Rua das Flores, 123 - Porto Alegre/RS   ]   │
+│ ─────────────────────────────────────────────────────────── │
+│  Score IA      ████████░░  78/100   🟡 Médio                │
+│  Advogado      [Dr. Christian      ▼]                       │
+│  Coluna CRM    [em_atendimento     ▼]                       │
+│ ─────────────────────────────────────────────────────────── │
+│  [👁 Ver no CRM]    [👤 Ver cliente]    [↗ Transferir]      │
+└─────────────────────────────────────────────────────────────┘</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+      <div class="card-sm">
+        <div class="card-title">Props necessárias</div>
+        <div class="code" style="padding:8px 12px;font-size:0.73rem">leadId: string
+clienteId?: string
+readonly?: boolean</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-title">Fonte de dados</div>
+        <div class="code" style="padding:8px 12px;font-size:0.73rem">useLeadDados(leadId)
+useClienteDados(clienteId)
+leads + clientes tables</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA RESTRICOES -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span class="badge b-green">NOVA</span>
+      <strong>Aba: Restrições</strong>
+      <span style="color:var(--muted);font-size:0.78rem;margin-left:auto">Reutiliza ClienteDrawerTabRestricoes com contexto=lead</span>
+    </div>
+    <div class="wireframe">┌─────────────────────────────────────────────────────────────┐
+│  🔒 RESTRIÇÕES                     [+ Criar] [🔍 Buscar]    │
+│ ─────────────────────────────────────────────────────────── │
+│  ┌─ KPIs ───────────────────────────────────────────────┐   │
+│  │  3 restrições   │  2 processáveis   │  R$ 4.390 tot  │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                             │
+│  [🔍 Disparar Auditoria Boa Vista]                         │
+│                                                             │
+│  ▶ 🏦 Banco XYZ S.A.              R$ 2.500    Em análise   │
+│     Negativação • 15/03/2024 • 2 docs                      │
+│     [📁 Pasta Drive] [+ Doc] [✏ Editar] [🗑]               │
+│                                                             │
+│  ▶ 💳 Financeira ABC Ltda          R$ 1.890    Pendente     │
+│     Protesto • 22/01/2024 • 0 docs                         │
+│     [📁 Pasta Drive] [+ Doc] [✏ Editar] [🗑]               │
+│                                                             │
+│  ✗ 🏛 Cartório Centro              R$ 450      Não proc.    │
+│     [cartório excluído automaticamente]                    │
+└─────────────────────────────────────────────────────────────┘</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+      <div class="card-sm">
+        <div class="card-title">Componente a reutilizar</div>
+        <div class="code" style="padding:8px 12px;font-size:0.73rem">ClienteDrawerTabRestricoes
+  context="mdzap"
+  leadId={leadId}
+  clienteId={clienteId}</div>
+      </div>
+      <div class="card-sm">
+        <div class="card-title">Adaptações necessárias</div>
+        <div class="code" style="padding:8px 12px;font-size:0.73rem">+ prop context="mdzap"
++ exibir score auditoria
++ link para pasta Drive
+Nenhuma mudança de schema</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA DOCUMENTOS -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span class="badge b-green">NOVA</span>
+      <strong>Aba: Documentos</strong>
+      <span style="color:var(--muted);font-size:0.78rem;margin-left:auto">Reutiliza ClienteDrawerTabDocumentosLead com contexto=lead</span>
+    </div>
+    <div class="wireframe">┌─────────────────────────────────────────────────────────────┐
+│  📁 DOCUMENTOS                         [☁️ Ver Drive]       │
+│ ─────────────────────────────────────────────────────────── │
+│  ┌─ Upload ──────────────────────────────────────────────┐  │
+│  │     📎 Arraste aqui ou clique para enviar             │  │
+│  │     PDF  JPG  PNG  DOC  XLS  • máx 100MB              │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                             │
+│  DOCUMENTOS PESSOAIS  (Tier 1 — sem restrição)              │
+│  📄 RG_frente.jpg          💬 WhatsApp  [👁][✏][⬇][🗑]      │
+│  📄 comp_endereco.pdf      ☁️ Drive     [👁][✏][⬇][🗑]      │
+│  📄 CNH_verso.jpg          💬 WhatsApp  [👁][✏][⬇][🗑]      │
+│                                                             │
+│  POR RESTRIÇÃO  (Tier 2)                                    │
+│  ▶ 🏦 Banco XYZ S.A.         2 docs  [📎 Adicionar]        │
+│     📄 contrato_banco.pdf  ☁️ Drive   [👁][⬇][🗑]           │
+│     📄 extrato_jan24.pdf   ☁️ Drive   [👁][⬇][🗑]           │
+│  ▶ 💳 Financeira ABC Ltda    0 docs  [📎 Adicionar]        │
+│     ⬜ Nenhum documento enviado ainda                       │
+└─────────────────────────────────────────────────────────────┘</div>
+    <div class="highlight hl-blue" style="margin-top:12px;font-size:0.8rem">
+      <strong>Tier 1</strong> = restricao_id IS NULL (documentos pessoais do lead) &nbsp;|&nbsp;
+      <strong>Tier 2</strong> = restricao_id NOT NULL (documentos por restrição) &nbsp;|&nbsp;
+      <strong>Tier 2B</strong> = documentos que chegam pelo WhatsApp e são classificados automaticamente
+    </div>
+  </div>
+
+  <!-- ABA HISTORICO -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span class="badge b-blue">JÁ EXISTE</span>
+      <strong>Aba: Histórico</strong>
+      <span style="color:var(--muted);font-size:0.78rem;margin-left:auto">MdzapConversaTimeline — manter sem alterações</span>
+    </div>
+    <div class="wireframe">┌─────────────────────────────────────────────────────────────┐
+│  📋 HISTÓRICO DA CONVERSA                                   │
+│ ─────────────────────────────────────────────────────────── │
+│  hoje 14:32  ✅ Auditoria disparada — 3 restrições          │
+│  hoje 14:15  📄 Documento recebido — RG_frente.jpg          │
+│  hoje 14:00  👤 Conversa assumida por Heloísa               │
+│  ontem       🔄 Lead movido para em_atendimento             │
+│  03/04       ✨ Lead criado pelo MdZap                      │
+│                                                             │
+│  [Carregar mais...]                                         │
+└─────────────────────────────────────────────────────────────┘</div>
+  </div>
+
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 3 — CRM DRAWER COMPLETO -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <span class="section-icon">🗂</span>
+    <h2>CRM Drawer — Mapa Completo</h2>
+    <span class="badge b-blue section-badge">Estrutura Real Descoberta</span>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-title">7 Abas por contexto</div>
+      <div class="tab-strip" style="flex-direction:column;gap:4px;background:transparent;border:none;padding:0">
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+          <span class="pill p-blue" style="font-size:0.68rem">1</span>
+          <span style="font-size:0.82rem;font-weight:600">Dados</span>
+          <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">1.151 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+          <span class="pill p-red" style="font-size:0.68rem">2</span>
+          <span style="font-size:0.82rem;font-weight:600">Restrições</span>
+          <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">418 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+          <span class="pill p-green" style="font-size:0.68rem">3</span>
+          <span style="font-size:0.82rem;font-weight:600">Documentos</span>
+          <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">646 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+          <span class="pill p-muted" style="font-size:0.68rem">4</span>
+          <span style="font-size:0.82rem;font-weight:600">Follow-up</span>
+          <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">CRM / clientes</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+          <span class="pill p-muted" style="font-size:0.68rem">5</span>
+          <span style="font-size:0.82rem;font-weight:600">Observações</span>
+          <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">Notas internas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid rgba(124,109,255,0.3)">
+          <span class="pill p-purple" style="font-size:0.68rem">6</span>
+          <span style="font-size:0.82rem;font-weight:600">MDZap</span>
+          <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">Embed conversa</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+          <span class="pill p-muted" style="font-size:0.68rem">7</span>
+          <span style="font-size:0.82rem;font-weight:600">Histórico</span>
+          <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">Auditoria eventos</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Action Bar — 6 Botões</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+        <span class="pill p-purple">Editar</span>
+        <span class="pill p-green">Ver cliente</span>
+        <span class="pill p-blue">Transferir</span>
+        <span class="pill p-yellow">Mover CRM</span>
+        <span class="pill p-orange">Gerar contrato</span>
+        <span class="pill p-red">Arquivar</span>
+      </div>
+      <div class="card-title" style="margin-top:12px">Contextos disponíveis</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="pill p-blue">crm</span>
+        <span class="pill p-green">clientes</span>
+        <span class="pill p-purple">distribuicao</span>
+        <span class="pill p-muted">mdzap (a criar)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÁRVORE DE COMPONENTES -->
+  <div class="card">
+    <div class="card-title">Árvore completa de componentes — shared/cliente_drawer/</div>
+    <div class="tree" style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:16px;line-height:2">
+src/components/shared/cliente_drawer/
+├── <span class="t-file">ClienteDrawer.tsx</span>              <span class="t-ok">— container principal, 7 abas, action bar</span>
+│
+├── <span class="t-file">ClienteDrawerTabDados.tsx</span>       <span class="t-ok">— formulário completo, 1.151 linhas</span>
+│
+├── <span class="t-file">ClienteDrawerTabRestricoes.tsx</span>  <span class="t-ok">— KPIs + auditar + lista + modal + CSV (418L)</span>
+│
+├── <span class="t-file">ClienteDrawerTabDocumentosLead.tsx</span> <span class="t-ok">— Estados A-D + pastas + accordion (646L)</span>
+│
+├── <span class="t-file">RestricaoPastaCard.tsx</span>          <span class="t-ok">— accordion drag&drop bulk-dl soft-delete (494L)</span>
+│
+├── <span class="t-file">DocumentoItem.tsx</span>               <span class="t-ok">— linha doc: ícone, nome, status drive (195L)</span>
+│
+├── <span class="t-file">DocumentosUploadCentral.tsx</span>     <span class="t-ok">— área arrastar/clicar multi-formato (184L)</span>
+│
+└── <span class="t-file">DocumentosLeadPaineis.tsx</span>       <span class="t-ok">— ComprovanteAuditoria + Restricao + Drive (328L)</span>
+
+src/components/shared/mdzap/
+├── <span class="t-file">MdzapLeadPanel.tsx</span>              <span class="t-warn">— 4 abas hoje → ampliar para 6 abas</span>
+├── <span class="t-file">MdzapConversaTimeline.tsx</span>       <span class="t-ok">— já existe, manter</span>
+├── <span class="t-file">SentimentPanel.tsx</span>              <span class="t-ok">— 11 sentimentos, manter</span>
+└── <span class="t-file">MdzapLeadTabLead.tsx</span>            <span class="t-ok">— lead info atual, manter como aba Memória</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 4 — SISTEMA DE DOCUMENTOS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <span class="section-icon">📁</span>
+    <h2>Sistema de Documentos — Estado Real</h2>
+    <span class="badge b-yellow section-badge">Schema OK / Drive Incompleto</span>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:20px">
+    <div>
+      <div class="card-title" style="margin-bottom:8px">Schema: tabela <code style="color:var(--accent)">processos_documentos</code></div>
+      <div class="schema-wrap">
+        <div class="schema-row">
+          <span class="sf-name">id</span>
+          <span class="sf-type">UUID PK</span>
+          <span class="sf-note">gen_random_uuid()</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">nome</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">Nome do arquivo</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">arquivo_url</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">URL Supabase Storage</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">google_drive_id</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">ID do arquivo no Drive</span>
+          <span class="sf-badge"><span class="pill p-green">Existe ✓</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">status</span>
+          <span class="sf-type">TEXT CHECK</span>
+          <span class="sf-note">pendente | aprovado | rejeitado</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">lead_id</span>
+          <span class="sf-type">UUID FK</span>
+          <span class="sf-note">→ leads</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">cliente_id</span>
+          <span class="sf-type">UUID FK</span>
+          <span class="sf-note">→ clientes</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">restricao_id</span>
+          <span class="sf-type">UUID FK</span>
+          <span class="sf-note">NULL = Tier 1 / NOT NULL = Tier 2</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">processo_id</span>
+          <span class="sf-type">UUID FK</span>
+          <span class="sf-note">→ processos (Tier 3)</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">categoria</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">rg | cnh | comp_renda | comp_end...</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">organizacao_id</span>
+          <span class="sf-type">UUID FK</span>
+          <span class="sf-note">RLS ativo</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">deleted_at</span>
+          <span class="sf-type">TIMESTAMPTZ</span>
+          <span class="sf-note">Soft delete</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card-title" style="margin-bottom:8px">Fluxo atual de upload</div>
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:0.82rem">
+          <div class="flow-row">
+            <div class="flow-box fb-blue">Frontend</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box fb-purple">POST /webhook/mdflow/upload</div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-box fb-purple">n8n WH-SYNC-STORAGE-DRIVE</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box fb-green">Supabase Storage ✓</div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-box fb-purple">n8n</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box fb-green">Google Drive ✓ (upload)</div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-box fb-purple">n8n</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box fb-green">processos_documentos ✓</div>
+          </div>
+          <div style="margin-top:8px">
+            <span class="pill p-red">Drive → Supabase: NÃO EXISTE</span>
+            <span class="pill p-yellow" style="margin-left:6px">Pasta automática: NÃO EXISTE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-title" style="margin-bottom:8px">Sistema de tiers de documentos</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(32,201,151,0.06);border:1px solid rgba(32,201,151,0.2);border-radius:8px">
+          <span class="pill p-green" style="font-size:0.7rem">Tier 1</span>
+          <span style="font-size:0.82rem">restricao_id IS NULL — documentos pessoais do lead</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:8px">
+          <span class="pill p-blue" style="font-size:0.7rem">Tier 2</span>
+          <span style="font-size:0.82rem">restricao_id NOT NULL — documentos por restrição</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(124,109,255,0.06);border:1px solid rgba(124,109,255,0.2);border-radius:8px">
+          <span class="pill p-purple" style="font-size:0.7rem">Tier 2B</span>
+          <span style="font-size:0.82rem">Chegou pelo WhatsApp — classificação automática</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px">
+          <span class="pill p-yellow" style="font-size:0.7rem">Tier 3</span>
+          <span style="font-size:0.82rem">processo_id NOT NULL — documentos do processo jurídico</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="highlight hl-green">
+      <strong>O que já funciona perfeitamente:</strong><br>
+      Upload via frontend → Supabase Storage + Google Drive (unidirecional) + insert em processos_documentos. Todos os campos de schema necessários existem. Hooks useLeadDocs e useRestricaoDocs funcionais.
+    </div>
+    <div class="highlight hl-yellow">
+      <strong>O que falta implementar:</strong><br>
+      1. Drive bidirecional (sync Drive → Supabase)<br>
+      2. Criação automática de pasta no Drive ao criar restrição<br>
+      3. Mover arquivo para Lixeira ao soft delete<br>
+      4. Document Received salvar como Tier 1 com categoria
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 5 — SISTEMA DE RESTRIÇÕES -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <span class="section-icon">🔒</span>
+    <h2>Sistema de Restrições — Estado Real</h2>
+    <span class="badge b-red section-badge">N8N-REL-CONSULTA Inativo — BUG-01</span>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:20px">
+    <div>
+      <div class="card-title" style="margin-bottom:8px">Schema: tabela <code style="color:var(--accent)">leads_restricoes</code></div>
+      <div class="schema-wrap">
+        <div class="schema-row">
+          <span class="sf-name">id</span>
+          <span class="sf-type">UUID PK</span>
+          <span class="sf-note">gen_random_uuid()</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">empresa_id</span>
+          <span class="sf-type">UUID FK</span>
+          <span class="sf-note">→ empresas</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">empresa_nome</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">nome denormalizado</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">orgao_nome</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">nome do órgão de negativação</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">tipo</span>
+          <span class="sf-type">TEXT CHECK</span>
+          <span class="sf-note">comprador | devedor | fiador | avalista</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">codigo_contrato</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">número do contrato original</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">data_restricao</span>
+          <span class="sf-type">DATE</span>
+          <span class="sf-note">data de inclusão na restrição</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">valor</span>
+          <span class="sf-type">INT8</span>
+          <span class="sf-note">centavos — cegueira financeira</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">processavel</span>
+          <span class="sf-type">BOOLEAN</span>
+          <span class="sf-note">pode ser processada juridicamente</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">motivo_nao_processavel</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">razão quando processavel=false</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">processo_id</span>
+          <span class="sf-type">UUID FK</span>
+          <span class="sf-note">→ processos (quando distribuída)</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">drive_pasta_id</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">ID pasta Drive por restrição</span>
+          <span class="sf-badge"><span class="pill p-green">Existe ✓</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">drive_pasta_url</span>
+          <span class="sf-type">TEXT</span>
+          <span class="sf-note">URL pública da pasta Drive</span>
+          <span class="sf-badge"><span class="pill p-green">Existe ✓</span></span>
+        </div>
+        <div class="schema-row">
+          <span class="sf-name">organizacao_id</span>
+          <span class="sf-type">UUID FK</span>
+          <span class="sf-note">RLS ativo</span>
+          <span class="sf-badge"><span class="pill p-green">OK</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card-title" style="margin-bottom:8px">RPCs existentes</div>
+
+      <div class="accordion-item" style="margin-bottom:10px">
+        <div class="accordion-header">
+          <span class="pill p-green" style="font-size:0.68rem">RPC</span>
+          <code style="color:var(--blue)">fn_restricoes_listar</code>
+          <span class="pill p-green" style="margin-left:auto">Funcional</span>
+        </div>
+        <div class="accordion-body">
+          Lista restrições com filtros: leadId, clienteId, processoId, apenasProcessaveis.
+          Retorna dados enriquecidos com contagem de documentos e info da pasta Drive.
+        </div>
+      </div>
+
+      <div class="accordion-item" style="margin-bottom:20px">
+        <div class="accordion-header">
+          <span class="pill p-yellow" style="font-size:0.68rem">RPC</span>
+          <code style="color:var(--blue)">rpc_disparar_auditoria</code>
+          <span class="pill p-yellow" style="margin-left:auto">Parcial</span>
+        </div>
+        <div class="accordion-body">
+          Consulta 3 bureaus: Serasa, Boa Vista, STN. Problema: não filtra cartórios automaticamente.
+          N8N-REL-CONSULTA está INATIVO — causando valores errados no retorno.
+        </div>
+      </div>
+
+      <div class="card-title" style="margin-bottom:8px">Fluxo de auditoria — estado atual vs ideal</div>
+
+      <div class="card-sm" style="margin-bottom:10px">
+        <div style="font-size:0.75rem;color:var(--red);font-weight:600;margin-bottom:8px">ATUAL (quebrado)</div>
+        <div class="flow-row">
+          <div class="flow-box fb-blue">Frontend btn</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box fb-purple">rpc_disparar_auditoria</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box fb-red">N8N INATIVO</div>
+        </div>
+        <div style="margin-top:6px;font-size:0.75rem;color:var(--red)">Resultado: valores incorretos retornados</div>
+      </div>
+
+      <div class="card-sm">
+        <div style="font-size:0.75rem;color:var(--green);font-weight:600;margin-bottom:8px">IDEAL (após correção)</div>
+        <div class="flow-row">
+          <div class="flow-box fb-blue">Frontend btn</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box fb-purple">rpc_disparar_auditoria</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box fb-green">N8N Ativo</div>
+        </div>
+        <div class="flow-row" style="margin-top:6px">
+          <span style="width:24px"></span>
+          <div class="flow-box fb-green">3 bureaus</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box fb-yellow">Filtrar cartórios</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box fb-green">Salvar restricoes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight hl-red">
+    <strong>Campo drive_pasta_id já existe no schema mas nunca é preenchido</strong> — o n8n não cria a pasta automaticamente ao cadastrar uma restrição. Isso significa que a infraestrutura está pronta, falta apenas o trigger no n8n para chamar a API do Drive ao INSERT em leads_restricoes.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 6 — N8N WORKFLOWS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <span class="section-icon">⚡</span>
+    <h2>n8n — Workflows Existentes vs Gaps</h2>
+    <span class="badge b-orange section-badge">100 Total — 69 Ativos — 31 Inativos</span>
+  </div>
+
+  <div class="kpi-row" style="margin-bottom:20px">
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--green)">69</div>
+      <div class="kpi-label">Ativos</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--red)">31</div>
+      <div class="kpi-label">Inativos</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--green)">61</div>
+      <div class="kpi-label">Nodes Gerador Pet.</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--red)">3</div>
+      <div class="kpi-label">Nodes Doc Received</div>
+    </div>
+  </div>
+
+  <div class="table-wrap" style="margin-bottom:20px">
+    <table>
+      <thead>
+        <tr>
+          <th>Workflow</th>
+          <th>Nodes</th>
+          <th>Status</th>
+          <th>Avaliação</th>
+          <th>Ação necessária</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code style="color:var(--blue)">/MDZAP — Enviar Mensagem FE</code></td>
+          <td>—</td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-green">OK — funcional</span></td>
+          <td style="color:var(--muted)">Nenhuma</td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">/MDZAP — Document Received</code></td>
+          <td><strong style="color:var(--red)">3</strong></td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-red">Insuficiente — comprovante não salva</span></td>
+          <td><span class="pill p-red">Expandir para ~15 nodes</span></td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">/MDZAP — Lead Sync</code></td>
+          <td>—</td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-yellow">Verificar coluna_crm='novos'</span></td>
+          <td><span class="pill p-yellow">Confirmar e ajustar se necessário</span></td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">/MDZAP — AI Composer</code></td>
+          <td>—</td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-green">OK — funcional</span></td>
+          <td style="color:var(--muted)">Nenhuma</td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">/MDZAP — Triagem</code></td>
+          <td>—</td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-green">OK — funcional</span></td>
+          <td style="color:var(--muted)">Nenhuma</td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">N8N-REL-CONSULTA (Restrições)</code></td>
+          <td>—</td>
+          <td><span class="pill p-red">INATIVO</span></td>
+          <td><span class="pill p-red">CRÍTICO — BUG-01</span></td>
+          <td><span class="pill p-red">Reativar + corrigir + filtro cartório</span></td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">[OlivIA] - gerar_replica_boavista</code></td>
+          <td><strong style="color:var(--yellow)">1</strong></td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-yellow">1 node só — muito simplista</span></td>
+          <td><span class="pill p-yellow">Avaliar expansão futura</span></td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">WH-SYNC-STORAGE-DRIVE</code></td>
+          <td>—</td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-yellow">Unidirecional — falta bidirecional</span></td>
+          <td><span class="pill p-yellow">Adicionar sync Drive→Supabase</span></td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">Gerador de Petições</code></td>
+          <td><strong style="color:var(--green)">61</strong></td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-green">Sofisticado — Drive+Docs+Sheets+Claude</span></td>
+          <td style="color:var(--muted)">Nenhuma</td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">Distribuição</code></td>
+          <td>—</td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-green">OK — funcional</span></td>
+          <td style="color:var(--muted)">Nenhuma</td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">Contrato MIDAS / Procuração</code></td>
+          <td>—</td>
+          <td><span class="pill p-green">Ativo</span></td>
+          <td><span class="pill p-green">OK — funcional</span></td>
+          <td style="color:var(--muted)">Nenhuma</td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">ZapSign</code></td>
+          <td><strong style="color:var(--red)">0</strong></td>
+          <td><span class="pill p-red">NÃO EXISTE</span></td>
+          <td><span class="pill p-red">Zero implementação</span></td>
+          <td><span class="pill p-red">Criar do zero — aguardar decisão</span></td>
+        </tr>
+        <tr>
+          <td><code style="color:var(--blue)">Auto pasta Drive por restrição</code></td>
+          <td><strong style="color:var(--red)">0</strong></td>
+          <td><span class="pill p-red">NÃO EXISTE</span></td>
+          <td><span class="pill p-yellow">Schema pronto (drive_pasta_id existe)</span></td>
+          <td><span class="pill p-yellow">Criar trigger n8n no INSERT restricao</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GAPS POR PRIORIDADE -->
+  <div class="card-title" style="margin-bottom:10px">Gaps por prioridade</div>
+  <div class="grid g3">
+    <div class="bug-card p0">
+      <div class="bug-id">P0 — Bloqueante</div>
+      <div class="bug-title">N8N-REL-CONSULTA Inativo</div>
+      <div style="font-size:0.82rem;color:var(--muted)">Valores de restrições errados para todos os leads. Reativar imediatamente.</div>
+    </div>
+    <div class="bug-card p0">
+      <div class="bug-id">P0 — Bloqueante</div>
+      <div class="bug-title">Doc Received (3 nodes)</div>
+      <div style="font-size:0.82rem;color:var(--muted)">Comprovantes enviados pelo WhatsApp não são salvos no banco. Expandir para ~15 nodes.</div>
+    </div>
+    <div class="bug-card p1">
+      <div class="bug-id">P1 — Alto</div>
+      <div class="bug-title">Sem filtro cartórios</div>
+      <div style="font-size:0.82rem;color:var(--muted)">Cartórios aparecem como processáveis. Adicionar filtro no n8n de auditoria.</div>
+    </div>
+    <div class="bug-card p1">
+      <div class="bug-id">P1 — Alto</div>
+      <div class="bug-title">Drive unidirecional</div>
+      <div style="font-size:0.82rem;color:var(--muted)">Arquivos enviados direto no Drive não aparecem no sistema. Implementar sync reverso.</div>
+    </div>
+    <div class="bug-card p1">
+      <div class="bug-id">P1 — Alto</div>
+      <div class="bug-title">Lead Sync — coluna_crm</div>
+      <div style="font-size:0.82rem;color:var(--muted)">Confirmar se seta coluna_crm='novos' ao criar lead. Verificar antes de F3.</div>
+    </div>
+    <div class="bug-card p2">
+      <div class="bug-id">P2 — Médio</div>
+      <div class="bug-title">ZapSign — zero impl</div>
+      <div style="font-size:0.82rem;color:var(--muted)">Nenhum workflow criado. Depende de decisão sobre fornecedor (ZapSign vs D4Sign).</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 7 — BUGS P0 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <span class="section-icon">🐛</span>
+    <h2>Bugs Mapeados — P0</h2>
+    <span class="badge b-red section-badge">4 Bugs Críticos Identificados</span>
+  </div>
+
+  <div class="grid g2">
+
+    <div class="bug-card p0">
+      <div class="bug-id">BUG-01 — P0 CRÍTICO</div>
+      <div class="bug-title">N8N-REL-CONSULTA Inativo</div>
+
+      <div class="bug-row">
+        <span class="bug-label">Sintoma:</span>
+        <span class="bug-val">Valores de restrições retornados incorretamente para todos os leads</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Causa provável:</span>
+        <span class="bug-val">Workflow desativado manualmente — provável manutenção incompleta ou deploy com erro</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">O que investigar:</span>
+        <span class="bug-val">Verificar último log de execução, por que foi desativado, se há erro de credencial ou node quebrado</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Solução proposta:</span>
+        <span class="bug-val">Reativar + testar com lead real + adicionar filtro de cartórios como node adicional</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Arquivo afetado:</span>
+        <span class="bug-val"><code style="color:var(--blue)">n8n → N8N-REL-CONSULTA workflow</code></span>
+      </div>
+      <div style="margin-top:12px">
+        <div class="progress-bar">
+          <div class="progress-fill pf-red" style="width:0%"></div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:4px">Criticidade: MÁXIMA — afeta todos os leads do sistema</div>
+      </div>
+    </div>
+
+    <div class="bug-card p0">
+      <div class="bug-id">BUG-02 — P0 CRÍTICO</div>
+      <div class="bug-title">Document Received — apenas 3 nodes</div>
+
+      <div class="bug-row">
+        <span class="bug-label">Sintoma:</span>
+        <span class="bug-val">Comprovantes enviados pelo WhatsApp não são salvos como Tier 1 no banco</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Causa:</span>
+        <span class="bug-val">Workflow simplista (3 nodes) apenas recebe o webhook mas não processa, classifica nem persiste o documento</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">O que investigar:</span>
+        <span class="bug-val">Quais os 3 nodes existentes e o que cada um faz atualmente</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Solução proposta:</span>
+        <span class="bug-val">Expandir para ~15 nodes: receber → identificar tipo → upload Storage → insert processos_documentos (Tier 1, restricao_id=NULL) → notificar atendente</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Arquivo afetado:</span>
+        <span class="bug-val"><code style="color:var(--blue)">n8n → /MDZAP — Document Received</code></span>
+      </div>
+      <div style="margin-top:12px">
+        <div class="progress-bar">
+          <div class="progress-fill pf-red" style="width:0%"></div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:4px">Criticidade: ALTA — documentos perdidos silenciosamente</div>
+      </div>
+    </div>
+
+    <div class="bug-card p0">
+      <div class="bug-id">BUG-03 — P0 BLOQUEANTE</div>
+      <div class="bug-title">Sem filtro de cartórios no n8n de auditoria</div>
+
+      <div class="bug-row">
+        <span class="bug-label">Sintoma:</span>
+        <span class="bug-val">Restrições de cartórios aparecem como processáveis — não são, pois cartório ≠ credor negociável</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Causa:</span>
+        <span class="bug-val">O workflow de auditoria não diferencia entre negativação bancária (processável) e protesto em cartório (não processável automaticamente)</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">O que investigar:</span>
+        <span class="bug-val">Critérios de exclusão: só por nome? Há lista padrão de cartórios? Inclui CDL e SPC?</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Solução proposta:</span>
+        <span class="bug-val">Node de filtro no n8n: se orgao_nome ILIKE '%cartório%' OR '%cartorio%' → set processavel=false, motivo='protesto cartório'</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Arquivo afetado:</span>
+        <span class="bug-val"><code style="color:var(--blue)">n8n → N8N-REL-CONSULTA + rpc_disparar_auditoria</code></span>
+      </div>
+      <div style="margin-top:12px">
+        <div class="progress-bar">
+          <div class="progress-fill pf-red" style="width:0%"></div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:4px">Criticidade: ALTA — afeta cálculo de processabilidade</div>
+      </div>
+    </div>
+
+    <div class="bug-card p0">
+      <div class="bug-id">BUG-04 — P0 A INVESTIGAR</div>
+      <div class="bug-title">Histórico inconsistente</div>
+
+      <div class="bug-row">
+        <span class="bug-label">Sintoma:</span>
+        <span class="bug-val">Histórico de eventos do lead/cliente mostra dados incorretos ou faltantes</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Causa provável:</span>
+        <span class="bug-val">Possível: (1) query sem filtro deleted_at, (2) eventos_operacionais sem RLS correto, (3) timestamp com timezone errado</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">O que investigar:</span>
+        <span class="bug-val">1. Schema da tabela de histórico/eventos. 2. Query do MdzapConversaTimeline. 3. Se há overlap entre events de lead vs cliente</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Solução proposta:</span>
+        <span class="bug-val">Depende da causa — investigar antes de implementar. Checar query + RLS + join com leads</span>
+      </div>
+      <div class="bug-row">
+        <span class="bug-label">Arquivo suspeito:</span>
+        <span class="bug-val"><code style="color:var(--blue)">MdzapConversaTimeline.tsx + tabela eventos_operacionais</code></span>
+      </div>
+      <div style="margin-top:12px">
+        <div class="progress-bar">
+          <div class="progress-fill pf-yellow" style="width:0%"></div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:4px">Causa ainda não confirmada — investigar antes de F1</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 8 — PLANO DE EXECUÇÃO -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">08</div>
+    <span class="section-icon">🗺</span>
+    <h2>Plano de Execução — 6 Fases</h2>
+    <span class="badge b-purple section-badge">Realista — baseado no que já existe</span>
+  </div>
+
+  <div class="highlight hl-green" style="margin-bottom:20px;font-size:0.85rem">
+    <strong>Premissa fundamental:</strong> 80% do trabalho já está feito. Schema pronto, componentes prontos, hooks prontos. O foco é: (1) corrigir bugs P0, (2) reutilizar componentes no MdZap, (3) completar gaps de integrações.
+  </div>
+
+  <div class="grid g2" style="gap:12px">
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-num ph-red">F1</div>
+        <div>
+          <div class="phase-title">Bugs P0 — Correções urgentes</div>
+          <div class="phase-sub">Esforço baixo — tudo já existe, só corrigir</div>
+        </div>
+        <span class="badge b-red" style="margin-left:auto">P0</span>
+      </div>
+      <ul class="phase-items">
+        <li>
+          <span class="pi-icon">🔴</span>
+          <div>
+            <div>Reativar N8N-REL-CONSULTA</div>
+            <div class="pi-note">Verificar logs + credenciais + ativar + testar</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🔴</span>
+          <div>
+            <div>Expandir Document Received (3 → ~15 nodes)</div>
+            <div class="pi-note">Upload Storage + insert processos_documentos Tier 1 + notificar</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🔴</span>
+          <div>
+            <div>Adicionar filtro cartórios no n8n auditoria</div>
+            <div class="pi-note">Node IF: orgao_nome contains 'cartório' → processavel=false</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟡</span>
+          <div>
+            <div>Investigar BUG-04 histórico inconsistente</div>
+            <div class="pi-note">Auditar query + RLS antes de F2</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-num ph-blue">F2</div>
+        <div>
+          <div class="phase-title">MdZap Lead Panel v2</div>
+          <div class="phase-sub">Reutilizar 80% do CRM Drawer — mínimo código novo</div>
+        </div>
+        <span class="badge b-blue" style="margin-left:auto">P1</span>
+      </div>
+      <ul class="phase-items">
+        <li>
+          <span class="pi-icon">🔵</span>
+          <div>
+            <div>Adicionar aba Dados ao MdzapLeadPanel</div>
+            <div class="pi-note">Reutilizar campos do ClienteDrawerTabDados com prop context="mdzap"</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🔵</span>
+          <div>
+            <div>Adicionar aba Restrições ao MdzapLeadPanel</div>
+            <div class="pi-note">Reutilizar ClienteDrawerTabRestricoes — apenas adicionar context prop</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🔵</span>
+          <div>
+            <div>Adicionar aba Documentos ao MdzapLeadPanel</div>
+            <div class="pi-note">Reutilizar ClienteDrawerTabDocumentosLead — leadId da conversa ativa</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🔵</span>
+          <div>
+            <div>Adaptar ordem das abas (Dados/Restr/Docs/Histórico/Memória/Tom)</div>
+            <div class="pi-note">Reorganizar sem remover abas existentes</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-num ph-yellow">F3</div>
+        <div>
+          <div class="phase-title">Lead Sync — verificar e ajustar</div>
+          <div class="phase-sub">Confirmar que novo lead MdZap entra no CRM corretamente</div>
+        </div>
+        <span class="badge b-yellow" style="margin-left:auto">P1</span>
+      </div>
+      <ul class="phase-items">
+        <li>
+          <span class="pi-icon">🟡</span>
+          <div>
+            <div>Confirmar que Lead Sync seta coluna_crm='novos'</div>
+            <div class="pi-note">Testar com lead real via WhatsApp</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟡</span>
+          <div>
+            <div>Verificar se cria pasta Drive base ao criar lead</div>
+            <div class="pi-note">Campo google_drive_folder_id em clientes deve ser preenchido</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟡</span>
+          <div>
+            <div>Garantir que leadId fica disponível no MdZap Panel</div>
+            <div class="pi-note">Necessário para abas F2 funcionarem</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-num ph-green">F4</div>
+        <div>
+          <div class="phase-title">Google Drive — completar integração</div>
+          <div class="phase-sub">Expandir WH-SYNC-STORAGE-DRIVE para bidirecional</div>
+        </div>
+        <span class="badge b-green" style="margin-left:auto">P1</span>
+      </div>
+      <ul class="phase-items">
+        <li>
+          <span class="pi-icon">🟢</span>
+          <div>
+            <div>Criar pasta Drive automaticamente ao cadastrar restrição</div>
+            <div class="pi-note">drive_pasta_id já existe no schema — só falta o trigger n8n no INSERT</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟢</span>
+          <div>
+            <div>Preencher drive_pasta_url no banco após criação</div>
+            <div class="pi-note">URL pública da pasta para exibir no drawer</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟢</span>
+          <div>
+            <div>Adicionar sync bidirecional Drive → Supabase</div>
+            <div class="pi-note">Webhook Drive notifica n8n ao receber arquivo novo</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟢</span>
+          <div>
+            <div>Soft delete: mover para Lixeira Drive ao deleted_at</div>
+            <div class="pi-note">Não excluir permanentemente — apenas mover</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-num ph-orange">F5</div>
+        <div>
+          <div class="phase-title">ZapSign — criar do zero</div>
+          <div class="phase-sub">Depende de decisão sobre fornecedor — aguardar Christian</div>
+        </div>
+        <span class="badge b-orange" style="margin-left:auto">P2</span>
+      </div>
+      <ul class="phase-items">
+        <li>
+          <span class="pi-icon">🟠</span>
+          <div>
+            <div>Decidir: ZapSign, D4Sign ou outro</div>
+            <div class="pi-note">Verificar conta e API key disponível</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟠</span>
+          <div>
+            <div>Criar workflow n8n de envio para assinatura</div>
+            <div class="pi-note">Gerar documento → enviar para ZapSign → retornar link</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟠</span>
+          <div>
+            <div>Adicionar botão "Assinar" no Lead Panel</div>
+            <div class="pi-note">Exibir no contexto mdzap com link de assinatura</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟠</span>
+          <div>
+            <div>Webhook de confirmação de assinatura</div>
+            <div class="pi-note">ZapSign → n8n → atualizar status contrato_url no banco</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-num ph-purple">F6</div>
+        <div>
+          <div class="phase-title">Auto-save nome_variacoes</div>
+          <div class="phase-sub">Pequeno, alto valor — salvar variações de nome de empresa</div>
+        </div>
+        <span class="badge b-purple" style="margin-left:auto">P2</span>
+      </div>
+      <ul class="phase-items">
+        <li>
+          <span class="pi-icon">🟣</span>
+          <div>
+            <div>Quando atendente edita empresa_nome na restrição</div>
+            <div class="pi-note">Salvar nome anterior em empresas.nome_variacoes[] JSONB</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟣</span>
+          <div>
+            <div>Usar jsonb_set atômico via RPC</div>
+            <div class="pi-note">Nunca UPDATE SET direto em JSONB — padrão MdFlow</div>
+          </div>
+        </li>
+        <li>
+          <span class="pi-icon">🟣</span>
+          <div>
+            <div>Usar nome_variacoes na busca de restrições</div>
+            <div class="pi-note">unaccent ILIKE contra array de variações</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 9 — ARQUITETURA DE REUTILIZAÇÃO -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">09</div>
+    <span class="section-icon">♻️</span>
+    <h2>Arquitetura de Reutilização</h2>
+    <span class="badge b-green section-badge">80% dos componentes já prontos</span>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">Diagrama: CRM Drawer → MdZap Lead Panel v2</div>
+    <div class="wireframe" style="font-size:0.8rem;line-height:2">CRM Drawer (hoje)                      MdZap Lead Panel v2
+──────────────────────────             ─────────────────────────────
+
+ClienteDrawerTabDados           ─────▶  TabDados
+  context="crm" / "clientes"             context="mdzap"  [READONLY parcial]
+  leadId/clienteId                        leadId (da conversa ativa)
+
+ClienteDrawerTabRestricoes      ─────▶  TabRestricoes
+  KPIs + auditar + lista + modal          mesmos componentes
+  RestricaoPastaCard.tsx                  context="mdzap"
+  drag&drop, bulk download                [sem drag&drop]
+
+ClienteDrawerTabDocumentosLead  ─────▶  TabDocumentos
+  Estados A-D + pastas accordion          reutilizar direto
+  DocumentoItem.tsx                       leadId da conversa
+  DocumentosUploadCentral.tsx             [upload via WhatsApp ainda vai]
+
+MdzapConversaTimeline           ─────▶  TabHistorico       [JÁ EXISTE]
+SentimentPanel.tsx              ─────▶  TabTom             [JÁ EXISTE]
+MdzapLeadTabLead.tsx            ─────▶  TabMemória         [JÁ EXISTE]
+
+Props obrigatórias compartilhadas:
+  leadId: string          (sempre disponível no contexto MdZap)
+  clienteId?: string      (opcional — pode ser null antes de virar cliente)
+  context: 'crm' | 'clientes' | 'distribuicao' | 'mdzap'  ← NOVO CONTEXTO</div>
+  </div>
+
+  <div class="grid g2">
+    <div>
+      <div class="card-title" style="margin-bottom:8px">O que precisa de adaptação mínima</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Componente</th><th>Adaptação</th><th>Esforço</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code style="color:var(--blue)">ClienteDrawerTabDados</code></td>
+              <td>Adicionar prop <code>context="mdzap"</code> para modo compacto</td>
+              <td><span class="pill p-green">Baixo</span></td>
+            </tr>
+            <tr>
+              <td><code style="color:var(--blue)">ClienteDrawerTabRestricoes</code></td>
+              <td>Prop <code>context</code> já existe — só adicionar 'mdzap' ao type</td>
+              <td><span class="pill p-green">Mínimo</span></td>
+            </tr>
+            <tr>
+              <td><code style="color:var(--blue)">ClienteDrawerTabDocumentosLead</code></td>
+              <td>Reutilizar direto — já aceita leadId</td>
+              <td><span class="pill p-green">Zero</span></td>
+            </tr>
+            <tr>
+              <td><code style="color:var(--blue)">MdzapLeadPanel.tsx</code></td>
+              <td>Adicionar 3 novas abas + reorganizar ordem</td>
+              <td><span class="pill p-yellow">Médio</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="card-title" style="margin-bottom:8px">Estimativa de esforço F2</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px">
+            <span>TabDados (adaptar)</span>
+            <span style="color:var(--green)">~2h</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill pf-green" style="width:20%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px">
+            <span>TabRestricoes (reutilizar)</span>
+            <span style="color:var(--green)">~1h</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill pf-green" style="width:10%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px">
+            <span>TabDocumentos (reutilizar direto)</span>
+            <span style="color:var(--green)">~30min</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill pf-green" style="width:5%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px">
+            <span>MdzapLeadPanel v2 (orquestrar)</span>
+            <span style="color:var(--yellow)">~3h</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill pf-yellow" style="width:30%"></div></div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:8px">
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600">
+            <span>Total estimado F2</span>
+            <span style="color:var(--accent)">~6-8h desenvolvimento</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 10 — PERGUNTAS PARA CHRISTIAN -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <span class="section-icon">❓</span>
+    <h2>Perguntas Finais para Christian</h2>
+    <span class="badge b-yellow section-badge">6 Decisões Necessárias</span>
+  </div>
+
+  <div class="highlight hl-yellow" style="margin-bottom:20px;font-size:0.83rem">
+    Apenas as questões que realmente bloqueiam o desenvolvimento. Ordenadas por prioridade de resposta.
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+
+    <div class="q-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="q-num">Q-01</div>
+        <span class="badge b-red">Bloqueante — F1</span>
+      </div>
+      <div class="q-text">N8N-REL-CONSULTA: por qual motivo foi desativado? Pode reativar agora?</div>
+      <div class="q-why">Este workflow é responsável pelos valores de restrições no sistema inteiro. Está inativo e causando dados incorretos. Preciso saber se havia um motivo para ficar inativo antes de reativar — pode haver um erro proposital de manutenção em andamento.</div>
+    </div>
+
+    <div class="q-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="q-num">Q-02</div>
+        <span class="badge b-red">Bloqueante — F5</span>
+      </div>
+      <div class="q-text">ZapSign: tem conta e API key configurada? Ou usar D4Sign / outro fornecedor?</div>
+      <div class="q-why">Nenhum workflow de assinatura eletrônica existe ainda. Preciso saber o fornecedor escolhido para criar a integração correta. Se D4Sign, a API é diferente. Se nenhum ainda, F5 fica em espera.</div>
+    </div>
+
+    <div class="q-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="q-num">Q-03</div>
+        <span class="badge b-yellow">Decisão de UX — F2</span>
+      </div>
+      <div class="q-text">Lead Panel v2: as abas novas (Dados/Restrições/Docs) SUBSTITUEM Lead/Memória/Tom ou são ADICIONADAS antes delas?</div>
+      <div class="q-why">Proposta atual: adicionar Dados/Restrições/Docs ANTES das abas existentes, mantendo Histórico/Memória/Tom intocadas. Isso resulta em 6 abas. Se a preferência for substituir, ficaria em 4-5 abas. Preciso desta decisão para não refatorar duas vezes.</div>
+    </div>
+
+    <div class="q-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="q-num">Q-04</div>
+        <span class="badge b-yellow">Infraestrutura — F4</span>
+      </div>
+      <div class="q-text">Drive bidirecional: tem service account do Google já configurada no n8n?</div>
+      <div class="q-why">WH-SYNC-STORAGE-DRIVE já funciona para upload. Para o sync bidirecional (Drive → Supabase), preciso de webhook do Google Drive configurado via service account. Se já existir a credencial, F4 é só adicionar nodes. Se não, precisa configurar primeiro.</div>
+    </div>
+
+    <div class="q-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="q-num">Q-05</div>
+        <span class="badge b-yellow">Regra de negócio — F1</span>
+      </div>
+      <div class="q-text">Filtro cartórios: a exclusão como processável é só pelo nome "cartório" ou existe uma lista específica de órgãos?</div>
+      <div class="q-why">A solução mais simples é filtrar por nome (contains 'cartório'). Mas pode haver casos onde o órgão não usa a palavra cartório no nome (CDL, SPC, serviços de proteção ao crédito). Preciso saber se há uma lista completa ou se o filtro por nome é suficiente por agora.</div>
+    </div>
+
+    <div class="q-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="q-num">Q-06</div>
+        <span class="badge b-blue">Escopo — F2</span>
+      </div>
+      <div class="q-text">Tier 3 no MdZap: documentos pós-distribuição (ligados a processo_id) aparecem no Lead Panel?</div>
+      <div class="q-why">A aba Documentos do Lead Panel mostrará Tier 1 e Tier 2. Mas quando o lead já tem um processo distribuído, os documentos de Tier 3 (processo_id not null) devem aparecer também? Ou o Lead Panel é apenas para fase pré-distribuição?</div>
+    </div>
+
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<div class="footer">
+  Investigação Técnica MdZap / Docs / Restrições — MdFlow MdLab LegalTech &nbsp;|&nbsp; 06/04/2026 &nbsp;|&nbsp; Claude Code — Sonnet 4.6
+</div>
+
+</main><!-- /main -->
+
+<script>
+// Scroll-spy na sidebar
+(function() {
+  const sections = document.querySelectorAll('section[id], .hero[id]');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+  function getActiveSection() {
+    const scrollY = document.querySelector('.main').scrollTop;
+    let active = null;
+    sections.forEach(sec => {
+      const top = sec.offsetTop - 60;
+      if (scrollY >= top) active = sec.id;
+    });
+    return active;
+  }
+
+  document.querySelector('.main').addEventListener('scroll', function() {
+    const activeId = getActiveSection();
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + activeId);
+    });
+  }, { passive: true });
+
+  // Smooth scroll
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').slice(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        document.querySelector('.main').scrollTo({
+          top: target.offsetTop - 24,
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
