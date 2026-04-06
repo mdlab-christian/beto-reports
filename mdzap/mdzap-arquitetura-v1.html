@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Arquitetura v1</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1a1f33;
+  --surface3: #1e2438;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --green: #20c997;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --blue: #38bdf8;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --sidebar-w: 240px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: #0a0c14;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 24px 0;
+}
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .logo-icon { font-size: 1.5rem; }
+.sidebar-logo .logo-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 4px;
+}
+.sidebar-logo .logo-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.nav-section-label {
+  padding: 8px 20px 4px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(124,109,255,0.06);
+  border-left-color: var(--accent);
+}
+.nav-item.active {
+  color: var(--accent);
+  background: rgba(124,109,255,0.1);
+  border-left-color: var(--accent);
+}
+.nav-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-green { background: var(--green); }
+.dot-blue { background: var(--blue); }
+.dot-yellow { background: var(--yellow); }
+.dot-red { background: var(--red); }
+.dot-purple { background: var(--accent); }
+.dot-gray { background: var(--text-muted); }
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  padding: 32px 40px;
+  max-width: calc(100vw - var(--sidebar-w));
+}
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 48px 24px 40px;
+}
+.hero-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 20px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(32,201,151,0.1); color: var(--green); border: 1px solid rgba(32,201,151,0.25); }
+.by { background: rgba(245,158,11,0.1); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+.br { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+.bb { background: rgba(56,189,248,0.1); color: var(--blue); border: 1px solid rgba(56,189,248,0.25); }
+
+/* SECTIONS */
+.section { margin: 40px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.15rem; font-weight: 700; }
+.section-header .section-badge {
+  margin-left: auto;
+  font-size: 0.68rem;
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+
+/* LAYER DIAGRAM */
+.layers { display: flex; flex-direction: column; gap: 0; }
+.layer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 24px;
+  position: relative;
+}
+.layer-card.layer-ext { border-color: rgba(245,158,11,0.4); }
+.layer-card.layer-n8n { border-color: rgba(56,189,248,0.4); }
+.layer-card.layer-orch { border-color: rgba(124,109,255,0.4); }
+.layer-card.layer-db { border-color: rgba(32,201,151,0.4); }
+.layer-card.layer-fe { border-color: rgba(239,68,68,0.3); }
+.layer-num {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+.layer-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+.layer-ext .layer-title { color: var(--yellow); }
+.layer-n8n .layer-title { color: var(--blue); }
+.layer-orch .layer-title { color: var(--accent); }
+.layer-db .layer-title { color: var(--green); }
+.layer-fe .layer-title { color: #f87171; }
+.layer-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.layer-item {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  color: var(--text);
+}
+.layer-arrow {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* NODE SPEC TABLE */
+.node-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* NODE CARDS */
+.node-grid { display: flex; flex-direction: column; gap: 16px; }
+.node-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.node-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.node-num {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.node-num.nn-blue { background: var(--blue); color: #0d0f18; }
+.node-num.nn-green { background: var(--green); color: #0d0f18; }
+.node-num.nn-yellow { background: var(--yellow); color: #0d0f18; }
+.node-num.nn-red { background: var(--red); }
+.node-name { font-size: 0.9rem; font-weight: 700; }
+.node-tag {
+  margin-left: auto;
+  font-size: 0.68rem;
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+.node-tag-get { background: rgba(32,201,151,0.15); color: var(--green); border: 1px solid rgba(32,201,151,0.3); }
+.node-tag-post { background: rgba(56,189,248,0.15); color: var(--blue); border: 1px solid rgba(56,189,248,0.3); }
+.node-tag-sql { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+.node-tag-branch { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.node-tag-llm { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.node-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.node-desc { color: var(--text-muted); font-size: 0.82rem; }
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--green);
+  overflow-x: auto;
+  white-space: pre;
+  word-break: normal;
+}
+.code.code-blue { color: var(--blue); }
+.code.code-yellow { color: var(--yellow); }
+.code.code-text { color: var(--text); }
+.node-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.field-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  color: var(--text-muted);
+}
+.field-pill.fp-key { color: var(--accent); border-color: rgba(124,109,255,0.3); }
+.field-pill.fp-val { color: var(--green); border-color: rgba(32,201,151,0.2); }
+
+/* STATUS PILLS */
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.73rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.sp-done { background: rgba(32,201,151,0.1); color: var(--green); }
+.sp-run { background: rgba(56,189,248,0.1); color: var(--blue); }
+.sp-pend { background: rgba(245,158,11,0.1); color: var(--yellow); }
+.sp-block { background: rgba(239,68,68,0.1); color: var(--red); }
+
+/* BUG CARDS */
+.bug-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.bug-card {
+  background: rgba(239,68,68,0.05);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 12px;
+  padding: 18px;
+}
+.bug-card.bug-warn {
+  background: rgba(245,158,11,0.05);
+  border-color: rgba(245,158,11,0.25);
+}
+.bug-severity {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--red);
+  margin-bottom: 4px;
+}
+.bug-card.bug-warn .bug-severity { color: var(--yellow); }
+.bug-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+.bug-detail { font-size: 0.78rem; color: var(--text-muted); line-height: 1.7; }
+.bug-fix {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  background: rgba(0,0,0,0.4);
+  border-left: 3px solid var(--red);
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+  color: var(--text-muted);
+}
+.bug-card.bug-warn .bug-fix { border-left-color: var(--yellow); }
+
+/* ROADMAP */
+.roadmap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.phase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.phase-header {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.phase-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.phase-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+.phase-f1 .phase-header { background: rgba(239,68,68,0.08); }
+.phase-f2 .phase-header { background: rgba(56,189,248,0.08); }
+.phase-f3 .phase-header { background: rgba(124,109,255,0.08); }
+.phase-f4 .phase-header { background: rgba(32,201,151,0.08); }
+.phase-f1 .phase-label { color: var(--red); }
+.phase-f2 .phase-label { color: var(--blue); }
+.phase-f3 .phase-label { color: var(--accent); }
+.phase-f4 .phase-label { color: var(--green); }
+.phase-items { padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; }
+.phase-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.phase-item::before {
+  content: '◆';
+  font-size: 0.5rem;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.phase-f1 .phase-item::before { color: var(--red); }
+.phase-f2 .phase-item::before { color: var(--blue); }
+.phase-f3 .phase-item::before { color: var(--accent); }
+.phase-f4 .phase-item::before { color: var(--green); }
+
+/* OUTBOUND FLOW */
+.flow-steps { display: flex; flex-direction: column; gap: 0; }
+.flow-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.flow-step-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+.flow-circle {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.flow-circle-purple { background: rgba(124,109,255,0.2); color: var(--accent); border: 2px solid var(--accent); }
+.flow-circle-blue { background: rgba(56,189,248,0.2); color: var(--blue); border: 2px solid var(--blue); }
+.flow-circle-green { background: rgba(32,201,151,0.2); color: var(--green); border: 2px solid var(--green); }
+.flow-line-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  background: var(--border);
+  margin: 2px 0;
+}
+.flow-content {
+  padding-bottom: 20px;
+  flex: 1;
+}
+.flow-content-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  padding-top: 6px;
+}
+.flow-content-body { color: var(--text-muted); font-size: 0.78rem; }
+
+/* MULTI-SDR */
+.sdr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.sdr-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+.sdr-card.sdr-active { border-color: rgba(32,201,151,0.35); }
+.sdr-card.sdr-scaffold { border-color: rgba(245,158,11,0.2); }
+.sdr-num { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px; }
+.sdr-agent { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+.sdr-active .sdr-agent { color: var(--green); }
+.sdr-scaffold .sdr-agent { color: var(--yellow); }
+.sdr-slug {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent);
+  background: rgba(124,109,255,0.1);
+  border-radius: 5px;
+  padding: 2px 8px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.sdr-detail { font-size: 0.75rem; color: var(--text-muted); line-height: 1.8; }
+
+/* ROUTING DIAGRAM */
+.route-diagram {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 2;
+  overflow-x: auto;
+  white-space: pre;
+}
+.rt-yellow { color: var(--yellow); }
+.rt-blue { color: var(--blue); }
+.rt-green { color: var(--green); }
+.rt-purple { color: var(--accent); }
+.rt-red { color: var(--red); }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* RESPONSIVE */
+@media(max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; padding: 20px; }
+  .bug-grid, .roadmap-grid, .sdr-grid { grid-template-columns: 1fr; }
+}
+@media(max-width: 768px) {
+  .gradient-text { font-size: 1.6rem; }
+}
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+/* INLINE CODE */
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78em;
+  background: rgba(124,109,255,0.12);
+  color: var(--accent);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💬</div>
+    <div class="logo-title">MdZap</div>
+    <div class="logo-sub">Arquitetura v1 — 2026-04-06</div>
+  </div>
+  <div class="nav-section-label">Visão Geral</div>
+  <a class="nav-item active" href="#s1">
+    <span class="nav-dot dot-purple"></span>
+    1. Camadas do Sistema
+  </a>
+  <div class="nav-section-label">Cenários N8N</div>
+  <a class="nav-item" href="#s2">
+    <span class="nav-dot dot-blue"></span>
+    2. Facebook Inbound
+  </a>
+  <a class="nav-item" href="#s3">
+    <span class="nav-dot dot-purple"></span>
+    3. Orchestrator
+  </a>
+  <a class="nav-item" href="#s4">
+    <span class="nav-dot dot-green"></span>
+    4. Enviar Mensagem
+  </a>
+  <div class="nav-section-label">Arquitetura</div>
+  <a class="nav-item" href="#s5">
+    <span class="nav-dot dot-yellow"></span>
+    5. Multi-SDR Routing
+  </a>
+  <div class="nav-section-label">Ação</div>
+  <a class="nav-item" href="#s6">
+    <span class="nav-dot dot-red"></span>
+    6. Bugs Críticos (F1)
+  </a>
+  <a class="nav-item" href="#s7">
+    <span class="nav-dot dot-green"></span>
+    7. Roadmap
+  </a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-icon">💬</span>
+    <h1 class="gradient-text">MdZap — Arquitetura de Sistema</h1>
+    <p class="hero-sub">WhatsApp SDR multi-agente · Meta WABA 1498882501878361 · Julia (sdr_leads)</p>
+    <div class="badges">
+      <span class="badge bp">n8n Orchestrated</span>
+      <span class="badge bg">Claude claude-sonnet-4-6</span>
+      <span class="badge bb">Meta Cloud API v19.0</span>
+      <span class="badge by">3 SDRs Planejados</span>
+      <span class="badge br">5 Bugs F1</span>
+    </div>
+  </div>
+
+  <!-- SECAO 1 — CAMADAS -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <span class="section-icon">🏗️</span>
+      <h2>Visão em Camadas</h2>
+      <span class="badge section-badge bp">5 Camadas</span>
+    </div>
+
+    <div class="layers">
+      <!-- CAMADA 1 -->
+      <div class="layer-card layer-ext">
+        <div class="layer-num">Camada 1 — Externo</div>
+        <div class="layer-title">Meta Cloud API</div>
+        <div class="layer-items">
+          <span class="layer-item">WABA: 1498882501878361</span>
+          <span class="layer-item">Phone ID: 997740236764543 (Julia)</span>
+          <span class="layer-item">POST /webhook/mdzap-facebook</span>
+          <span class="layer-item">GET /webhook/mdzap-facebook (verify)</span>
+        </div>
+        <div class="layer-items" style="margin-top:8px">
+          <span class="layer-item" style="color:var(--text-muted)">text</span>
+          <span class="layer-item" style="color:var(--text-muted)">image</span>
+          <span class="layer-item" style="color:var(--text-muted)">video</span>
+          <span class="layer-item" style="color:var(--text-muted)">audio</span>
+          <span class="layer-item" style="color:var(--text-muted)">document</span>
+          <span class="layer-item" style="color:var(--text-muted)">location</span>
+          <span class="layer-item" style="color:var(--text-muted)">sticker</span>
+          <span class="layer-item" style="color:var(--text-muted)">status_update</span>
+        </div>
+      </div>
+      <div class="layer-arrow">↓</div>
+
+      <!-- CAMADA 2 -->
+      <div class="layer-card layer-n8n">
+        <div class="layer-num">Camada 2 — Gateway</div>
+        <div class="layer-title">N8N — Facebook Inbound</div>
+        <div class="layer-items">
+          <span class="layer-item">Verifica hub.challenge (GET)</span>
+          <span class="layer-item">Parseia payload Meta (POST)</span>
+          <span class="layer-item">Lookup: phone_number_id → numero_id</span>
+          <span class="layer-item">Branch: message | status | media</span>
+          <span class="layer-item">Download media → Supabase Storage</span>
+          <span class="layer-item">Persiste mensagens + conversas</span>
+          <span class="layer-item">Router SDR → agente_slug</span>
+        </div>
+      </div>
+      <div class="layer-arrow">↓</div>
+
+      <!-- CAMADA 3 -->
+      <div class="layer-card layer-orch">
+        <div class="layer-num">Camada 3 — Inteligência</div>
+        <div class="layer-title">N8N — Orchestrator</div>
+        <div class="layer-items">
+          <span class="layer-item">Busca contexto (conv + lead + histórico 20 msgs)</span>
+          <span class="layer-item">Skip guard (awaiting_human / encerrada / blocked)</span>
+          <span class="layer-item">Carrega mdzap_ai_modules[agente_slug]</span>
+          <span class="layer-item">Build system_prompt + messages[]</span>
+          <span class="layer-item">Claude claude-sonnet-4-6</span>
+          <span class="layer-item">Detecta HANDOFF_REQUESTED</span>
+          <span class="layer-item">Persiste resposta → dispara envio</span>
+        </div>
+      </div>
+      <div class="layer-arrow">↓</div>
+
+      <!-- CAMADA 4 -->
+      <div class="layer-card layer-db">
+        <div class="layer-num">Camada 4 — Persistência</div>
+        <div class="layer-title">Supabase — Banco + Storage</div>
+        <div class="layer-items">
+          <span class="layer-item">whatsapp_numeros</span>
+          <span class="layer-item">whatsapp_conversas</span>
+          <span class="layer-item">whatsapp_mensagens</span>
+          <span class="layer-item">leads</span>
+          <span class="layer-item">mdzap_ai_modules</span>
+          <span class="layer-item">leads_documentos</span>
+          <span class="layer-item">Storage: mdzap-media/{orgId}/{conversaId}/</span>
+        </div>
+      </div>
+      <div class="layer-arrow">↓</div>
+
+      <!-- CAMADA 5 -->
+      <div class="layer-card layer-fe">
+        <div class="layer-num">Camada 5 — Interface</div>
+        <div class="layer-title">Frontend — /mdzap</div>
+        <div class="layer-items">
+          <span class="layer-item">Realtime via Supabase channels</span>
+          <span class="layer-item">Assumir conversa</span>
+          <span class="layer-item">Devolver para IA</span>
+          <span class="layer-item">Transferir entre agentes</span>
+          <span class="layer-item">Lead Panel: dados / restrições / documentos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 2 — FACEBOOK INBOUND -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <span class="section-icon">📥</span>
+      <h2>N8N — Facebook Inbound</h2>
+      <span class="badge section-badge bb">13 Nós</span>
+    </div>
+
+    <div class="node-grid">
+
+      <!-- NÓ 1 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-green">NÓ 1</span>
+          <span class="node-name">Webhook GET Verify</span>
+          <span class="node-tag node-tag-get">GET</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Verifica o hub challenge do Meta. Executado uma única vez no setup da integração.</div>
+          <div class="code">Trigger: GET /webhook/mdzap-facebook
+
+Verifica: hub.verify_token == 'mdzap_fb_verify_2026'
+  → true:  Respond hub.challenge (200)
+  → false: Respond 403 Forbidden</div>
+        </div>
+      </div>
+
+      <!-- NÓ 2 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-blue">NÓ 2</span>
+          <span class="node-name">Webhook POST</span>
+          <span class="node-tag node-tag-post">POST</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Recebe todos os eventos da Meta. Retorna 200 imediatamente (onReceived) para evitar retentativas do Meta.</div>
+          <div class="code">Trigger: POST /webhook/mdzap-facebook
+Respond: imediato (onReceived) → 200 OK
+Continua: processamento assíncrono</div>
+        </div>
+      </div>
+
+      <!-- NÓ 3 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 3</span>
+          <span class="node-name">Parse & Route Type</span>
+          <span class="node-tag node-tag-branch">BRANCH</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Extrai o payload do Meta e roteia pelo tipo de evento.</div>
+          <div class="code">payload = entry[0].changes[0].value
+
+Branch A: value.messages  → processar mensagem
+Branch B: value.statuses  → atualizar status de entrega
+Branch C: (else)          → noop — evento sem dados relevantes</div>
+        </div>
+      </div>
+
+      <!-- NÓ 4A -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-yellow">NÓ 4A</span>
+          <span class="node-name">Lookup Numero</span>
+          <span class="node-tag node-tag-sql">SQL</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Para Branch A (mensagem). Resolve o phone_number_id Meta para um registro interno, carregando org, agente e token.</div>
+          <div class="code">phone_number_id = value.metadata.phone_number_id
+
+SELECT id, organizacao_id, agente_slug, config
+FROM whatsapp_numeros
+WHERE wa_instance_id = $phone_number_id
+  AND deleted_at IS NULL
+
+→ Retorna: numero_id, organizacao_id, agente_slug, access_token</div>
+        </div>
+      </div>
+
+      <!-- NÓ 4B -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-yellow">NÓ 4B</span>
+          <span class="node-name">Update Status</span>
+          <span class="node-tag node-tag-sql">SQL</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Para Branch B (status_update). Atualiza o status de entrega de cada mensagem enviada pela Julia.</div>
+          <div class="code">Para cada status em value.statuses:
+  UPDATE whatsapp_mensagens
+  SET status = $status
+  WHERE wa_message_id = $wamid
+    AND deleted_at IS NULL
+
+Status possíveis:
+  sent → delivered → read
+  failed (qualquer etapa)</div>
+          <div class="node-desc" style="color: var(--yellow);">Fim do fluxo para o Branch B.</div>
+        </div>
+      </div>
+
+      <!-- NÓ 5 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 5</span>
+          <span class="node-name">Parse Message</span>
+          <span class="node-tag node-tag-branch">PARSE</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Normaliza todos os campos da mensagem Meta em variáveis padronizadas.</div>
+          <div class="code">from          = message.from               (telefone cliente)
+contact_name  = contacts[0].profile.name
+wamid         = message.id                (wa_message_id)
+timestamp     = message.timestamp
+message_type  = message.type              (text|image|video|audio|document|location|sticker)
+text          = message.text?.body        (se type=text)
+media_id      = message[type]?.id         (se mídia)
+caption       = message[type]?.caption
+filename      = message.document?.filename
+mime_type     = message[type]?.mime_type
+latitude      = message.location?.latitude
+longitude     = message.location?.longitude</div>
+        </div>
+      </div>
+
+      <!-- NÓ 6 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-blue">NÓ 6</span>
+          <span class="node-name">Upsert Conversa</span>
+          <span class="node-tag node-tag-sql">UPSERT</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Busca conversa ativa existente ou cria uma nova. Incrementa contador de não lidas.</div>
+          <div class="code">-- Busca conversa ativa
+SELECT id, nao_lidas
+FROM whatsapp_conversas
+WHERE contato_numero = $from
+  AND numero_id      = $numero_id
+  AND deleted_at IS NULL
+LIMIT 1
+
+-- Se existe:
+UPDATE SET ultimo_msg_at = now(), nao_lidas = nao_lidas + 1
+
+-- Se não existe:
+INSERT (organizacao_id, numero_id, contato_numero,
+        contato_nome, status='ativa', nao_lidas=1)
+
+→ RETURNING id as conversa_id</div>
+        </div>
+      </div>
+
+      <!-- NÓ 7 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 7</span>
+          <span class="node-name">Branch por Tipo de Mensagem</span>
+          <span class="node-tag node-tag-branch">BRANCH</span>
+        </div>
+        <div class="node-body">
+          <div class="code">text | location | sticker  → Nó 8  (Save Message direto)
+audio                      → Nó 9A (Download → Transcribe → Save)
+image | video | document   → Nó 9B (Download → Save → Vision opcional)</div>
+        </div>
+      </div>
+
+      <!-- NÓ 8 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-green">NÓ 8</span>
+          <span class="node-name">Save Message — Texto / Location / Sticker</span>
+          <span class="node-tag node-tag-sql">INSERT</span>
+        </div>
+        <div class="node-body">
+          <div class="code">INSERT INTO whatsapp_mensagens:
+  organizacao_id   = $organizacao_id
+  conversa_id      = $conversa_id
+  direcao          = 'entrada'
+  tipo             = $message_type
+  remetente_tipo   = 'human'
+  status           = 'received'
+  wa_message_id    = $wamid
+  metadata = {
+    preview:       $text[0:200],
+    from:          $from,
+    contact_name:  $contact_name,
+    timestamp:     $timestamp,
+    latitude:      $latitude?,
+    longitude:     $longitude?
+  }
+RETURNING id as mensagem_id</div>
+        </div>
+      </div>
+
+      <!-- NÓ 9A -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-yellow">NÓ 9A</span>
+          <span class="node-name">Download Media</span>
+          <span class="node-tag node-tag-post">HTTP</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Baixa mídia da Meta e faz upload no Supabase Storage. Executado para áudio, imagem, vídeo e documento.</div>
+          <div class="code">1. GET https://graph.facebook.com/v19.0/{media_id}
+   Header: Authorization: Bearer {access_token}
+   → { url, mime_type }
+
+2. GET {url}
+   Header: Authorization: Bearer {access_token}
+   → download binário do arquivo
+
+3. Upload Supabase Storage:
+   bucket: mdzap-media
+   path:   {organizacao_id}/{conversa_id}/{wamid}.{ext}
+   → storage_url (URL pública ou signed)</div>
+        </div>
+      </div>
+
+      <!-- NÓ 9B -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-green">NÓ 9B</span>
+          <span class="node-name">Save Message — Mídia</span>
+          <span class="node-tag node-tag-sql">INSERT</span>
+        </div>
+        <div class="node-body">
+          <div class="code">INSERT INTO whatsapp_mensagens:
+  organizacao_id   = $organizacao_id
+  conversa_id      = $conversa_id
+  direcao          = 'entrada'
+  tipo             = $message_type
+  remetente_tipo   = 'human'
+  status           = 'received'
+  wa_message_id    = $wamid
+  metadata = {
+    preview:      $caption || $filename || '[áudio]',
+    media_id:     $media_id,
+    storage_url:  $storage_url,
+    mime_type:    $mime_type,
+    filename:     $filename?,
+    caption:      $caption?,
+    from:         $from,
+    contact_name: $contact_name,
+    timestamp:    $timestamp
+  }
+RETURNING id as mensagem_id</div>
+        </div>
+      </div>
+
+      <!-- NÓ 9C -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 9C</span>
+          <span class="node-name">Transcrição de Áudio</span>
+          <span class="node-tag node-tag-post">POST (só audio)</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Transcreve áudio via Whisper. O texto transcrito é injetado no contexto da Julia como se fosse texto.</div>
+          <div class="code">POST /mdzap/audio-transcribe
+Body: { storage_url, conversa_id, mensagem_id }
+
+→ Whisper transcreve arquivo
+→ UPDATE whatsapp_mensagens
+  SET metadata = jsonb_set(metadata, '{transcricao}', $texto)
+  WHERE id = $mensagem_id
+
+→ transcricao usada como $text no contexto do Orchestrator</div>
+        </div>
+      </div>
+
+      <!-- NÓ 9D -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 9D</span>
+          <span class="node-name">Document Received</span>
+          <span class="node-tag node-tag-post">POST (document/image)</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Processa documentos recebidos — salva em leads_documentos e opcionalmente analisa com Vision (Claude/Gemini).</div>
+          <div class="code">POST /mdzap/document-received
+Body: { storage_url, conversa_id, lead_id, mime_type, filename }
+
+→ INSERT leads_documentos (Tier 1 — não validado)
+→ Vision Analysis (opcional):
+    Claude/Gemini detecta tipo do documento
+    Exemplos: RG, CPF, comprovante renda, contrato
+→ UPDATE leads_documentos SET tipo_detectado = $tipo</div>
+        </div>
+      </div>
+
+      <!-- NÓ 10 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-yellow">NÓ 10</span>
+          <span class="node-name">Router SDR</span>
+          <span class="node-tag node-tag-branch">SWITCH</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Roteia para o orquestrador correto com base no <code>agente_slug</code> do número que recebeu a mensagem. Ponto de extensão para SDR 2 e 3.</div>
+          <div class="code">agente_slug = lookup_resultado.agente_slug
+
+switch (agente_slug):
+
+  'sdr_leads' →
+    POST /webhook/mdflow/mdzap/orchestrator
+    Body: { conversa_id, agente_slug: 'sdr_leads', mensagem_id }
+
+  'sdr_docs' →
+    POST /webhook/mdflow/mdzap/sdr-docs-stub
+    Body: { conversa_id }
+    (acknowledge — implementação futura)
+
+  'sdr_acordos' →
+    POST /webhook/mdflow/mdzap/sdr-acordos-stub
+    Body: { conversa_id }
+    (acknowledge — implementação futura)
+
+  default →
+    log: "agente_slug desconhecido: {slug}"</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECAO 3 — ORCHESTRATOR -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <span class="section-icon">🧠</span>
+      <h2>N8N — Orchestrator</h2>
+      <span class="badge section-badge bp">11 Nós · Claude claude-sonnet-4-6</span>
+    </div>
+
+    <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 0.8rem; color: var(--text-muted);">
+      Recebe: <code>POST /mdflow/mdzap/orchestrator</code> com body <code>&#123; conversa_id, agente_slug, mensagem_id &#125;</code>
+    </div>
+
+    <div class="node-grid">
+
+      <!-- NÓ 1 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-blue">NÓ 1</span>
+          <span class="node-name">Webhook Trigger</span>
+          <span class="node-tag node-tag-post">POST</span>
+        </div>
+        <div class="node-body">
+          <div class="code">POST /mdflow/mdzap/orchestrator
+Header: mdflow: MdL1501@
+
+Body:
+{
+  "conversa_id":  "uuid",
+  "agente_slug":  "sdr_leads",
+  "mensagem_id":  "uuid"
+}
+
+→ responseNode ao final do fluxo (não imediato)</div>
+        </div>
+      </div>
+
+      <!-- NÓ 2 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-yellow">NÓ 2</span>
+          <span class="node-name">Buscar Contexto</span>
+          <span class="node-tag node-tag-sql">4x SQL</span>
+        </div>
+        <div class="node-body">
+          <div class="code code-yellow">-- 1. Conversa
+SELECT c.id, c.contato_numero, c.status, c.metadata,
+       c.lead_id, c.numero_id, c.organizacao_id
+FROM whatsapp_conversas c
+WHERE c.id = $conversa_id AND c.deleted_at IS NULL
+
+-- 2. Lead (se lead_id não nulo)
+SELECT l.id, l.nome, l.telefone, l.cpf,
+       l.coluna_crm, l.awaiting_human, l.wa_blocked
+FROM leads l WHERE l.id = $lead_id
+
+-- 3. Histórico (últimas 20, cronológico reverso)
+SELECT direcao, tipo, remetente_tipo, metadata, created_at
+FROM whatsapp_mensagens
+WHERE conversa_id = $conversa_id AND deleted_at IS NULL
+ORDER BY created_at DESC LIMIT 20
+
+-- 4. Módulo IA
+SELECT system_prompt, modelo, temperatura,
+       max_tokens, config
+FROM mdzap_ai_modules
+WHERE slug = $agente_slug AND ativo = true</div>
+        </div>
+      </div>
+
+      <!-- NÓ 3 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 3</span>
+          <span class="node-name">Skip Guard</span>
+          <span class="node-tag node-tag-branch">IF</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Se qualquer condição for verdadeira, responde 200 silenciosamente sem chamar a IA.</div>
+          <div class="code">SKIP se:
+  conversa.status   = 'encerrada'
+  lead.awaiting_human = true
+  lead.wa_blocked     = true
+  modulo IS NULL        (slug não encontrado no banco)
+  última mensagem de saída < 3s atrás  ← anti-loop</div>
+        </div>
+      </div>
+
+      <!-- NÓ 4 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 4</span>
+          <span class="node-name">Build Messages Array</span>
+          <span class="node-tag node-tag-branch">TRANSFORM</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Converte histórico do banco para o formato messages[] da API Anthropic.</div>
+          <div class="code">historico (reverso → cronológico) → messages[]
+
+  direcao='entrada' →  { role: 'user',
+                         content: metadata.transcricao
+                              || metadata.preview
+                              || '[mídia sem texto]' }
+
+  direcao='saida'   →  { role: 'assistant',
+                         content: metadata.preview }
+
+Regras:
+  ✦ Máximo 20 mensagens
+  ✦ Remove messages com content vazio/nulo
+  ✦ Array DEVE começar com role='user'
+  ✦ Alternância user → assistant obrigatória</div>
+        </div>
+      </div>
+
+      <!-- NÓ 5 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 5</span>
+          <span class="node-name">Build System Prompt</span>
+          <span class="node-tag node-tag-branch">TEMPLATE</span>
+        </div>
+        <div class="node-body">
+          <div class="code">{modulo.system_prompt}
+
+=== CONTEXTO DO CLIENTE ===
+Nome:       {lead.nome || 'não identificado'}
+Telefone:   {conversa.contato_numero}
+CPF:        {lead.cpf || 'não informado'}
+Status CRM: {lead.coluna_crm || 'novos'}
+Turno:      {metadata.turn_count || 0}
+Data/hora:  {ISO timestamp BRT}
+
+=== INSTRUÇÕES ESPECIAIS ===
+- Se cliente pedir humano: responda e inclua "HANDOFF_REQUESTED"
+- Se precisar do CPF: pergunte educadamente
+- Respostas curtas, WhatsApp-friendly, sem markdown pesado</div>
+        </div>
+      </div>
+
+      <!-- NÓ 6 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-red" style="background: var(--red);">NÓ 6</span>
+          <span class="node-name">Chamar Claude API</span>
+          <span class="node-tag node-tag-llm">LLM</span>
+        </div>
+        <div class="node-body">
+          <div class="code code-blue">POST https://api.anthropic.com/v1/messages
+Headers:
+  x-api-key:         $env.ANTHROPIC_API_KEY
+  anthropic-version: 2023-06-01
+  Content-Type:      application/json
+
+Body:
+{
+  "model":       modulo.modelo   || "claude-sonnet-4-6",
+  "max_tokens":  modulo.max_tokens || 1024,
+  "temperature": modulo.temperatura || 0.7,
+  "system":      $system_prompt_construido,
+  "messages":    $messages_array
+}</div>
+        </div>
+      </div>
+
+      <!-- NÓ 7 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num">NÓ 7</span>
+          <span class="node-name">Parse Resposta Claude</span>
+          <span class="node-tag node-tag-branch">PARSE</span>
+        </div>
+        <div class="node-body">
+          <div class="code">resposta_texto  = content[0].text
+tokens_input    = usage.input_tokens
+tokens_output   = usage.output_tokens
+
+pedido_humano = /HANDOFF_REQUESTED|falar com (uma )?pessoa|atendente|humano/i
+                .test(resposta_texto)
+
+cpf_extraido  = /\d{3}\.?\d{3}\.?\d{3}-?\d{2}/.exec(client_msg)
+                (aplicado na última mensagem do usuário)</div>
+        </div>
+      </div>
+
+      <!-- NÓ 8 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-green">NÓ 8</span>
+          <span class="node-name">Salvar Resposta no Banco</span>
+          <span class="node-tag node-tag-sql">INSERT + UPDATE</span>
+        </div>
+        <div class="node-body">
+          <div class="code">-- Insere mensagem de saída
+INSERT INTO whatsapp_mensagens:
+  organizacao_id = $organizacao_id
+  conversa_id    = $conversa_id
+  direcao        = 'saida'
+  tipo           = 'text'
+  remetente_tipo = 'nina'     ← ver P5 (inconsistência com Julia)
+  status         = 'pending'  ← atualizado para 'sent' após envio Meta
+  metadata = {
+    preview:       $resposta_texto[0:200],
+    tokens_input:  $tokens_input,
+    tokens_output: $tokens_output,
+    agente_slug:   $agente_slug
+  }
+RETURNING id as mensagem_saida_id
+
+-- Atualiza metadados da conversa
+UPDATE whatsapp_conversas SET
+  metadata = jsonb_set(metadata,'{turn_count}',
+                (COALESCE((metadata->>'turn_count')::int,0)+1)::text::jsonb),
+  metadata = jsonb_set(metadata,'{last_julia_at}', now()::text::jsonb),
+  updated_at = now()
+WHERE id = $conversa_id</div>
+        </div>
+      </div>
+
+      <!-- NÓ 9 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-red" style="background: var(--red);">NÓ 9</span>
+          <span class="node-name">Handoff Guard</span>
+          <span class="node-tag node-tag-branch">IF</span>
+        </div>
+        <div class="node-body">
+          <div class="node-desc">Se detectou pedido de humano, marca a conversa como awaiting_human e registra evento de CRM.</div>
+          <div class="code">SE pedido_humano = true:
+
+  UPDATE leads
+  SET awaiting_human = true
+  WHERE id = $lead_id
+
+  INSERT crm_sync_events:
+    event_type = 'conversation.status_changed'
+    reason     = 'handoff_requested'
+
+→ Continua fluxo normalmente para enviar mensagem de transição</div>
+        </div>
+      </div>
+
+      <!-- NÓ 10 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-blue">NÓ 10</span>
+          <span class="node-name">Enviar via Meta</span>
+          <span class="node-tag node-tag-post">POST</span>
+        </div>
+        <div class="node-body">
+          <div class="code">POST https://primary-production-e209.up.railway.app
+     /webhook/mdflow/mdzap/enviar-mensagem
+
+Headers: mdflow: MdL1501@
+
+Body:
+{
+  "request_id":      "uuid-gerado",
+  "contexto":        "mdzap.orchestrator-reply",
+  "organizacao_id":  "$organizacao_id",
+  "actor_user_id":   null,
+  "origem_rota":     "/mdzap",
+  "data": {
+    "numero_id":    "$numero_id",
+    "contato":      "$contato_numero",
+    "mensagem":     "$resposta_texto",
+    "tipo":         "text",
+    "mensagem_id":  "$mensagem_saida_id"  ← para UPDATE otimista
+  }
+}</div>
+        </div>
+      </div>
+
+      <!-- NÓ 11 -->
+      <div class="node-card">
+        <div class="node-card-header">
+          <span class="node-num nn-green">NÓ 11</span>
+          <span class="node-name">Respond 200</span>
+          <span class="node-tag node-tag-post">RESPONSE</span>
+        </div>
+        <div class="node-body">
+          <div class="code code-text">HTTP 200 OK
+{
+  "success": true,
+  "action":  "noop",
+  "message": "resposta enviada"
+}</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECAO 4 — ENVIAR MENSAGEM -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <span class="section-icon">📤</span>
+      <h2>N8N — Enviar Mensagem (Outbound)</h2>
+      <span class="badge section-badge bg">Interno + Frontend</span>
+    </div>
+
+    <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 0.8rem; color: var(--text-muted);">
+      Recebe: <code>POST /mdflow/mdzap/enviar-mensagem</code> (pelo Orchestrator ou diretamente pelo frontend /mdzap)
+    </div>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-line">
+          <div class="flow-circle flow-circle-purple">1</div>
+          <div class="flow-line-connector"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-content-title">Parse Payload</div>
+          <div class="flow-content-body">
+            Extrai campos: <code>numero_id</code>, <code>contato</code>, <code>mensagem</code>, <code>tipo</code>, <code>media_url?</code>, <code>filename?</code>, <code>caption?</code>, <code>mensagem_id?</code>
+          </div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-line">
+          <div class="flow-circle flow-circle-purple">2</div>
+          <div class="flow-line-connector"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-content-title">Fetch Numero</div>
+          <div class="code" style="margin-top:8px">SELECT wa_instance_id, config
+FROM whatsapp_numeros WHERE id = $numero_id
+→ phone_number_id = wa_instance_id
+→ access_token    = config.access_token</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-line">
+          <div class="flow-circle flow-circle-blue">3</div>
+          <div class="flow-line-connector"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-content-title">Build Meta Payload por Tipo</div>
+          <div class="code" style="margin-top:8px">text:     { messaging_product:'whatsapp', to: contato,
+            type:'text', text:{ body: mensagem } }
+
+image:    { type:'image',    image:{link:media_url, caption} }
+video:    { type:'video',    video:{link:media_url, caption} }
+document: { type:'document', document:{link:media_url, filename, caption} }
+audio:    { type:'audio',    audio:{link:media_url} }
+template: { type:'template', template:{name, language, components} }</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-line">
+          <div class="flow-circle flow-circle-blue">4</div>
+          <div class="flow-line-connector"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-content-title">POST Meta API</div>
+          <div class="code" style="margin-top:8px">POST https://graph.facebook.com/v19.0/{phone_number_id}/messages
+Headers: Authorization: Bearer {access_token}
+         Content-Type: application/json
+→ Retorna: { messages: [{ id: wamid }] }</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-line">
+          <div class="flow-circle flow-circle-green">5</div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-content-title">UPDATE Status (se mensagem_id fornecido)</div>
+          <div class="code" style="margin-top:8px">UPDATE whatsapp_mensagens
+SET status        = 'sent',
+    wa_message_id = $wamid
+WHERE id = $mensagem_id AND deleted_at IS NULL</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 5 — MULTI-SDR -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <span class="section-icon">🔀</span>
+      <h2>Multi-SDR Routing</h2>
+      <span class="badge section-badge by">3 SDRs Planejados</span>
+    </div>
+
+    <div class="sdr-grid">
+      <div class="sdr-card sdr-active">
+        <div class="sdr-num">SDR 1</div>
+        <div class="sdr-agent">Julia</div>
+        <div class="sdr-slug">sdr_leads</div>
+        <div style="margin-bottom: 10px;"><span class="status-pill sp-done">Implementar agora</span></div>
+        <div class="sdr-detail">
+          Número: 55 51 81685 5848<br>
+          Phone ID: 997740236764543<br>
+          Orquestrador: /MDZAP — Orchestrator<br>
+          Foco: qualificação de leads, CPF, restrições
+        </div>
+      </div>
+      <div class="sdr-card sdr-scaffold">
+        <div class="sdr-num">SDR 2</div>
+        <div class="sdr-agent">A definir</div>
+        <div class="sdr-slug">sdr_docs</div>
+        <div style="margin-bottom: 10px;"><span class="status-pill sp-pend">Scaffolding</span></div>
+        <div class="sdr-detail">
+          Número: a provisionar<br>
+          Phone ID: a obter na Meta<br>
+          Orquestrador: /MDZAP — SDR Docs Stub<br>
+          Foco: coleta e validação de documentos
+        </div>
+      </div>
+      <div class="sdr-card sdr-scaffold">
+        <div class="sdr-num">SDR 3</div>
+        <div class="sdr-agent">A definir</div>
+        <div class="sdr-slug">sdr_acordos</div>
+        <div style="margin-bottom: 10px;"><span class="status-pill sp-pend">Scaffolding</span></div>
+        <div class="sdr-detail">
+          Número: a provisionar<br>
+          Phone ID: a obter na Meta<br>
+          Orquestrador: /MDZAP — SDR Acordos Stub<br>
+          Foco: negociação de acordos, propostas
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top: 28px;">
+      <h2 style="font-size:0.95rem;">Como adicionar SDR 2 / 3</h2>
+    </div>
+    <div class="code code-text" style="font-size: 0.78rem; margin-bottom: 20px;">1. Provisionar número no WABA (1498882501878361) → obter phone_number_id
+
+2. INSERT INTO whatsapp_numeros (
+     numero, wa_instance_id, config::jsonb,
+     agente_slug = 'sdr_docs',    -- ou sdr_acordos
+     organizacao_id, ativo = true
+   )
+
+3. Ativar workflow stub correspondente no n8n
+
+4. INSERT INTO mdzap_ai_modules (
+     slug = 'sdr_docs',
+     system_prompt = '[definir prompt do agente]',
+     modelo = 'claude-sonnet-4-6',
+     ativo = true
+   )</div>
+
+    <div class="section-header">
+      <h2 style="font-size:0.95rem;">Lógica de Roteamento — FACEBOOK-INBOUND</h2>
+    </div>
+    <div class="route-diagram">Meta payload
+  └─► metadata.<span class="rt-yellow">phone_number_id</span>
+        └─► <span class="rt-blue">whatsapp_numeros</span> WHERE wa_instance_id = phone_number_id
+              └─► <span class="rt-yellow">agente_slug</span>
+                    ├─ <span class="rt-green">'sdr_leads'</span>   →  /orchestrator &#123;conversa_id, agente_slug&#125;
+                    ├─ <span class="rt-yellow">'sdr_docs'</span>    →  /sdr-docs-stub &#123;conversa_id&#125;
+                    └─ <span class="rt-purple">'sdr_acordos'</span> →  /sdr-acordos-stub &#123;conversa_id&#125;</div>
+  </div>
+
+  <!-- SECAO 6 — BUGS -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <span class="section-icon">🚨</span>
+      <h2>Problemas a Corrigir — F1</h2>
+      <span class="badge section-badge br">4 Blockers · 1 Aviso</span>
+    </div>
+
+    <div class="bug-grid">
+      <div class="bug-card">
+        <div class="bug-severity">P1 — BLOCKER</div>
+        <div class="bug-title">wa_numero_id hardcoded no FACEBOOK-INBOUND</div>
+        <div class="bug-detail">
+          Arquivo: <code>k9377WTyVJYOnD4e</code><br>
+          Nó: Parse Message<br>
+          O <code>numero_id</code> está fixo no fluxo em vez de ser resolvido dinamicamente pelo <code>phone_number_id</code> da Meta.
+          Com isso, qualquer número adicional (SDR 2, SDR 3) quebraria silenciosamente.
+        </div>
+        <div class="bug-fix">Fix: extrair <code>metadata.phone_number_id</code> no Nó 3 e executar SELECT dinâmico em <code>whatsapp_numeros WHERE wa_instance_id = $phone_number_id</code></div>
+      </div>
+
+      <div class="bug-card">
+        <div class="bug-severity">P1 — BLOCKER</div>
+        <div class="bug-title">FACEBOOK-INBOUND não chama o Orchestrator</div>
+        <div class="bug-detail">
+          O fluxo atual termina no <code>Save Message</code> sem encaminhar para nenhum orquestrador.
+          A Julia nunca responde porque o cenário de IA não é disparado.
+        </div>
+        <div class="bug-fix">Fix: adicionar Nó 10 "Router SDR" após o Save Message, chamando <code>POST /webhook/mdflow/mdzap/orchestrator</code> com <code>&#123;conversa_id, agente_slug, mensagem_id&#125;</code></div>
+      </div>
+
+      <div class="bug-card">
+        <div class="bug-severity">P1 — BLOCKER</div>
+        <div class="bug-title">Orchestrator com agente_slug 'sdr_leads' hardcoded</div>
+        <div class="bug-detail">
+          O SELECT em <code>mdzap_ai_modules</code> usa um slug fixo em vez de ler o valor recebido no payload.
+          Impossível expandir para múltiplos SDRs sem duplicar o workflow inteiro.
+        </div>
+        <div class="bug-fix">Fix: receber <code>agente_slug</code> no body do webhook e usar <code>$agente_slug</code> dinamicamente no SELECT <code>WHERE slug = $agente_slug</code></div>
+      </div>
+
+      <div class="bug-card">
+        <div class="bug-severity">P1 — BLOCKER</div>
+        <div class="bug-title">API key Anthropic hardcoded no Orchestrator</div>
+        <div class="bug-detail">
+          A chave <code>ANTHROPIC_API_KEY</code> está inserida literalmente no nó HTTP do Orchestrator.
+          Risco de exposição em logs, histórico de versões do n8n e exports de workflow.
+        </div>
+        <div class="bug-fix">Fix: substituir valor literal por <code>&#123;&#123; $env.ANTHROPIC_API_KEY &#125;&#125;</code> via n8n Environment Variables</div>
+      </div>
+
+      <div class="bug-card bug-warn">
+        <div class="bug-severity" style="color: var(--yellow);">P3 — AVISO</div>
+        <div class="bug-title">remetente_tipo='nina' inconsistente com nome Julia</div>
+        <div class="bug-detail">
+          Mensagens saída inseridas com <code>remetente_tipo='nina'</code>, mas o agente em produção chama-se Julia (<code>sdr_leads</code>).
+          Inconsistência cosmética, mas pode confundir filtros futuros na UI.
+        </div>
+        <div class="bug-fix">Fix: atualizar para <code>remetente_tipo='julia'</code> — ou decidir padronizar como <code>'ia'</code> e guardar o nome do agente em <code>metadata.agente_slug</code></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 7 — ROADMAP -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <span class="section-icon">🗺️</span>
+      <h2>Roadmap de Execução</h2>
+      <span class="badge section-badge bp">4 Fases</span>
+    </div>
+
+    <div class="roadmap-grid">
+      <div class="phase-card phase-f1">
+        <div class="phase-header">
+          <div>
+            <div class="phase-label">F1 — Agora</div>
+            <div class="phase-title">Desbloqueios Críticos</div>
+          </div>
+          <span class="status-pill sp-block" style="margin-left:auto;">urgente</span>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item">Migration: ADD COLUMN agente_slug TEXT DEFAULT 'sdr_leads' em whatsapp_numeros</div>
+          <div class="phase-item">Fix FACEBOOK-INBOUND: lookup dinâmico phone_number_id + Router SDR (Nó 10)</div>
+          <div class="phase-item">Fix Orchestrator: env key Anthropic + agente_slug dinâmico + payload envio correto</div>
+          <div class="phase-item">Criar /MDZAP — SDR Docs Stub (apenas acknowledge 200)</div>
+          <div class="phase-item">Criar /MDZAP — SDR Acordos Stub (apenas acknowledge 200)</div>
+        </div>
+      </div>
+
+      <div class="phase-card phase-f2">
+        <div class="phase-header">
+          <div>
+            <div class="phase-label">F2 — Próxima sprint</div>
+            <div class="phase-title">Message Grouper</div>
+          </div>
+          <span class="status-pill sp-pend" style="margin-left:auto;">planejado</span>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item">Criar tabela message_grouping_queue no Supabase</div>
+          <div class="phase-item">FACEBOOK-INBOUND: salvar na fila em vez de chamar Orchestrator direto</div>
+          <div class="phase-item">Cron 10s: claim mensagens → agrupa por conversa_id → chama Orchestrator com batch</div>
+          <div class="phase-item">Lead Panel v2: documentos, restrições, histórico unificado</div>
+        </div>
+      </div>
+
+      <div class="phase-card phase-f3">
+        <div class="phase-header">
+          <div>
+            <div class="phase-label">F3 — Julia</div>
+            <div class="phase-title">Comportamento Completo</div>
+          </div>
+          <span class="status-pill sp-pend" style="margin-left:auto;">planejado</span>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item">Definir system_prompt da Julia (sdr_leads) com persona completa</div>
+          <div class="phase-item">Fluxo CPF: Julia pede → salva em leads.cpf → dispara auditoria Boa Vista</div>
+          <div class="phase-item">Fluxo criação de lead: Julia detecta novo contato → chama /MDZAP — Inbound Upsert Lead</div>
+          <div class="phase-item">Integração Boa Vista: resposta automática do score dentro da conversa</div>
+        </div>
+      </div>
+
+      <div class="phase-card phase-f4">
+        <div class="phase-header">
+          <div>
+            <div class="phase-label">F4 — Expansão</div>
+            <div class="phase-title">SDR 2 + SDR 3</div>
+          </div>
+          <span class="status-pill sp-pend" style="margin-left:auto;">futuro</span>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item">Provisionar números SDR Docs e SDR Acordos no WABA</div>
+          <div class="phase-item">Definir system_prompts de cada agente</div>
+          <div class="phase-item">Ativar stubs → migrar para orquestradores reais</div>
+          <div class="phase-item">Dashboard multi-SDR: conversas por agente, taxa de handoff, CPF coletado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    MdZap — Arquitetura v1 · MdLab LegalTech · 2026-04-06
+  </div>
+
+</main>
+
+<script>
+// Smooth scroll + active nav
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Intersection observer para nav ativo
+const sections = document.querySelectorAll('.section[id]');
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = '#' + entry.target.id;
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === id) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-80px 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
