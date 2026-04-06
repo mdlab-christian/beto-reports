@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Mapeamento n8n Flows v1</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; padding: 24px; }
+.container { max-width: 1200px; margin: 0 auto; }
+
+/* Hero */
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* Grid */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Section */
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; vertical-align: top; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Status pills */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; white-space: nowrap; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+
+/* Code */
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+.code-id { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.75rem; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); }
+
+/* Flow diagram */
+.flow-container { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; overflow-x: auto; }
+.flow-row { display: flex; align-items: flex-start; gap: 0; flex-wrap: nowrap; min-width: 900px; }
+.flow-node { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; min-width: 160px; max-width: 200px; flex-shrink: 0; position: relative; }
+.flow-node.node-entry { border-color: var(--accent5); }
+.flow-node.node-ai { border-color: var(--accent); }
+.flow-node.node-db { border-color: var(--accent3); }
+.flow-node.node-out { border-color: var(--accent4); }
+.flow-node.node-error { border-color: var(--accent2); }
+.flow-node.node-stub { border-color: var(--text-muted); border-style: dashed; opacity: 0.7; }
+.flow-node-title { font-size: 0.78rem; font-weight: 600; margin-bottom: 4px; }
+.flow-node-sub { font-size: 0.7rem; color: var(--text-muted); }
+.flow-node-tag { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; }
+.tag-active { background: rgba(79,255,176,0.12); color: var(--accent3); }
+.tag-fix { background: rgba(255,107,107,0.12); color: var(--accent2); }
+.tag-stub { background: rgba(122,130,168,0.12); color: var(--text-muted); }
+
+/* Arrow */
+.flow-arrow { display: flex; align-items: center; padding: 0 6px; color: var(--text-muted); font-size: 1.1rem; flex-shrink: 0; align-self: center; margin-top: -20px; }
+.flow-arrow-label { font-size: 0.65rem; color: var(--text-muted); text-align: center; white-space: nowrap; }
+.arrow-wrap { display: flex; flex-direction: column; align-items: center; padding: 0 4px; flex-shrink: 0; align-self: center; }
+
+/* Branch */
+.flow-branch { display: flex; flex-direction: column; gap: 8px; }
+.branch-item { display: flex; align-items: center; gap: 8px; }
+.branch-label { font-size: 0.65rem; color: var(--accent4); white-space: nowrap; min-width: 60px; }
+
+/* Problem cards */
+.problem-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; border-left: 3px solid var(--accent2); }
+.problem-card.p1 { border-left-color: var(--accent2); }
+.problem-card.p2 { border-left-color: var(--accent4); }
+.problem-card.info { border-left-color: var(--text-muted); }
+.problem-tag { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px; }
+.problem-tag.p1-tag { color: var(--accent2); }
+.problem-tag.p2-tag { color: var(--accent4); }
+.problem-tag.info-tag { color: var(--text-muted); }
+.problem-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; }
+.problem-desc { font-size: 0.8rem; color: var(--text-muted); }
+.problem-fix { font-size: 0.78rem; color: var(--accent3); margin-top: 8px; }
+
+/* Roadmap */
+.phase-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.phase-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.phase-f1 { color: var(--accent2); }
+.phase-f2 { color: var(--accent4); }
+.phase-f3 { color: var(--accent); }
+.phase-f4 { color: var(--accent3); }
+.phase-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; }
+.phase-item { font-size: 0.82rem; color: var(--text-muted); padding: 4px 0; border-bottom: 1px solid rgba(42,47,74,0.5); display: flex; gap: 8px; }
+.phase-item:last-child { border-bottom: none; }
+.phase-dot { color: var(--accent4); flex-shrink: 0; }
+
+/* DB tables */
+.db-table { background: var(--surface2); border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+.db-table-name { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
+.db-field { display: flex; gap: 8px; font-size: 0.75rem; padding: 3px 0; }
+.db-field-name { font-family: 'JetBrains Mono', monospace; color: var(--text); min-width: 160px; }
+.db-field-type { color: var(--accent5); min-width: 80px; }
+.db-field-desc { color: var(--text-muted); }
+.db-field.new-field .db-field-name::after { content: " NOVO"; font-size: 0.65rem; color: var(--accent3); background: rgba(79,255,176,0.1); padding: 1px 4px; border-radius: 3px; margin-left: 4px; }
+
+/* Footer */
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+
+/* Vertical flow */
+.vflow { display: flex; flex-direction: column; gap: 4px; }
+.vflow-step { display: flex; align-items: flex-start; gap: 10px; }
+.vflow-num { width: 22px; height: 22px; border-radius: 50%; background: var(--surface3); border: 1px solid var(--border); font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-muted); margin-top: 1px; }
+.vflow-num.active { border-color: var(--accent3); color: var(--accent3); background: rgba(79,255,176,0.08); }
+.vflow-num.fix { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,107,0.08); }
+.vflow-content { flex: 1; }
+.vflow-title { font-size: 0.82rem; font-weight: 600; }
+.vflow-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+.vflow-connector { width: 1px; background: var(--border); height: 12px; margin-left: 11px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="hero-emoji">💬</span>
+    <h1 class="gradient-text">MdZap — Mapeamento n8n Flows v1</h1>
+    <p class="hero-sub">Arquitetura multi-SDR · Flows ativos · Problemas identificados · Roadmap de execução</p>
+    <div class="badges">
+      <span class="badge bp">n8n Workflows</span>
+      <span class="badge bg">37 flows mapeados</span>
+      <span class="badge br">4 blockers P1/P2</span>
+      <span class="badge by">F1 em execução</span>
+      <span class="badge bb">Meta Cloud API v19.0</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid g4" style="margin-bottom: 32px;">
+    <div class="stat-card">
+      <div class="stat-value">37</div>
+      <div class="stat-label">Webhooks Ativos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent2);">4</div>
+      <div class="stat-label">Blockers P1/P2</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent4);">3</div>
+      <div class="stat-label">SDRs Planejados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent3);">4</div>
+      <div class="stat-label">Fases Roadmap</div>
+    </div>
+  </div>
+
+  <!-- Fluxo Principal Inbound -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📥</span>
+      <h2>Fluxo Principal — Inbound Meta Cloud API</h2>
+    </div>
+    <div class="flow-container">
+      <div style="margin-bottom: 20px; font-size: 0.78rem; color: var(--text-muted);">phone_number_id: <span class="code-id">997740236764543</span> &nbsp;·&nbsp; Webhook ID: <span class="code-id">k9377WTyVJYOnD4e</span></div>
+
+      <div class="flow-row">
+        <!-- Meta API -->
+        <div class="flow-node node-entry">
+          <div class="flow-node-title">Meta Cloud API</div>
+          <div class="flow-node-sub">GET → hub.challenge<br>POST → mensagens</div>
+          <span class="flow-node-tag tag-active">entrada</span>
+        </div>
+
+        <div class="arrow-wrap">
+          <div class="flow-arrow">→</div>
+          <div class="flow-arrow-label">POST</div>
+        </div>
+
+        <!-- FACEBOOK-INBOUND -->
+        <div class="flow-node node-db">
+          <div class="flow-node-title">FACEBOOK-INBOUND</div>
+          <div class="flow-node-sub">Parse · Upsert · Save</div>
+          <span class="flow-node-tag tag-active">ativo</span>
+        </div>
+
+        <div class="arrow-wrap">
+          <div class="flow-arrow">→</div>
+          <div class="flow-arrow-label" style="color: var(--accent2);">FALTA</div>
+        </div>
+
+        <!-- Router (a implementar) -->
+        <div class="flow-node node-error" style="border-style: dashed;">
+          <div class="flow-node-title">Router SDR</div>
+          <div class="flow-node-sub">lookup agente_slug<br>em whatsapp_numeros</div>
+          <span class="flow-node-tag tag-fix">implementar F1</span>
+        </div>
+
+        <div class="arrow-wrap" style="margin-left: 8px;">
+          <div class="flow-arrow" style="color: var(--text-muted);">⤵</div>
+        </div>
+
+        <!-- Branches -->
+        <div class="flow-branch">
+          <div class="branch-item">
+            <span class="branch-label">sdr_leads →</span>
+            <div class="flow-node node-ai" style="min-width: 140px;">
+              <div class="flow-node-title">Orchestrator Julia</div>
+              <div class="flow-node-sub">HLdJDx6D45EcER9Z</div>
+              <span class="flow-node-tag tag-active">ativo</span>
+            </div>
+          </div>
+          <div class="branch-item">
+            <span class="branch-label">sdr_docs →</span>
+            <div class="flow-node node-stub" style="min-width: 140px;">
+              <div class="flow-node-title">SDR Docs Stub</div>
+              <div class="flow-node-sub">scaffolding F1</div>
+              <span class="flow-node-tag tag-stub">pendente</span>
+            </div>
+          </div>
+          <div class="branch-item">
+            <span class="branch-label">sdr_acordos →</span>
+            <div class="flow-node node-stub" style="min-width: 140px;">
+              <div class="flow-node-title">SDR Acordos Stub</div>
+              <div class="flow-node-sub">scaffolding F1</div>
+              <span class="flow-node-tag tag-stub">pendente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Steps FACEBOOK-INBOUND + Orchestrator side by side -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔍</span>
+      <h2>Detalhamento dos Flows Críticos</h2>
+    </div>
+    <div class="grid g2">
+
+      <!-- FACEBOOK-INBOUND steps -->
+      <div class="card">
+        <div class="card-title">MDZAP-FACEBOOK-INBOUND &nbsp;<span class="code-id">k9377WTyVJYOnD4e</span></div>
+        <div class="vflow">
+          <div class="vflow-step">
+            <div class="vflow-num active">1</div>
+            <div class="vflow-content">
+              <div class="vflow-title">Parse Message</div>
+              <div class="vflow-desc">Extrai phone_number_id, from, text, message_type</div>
+            </div>
+          </div>
+          <div class="vflow-connector"></div>
+          <div class="vflow-step">
+            <div class="vflow-num fix">!</div>
+            <div class="vflow-content">
+              <div class="vflow-title" style="color: var(--accent2);">wa_numero_id HARDCODED</div>
+              <div class="vflow-desc">Lookup dinâmico em whatsapp_numeros via phone_number_id — corrigir F1</div>
+            </div>
+          </div>
+          <div class="vflow-connector"></div>
+          <div class="vflow-step">
+            <div class="vflow-num active">2</div>
+            <div class="vflow-content">
+              <div class="vflow-title">Upsert Conversa</div>
+              <div class="vflow-desc">Cria ou atualiza whatsapp_conversas</div>
+            </div>
+          </div>
+          <div class="vflow-connector"></div>
+          <div class="vflow-step">
+            <div class="vflow-num active">3</div>
+            <div class="vflow-content">
+              <div class="vflow-title">Save Message</div>
+              <div class="vflow-desc">Persiste em whatsapp_mensagens</div>
+            </div>
+          </div>
+          <div class="vflow-connector"></div>
+          <div class="vflow-step">
+            <div class="vflow-num fix">4</div>
+            <div class="vflow-content">
+              <div class="vflow-title" style="color: var(--accent2);">[FALTA] Router SDR</div>
+              <div class="vflow-desc">Lookup agente_slug → rota para Orchestrator / stubs SDR 2+3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orchestrator steps -->
+      <div class="card">
+        <div class="card-title">N8N-MDZAP-ORCHESTRATOR &nbsp;<span class="code-id">HLdJDx6D45EcER9Z</span></div>
+        <div class="vflow">
+          <div class="vflow-step">
+            <div class="vflow-num active">1</div>
+            <div class="vflow-content">
+              <div class="vflow-title">Buscar Contexto</div>
+              <div class="vflow-desc">whatsapp_conversas + leads + histórico 20 msgs + mdzap_ai_modules[sdr_leads]</div>
+            </div>
+          </div>
+          <div class="vflow-connector"></div>
+          <div class="vflow-step">
+            <div class="vflow-num active">2</div>
+            <div class="vflow-content">
+              <div class="vflow-title">Skip Guard</div>
+              <div class="vflow-desc">Pula se: encerrada | awaiting_human | wa_blocked</div>
+            </div>
+          </div>
+          <div class="vflow-connector"></div>
+          <div class="vflow-step">
+            <div class="vflow-num fix">!</div>
+            <div class="vflow-content">
+              <div class="vflow-title" style="color: var(--accent2);">Chamar Claude — API key hardcoded</div>
+              <div class="vflow-desc">claude-sonnet-4-6 · system_prompt do módulo sdr_leads<br>Corrigir: usar $env.ANTHROPIC_API_KEY</div>
+            </div>
+          </div>
+          <div class="vflow-connector"></div>
+          <div class="vflow-step">
+            <div class="vflow-num active">4</div>
+            <div class="vflow-content">
+              <div class="vflow-title">Enviar Resposta</div>
+              <div class="vflow-desc">INSERT msg saída + UPDATE metadata → POST /mdflow/mdzap/enviar-mensagem</div>
+            </div>
+          </div>
+          <div class="vflow-connector"></div>
+          <div class="vflow-step">
+            <div class="vflow-num active">5</div>
+            <div class="vflow-content">
+              <div class="vflow-title">Handoff?</div>
+              <div class="vflow-desc">UPDATE leads.awaiting_human = true se Julia solicitar handoff</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Envio Outbound -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📤</span>
+      <h2>Fluxo Outbound — Envio de Mensagens</h2>
+    </div>
+    <div class="flow-container">
+      <div class="flow-row">
+        <div class="flow-node node-ai">
+          <div class="flow-node-title">Orchestrator Julia</div>
+          <div class="flow-node-sub">gera resposta</div>
+          <span class="flow-node-tag tag-active">ativo</span>
+        </div>
+        <div class="arrow-wrap">
+          <div class="flow-arrow">→</div>
+          <div class="flow-arrow-label">POST</div>
+        </div>
+        <div class="flow-node node-out">
+          <div class="flow-node-title">WH-MDZAP-01</div>
+          <div class="flow-node-sub">Enviar Mensagem<br><span class="code-id" style="font-size:0.65rem;">szyOvsQD5zMWWdFt</span></div>
+          <span class="flow-node-tag tag-active">orchestrator path</span>
+        </div>
+        <div class="arrow-wrap">
+          <div class="flow-arrow">→</div>
+          <div class="flow-arrow-label">graph.facebook.com</div>
+        </div>
+        <div class="flow-node node-entry">
+          <div class="flow-node-title">Meta Graph API</div>
+          <div class="flow-node-sub">v19.0/{phone_id}/messages<br>+ UPDATE status</div>
+          <span class="flow-node-tag tag-active">entrega</span>
+        </div>
+      </div>
+      <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <div class="flow-row">
+          <div class="flow-node node-db">
+            <div class="flow-node-title">Frontend MdFlow</div>
+            <div class="flow-node-sub">envio manual via UI</div>
+            <span class="flow-node-tag tag-active">frontend</span>
+          </div>
+          <div class="arrow-wrap">
+            <div class="flow-arrow">→</div>
+            <div class="flow-arrow-label">POST</div>
+          </div>
+          <div class="flow-node node-out">
+            <div class="flow-node-title">MDZAP-ENVIAR-MENSAGEM</div>
+            <div class="flow-node-sub">FE path<br><span class="code-id" style="font-size:0.65rem;">5nZxUubzqoeYInSO</span></div>
+            <span class="flow-node-tag tag-active">frontend path</span>
+          </div>
+          <div class="arrow-wrap">
+            <div class="flow-arrow">→</div>
+            <div class="flow-arrow-label">graph.facebook.com</div>
+          </div>
+          <div class="flow-node node-entry">
+            <div class="flow-node-title">Meta Graph API</div>
+            <div class="flow-node-sub">mesma lógica</div>
+            <span class="flow-node-tag tag-active">entrega</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Catálogo completo de webhooks -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>Catálogo Completo — 37 Webhooks MdZap</h2>
+    </div>
+
+    <!-- Entrada -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title">Entrada — Inbound Meta</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Path</th><th>Função</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-id">k9377WTyVJYOnD4e</span></td>
+            <td>MDZAP-FACEBOOK-INBOUND</td>
+            <td><span class="code">mdzap-facebook</span></td>
+            <td>Receptor Meta Cloud API</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Orquestração -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title">Orquestração</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Path / Trigger</th><th>Função</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-id">HLdJDx6D45EcER9Z</span></td>
+            <td>N8N-MDZAP-ORCHESTRATOR</td>
+            <td><span class="code">mdflow/mdzap/orchestrator</span></td>
+            <td>Julia SDR brain — decide resposta + handoff</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">iqbGbztOAtarXbNs</span></td>
+            <td>N8N-MDZAP-HEARTBEAT</td>
+            <td>cron 5min</td>
+            <td>Monitor heartbeat serviços</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">RC2TiOa72cRvnzH9</span></td>
+            <td>MDZAP-EVENT-DISPATCH-CRON</td>
+            <td>cron</td>
+            <td>Dispatch de eventos agendados</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Envio Outbound -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title">Envio Outbound</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Path</th><th>Função</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-id">szyOvsQD5zMWWdFt</span></td>
+            <td>WH-MDZAP-01 Enviar Mensagem</td>
+            <td><span class="code">mdflow/mdzap/enviar-mensagem</span></td>
+            <td>Orchestrator → Meta Graph API</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">5nZxUubzqoeYInSO</span></td>
+            <td>MDZAP-ENVIAR-MENSAGEM FE</td>
+            <td><span class="code">mdzap/enviar-mensagem</span></td>
+            <td>Frontend → Meta (envio manual)</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">2DxMd7m0d2GMASFg</span></td>
+            <td>MDZAP-ENVIAR-TEMPLATE</td>
+            <td><span class="code">mdzap/enviar-template</span></td>
+            <td>Templates WA aprovados</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">cBQsgdfAgAQYmXPU</span></td>
+            <td>MDZAP-ENVIAR-AUDIO</td>
+            <td><span class="code">mdzap/enviar-audio</span></td>
+            <td>Envio de áudio</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Gestão de conversa -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title">Gestão de Conversa</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Path</th><th>Função</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-id">rqoxaljFZVInPKwJ</span></td>
+            <td>MDZAP-ASSUMIR-CONVERSA</td>
+            <td><span class="code">mdzap/assumir-conversa</span></td>
+            <td>Humano assume conversa da Julia</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">THe3SbAxGeMnbZAE</span></td>
+            <td>MDZAP-DEVOLVER-JULIA</td>
+            <td><span class="code">mdzap/devolver-julia</span></td>
+            <td>Devolve conversa para Julia</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">Af4O6x0EDJu8n5Qq</span></td>
+            <td>MDZAP-TRANSFERIR-CONVERSA</td>
+            <td><span class="code">mdzap/transferir-conversa</span></td>
+            <td>Transfere para outro agente</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">6ht8s7FVDKEnLLPz</span></td>
+            <td>MDZAP-ENCERRAR-CONVERSA</td>
+            <td><span class="code">mdzap/encerrar-conversa</span></td>
+            <td>Encerra conversa</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">gXdZp074rgRYBrJ3</span></td>
+            <td>MDZAP-CONVERSATION-STATUS</td>
+            <td><span class="code">mdzap/conversation-status</span></td>
+            <td>Consulta/atualiza status</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Lead / CRM -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title">Lead / CRM</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Path</th><th>Função</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-id">El2TY2MgC4RVA9mY</span></td>
+            <td>MDZAP-UPSERT-LEAD</td>
+            <td><span class="code">mdzap/upsert-lead</span></td>
+            <td>Cria ou atualiza lead</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">A0DEvhxjfzhJmGbU</span></td>
+            <td>WH-MDZAP-09 Inbound Upsert Lead</td>
+            <td><span class="code">mdflow/mdzap/inbound-upsert-lead</span></td>
+            <td>Lead via inbound WA</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">38t0RwznvYRKqdJB</span></td>
+            <td>MDZAP-LEAD-SYNC</td>
+            <td><span class="code">mdzap/lead-sync</span></td>
+            <td>Sincroniza dados do lead</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">6juwlcSdlkOcDOAB</span></td>
+            <td>WH-MDZAP-04 Stage Changed</td>
+            <td><span class="code">mdflow/mdzap/event-stage-changed</span></td>
+            <td>Evento: stage do lead mudou</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">qbhexXG7AuDiwT26</span></td>
+            <td>WH-CRM-07 Triagem Extract</td>
+            <td><span class="code">mdflow/mdzap/triagem-extract</span></td>
+            <td>Extrai dados de triagem</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">AbdytxeYO6mMQKGw</span></td>
+            <td>MDZAP-TRIAGEM</td>
+            <td><span class="code">mdflow/mdzap/triagem</span></td>
+            <td>Processa triagem de lead</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">SnkzA20Z8O5VNfgB</span></td>
+            <td>WH-MDZAP-03 Lead Qualified</td>
+            <td><span class="code">mdflow/mdzap/event-lead-qualified</span></td>
+            <td>Evento: lead qualificado</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mídia / IA -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title">Mídia / IA</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Path</th><th>Função</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-id">7BvjpfcStEG2z27V</span></td>
+            <td>MDZAP-DOCUMENT-RECEIVED</td>
+            <td><span class="code">mdzap/document-received</span></td>
+            <td>Documento recebido via WA</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">2iVpyvXO2Q2kCzOi</span></td>
+            <td>MDZAP-AI-COMPOSER</td>
+            <td><span class="code">mdzap/ai-composer</span></td>
+            <td>Reescrever / traduzir mensagem</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">Px49P0DqK7aTKtdH</span></td>
+            <td>MDZAP-AUDIO-TRANSCRIBE</td>
+            <td><span class="code">mdzap/audio-transcribe</span></td>
+            <td>Transcrição de áudio</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">dxE4EypFu2dzmJw3</span></td>
+            <td>MDZAP-AUDIO-TTS</td>
+            <td><span class="code">mdzap/audio-tts</span></td>
+            <td>Text-to-Speech</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Julia Lab -->
+    <div class="card" style="margin-bottom: 16px;">
+      <div class="card-title">Julia Lab / Config</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Path</th><th>Função</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-id">4T5QQjKetCoXI6rR</span></td>
+            <td>MDZAP-JULIA-LAB</td>
+            <td><span class="code">mdzap/julia-lab</span></td>
+            <td>Sandbox para testes da Julia</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">FoJB50sYME07rWzC</span></td>
+            <td>MDZAP-JULIA-LAB-REFINE</td>
+            <td><span class="code">mdzap/julia-lab-refine</span></td>
+            <td>Refina prompts Julia</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">6jgyFxNBWVrkI132</span></td>
+            <td>MDZAP-JULIA-PROMPT-SAVE</td>
+            <td><span class="code">mdzap/julia-prompt-save</span></td>
+            <td>Salva prompts aprovados</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">l4DmazPtypmw4cKz</span></td>
+            <td>MDZAP-JULIA-FEEDBACK</td>
+            <td><span class="code">mdzap/julia-feedback</span></td>
+            <td>Feedback sobre respostas Julia</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Outros -->
+    <div class="card">
+      <div class="card-title">Outros</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Path</th><th>Função</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-id">bz6oyFCf8AuxoQqr</span></td>
+            <td>WH-MDZAP-11 Bulk Documentos</td>
+            <td><span class="code">mdflow/mdzap/bulk-documentos</span></td>
+            <td>Documentos em lote</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">peUJnN2ZkLQRrXZV</span></td>
+            <td>MDZAP-RECONECTAR</td>
+            <td><span class="code">mdzap/reconectar</span></td>
+            <td>Reconecta instância WA</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">HGK0IuUHm198xcIB</span></td>
+            <td>WH-CRM-06 Message Event</td>
+            <td><span class="code">mdflow/mdzap/message-event</span></td>
+            <td>Eventos de mensagem</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">J6rUTWVZavMrb8Or</span></td>
+            <td>WH-CRM-04 Sync Out</td>
+            <td><span class="code">mdflow/mdzap/sync-out</span></td>
+            <td>Sync saída CRM</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+          <tr>
+            <td><span class="code-id">jTCxzuI1ISuECx4j</span></td>
+            <td>WH-MDZAP-05 Proposal Response</td>
+            <td><span class="code">mdflow/mdzap/event-proposal-response</span></td>
+            <td>Resposta de proposta</td>
+            <td><span class="status-pill sp-done">✅ ativo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Problemas identificados -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <h2>Problemas Identificados</h2>
+    </div>
+    <div class="grid g2">
+      <div class="problem-card p1">
+        <div class="problem-tag p1-tag">P1 — BLOCKER</div>
+        <div class="problem-title">wa_numero_id hardcoded no FACEBOOK-INBOUND</div>
+        <div class="problem-desc">O flow <span class="code-id">k9377WTyVJYOnD4e</span> usa um ID fixo para o número WhatsApp em vez de fazer lookup dinâmico. Isso impede que a arquitetura multi-SDR funcione, pois não é possível rotear mensagens de múltiplos números para diferentes agentes.</div>
+        <div class="problem-fix">Fix F1: lookup em whatsapp_numeros WHERE wa_instance_id = phone_number_id recebido</div>
+      </div>
+      <div class="problem-card p1">
+        <div class="problem-tag p1-tag">P2 — BLOCKER</div>
+        <div class="problem-title">FACEBOOK-INBOUND não chama o Orchestrator</div>
+        <div class="problem-desc">Após salvar a mensagem, o flow não faz nenhuma chamada ao Orchestrator Julia. Isso significa que Julia nunca responde a nenhuma mensagem recebida — o loop de conversa IA está quebrado.</div>
+        <div class="problem-fix">Fix F1: adicionar step Router que lê agente_slug e chama o webhook correspondente</div>
+      </div>
+      <div class="problem-card p1">
+        <div class="problem-tag p1-tag">P3 — BLOCKER</div>
+        <div class="problem-title">Orchestrator hardcoda slug sdr_leads</div>
+        <div class="problem-desc">O flow <span class="code-id">HLdJDx6D45EcER9Z</span> busca sempre o módulo <code>sdr_leads</code> em mdzap_ai_modules, ignorando o campo agente_slug passado pelo Router. SDR Docs e SDR Acordos nunca carregariam seu system_prompt.</div>
+        <div class="problem-fix">Fix F1: receber agente_slug no body do POST e usar dinamicamente no SELECT mdzap_ai_modules</div>
+      </div>
+      <div class="problem-card p2">
+        <div class="problem-tag p2-tag">P4 — BUG</div>
+        <div class="problem-title">API key Anthropic hardcoded no Orchestrator</div>
+        <div class="problem-desc">A chave da Anthropic está embutida diretamente no node HTTP do Orchestrator, em vez de ser lida via variável de ambiente. Representa risco de segurança e impossibilita rotação de chave centralizada.</div>
+        <div class="problem-fix">Fix F1: substituir por $env.ANTHROPIC_API_KEY nas credenciais do node</div>
+      </div>
+    </div>
+    <div class="problem-card info" style="margin-top: 16px;">
+      <div class="problem-tag info-tag">D1 — INFO (limpeza futura)</div>
+      <div class="problem-title">Workflows duplicados detectados</div>
+      <div class="problem-desc">Os seguintes flows têm duplicatas no n8n que devem ser consolidadas após as fixes P1-P4:</div>
+      <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="status-pill sp-pend">JULIA-FEEDBACK (4x)</span>
+        <span class="status-pill sp-pend">ASSUMIR-CONVERSA (2x)</span>
+        <span class="status-pill sp-pend">AUDIO-TRANSCRIBE (3x)</span>
+        <span class="status-pill sp-pend">JULIA-PROMPT-SAVE (2x)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insight legado -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">💡</span>
+      <h2>Insight do Framework Legado — Message Grouper</h2>
+    </div>
+    <div class="card">
+      <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 240px;">
+          <div class="card-title">O que era o W1 (framework .mmd)</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">O framework antigo implementava um <strong style="color: var(--text);">Message Grouper</strong> com delay de 10 segundos antes de chamar a IA. Ele agrupava mensagens enviadas em rápida sucessão para evitar respostas fragmentadas.</p>
+          <div class="code">Usuário: "oi"       ─┐
+Usuário: "sou o João" ├─ delay 10s → 1 chamada IA
+Usuário: "tenho uma dívida" ─┘</div>
+        </div>
+        <div style="flex: 1; min-width: 240px;">
+          <div class="card-title">Recomendação para F2</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Implementar no FACEBOOK-INBOUND antes de chamar o Router:</p>
+          <div class="vflow">
+            <div class="vflow-step">
+              <div class="vflow-num" style="border-color: var(--accent4); color: var(--accent4);">1</div>
+              <div class="vflow-content">
+                <div class="vflow-title">Receber mensagem</div>
+                <div class="vflow-desc">Save imediato em whatsapp_mensagens</div>
+              </div>
+            </div>
+            <div class="vflow-connector"></div>
+            <div class="vflow-step">
+              <div class="vflow-num" style="border-color: var(--accent4); color: var(--accent4);">2</div>
+              <div class="vflow-content">
+                <div class="vflow-title">Wait Node (10s)</div>
+                <div class="vflow-desc">Aguarda possíveis mensagens seguintes</div>
+              </div>
+            </div>
+            <div class="vflow-connector"></div>
+            <div class="vflow-step">
+              <div class="vflow-num" style="border-color: var(--accent4); color: var(--accent4);">3</div>
+              <div class="vflow-content">
+                <div class="vflow-title">Check: nova mensagem chegou?</div>
+                <div class="vflow-desc">Se sim → reinicia timer. Se não → chama Router</div>
+              </div>
+            </div>
+            <div class="vflow-connector"></div>
+            <div class="vflow-step">
+              <div class="vflow-num" style="border-color: var(--accent4); color: var(--accent4);">4</div>
+              <div class="vflow-content">
+                <div class="vflow-title">Router SDR</div>
+                <div class="vflow-desc">Todas as mensagens agrupadas em 1 contexto</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banco de dados -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗄️</span>
+      <h2>Banco de Dados — Tabelas-Chave</h2>
+    </div>
+    <div class="grid g2">
+      <div>
+        <div class="db-table">
+          <div class="db-table-name">whatsapp_numeros</div>
+          <div class="db-field"><span class="db-field-name">numero</span><span class="db-field-type">TEXT</span><span class="db-field-desc">Número WA</span></div>
+          <div class="db-field"><span class="db-field-name">wa_instance_id</span><span class="db-field-type">TEXT</span><span class="db-field-desc">= phone_number_id Meta</span></div>
+          <div class="db-field"><span class="db-field-name">config</span><span class="db-field-type">JSONB</span><span class="db-field-desc">access_token, waba_id</span></div>
+          <div class="db-field"><span class="db-field-name">ai_enabled</span><span class="db-field-type">BOOLEAN</span><span class="db-field-desc">IA ativa neste número</span></div>
+          <div class="db-field new-field"><span class="db-field-name">agente_slug</span><span class="db-field-type">TEXT</span><span class="db-field-desc">sdr_leads | sdr_docs | sdr_acordos</span></div>
+        </div>
+        <div class="db-table">
+          <div class="db-table-name">whatsapp_conversas</div>
+          <div class="db-field"><span class="db-field-name">numero_id</span><span class="db-field-type">UUID</span><span class="db-field-desc">FK whatsapp_numeros</span></div>
+          <div class="db-field"><span class="db-field-name">contato_numero</span><span class="db-field-type">TEXT</span><span class="db-field-desc">Telefone do contato</span></div>
+          <div class="db-field"><span class="db-field-name">lead_id</span><span class="db-field-type">UUID</span><span class="db-field-desc">FK leads</span></div>
+          <div class="db-field"><span class="db-field-name">status</span><span class="db-field-type">TEXT</span><span class="db-field-desc">encerrada | awaiting_human | ativa</span></div>
+          <div class="db-field"><span class="db-field-name">metadata</span><span class="db-field-type">JSONB</span><span class="db-field-desc">Dados da conversa</span></div>
+          <div class="db-field"><span class="db-field-name">nao_lidas</span><span class="db-field-type">INT</span><span class="db-field-desc">Contador não lidas</span></div>
+        </div>
+        <div class="db-table">
+          <div class="db-table-name">whatsapp_mensagens</div>
+          <div class="db-field"><span class="db-field-name">conversa_id</span><span class="db-field-type">UUID</span><span class="db-field-desc">FK whatsapp_conversas</span></div>
+          <div class="db-field"><span class="db-field-name">direcao</span><span class="db-field-type">TEXT</span><span class="db-field-desc">entrada | saida</span></div>
+          <div class="db-field"><span class="db-field-name">tipo</span><span class="db-field-type">TEXT</span><span class="db-field-desc">text | audio | document | template</span></div>
+          <div class="db-field"><span class="db-field-name">remetente_tipo</span><span class="db-field-type">TEXT</span><span class="db-field-desc">usuario | julia | humano</span></div>
+          <div class="db-field"><span class="db-field-name">wa_message_id</span><span class="db-field-type">TEXT</span><span class="db-field-desc">ID Meta da mensagem</span></div>
+          <div class="db-field"><span class="db-field-name">metadata</span><span class="db-field-type">JSONB</span><span class="db-field-desc">Dados adicionais</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="db-table">
+          <div class="db-table-name">mdzap_ai_modules</div>
+          <div class="db-field"><span class="db-field-name">slug</span><span class="db-field-type">TEXT</span><span class="db-field-desc">sdr_leads | sdr_docs | sdr_acordos</span></div>
+          <div class="db-field"><span class="db-field-name">system_prompt</span><span class="db-field-type">TEXT</span><span class="db-field-desc">Prompt do agente SDR</span></div>
+          <div class="db-field"><span class="db-field-name">modelo</span><span class="db-field-type">TEXT</span><span class="db-field-desc">claude-sonnet-4-6</span></div>
+          <div class="db-field"><span class="db-field-name">temperatura</span><span class="db-field-type">FLOAT</span><span class="db-field-desc">0.0 – 1.0</span></div>
+          <div class="db-field"><span class="db-field-name">max_tokens</span><span class="db-field-type">INT</span><span class="db-field-desc">Limite de tokens</span></div>
+          <div class="db-field"><span class="db-field-name">ativo</span><span class="db-field-type">BOOLEAN</span><span class="db-field-desc">Módulo habilitado</span></div>
+        </div>
+        <div class="db-table">
+          <div class="db-table-name">leads</div>
+          <div class="db-field"><span class="db-field-name">nome</span><span class="db-field-type">TEXT</span><span class="db-field-desc">Nome do lead</span></div>
+          <div class="db-field"><span class="db-field-name">telefone</span><span class="db-field-type">TEXT</span><span class="db-field-desc">Telefone WA</span></div>
+          <div class="db-field"><span class="db-field-name">coluna_crm</span><span class="db-field-type">TEXT</span><span class="db-field-desc">Etapa no kanban CRM</span></div>
+          <div class="db-field"><span class="db-field-name">awaiting_human</span><span class="db-field-type">BOOLEAN</span><span class="db-field-desc">Handoff solicitado</span></div>
+          <div class="db-field"><span class="db-field-name">wa_blocked</span><span class="db-field-type">BOOLEAN</span><span class="db-field-desc">Contato bloqueado</span></div>
+        </div>
+        <div style="background: rgba(124,109,255,0.06); border: 1px solid rgba(124,109,255,0.2); border-radius: 8px; padding: 12px; margin-top: 8px;">
+          <div style="font-size: 0.75rem; font-weight: 600; color: var(--accent); margin-bottom: 6px;">Migration F1 necessária</div>
+          <div class="code">ALTER TABLE whatsapp_numeros
+  ADD COLUMN agente_slug TEXT
+  CHECK (agente_slug IN (
+    'sdr_leads',
+    'sdr_docs',
+    'sdr_acordos'
+  ));
+
+UPDATE whatsapp_numeros
+  SET agente_slug = 'sdr_leads'
+  WHERE agente_slug IS NULL;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Roadmap -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗺️</span>
+      <h2>Roadmap de Execução — 4 Fases</h2>
+    </div>
+    <div class="grid g4">
+      <div class="phase-card">
+        <div class="phase-label phase-f1">F1 — Agora</div>
+        <div class="phase-title">Foundation Multi-SDR</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Migration: agente_slug em whatsapp_numeros</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Fix FACEBOOK-INBOUND: lookup dinâmico wa_numero_id</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Fix FACEBOOK-INBOUND: adicionar Router SDR</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Fix Orchestrator: receber agente_slug dinamicamente</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Fix Orchestrator: $env.ANTHROPIC_API_KEY</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Criar stubs SDR Docs + SDR Acordos</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label phase-f2">F2 — Em seguida</div>
+        <div class="phase-title">UX + Agrupamento</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Message Grouper (Wait Node 10s)</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Lead Panel v2 no frontend</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Limpeza duplicatas D1</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Métricas de conversas por SDR</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label phase-f3">F3 — Julia comportamento</div>
+        <div class="phase-title">Prompt Completo</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>System prompt definitivo sdr_leads</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Regras de handoff refinadas</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Integração triagem automática</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Testes via JULIA-LAB</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label phase-f4">F4 — SDR 2 + 3</div>
+        <div class="phase-title">Novos Agentes</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>SDR Docs: coleta de documentos</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>SDR Acordos: negociação WA</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Módulos mdzap_ai_modules para cada SDR</div>
+        <div class="phase-item"><span class="phase-dot">▸</span>Números WA dedicados por SDR</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · MdZap n8n Flow Map v1 · 2026-04-06
+  </div>
+
+</div>
+</body>
+</html>
