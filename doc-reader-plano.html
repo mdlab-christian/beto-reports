@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doc Reader Agent — Plano 3 Camadas | MdZap</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --primary: #20c997;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 24px;
+}
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* HERO */
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(32,201,151,0.1); color: var(--primary); border: 1px solid rgba(32,201,151,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* GRID */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* STAT CARDS */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* SECTION */
+.section { margin: 32px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+
+/* STATUS PILLS */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+.sp-done { background: rgba(32,201,151,0.1); color: var(--primary); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-open { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+
+/* CODE BLOCK */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  word-break: break-all;
+  line-height: 1.7;
+}
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; vertical-align: top; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:last-child td { border-bottom: none; }
+
+/* CAMADA CARDS */
+.layer-card {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.layer-header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.layer-header-1 { background: linear-gradient(135deg, rgba(32,201,151,0.12), rgba(32,201,151,0.04)); border-bottom: 1px solid rgba(32,201,151,0.2); }
+.layer-header-2 { background: linear-gradient(135deg, rgba(124,109,255,0.12), rgba(124,109,255,0.04)); border-bottom: 1px solid rgba(124,109,255,0.2); }
+.layer-header-3 { background: linear-gradient(135deg, rgba(91,196,245,0.12), rgba(91,196,245,0.04)); border-bottom: 1px solid rgba(91,196,245,0.2); }
+.layer-number {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ln-1 { background: rgba(32,201,151,0.2); color: var(--primary); border: 1px solid rgba(32,201,151,0.4); }
+.ln-2 { background: rgba(124,109,255,0.2); color: var(--accent); border: 1px solid rgba(124,109,255,0.4); }
+.ln-3 { background: rgba(91,196,245,0.2); color: var(--accent5); border: 1px solid rgba(91,196,245,0.4); }
+.layer-title { font-size: 1.05rem; font-weight: 700; }
+.layer-subtitle { color: var(--text-muted); font-size: 0.82rem; margin-top: 2px; }
+.layer-body { background: var(--surface); padding: 24px; }
+
+/* IMPL GRID */
+.impl-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+@media(max-width:768px) { .impl-grid { grid-template-columns: 1fr; } }
+.impl-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.impl-block-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.ibt-done { color: var(--primary); }
+.ibt-miss { color: var(--accent2); }
+.ibt-open { color: var(--accent4); }
+.impl-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: 0.83rem; line-height: 1.4; }
+.impl-item:last-child { margin-bottom: 0; }
+.item-icon { flex-shrink: 0; font-size: 0.85rem; margin-top: 1px; }
+
+/* DECISION TABLE */
+.decision-table-wrapper {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.decision-table-wrapper th:first-child { min-width: 180px; }
+
+/* FLOW DIAGRAM */
+.flow-diagram {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  overflow-x: auto;
+}
+.flow-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* SCHEMA TABLE */
+.schema-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media(max-width:768px) { .schema-grid { grid-template-columns: 1fr; } }
+.schema-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+.schema-doc-type {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--accent5);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.schema-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent3);
+  margin-bottom: 4px;
+}
+
+/* BATCH RESULTS */
+.batch-bar {
+  background: var(--surface2);
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.batch-bar-fill { height: 100%; border-radius: 6px; }
+.bf-green { background: var(--primary); }
+.bf-yellow { background: var(--accent4); }
+.bf-red { background: var(--accent2); }
+.batch-stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.batch-stat-label { font-size: 0.82rem; color: var(--text-muted); }
+.batch-stat-val { font-size: 0.85rem; font-weight: 600; }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* NEXT STEPS */
+.next-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.next-step-item:last-child { border-bottom: none; }
+.ns-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(32,201,151,0.15);
+  border: 1px solid rgba(32,201,151,0.3);
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.ns-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 2px; }
+.ns-desc { font-size: 0.82rem; color: var(--text-muted); }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 24px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">📄</span>
+    <h1 class="gradient-text">Doc Reader Agent — Plano 3 Camadas</h1>
+    <p class="hero-sub">MdZap · MP Advocacia · Plano de Evolução para Discussão e Aprovação</p>
+    <div class="badges">
+      <span class="badge bp">🐙 Jarbas 2.0</span>
+      <span class="badge by">⚠️ Em Discussão</span>
+      <span class="badge bb">MdZap · Doc Reader</span>
+      <span class="badge bg">06/04/2026</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value">943</div>
+      <div class="stat-label">Docs analisados no batch</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--primary)">43%</div>
+      <div class="stat-label">Taxa de legibilidade total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent5)">3,9</div>
+      <div class="stat-label">Campos extraídos / doc (média)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent4)">9</div>
+      <div class="stat-label">Decisões pendentes de aprovação</div>
+    </div>
+  </div>
+
+  <!-- SUMÁRIO EXECUTIVO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🧭</span>
+      <h2>Sumário Executivo</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title" style="color:var(--primary)">O que já existe e funciona</div>
+        <div class="impl-item"><span class="item-icon">✅</span><span>Webhook n8n ativo: <span style="font-family:monospace;color:var(--accent3)">POST /webhook/mdzap/doc-reader</span> (ID: eVgkSfkq2Clrlzuq)</span></div>
+        <div class="impl-item"><span class="item-icon">✅</span><span>Disparo automático ao receber imagem/documento via WhatsApp</span></div>
+        <div class="impl-item"><span class="item-icon">✅</span><span>Análise com Claude Vision (claude-haiku) com prompt genérico</span></div>
+        <div class="impl-item"><span class="item-icon">✅</span><span>Extração básica: tipo_documento, qualidade, campos, resumo</span></div>
+        <div class="impl-item"><span class="item-icon">✅</span><span>Salva em <span style="font-family:monospace;color:var(--accent3)">whatsapp_mensagens.metadata.doc_reader_result</span></span></div>
+        <div class="impl-item"><span class="item-icon">✅</span><span>Re-dispara Orchestrator (Julia) com <span style="font-family:monospace;color:var(--accent3)">_source: 'doc_reader'</span></span></div>
+        <div class="impl-item"><span class="item-icon">✅</span><span>Batch de treinamento: 1078 pastas Drive, 943 documentos analisados</span></div>
+        <div class="impl-item"><span class="item-icon">✅</span><span>6 tipos de documentos identificados e validados em produção</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--accent2)">O que falta implementar</div>
+        <div class="impl-item"><span class="item-icon">❌</span><span>Super prompt v2 baseado nos resultados reais do batch de treinamento</span></div>
+        <div class="impl-item"><span class="item-icon">❌</span><span>Schema de extração por tipo de documento (campos específicos por doc)</span></div>
+        <div class="impl-item"><span class="item-icon">❌</span><span>Sistema de confiança por campo extraído (alto/médio/baixo)</span></div>
+        <div class="impl-item"><span class="item-icon">❌</span><span>Merge inteligente de múltiplos documentos do mesmo lead</span></div>
+        <div class="impl-item"><span class="item-icon">❌</span><span>Atualização automática da aba Dados do Lead Panel no MdZap</span></div>
+        <div class="impl-item"><span class="item-icon">❌</span><span>Validação matemática de CPF e estrutural de CEP</span></div>
+        <div class="impl-item"><span class="item-icon">❌</span><span>Deduplicação de documentos já processados</span></div>
+        <div class="impl-item"><span class="item-icon">❌</span><span>Feedback ao atendente quando dados são preenchidos automaticamente</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUXO ASCII -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔀</span>
+      <h2>Pipeline Completo — 3 Camadas</h2>
+    </div>
+    <div class="flow-diagram">
+      <div class="flow-title">// DIAGRAMA DE FLUXO — DOC READER AGENT</div>
+      <div class="code">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                          CAMADA 1 — ENTRADA (TRIGGER)                           │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│   Lead envia doc via WhatsApp                                                    │
+│   (JPG / PNG / PDF)                                                              │
+│         │                                                                        │
+│         ▼                                                                        │
+│   [Webhook document-received]                                                    │
+│   Valida: tipo MIME, tamanho &lt;10MB                                               │
+│   Verifica: hash SHA256 → já processado?                                         │
+│         │                                                                        │
+│         ├─── Já processado → SKIP (deduplicação)                                 │
+│         │                                                                        │
+│         └─── Novo → fila de processamento                                        │
+│                    (prioridade: identidade > residência > renda)                  │
+│                                                                                  │
+└───────────────────────────────┬─────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                        CAMADA 2 — ANÁLISE E EXTRAÇÃO (CORE)                     │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│   Claude Vision (claude-haiku OU claude-sonnet?)                                 │
+│   Super prompt v2 com schema por tipo                                            │
+│         │                                                                        │
+│         ▼                                                                        │
+│   Detecta tipo → aplica schema específico                                        │
+│                                                                                  │
+│   RG/CNH ────────────→ nome, cpf, rg, data_nasc, sexo, naturalidade             │
+│   CPF ────────────────→ cpf, nome, data_nasc                                    │
+│   Comp. Residência ──→ cep, logradouro, numero, bairro, cidade, uf              │
+│   Holerite/CTPS ─────→ profissao, empregador, renda_mensal                      │
+│   Extrato ────────────→ banco, agencia, conta                                   │
+│         │                                                                        │
+│         ▼                                                                        │
+│   Score de confiança por campo: ALTO / MÉDIO / BAIXO                             │
+│   Validação: CPF (algoritmo mod11), CEP (formato), data coerente                 │
+│   Merge com docs anteriores do mesmo lead                                        │
+│                                                                                  │
+└───────────────────────────────┬─────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                      CAMADA 3 — OUTPUT: JULIA + ABA DADOS                       │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│   3A) JULIA (Orchestrator)                                                       │
+│   ┌────────────────────────────────────────────────────────────────────────┐    │
+│   │  Recebe bloco "=== DOCUMENTO RECEBIDO ===" com dados e confiança       │    │
+│   │  Confiança ALTA  → usa dado diretamente, confirma brevemente           │    │
+│   │  Confiança MÉDIA → confirma com o lead antes de usar                   │    │
+│   │  Confiança BAIXA → pede reenvio de documento melhor                    │    │
+│   └────────────────────────────────────────────────────────────────────────┘    │
+│                                                                                  │
+│   3B) ABA DADOS (MdZap UI)                                                       │
+│   ┌────────────────────────────────────────────────────────────────────────┐    │
+│   │  Campos pré-preenchidos com badge "Doc Reader"                         │    │
+│   │  Confiança ALTA  → salva imediatamente + badge verde                   │    │
+│   │  Confiança MÉDIA → salva como pendente + badge amarelo                 │    │
+│   │  Conflito com dado existente → alerta atendente, não sobrescreve       │    │
+│   └────────────────────────────────────────────────────────────────────────┘    │
+│                                                                                  │
+│   3C) CONVERSÃO PARA CLIENTE (MdFlow)                                            │
+│   ┌────────────────────────────────────────────────────────────────────────┐    │
+│   │  Dados ALTO já preenchidos na tabela clientes                          │    │
+│   │  Dados MÉDIO/BAIXO marcados como pendentes de confirmação              │    │
+│   └────────────────────────────────────────────────────────────────────────┘    │
+│                                                                                  │
+└─────────────────────────────────────────────────────────────────────────────────┘</div>
+    </div>
+  </div>
+
+  <!-- CAMADA 1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📥</span>
+      <h2>Camada 1 — Entrada (Trigger)</h2>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-header layer-header-1">
+        <div class="layer-number ln-1">1</div>
+        <div>
+          <div class="layer-title">Entrada e Detecção de Documentos</div>
+          <div class="layer-subtitle">Quando e como o Doc Reader ativa — gatilhos, deduplicação, priorização</div>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="impl-grid">
+          <div class="impl-block">
+            <div class="impl-block-title ibt-done">✅ Já Implementado</div>
+            <div class="impl-item"><span class="item-icon">✅</span><span>Webhook dispara ao receber imagem/doc via WhatsApp</span></div>
+            <div class="impl-item"><span class="item-icon">✅</span><span>Suporte a JPG, PNG processados pelo Claude Vision</span></div>
+            <div class="impl-item"><span class="item-icon">✅</span><span>Processamento em background (silencioso para o lead)</span></div>
+            <div class="impl-item"><span class="item-icon">✅</span><span>Re-disparo do Orchestrator após extração</span></div>
+          </div>
+          <div class="impl-block">
+            <div class="impl-block-title ibt-miss">❌ Ainda Falta</div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Deduplicação por hash SHA256 do arquivo</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Fila de prioridade (identidade > residência > renda)</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Suporte a PDF com conversão de página para imagem</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Validação de tamanho máximo (&lt;10MB) com resposta ao lead</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Opção de upload manual pelo atendente no Lead Panel</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Retentativa automática para documentos com erro 403</span></div>
+          </div>
+          <div class="impl-block">
+            <div class="impl-block-title ibt-open">❓ Decisões em Aberto</div>
+            <div class="impl-item"><span class="item-icon">❓</span><span>Avisar o lead ao receber o documento? ("Recebi seu RG, aguarde...")</span></div>
+            <div class="impl-item"><span class="item-icon">❓</span><span>Processar documentos recebidos de madrugada imediatamente ou aguardar?</span></div>
+            <div class="impl-item"><span class="item-icon">❓</span><span>Processar TODOS os docs ou apenas tipos 3/4/5 (identidade, residência, renda)?</span></div>
+            <div class="impl-item"><span class="item-icon">❓</span><span>Notificar atendente no Telegram quando doc novo chega?</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMADA 2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🧠</span>
+      <h2>Camada 2 — Análise e Extração (Core)</h2>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-header layer-header-2">
+        <div class="layer-number ln-2">2</div>
+        <div>
+          <div class="layer-title">Análise com Claude Vision + Schema por Tipo</div>
+          <div class="layer-subtitle">Prompt v2, confiança por campo, validação, merge de documentos</div>
+        </div>
+      </div>
+      <div class="layer-body">
+        <div class="impl-grid">
+          <div class="impl-block">
+            <div class="impl-block-title ibt-done">✅ Já Implementado</div>
+            <div class="impl-item"><span class="item-icon">✅</span><span>Claude Vision (claude-haiku) com prompt genérico</span></div>
+            <div class="impl-item"><span class="item-icon">✅</span><span>Detecção de tipo_documento e qualidade</span></div>
+            <div class="impl-item"><span class="item-icon">✅</span><span>Extração genérica: cpf, nome, endereço, banco</span></div>
+            <div class="impl-item"><span class="item-icon">✅</span><span>Média de 3,9 campos por documento (validado no batch)</span></div>
+          </div>
+          <div class="impl-block">
+            <div class="impl-block-title ibt-miss">❌ Ainda Falta</div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Super prompt v2 com schema específico por tipo de doc</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Score de confiança por campo (alto/médio/baixo)</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Validação matemática de CPF (algoritmo mod11)</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Validação estrutural de CEP (8 dígitos + API opcional)</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Merge inteligente de múltiplos docs do mesmo lead</span></div>
+            <div class="impl-item"><span class="item-icon">❌</span><span>Thumbnail armazenado do documento analisado</span></div>
+          </div>
+          <div class="impl-block">
+            <div class="impl-block-title ibt-open">❓ Decisões em Aberto</div>
+            <div class="impl-item"><span class="item-icon">❓</span><span>Modelo: manter claude-haiku (rápido/barato) ou migrar para claude-sonnet (mais preciso)?</span></div>
+            <div class="impl-item"><span class="item-icon">❓</span><span>Qualidade mínima: aceitar "parcialmente_legível" ou exigir "legível"?</span></div>
+            <div class="impl-item"><span class="item-icon">❓</span><span>Doc ilegível: pedir reenvio automaticamente ao lead ou apenas logar?</span></div>
+            <div class="impl-item"><span class="item-icon">❓</span><span>Armazenar thumbnail do doc analisado (privacidade vs utilidade)?</span></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:14px;font-weight:700;">Schema Proposto de Extração por Tipo</div>
+        <div class="schema-grid">
+          <div class="schema-item">
+            <div class="schema-doc-type">RG / CNH</div>
+            <div class="schema-field">→ nome</div>
+            <div class="schema-field">→ cpf</div>
+            <div class="schema-field">→ rg</div>
+            <div class="schema-field">→ data_nascimento</div>
+            <div class="schema-field">→ sexo</div>
+            <div class="schema-field">→ naturalidade</div>
+          </div>
+          <div class="schema-item">
+            <div class="schema-doc-type">CPF</div>
+            <div class="schema-field">→ cpf</div>
+            <div class="schema-field">→ nome</div>
+            <div class="schema-field">→ data_nascimento</div>
+          </div>
+          <div class="schema-item">
+            <div class="schema-doc-type">Comp. Residência</div>
+            <div class="schema-field">→ cep</div>
+            <div class="schema-field">→ logradouro</div>
+            <div class="schema-field">→ numero</div>
+            <div class="schema-field">→ bairro</div>
+            <div class="schema-field">→ cidade</div>
+            <div class="schema-field">→ uf</div>
+            <div class="schema-field">→ nome (titular)</div>
+          </div>
+          <div class="schema-item">
+            <div class="schema-doc-type">Holerite / CTPS</div>
+            <div class="schema-field">→ profissao</div>
+            <div class="schema-field">→ empregador</div>
+            <div class="schema-field">→ renda_mensal</div>
+          </div>
+          <div class="schema-item">
+            <div class="schema-doc-type">Extrato Bancário</div>
+            <div class="schema-field">→ banco</div>
+            <div class="schema-field">→ agencia</div>
+            <div class="schema-field">→ conta</div>
+          </div>
+          <div class="schema-item" style="background:rgba(255,107,107,0.05);border-color:rgba(255,107,107,0.2);">
+            <div class="schema-doc-type" style="color:var(--accent2)">Não Extrai</div>
+            <div class="impl-item" style="margin-bottom:4px;"><span style="font-size:0.75rem;color:var(--text-muted)">mae_nome — não necessário</span></div>
+            <div class="impl-item" style="margin-bottom:4px;"><span style="font-size:0.75rem;color:var(--text-muted)">email — não vem em docs</span></div>
+            <div class="impl-item"><span style="font-size:0.75rem;color:var(--text-muted)">origem — campo de CRM</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMADA 3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📤</span>
+      <h2>Camada 3 — Output: Julia + Aba Dados</h2>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-header layer-header-3">
+        <div class="layer-number ln-3">3</div>
+        <div>
+          <div class="layer-title">Destino dos Dados Extraídos</div>
+          <div class="layer-subtitle">Julia (Orchestrator), aba Dados do Lead Panel e conversão para cliente no MdFlow</div>
+        </div>
+      </div>
+      <div class="layer-body">
+
+        <!-- 3A -->
+        <div style="margin-bottom:20px;">
+          <div style="font-size:0.85rem;font-weight:700;color:var(--accent5);margin-bottom:12px;display:flex;align-items:center;gap:8px;"><span>3A</span><span>— Julia (Orchestrator)</span></div>
+          <div class="impl-grid">
+            <div class="impl-block">
+              <div class="impl-block-title ibt-done">✅ Já Implementado</div>
+              <div class="impl-item"><span class="item-icon">✅</span><span>Bloco "=== DOCUMENTO RECEBIDO ===" no prompt da Julia</span></div>
+              <div class="impl-item"><span class="item-icon">✅</span><span>Julia recebe campos extraídos para usar no autocadastro</span></div>
+              <div class="impl-item"><span class="item-icon">✅</span><span>Re-disparo do Orchestrator com <span style="font-family:monospace;color:var(--accent3)">_source: 'doc_reader'</span></span></div>
+            </div>
+            <div class="impl-block">
+              <div class="impl-block-title ibt-miss">❌ Ainda Falta</div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Score de confiança passado para Julia (atualmente dados brutos)</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Instrução para Julia confirmar dado ALTO brevemente com o lead</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Instrução para Julia perguntar ao lead dado MÉDIO/BAIXO</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Instrução para Julia pedir reenvio se doc ilegível</span></div>
+            </div>
+            <div class="impl-block">
+              <div class="impl-block-title ibt-open">❓ Decisões em Aberto</div>
+              <div class="impl-item"><span class="item-icon">❓</span><span>Julia confirma: "Seu RG é 123456, correto?" para campo ALTO ou apenas salva direto?</span></div>
+              <div class="impl-item"><span class="item-icon">❓</span><span>Tom da confirmação: formal ou informal como o atendimento atual?</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 3B -->
+        <div style="margin-bottom:20px;">
+          <div style="font-size:0.85rem;font-weight:700;color:var(--accent4);margin-bottom:12px;display:flex;align-items:center;gap:8px;"><span>3B</span><span>— Aba Dados do Lead Panel (MdZap UI)</span></div>
+          <div class="impl-grid">
+            <div class="impl-block">
+              <div class="impl-block-title ibt-done">✅ Já Implementado</div>
+              <div class="impl-item"><span class="item-icon">✅</span><span>Aba Dados exibe campos do lead (nome, CPF, telefone, endereço, profissão)</span></div>
+              <div class="impl-item"><span class="item-icon">✅</span><span>Campos editáveis manualmente pelo atendente</span></div>
+            </div>
+            <div class="impl-block">
+              <div class="impl-block-title ibt-miss">❌ Ainda Falta</div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Atualização automática da aba Dados com dados do Doc Reader</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Badge visual "Doc Reader" distinguindo campos manuais vs automáticos</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Indicação de confiança por campo (verde/amarelo)</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Histórico: qual documento originou cada campo</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Alerta de conflito quando campo já preenchido manualmente</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Notificação ao atendente quando dados foram auto-preenchidos</span></div>
+            </div>
+            <div class="impl-block">
+              <div class="impl-block-title ibt-open">❓ Decisões em Aberto</div>
+              <div class="impl-item"><span class="item-icon">❓</span><span>Atualizar imediatamente após extração ou só após Julia confirmar com o lead?</span></div>
+              <div class="impl-item"><span class="item-icon">❓</span><span>Mostrar badge "Doc Reader" permanentemente ou apenas na edição?</span></div>
+              <div class="impl-item"><span class="item-icon">❓</span><span>Conflito de dado: sobrescrever silenciosamente, alertar ou bloquear?</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 3C -->
+        <div>
+          <div style="font-size:0.85rem;font-weight:700;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:8px;"><span>3C</span><span>— Conversão para Cliente no MdFlow</span></div>
+          <div class="grid g2">
+            <div class="impl-block">
+              <div class="impl-block-title ibt-done">✅ Já Implementado</div>
+              <div class="impl-item"><span class="item-icon">✅</span><span>Fluxo de conversão lead → cliente existente no MdFlow</span></div>
+              <div class="impl-item"><span class="item-icon">✅</span><span>Campos de cliente mapeados (pessoais, endereço, profissão/renda)</span></div>
+            </div>
+            <div class="impl-block">
+              <div class="impl-block-title ibt-miss">❌ Ainda Falta</div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Campos ALTO transferidos automaticamente para <span style="font-family:monospace;color:var(--accent3)">clientes</span> na conversão</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Campos MÉDIO/BAIXO marcados como pendentes de confirmação</span></div>
+              <div class="impl-item"><span class="item-icon">❌</span><span>Rastreabilidade: origem "Doc Reader" em campo da tabela clientes</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- BATCH DE TREINAMENTO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <h2>Resultados do Batch de Treinamento</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Legibilidade dos 943 Documentos</div>
+        <div class="batch-stat-row">
+          <span class="batch-stat-label">Legíveis (completos)</span>
+          <span class="batch-stat-val" style="color:var(--primary)">43% · 405 docs</span>
+        </div>
+        <div class="batch-bar"><div class="batch-bar-fill bf-green" style="width:43%"></div></div>
+        <div style="height:10px"></div>
+        <div class="batch-stat-row">
+          <span class="batch-stat-label">Parcialmente legíveis</span>
+          <span class="batch-stat-val" style="color:var(--accent4)">10% · 94 docs</span>
+        </div>
+        <div class="batch-bar"><div class="batch-bar-fill bf-yellow" style="width:10%"></div></div>
+        <div style="height:10px"></div>
+        <div class="batch-stat-row">
+          <span class="batch-stat-label">Erros (403 forbidden)</span>
+          <span class="batch-stat-val" style="color:var(--accent2)">47% · 444 docs</span>
+        </div>
+        <div class="batch-bar"><div class="batch-bar-fill bf-red" style="width:47%"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Distribuição por Tipo de Documento</div>
+        <table>
+          <tr>
+            <td>Comprovante de Residência</td>
+            <td><span class="status-pill sp-done">85 docs</span></td>
+          </tr>
+          <tr>
+            <td>Extrato Bancário</td>
+            <td><span class="status-pill sp-open">55 docs</span></td>
+          </tr>
+          <tr>
+            <td>RG</td>
+            <td><span class="status-pill sp-done">50 docs</span></td>
+          </tr>
+          <tr>
+            <td>CTPS</td>
+            <td><span class="status-pill sp-open">40 docs</span></td>
+          </tr>
+          <tr>
+            <td>CPF</td>
+            <td><span class="status-pill sp-pend">36 docs</span></td>
+          </tr>
+          <tr>
+            <td>CNH</td>
+            <td><span class="status-pill sp-pend">13 docs</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:12px;" class="card">
+      <div class="grid g3">
+        <div style="text-align:center;padding:12px;">
+          <div style="font-size:1.6rem;font-weight:700;color:var(--primary)">3,9</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;">Campos / doc (média)</div>
+        </div>
+        <div style="text-align:center;padding:12px;border-left:1px solid var(--border);border-right:1px solid var(--border);">
+          <div style="font-size:1.6rem;font-weight:700;color:var(--accent5)">1078</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;">Pastas Drive processadas</div>
+        </div>
+        <div style="text-align:center;padding:12px;">
+          <div style="font-size:1.6rem;font-weight:700;color:var(--accent4)">6</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;">Tipos de doc identificados</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELA DE DECISÕES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗳️</span>
+      <h2>Tabela de Decisões Pendentes</h2>
+    </div>
+    <div class="decision-table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Decisão</th>
+            <th>Opção A</th>
+            <th>Opção B</th>
+            <th>Impacto</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D1</td>
+            <td><strong>Modelo IA</strong></td>
+            <td>claude-haiku — rápido e barato (~$0,001/doc)</td>
+            <td>claude-sonnet — mais preciso (~$0,01/doc)</td>
+            <td style="color:var(--accent4)">Custo e precisão de extração</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D2</td>
+            <td><strong>Feedback ao lead</strong></td>
+            <td>Silencioso (comportamento atual)</td>
+            <td>"Recebi seu RG, aguarde um momento..."</td>
+            <td style="color:var(--accent5)">UX do lead, volume de mensagens</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D3</td>
+            <td><strong>Qualidade mínima aceita</strong></td>
+            <td>Apenas "legível" — dados confiáveis</td>
+            <td>Aceitar "parcialmente_legível" com confiança média</td>
+            <td style="color:var(--accent4)">Taxa de aproveitamento dos docs</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D4</td>
+            <td><strong>Timing de atualização da aba Dados</strong></td>
+            <td>Imediatamente após extração (otimista)</td>
+            <td>Só após Julia confirmar com o lead</td>
+            <td style="color:var(--accent2)">Risco de dado errado aparecer na UI</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D5</td>
+            <td><strong>Conflito de dados na aba</strong></td>
+            <td>Sobrescrever silenciosamente</td>
+            <td>Alertar atendente e aguardar confirmação</td>
+            <td style="color:var(--accent2)">Integridade dos dados manuais</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D6</td>
+            <td><strong>Confirmação Julia (dado ALTO)</strong></td>
+            <td>Salvar direto sem perguntar ao lead</td>
+            <td>"Seu RG é 123456, correto?" antes de salvar</td>
+            <td style="color:var(--accent5)">Volume de mensagens vs confiabilidade</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D7</td>
+            <td><strong>Doc ilegível</strong></td>
+            <td>Apenas logar, atendente age manualmente</td>
+            <td>Julia pede reenvio automaticamente ao lead</td>
+            <td style="color:var(--accent5)">Autonomia do agente vs controle humano</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D8</td>
+            <td><strong>Escopo de docs processados</strong></td>
+            <td>Todos os documentos recebidos</td>
+            <td>Apenas identidade, residência e renda (tipos 3-5)</td>
+            <td style="color:var(--accent4)">Volume de processamento e custo</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:monospace;color:var(--text-muted)">D9</td>
+            <td><strong>Thumbnail do documento</strong></td>
+            <td>Não armazenar (privacidade LGPD)</td>
+            <td>Armazenar thumbnail no Supabase Storage (rastreabilidade)</td>
+            <td style="color:var(--accent2)">LGPD, storage e auditoria</td>
+            <td><span class="status-pill sp-pend">⏳ Pendente</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PRÓXIMOS PASSOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⏭️</span>
+      <h2>Próximos Passos</h2>
+    </div>
+    <div class="card">
+      <div class="next-step-item">
+        <div class="ns-num">1</div>
+        <div>
+          <div class="ns-title">Aprovar as 9 decisões pendentes</div>
+          <div class="ns-desc">Revisar a tabela de decisões (D1–D9) e definir qual opção seguir em cada ponto. Christian e Heloísa devem alinhar, especialmente D2 (feedback ao lead), D4 (timing) e D6 (confirmação Julia).</div>
+        </div>
+      </div>
+      <div class="next-step-item">
+        <div class="ns-num">2</div>
+        <div>
+          <div class="ns-title">Escrever Super Prompt v2 (Camada 2)</div>
+          <div class="ns-desc">Baseado nos resultados do batch: 6 tipos identificados, schemas específicos por tipo, instrução de score de confiança (alto/médio/baixo). Substituir o prompt genérico atual no n8n.</div>
+        </div>
+      </div>
+      <div class="next-step-item">
+        <div class="ns-num">3</div>
+        <div>
+          <div class="ns-title">Implementar validação de CPF e CEP (Camada 2)</div>
+          <div class="ns-desc">Adicionar nó de code no n8n após extração: validação mod11 do CPF, validação de formato do CEP. Campos inválidos recebem confiança "baixo" automaticamente.</div>
+        </div>
+      </div>
+      <div class="next-step-item">
+        <div class="ns-num">4</div>
+        <div>
+          <div class="ns-title">Implementar deduplicação por hash (Camada 1)</div>
+          <div class="ns-desc">Calcular SHA256 do arquivo antes de processar. Salvar hash em campo da mensagem. Se hash já existe na conversa do lead, pular processamento.</div>
+        </div>
+      </div>
+      <div class="next-step-item">
+        <div class="ns-num">5</div>
+        <div>
+          <div class="ns-title">Atualizar Julia com score de confiança (Camada 3A)</div>
+          <div class="ns-desc">Passar confiança por campo no bloco do prompt. Adicionar instruções: dado ALTO → confirmar brevemente, MÉDIO/BAIXO → perguntar ou pedir reenvio.</div>
+        </div>
+      </div>
+      <div class="next-step-item">
+        <div class="ns-num">6</div>
+        <div>
+          <div class="ns-title">Implementar atualização automática da aba Dados (Camada 3B)</div>
+          <div class="ns-desc">Após decisão D4 aprovada: webhook atualiza tabela leads com campos extraídos + metadado de origem. Frontend MdZap exibe badge "Doc Reader" e indicador de confiança.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · MP Advocacia · Doc Reader Agent Plan v1 · 06/04/2026
+  </div>
+
+</div>
+</body>
+</html>
