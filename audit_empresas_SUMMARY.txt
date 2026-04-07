@@ -1,0 +1,96 @@
+================================================================================
+  DB AUDIT: /EMPRESAS — 2026-04-06
+================================================================================
+
+📊 RESUMO EXECUTIVO
+  • Tabelas auditadas: 4
+  • Issues P0 (bloqueadores): 0 ✅
+  • Issues P1 (importantes): 2 ⚠️
+  • Issues P2 (melhorias): 1 (opcional)
+  • Conformidades: 10/10
+
+📋 ESTADO DAS TABELAS
+
+  empresas               ✅ Completa (10 índices, 2 triggers, 14 RPCs)
+  orgaos_restritivos    ✅ Completa (soft delete, auditoria)
+  empresas_categorias   ⚠️  FALTAM: deleted_at, updated_at, trigger, idx_del
+  empresas_escritorios  ⚠️  FALTAM: idx_org_del (complementar)
+
+🚨 ISSUES P1 CRÍTICAS
+
+  1. empresas_categorias — Faltam colunas obrigatórias
+     └─ Sem deleted_at + updated_at → não pode fazer soft delete
+     └─ FK com empresas vai quebrar se tentar DELETE
+     └─ Sem auditoria de mudanças (sem updated_at automático)
+
+  2. empresas_categorias — Falta trigger set_updated_at
+     └─ Campo updated_at não é atualizado automaticamente
+
+🔧 SQL DE CORREÇÃO IMEDIATA (execute em order)
+
+  1. ALTER TABLE public.empresas_categorias 
+       ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL,
+       ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now() NOT NULL;
+
+  2. CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+     RETURNS TRIGGER AS $$
+     BEGIN NEW.updated_at = now(); RETURN NEW; END;
+     $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+     CREATE TRIGGER set_updated_at_empresas_categorias
+       BEFORE UPDATE ON public.empresas_categorias
+       FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+  3. CREATE INDEX IF NOT EXISTS idx_empresas_categorias_org_del 
+       ON public.empresas_categorias(organizacao_id) WHERE deleted_at IS NULL;
+
+✅ CONFORMIDADES POSITIVAS
+
+  • RLS habilitado em 4/4 tabelas ✅
+  • Isolamento de tenant (organizacao_id): 4/4 ✅
+  • Soft delete (deleted_at): 3/4 ✅
+  • Auditoria (created_at, updated_at): 3/4 ✅
+  • Foreign Keys: 6/6 válidas ✅
+  • Índices principais (idx_org): 4/4 ✅
+  • RPCs com SECURITY DEFINER: 14/15 ✅
+  • Sem ENUM nativo PostgreSQL: 0 encontrados ✅
+
+🔗 FOREIGN KEYS VALIDADAS
+
+  empresas.organizacao_id → organizacoes.id ✅
+  empresas.categoria_id → empresas_categorias.id ✅
+  orgaos_restritivos.organizacao_id → organizacoes.id ✅
+  empresas_categorias.organizacao_id → organizacoes.id ✅
+  empresas_escritorios.organizacao_id → organizacoes.id ✅
+  empresas_escritorios.empresa_id → empresas.id ✅
+
+📡 RPCs DA PÁGINA (15 encontradas)
+
+  ✅ SECURITY DEFINER (14):
+    • aprovar_empresa
+    • delete_empresa
+    • merge_empresas
+    • rpc_empresas_kpis
+    • rpc_empresas_ranking
+    • get_empresa_metricas
+    • get_jurimetria_ranking_empresas
+    • ensure_empresa_stub
+    • fn_empresas_stats
+    • + 5 mais
+
+  ⚠️  PUBLIC (1):
+    • buscar_empresa_similar
+
+⏱️  PRÓXIMOS PASSOS
+
+  1. [URGENTE] Executar 3 comandos SQL acima em ordem
+  2. Testar: DELETE categoria, UPDATE categoria
+  3. Validar: Queries com WHERE deleted_at IS NULL funcionam
+  4. [OPCIONAL] Criar idx_empresas_escritorios_org_del (P2)
+
+📁 ARQUIVOS GERADOS
+
+  • ~/beto-reports/audit_empresas_2026_04_06.md  (relatório detalhado)
+  • ~/beto-reports/audit_empresas_2026_04_06.html (dashboard visual)
+
+================================================================================

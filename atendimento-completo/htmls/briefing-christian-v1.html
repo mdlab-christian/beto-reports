@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing Christian — Atendimento Completo</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --card: #1a1f33;
+  --border: #2a2f45;
+  --text: #e8e6f0;
+  --muted: #8a8699;
+  --accent: #7c6dff;
+  --green: #20c997;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --blue: #38bdf8;
+  --orange: #fb923c;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.7; }
+.container { max-width:1100px; margin:0 auto; padding:2rem 1.5rem; }
+
+h1 { font-family:'Manrope',sans-serif; font-size:2rem; color:var(--green); margin-bottom:.3rem; }
+h2 { font-family:'Manrope',sans-serif; font-size:1.5rem; color:var(--accent); margin:2.5rem 0 1rem; border-bottom:2px solid var(--border); padding-bottom:.5rem; }
+h3 { font-size:1.15rem; color:var(--green); margin:1.5rem 0 .75rem; }
+.sub { color:var(--muted); font-size:.95rem; margin-bottom:2rem; }
+
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin:1rem 0; }
+.card-green { border-left:4px solid var(--green); }
+.card-yellow { border-left:4px solid var(--yellow); }
+.card-red { border-left:4px solid var(--red); }
+.card-blue { border-left:4px solid var(--blue); }
+.card-accent { border-left:4px solid var(--accent); }
+
+.grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:1rem; }
+
+/* Decision boxes */
+.decision { background:rgba(245,158,11,0.08); border:2px solid rgba(245,158,11,0.3); border-radius:12px; padding:1.25rem; margin:.75rem 0; }
+.decision-title { color:var(--yellow); font-weight:700; font-size:1rem; margin-bottom:.5rem; display:flex; align-items:center; gap:.5rem; }
+.decision p { color:var(--text); font-size:.9rem; }
+.decision .options { margin-top:.75rem; padding-left:1rem; }
+.decision .options li { color:var(--muted); margin:.3rem 0; font-size:.9rem; }
+
+/* Confirm boxes */
+.confirm { background:rgba(32,201,151,0.08); border:2px solid rgba(32,201,151,0.3); border-radius:12px; padding:1.25rem; margin:.75rem 0; }
+.confirm-title { color:var(--green); font-weight:700; font-size:1rem; margin-bottom:.5rem; }
+.confirm p { font-size:.9rem; }
+
+/* Bug boxes */
+.bug { background:rgba(239,68,68,0.08); border:2px solid rgba(239,68,68,0.3); border-radius:12px; padding:1.25rem; margin:.75rem 0; }
+.bug-title { color:var(--red); font-weight:700; font-size:1rem; margin-bottom:.5rem; }
+
+/* Flow diagrams */
+.flow { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.25rem; margin:1rem 0; }
+.flow pre { font-family:'JetBrains Mono',monospace; font-size:.82rem; line-height:1.9; color:var(--text); white-space:pre; overflow-x:auto; }
+.page { color:var(--accent); font-weight:700; }
+.action { color:var(--green); font-weight:600; }
+.data { color:var(--yellow); }
+.note { color:var(--muted); font-style:italic; }
+
+table { width:100%; border-collapse:collapse; margin:1rem 0; font-size:.88rem; }
+th { background:var(--surface); color:var(--accent); text-align:left; padding:.6rem .75rem; border:1px solid var(--border); }
+td { padding:.6rem .75rem; border:1px solid var(--border); }
+
+code { background:var(--surface); color:var(--green); padding:.1rem .35rem; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:.82rem; }
+
+.badge { display:inline-block; padding:.15rem .5rem; border-radius:999px; font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+.b-green { background:rgba(32,201,151,0.2); color:var(--green); }
+.b-yellow { background:rgba(245,158,11,0.2); color:var(--yellow); }
+.b-red { background:rgba(239,68,68,0.2); color:var(--red); }
+.b-blue { background:rgba(56,189,248,0.2); color:var(--blue); }
+.b-accent { background:rgba(124,109,255,0.2); color:var(--accent); }
+
+.num { display:inline-flex; width:28px; height:28px; align-items:center; justify-content:center; background:var(--accent); color:white; border-radius:50%; font-weight:700; font-size:.85rem; margin-right:.4rem; flex-shrink:0; }
+
+.section-intro { color:var(--muted); font-size:.95rem; margin-bottom:1rem; padding:0 .25rem; }
+
+ul { margin:.4rem 0 .4rem 1.25rem; }
+li { margin:.25rem 0; }
+
+.divider { border:none; border-top:1px solid var(--border); margin:2rem 0; }
+
+footer { text-align:center; color:var(--muted); margin-top:3rem; padding:1.5rem; border-top:1px solid var(--border); font-size:.82rem; }
+
+.hero { background: linear-gradient(135deg, rgba(124,109,255,0.1), rgba(32,201,151,0.1)); border:1px solid var(--border); border-radius:16px; padding:2rem; margin-bottom:2rem; text-align:center; }
+.hero p { color:var(--muted); max-width:700px; margin:0 auto; }
+
+.step-row { display:flex; align-items:flex-start; gap:.75rem; margin:.6rem 0; }
+.step-row .num { margin-top:2px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+<h1>Briefing — Atendimento Completo</h1>
+<p>Christian, esse documento e pra voce revisar. Tudo que esta aqui e o que EU ENTENDI dos seus audios e instrucoes. Seu trabalho e: <strong>confirmar o que esta certo, corrigir o que esta errado, e decidir o que esta em aberto</strong>.</p>
+<p style="margin-top:.75rem"><span class="badge b-yellow">REVISAR</span> <span class="badge b-red">0 LINHAS DE CODIGO</span> <span class="badge b-green">SO PLANEJAMENTO</span></p>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>1. O Fluxo Geral — Esta Certo?</h2>
+<p class="section-intro">Esse e o fluxo que eu entendi do atendimento do inicio ao fim. Veja se bate:</p>
+
+<div class="flow">
+<pre>
+  Cliente ve <span class="data">criativo</span> (Instagram/Facebook/Google)
+      |
+      |  clica no link → manda mensagem no WhatsApp com CPF
+      v
+  ┌───────────────────────────────────────────┐
+  |  <span class="page">MDZAP</span>  —  SDR Julia (IA) recebe           |
+  |  1. Detecta CPF na mensagem               |
+  |  2. Cria lead automatico no CRM           |
+  |  3. Dispara auditoria Boa Vista           |
+  |  4. Mostra restricoes pro cliente          |
+  |  5. Pede documentos obrigatorios           |
+  |  6. Qualifica e move no pipeline           |
+  └─────────────────┬─────────────────────────┘
+                    |
+                    v
+  ┌───────────────────────────────────────────┐
+  |  <span class="page">CRM PIPELINE</span>                              |
+  |  novos → em_atendimento → ag_documentos   |
+  |  → ag_assinatura → triagem                 |
+  |  → <span class="action">distribui</span> (converte em processo)       |
+  └─────────────────┬─────────────────────────┘
+                    |
+                    v
+  ┌───────────────────────────────────────────┐
+  |  <span class="page">DISTRIBUICAO</span>                              |
+  |  OlivIA gera peticao → JARBAS protocola    |
+  └─────────────────┬─────────────────────────┘
+                    |
+                    v
+  ┌───────────────────────────────────────────┐
+  |  <span class="page">PROCESSOS</span>  →  controller → decisoes      |
+  |  → acordos → financeiro → execucoes        |
+  └───────────────────────────────────────────┘
+</pre>
+</div>
+
+<div class="confirm">
+<div class="confirm-title">✅ CONFIRMAR</div>
+<p>Esse fluxo geral esta correto? O ponto de entrada e SEMPRE o WhatsApp (criativo → CPF → Julia)? Existe algum outro ponto de entrada que eu nao mapeei?</p>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>2. A Julia — O Que Ela Faz Exatamente</h2>
+<p class="section-intro">O que eu entendi que a Julia faz no primeiro contato:</p>
+
+<div class="card card-green">
+<div class="step-row"><span class="num">1</span><div>Cliente manda mensagem com CPF (mensagem pre-preenchida do criativo)</div></div>
+<div class="step-row"><span class="num">2</span><div>Julia detecta o CPF, cumprimenta, explica o servico</div></div>
+<div class="step-row"><span class="num">3</span><div>Julia cria o lead no CRM automaticamente (<code>coluna_crm='novos'</code>)</div></div>
+<div class="step-row"><span class="num">4</span><div>Julia dispara auditoria Boa Vista com o CPF</div></div>
+<div class="step-row"><span class="num">5</span><div>Recebe resultado → apresenta restricoes encontradas pro cliente no chat</div></div>
+<div class="step-row"><span class="num">6</span><div>Se tem restricoes processaveis: explica o processo, pede documentos (RG, comprovante endereco, prints)</div></div>
+<div class="step-row"><span class="num">7</span><div>Cliente envia docs no chat → salvam automaticamente na aba Documentos do lead</div></div>
+<div class="step-row"><span class="num">8</span><div>Julia move o lead no pipeline conforme progresso</div></div>
+<div class="step-row"><span class="num">9</span><div>Quando precisa de intervencao humana → marca <code>awaiting_human=true</code> (aparece no Radar CRM)</div></div>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Fluxo negativo</div>
+<p>Quando a Julia consulta e o cliente NAO tem restricoes processaveis, o que ela faz?</p>
+<ul class="options">
+<li>A) Informa que nao encontrou nada e encerra a conversa</li>
+<li>B) Oferece outro servico (revisional, trabalhista, etc)</li>
+<li>C) Passa pra humano decidir</li>
+<li>D) Arquiva o lead automaticamente com motivo "sem restricoes"</li>
+<li>E) Outro: ___</li>
+</ul>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Ate onde a Julia vai sozinha</div>
+<p>A Julia pode fechar o servico (agendar assinatura de contrato) ou SEMPRE precisa passar pra humano antes disso?</p>
+<ul class="options">
+<li>A) Julia faz tudo ate a assinatura</li>
+<li>B) Julia qualifica e coleta docs, humano fecha</li>
+<li>C) Depende do valor (ex: acima de X Julia passa pra humano)</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>3. Os 3 SDRs</h2>
+<p class="section-intro">Voce falou em 3 agentes SDR. Entendi que a Julia e o principal. Os outros dois:</p>
+
+<div class="grid2">
+<div class="card card-green">
+<h3>Julia (SDR 1) — Definida</h3>
+<ul>
+<li>Atendimento negativacao/restricoes</li>
+<li>Fluxo: CPF → auditoria → qualificacao → docs → distribuicao</li>
+<li>Prioridade 1 de implementacao</li>
+</ul>
+</div>
+<div class="card card-yellow">
+<h3>SDR 2 e SDR 3 — Indefinidos</h3>
+<ul>
+<li>Qual o perfil de cada?</li>
+<li>Outro tipo de acao juridica?</li>
+<li>Pos-venda / cobranca?</li>
+<li>Atendimento receptivo generico?</li>
+</ul>
+</div>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — SDR 2 e SDR 3</div>
+<p>Preciso saber o que cada um faz pra planejar. Se ainda nao decidiu, podemos implementar so a Julia agora e adicionar os outros depois.</p>
+<ul class="options">
+<li>A) Ja sei o que sao: ___ (descrever)</li>
+<li>B) Implementa so a Julia agora, os outros depois</li>
+<li>C) Vou pensar e te falo</li>
+</ul>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Numero WhatsApp</div>
+<p>Os 3 SDRs usam o mesmo numero de WhatsApp ou cada um tem o seu?</p>
+<ul class="options">
+<li>A) Mesmo numero, 3 "personalidades" diferentes</li>
+<li>B) Cada um com numero proprio</li>
+<li>C) Julia num numero, os outros 2 em outro</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>4. Auditoria Boa Vista — Regras</h2>
+<p class="section-intro">O que eu entendi da auditoria:</p>
+
+<div class="card card-green">
+<h3>Entendi assim:</h3>
+<ul>
+<li>Consulta SOMENTE Boa Vista (nao Serasa/SPC/Quod)</li>
+<li>Retorna lista de restricoes (credores + valores + datas)</li>
+<li>Cada restricao e vinculada a uma empresa (match fuzzy automatico)</li>
+<li>Regra especial: agrupar tudo do orgao "SCPC/Boa Vista" em 1 item</li>
+<li><strong>EXCLUIR CARTORIOS</strong> — nao sao processaveis</li>
+<li>Auto-aprendizado: nome do credor confirmado salva em <code>empresas.nome_variacoes</code></li>
+</ul>
+</div>
+
+<div class="confirm">
+<div class="confirm-title">✅ CONFIRMAR</div>
+<p>So Boa Vista mesmo? Nenhum outro bureau? E a exclusao de cartorios e por nome (ex: contendo "cartorio", "registro", "tabelionato") ou tem lista fixa?</p>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Restricoes manuais</div>
+<p>Alem da auditoria automatica, o atendente pode criar restricoes manualmente no CRM? (Ex: cliente informa uma restricao que nao apareceu na consulta)</p>
+<ul class="options">
+<li>A) Sim, pode criar manual</li>
+<li>B) Nao, so via auditoria</li>
+<li>C) Sim, mas precisa de aprovacao</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>5. Lead Panel do MdZap — Layout</h2>
+<p class="section-intro">O painel lateral direito do MdZap com as informacoes do lead:</p>
+
+<div class="card card-blue">
+<h3>Como eu entendi:</h3>
+<table>
+<tr><th>Aspecto</th><th>Detalhe</th></tr>
+<tr><td>Posicao</td><td>Lado direito, 320px, <strong>FECHADO por default</strong></td></tr>
+<tr><td>Toggle</td><td>Botao pra abrir/fechar</td></tr>
+<tr><td>Aba 1 — Dados</td><td>Edicao completa: nome, CPF, email, telefone, endereco, score, advogado</td></tr>
+<tr><td>Aba 2 — Restricoes</td><td>Lista de restricoes com badge de contagem, expandiveis por empresa</td></tr>
+<tr><td>Aba 3 — Documentos</td><td>Upload D&D, docs do chat auto-salvos, rename inline, separacao Iniciais vs por Restricao</td></tr>
+<tr><td>Aba 4 — Historico</td><td>Timeline: mudancas CRM, auditorias, docs enviados</td></tr>
+</table>
+</div>
+
+<div class="confirm">
+<div class="confirm-title">✅ CONFIRMAR</div>
+<p>Sao essas 4 abas mesmo? Falta alguma? A aba de Follow-up que existe no CRM drawer NAO aparece no MdZap panel, certo?</p>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Botao de auditoria no panel</div>
+<p>O lead panel do MdZap tem um botao pra disparar auditoria ali mesmo, ou so pela Julia / pagina de auditorias?</p>
+<ul class="options">
+<li>A) Sim, botao no panel (como no CRM drawer)</li>
+<li>B) Nao, so via Julia ou pagina auditorias</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>6. Documentos — O Sistema de 3 Tiers</h2>
+<p class="section-intro">Esse e o ponto mais complexo. Entendi que existem 3 "niveis" de documentos:</p>
+
+<div class="grid2">
+<div class="card card-green">
+<h3>Tier 1 — Docs do Lead</h3>
+<p>Documentos pessoais, nao ligados a nenhuma restricao especifica.</p>
+<ul>
+<li>RG / CNH</li>
+<li>Comprovante de endereco</li>
+<li>Docs gerais</li>
+</ul>
+<p><code>restricao_id = null</code></p>
+</div>
+<div class="card card-accent">
+<h3>Tier 2 — Docs da Restricao</h3>
+<p>Documentos especificos de uma restricao (prints, comprovantes).</p>
+<ul>
+<li>Print da tela do bureau</li>
+<li>Comprovante de negativacao</li>
+<li>Notificacao da empresa</li>
+</ul>
+<p><code>restricao_id = UUID</code></p>
+</div>
+</div>
+
+<div class="card card-yellow">
+<h3>Tier 3 — Docs Gerados (Processo)</h3>
+<p>Documentos criados pelo sistema apos a distribuicao.</p>
+<ul>
+<li>Peticao inicial (gerada pela OlivIA)</li>
+<li>Procuracao</li>
+<li>Docs de tramitacao</li>
+</ul>
+<p><code>processo_id = UUID</code></p>
+</div>
+
+<div class="confirm">
+<div class="confirm-title">✅ CONFIRMAR — Tabela unica</div>
+<p>Entendi que TODOS os documentos (Tier 1, 2 e 3) ficam na mesma tabela <code>processos_documentos</code>. E isso mesmo? Ou existe uma tabela <code>leads_documentos</code> separada?</p>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Docs do WhatsApp</div>
+<p>Quando o cliente manda uma foto/PDF no chat do WhatsApp:</p>
+<ul class="options">
+<li>A) Salva automaticamente como Tier 1 (doc geral do lead) e o atendente categoriza depois</li>
+<li>B) Julia pergunta "isso e RG, comprovante ou print de restricao?" e categoriza na hora</li>
+<li>C) Salva no bucket mdzap-media e o atendente arrasta manualmente pra aba docs</li>
+</ul>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Conversao lead → cliente</div>
+<p>Quando o lead vira cliente (na distribuicao), os documentos Tier 1 e Tier 2:</p>
+<ul class="options">
+<li>A) Ficam no mesmo registro, so preenche o <code>cliente_id</code></li>
+<li>B) Sao copiados pra novos registros vinculados ao cliente</li>
+<li>C) Ficam vinculados ao lead E ao cliente (duplo vinculo)</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>7. Google Drive — Obrigatorio</h2>
+<p class="section-intro">Voce foi claro: TODOS os documentos vao pro Drive. Entendi assim:</p>
+
+<div class="card card-red">
+<h3>Regra: nenhum documento fica so no Supabase Storage</h3>
+<p>Toda vez que um doc e salvo (upload manual, doc do WhatsApp, peticao gerada), ele e sincronizado automaticamente pro Google Drive do escritorio.</p>
+</div>
+
+<div class="card card-blue">
+<h3>Estrutura de pastas no Drive (como eu entendi)</h3>
+<div class="flow">
+<pre>
+  MP Advocacia/
+    └── Clientes/
+        └── {CPF} - {Nome do Cliente}/
+            ├── Documentos Pessoais/     ← Tier 1
+            ├── Restricoes/
+            |   ├── {Nome Empresa 1}/    ← Tier 2
+            |   ├── {Nome Empresa 2}/
+            |   └── ...
+            └── Processos/
+                └── {Numero CNJ}/
+                    ├── Iniciais/        ← Tier 1+2 copiados
+                    └── Tramitacao/       ← Tier 3
+</pre>
+</div>
+</div>
+
+<div class="confirm">
+<div class="confirm-title">✅ CONFIRMAR — Estrutura de pastas</div>
+<p>Essa estrutura de pastas esta certa? O nome da pasta raiz e "MP Advocacia"? As subpastas por empresa da restricao fazem sentido?</p>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Direcao do sync</div>
+<p>O sync com o Drive e:</p>
+<ul class="options">
+<li>A) So MdFlow → Drive (unidirecional, Drive e backup/consulta)</li>
+<li>B) Bidirecional (se alguem colocar doc no Drive, aparece no MdFlow)</li>
+</ul>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Quando cria a pasta no Drive</div>
+<ul class="options">
+<li>A) Quando o lead e criado (antes mesmo de ter restricoes)</li>
+<li>B) Quando a auditoria retorna restricoes</li>
+<li>C) No primeiro upload de documento</li>
+<li>D) Na distribuicao (quando vira processo)</li>
+</ul>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Deletar no Drive</div>
+<p>Se um documento e excluido no MdFlow (soft delete), o que acontece no Drive?</p>
+<ul class="options">
+<li>A) Tambem exclui do Drive</li>
+<li>B) Fica no Drive (Drive nunca deleta, so adiciona)</li>
+<li>C) Move pra pasta "Lixeira" no Drive</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>8. CRM Pipeline — Colunas e Transicoes</h2>
+<p class="section-intro">As 5 colunas do Kanban e como o lead se move:</p>
+
+<div class="flow">
+<pre>
+  <span class="page">NOVOS</span>                Lead criado (via Julia ou manual)
+    |
+    v
+  <span class="page">EM ATENDIMENTO</span>       Julia esta conversando / coletando info
+    |
+    v
+  <span class="page">AG. DOCUMENTOS</span>       Esperando cliente enviar docs
+    |
+    v
+  <span class="page">AG. ASSINATURA</span>       Docs ok, esperando assinar contrato
+    |
+    v
+  <span class="page">TRIAGEM</span>              Checklist final → distribui → vira processo
+    |
+    └──▶ <span class="action">ARQUIVADOS</span>   (saida: sem restricoes, desistiu, etc)
+</pre>
+</div>
+
+<div class="confirm">
+<div class="confirm-title">✅ CONFIRMAR</div>
+<p>Sao essas 5 colunas? Na ordem certa? Falta alguma coluna? Alguma que nao deveria existir?</p>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Quem move o lead</div>
+<p>A Julia (IA) pode mover o lead entre colunas automaticamente? Ou so humano move?</p>
+<ul class="options">
+<li>A) Julia move automaticamente conforme progresso</li>
+<li>B) Julia sugere mas humano confirma</li>
+<li>C) So humano move</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>9. Contrato e Assinatura</h2>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Tipo de assinatura</div>
+<p>Como o cliente assina o contrato?</p>
+<ul class="options">
+<li>A) Assinatura digital (Clicksign, DocuSign, D4Sign, etc)</li>
+<li>B) PDF enviado no WhatsApp, cliente assina fisico e manda foto</li>
+<li>C) Link de assinatura eletronica proprio (implementar)</li>
+<li>D) Outro: ___</li>
+</ul>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Template do contrato</div>
+<p>O contrato e gerado automaticamente a partir de um template com dados do lead/restricoes? Ou e fixo?</p>
+<ul class="options">
+<li>A) Template dinamico (preenche nome, CPF, restricoes, valores)</li>
+<li>B) PDF fixo igual pra todo mundo</li>
+<li>C) Advogado edita manualmente antes de enviar</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>10. Bugs Que Eu Identifiquei</h2>
+<p class="section-intro">Dos seus audios, mapeei estes bugs. Confirme se entendi certo:</p>
+
+<div class="bug">
+<div class="bug-title">🐛 BUG 1 — Valores de restricoes errados</div>
+<p>A auditoria retorna valores que nao batem com a realidade. Problema no parsing do JSON do bureau? Conversao centavos errada? Ou o bureau manda errado mesmo?</p>
+</div>
+
+<div class="bug">
+<div class="bug-title">🐛 BUG 2 — Comprovante nao salva</div>
+<p>Upload de comprovante de restricao (Tier 2) nao persiste. O upload parece funcionar mas o doc some. E isso? So comprovante ou qualquer doc Tier 2?</p>
+</div>
+
+<div class="bug">
+<div class="bug-title">🐛 BUG 3 — Boa Vista inclui cartorios</div>
+<p>Restricoes de cartorios estao aparecendo como processaveis. Devem ser excluidas. Confirme: excluir tudo que tem "cartorio" / "tabelionato" / "registro" no nome?</p>
+</div>
+
+<div class="bug">
+<div class="bug-title">🐛 BUG 4 — Historico inconsistente</div>
+<p>A aba Historico no drawer mostra dados que nao batem com as restricoes reais. O que exatamente esta errado? Restricoes aparecem duplicadas? Valores diferentes? Restricoes excluidas ainda aparecem?</p>
+</div>
+
+<div class="confirm">
+<div class="confirm-title">✅ CONFIRMAR</div>
+<p>Esses sao todos os bugs? Tem mais algum que eu nao peguei? Me de mais detalhes de cada um se possivel.</p>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>11. Componentes Compartilhados</h2>
+<p class="section-intro">Esses componentes precisam funcionar em TODAS as paginas (MdZap, CRM, Distribuicao, Clientes, Processos):</p>
+
+<table>
+<thead><tr><th>Componente</th><th>O que faz</th><th>Onde aparece</th></tr></thead>
+<tbody>
+<tr><td><code>DocumentoItem</code></td><td>Card de um doc: preview, download, rename, delete</td><td>Todas as abas de docs</td></tr>
+<tr><td><code>DocumentosUploadCentral</code></td><td>Area de upload com drag-and-drop</td><td>CRM, MdZap, Clientes</td></tr>
+<tr><td><code>RestricaoPastaCard</code></td><td>Card de restricao que abre e mostra docs Tier 2</td><td>CRM, MdZap, Distribuicao</td></tr>
+<tr><td><code>TabDados</code></td><td>Formulario de dados do lead/cliente</td><td>Todos os drawers/panels</td></tr>
+<tr><td><code>TabRestricoes</code></td><td>Lista de restricoes com badges</td><td>Todos os drawers/panels</td></tr>
+<tr><td><code>TabDocumentosLead</code></td><td>Docs do lead: iniciais + por restricao</td><td>CRM, MdZap, Distribuicao</td></tr>
+<tr><td><code>BotaoAuditoria</code></td><td>Botao que dispara auditoria</td><td>CRM, MdZap</td></tr>
+</tbody>
+</table>
+
+<div class="confirm">
+<div class="confirm-title">✅ CONFIRMAR</div>
+<p>Esses sao os componentes que precisam ser shared. Faltou algum? Tem algum que NAO deve ser compartilhado?</p>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>12. Ordem de Execucao — Minha Proposta</h2>
+<p class="section-intro">Depois que tudo estiver aprovado, eu sugiro essa ordem de implementacao:</p>
+
+<div class="card card-red">
+<h3><span class="num">1</span> Corrigir os 4 bugs</h3>
+<p>Antes de qualquer feature nova. Se os bugs estiverem no caminho do fluxo, tudo que construir em cima vai herdar o problema.</p>
+</div>
+
+<div class="card card-accent">
+<h3><span class="num">2</span> Extrair componentes shared</h3>
+<p>Tirar os 7 componentes de dentro do CRM drawer e colocar em <code>shared/</code>. Garantir que o CRM continua funcionando identico.</p>
+</div>
+
+<div class="card card-blue">
+<h3><span class="num">3</span> Lead Panel do MdZap</h3>
+<p>Montar o panel direito com as 4 abas, usando os componentes shared. Testar tudo no MdZap.</p>
+</div>
+
+<div class="card card-green">
+<h3><span class="num">4</span> SDR Julia (IA)</h3>
+<p>Implementar o fluxo automatico: CPF → lead → auditoria → apresentar → docs → qualificar.</p>
+</div>
+
+<div class="card card-yellow">
+<h3><span class="num">5</span> Google Drive</h3>
+<p>Integracao Drive em todos os contextos de documentos.</p>
+</div>
+
+<div class="card card-green">
+<h3><span class="num">6</span> Teste end-to-end</h3>
+<p>Fluxo completo MdZap → CRM → Distribuicao → Processos com dados reais.</p>
+</div>
+
+<div class="decision">
+<div class="decision-title">❓ DECIDIR — Ordem</div>
+<p>Concorda com essa ordem? Quer mudar alguma prioridade? Tem algo que deveria vir antes?</p>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>13. Resumo — O Que Eu Preciso de Voce</h2>
+
+<div class="card card-yellow" style="font-size:.95rem">
+<h3 style="color:var(--yellow)">Antes de comecar a proxima conversa, revise:</h3>
+
+<h4 style="color:var(--green); margin-top:1rem">✅ Confirmar (sim/nao)</h4>
+<ul>
+<li>Fluxo geral (secao 1) esta certo?</li>
+<li>Os 9 passos da Julia (secao 2) estao certos?</li>
+<li>Auditoria so Boa Vista? (secao 4)</li>
+<li>4 abas do lead panel? (secao 5)</li>
+<li>3 tiers de documentos? (secao 6)</li>
+<li>5 colunas do pipeline CRM? (secao 8)</li>
+<li>4 bugs identificados? (secao 10)</li>
+<li>7 componentes shared? (secao 11)</li>
+<li>Estrutura de pastas Drive? (secao 7)</li>
+<li>Ordem de execucao? (secao 12)</li>
+</ul>
+
+<h4 style="color:var(--yellow); margin-top:1rem">❓ Decidir (escolher opcao)</h4>
+<ul>
+<li>Fluxo negativo da Julia (sem restricoes) — A/B/C/D/E</li>
+<li>Ate onde Julia vai sozinha — A/B/C</li>
+<li>SDR 2 e SDR 3 — A/B/C</li>
+<li>Numero WhatsApp — A/B/C</li>
+<li>Restricoes manuais — A/B/C</li>
+<li>Botao auditoria no panel MdZap — A/B</li>
+<li>Docs do WhatsApp — A/B/C</li>
+<li>Conversao lead→cliente docs — A/B/C</li>
+<li>Direcao sync Drive — A/B</li>
+<li>Quando cria pasta Drive — A/B/C/D</li>
+<li>Deletar no Drive — A/B/C</li>
+<li>Quem move lead no pipeline — A/B/C</li>
+<li>Tipo de assinatura — A/B/C/D</li>
+<li>Template contrato — A/B/C</li>
+<li>Ordem de execucao — ok ou mudar</li>
+</ul>
+
+<h4 style="color:var(--red); margin-top:1rem">🐛 Detalhar (mais info)</h4>
+<ul>
+<li>Bug valores restricoes — mais detalhes do que esta errado</li>
+<li>Bug comprovante — so Tier 2 ou qualquer doc?</li>
+<li>Bug cartorios — criterio exato pra excluir</li>
+<li>Bug historico — o que exatamente esta inconsistente</li>
+</ul>
+</div>
+
+<hr class="divider">
+
+<div class="card" style="text-align:center; background:var(--surface)">
+<p style="color:var(--muted); font-size:.9rem">Na proxima conversa, comece com:</p>
+<p style="color:var(--green); font-size:1rem; margin-top:.5rem"><code>Leia ~/beto-reports/atendimento-completo/CONTINUIDADE.md</code></p>
+<p style="color:var(--muted); font-size:.85rem; margin-top:.5rem">E depois me passe suas respostas/correcoes desse briefing.</p>
+</div>
+
+<footer>
+Briefing Christian v1 · Atendimento Completo · MdFlow · 06/04/2026
+<br>Gerado pelo Claude Code para revisao do CTO
+</footer>
+
+</div>
+</body>
+</html>

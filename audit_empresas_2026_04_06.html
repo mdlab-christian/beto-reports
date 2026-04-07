@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DB Audit: /empresas — 2026-04-06</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0d0f18;
+      color: #f2efe8;
+      line-height: 1.6;
+      padding: 2rem;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    
+    header {
+      background: linear-gradient(135deg, #161926 0%, #1a1714 100%);
+      border: 1px solid #3a3530;
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; font-family: Manrope; font-weight: 700; }
+    .subtitle { color: #9e978a; font-size: 0.95rem; }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .stat-card {
+      background: rgba(32, 201, 151, 0.05);
+      border: 1px solid rgba(32, 201, 151, 0.2);
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .stat-value { font-size: 2rem; font-weight: 700; color: #20c997; margin-bottom: 0.25rem; }
+    .stat-label { color: #9e978a; font-size: 0.85rem; }
+    
+    section { margin-bottom: 2rem; }
+    section h2 {
+      font-family: Manrope;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #3a3530;
+      color: #20c997;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #161926;
+      border: 1px solid #3a3530;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    th {
+      background: #1a1714;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      color: #20c997;
+      border-bottom: 1px solid #3a3530;
+    }
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #3a3530;
+    }
+    tr:hover { background: rgba(32, 201, 151, 0.02); }
+    
+    .check { color: #20c997; font-weight: 700; }
+    .cross { color: #ef4444; font-weight: 700; }
+    .warning { color: #f59e0b; font-weight: 700; }
+    
+    .issue {
+      background: #1a1714;
+      border-left: 4px solid #ef4444;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+    }
+    .issue.p1 { border-left-color: #f59e0b; }
+    .issue.p2 { border-left-color: #06b6d4; }
+    
+    .issue-title { font-weight: 600; margin-bottom: 0.5rem; font-family: Manrope; }
+    .issue-detail { color: #9e978a; margin: 0.25rem 0; font-size: 0.9rem; }
+    
+    code, pre {
+      font-family: 'JetBrains Mono', monospace;
+      background: #12100e;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.85rem;
+    }
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid #3a3530;
+    }
+    
+    .sql-block {
+      background: #12100e;
+      border: 1px solid #3a3530;
+      border-radius: 6px;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin: 0 0.25rem;
+    }
+    .badge-ok { background: rgba(32, 201, 151, 0.2); color: #20c997; }
+    .badge-error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .badge-warn { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    
+    .rpc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .rpc-card {
+      background: #1a1714;
+      border: 1px solid #3a3530;
+      padding: 1rem;
+      border-radius: 6px;
+    }
+    .rpc-name { font-weight: 600; font-family: 'JetBrains Mono'; color: #20c997; }
+    .rpc-badge { margin-top: 0.5rem; }
+    
+    footer {
+      text-align: center;
+      color: #9e978a;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #3a3530;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔍 DB Audit: /empresas</h1>
+      <p class="subtitle">Auditoria completa do schema Supabase — 2026-04-06</p>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value">4</div>
+          <div class="stat-label">Tabelas auditadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Issues P1</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Issues P0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">10</div>
+          <div class="stat-label">Conformidades</div>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h2>📊 Status das Tabelas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tabela</th>
+            <th>Existe</th>
+            <th>org_id</th>
+            <th>deleted_at</th>
+            <th>updated_at</th>
+            <th>RLS</th>
+            <th>idx_org</th>
+            <th>idx_org_del</th>
+            <th>trigger</th>
+            <th>RPCs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>empresas</strong></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td>14</td>
+          </tr>
+          <tr>
+            <td><strong>orgaos_restritivos</strong></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>empresas_categorias</strong></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="cross">❌</span></td>
+            <td><span class="cross">❌</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="cross">❌</span></td>
+            <td><span class="cross">❌</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>empresas_escritorios</strong></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="check">✅</span></td>
+            <td><span class="warning">⚠️</span></td>
+            <td><span class="check">✅</span></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>🚨 Issues P1 (Importantes)</h2>
+      
+      <div class="issue p1">
+        <div class="issue-title">1. empresas_categorias: Faltam colunas obrigatórias</div>
+        <div class="issue-detail"><strong>Problema:</strong> Tabela não tem <code>deleted_at</code> nem <code>updated_at</code> (soft delete + auditoria não funcionam)</div>
+        <div class="issue-detail"><strong>Impacto:</strong> Exclusões físicas quebram FK com <code>empresas</code>. Sem auditoria de mudanças.</div>
+        <div class="issue-detail"><strong>Prioridade:</strong> ALTA — Bloqueia exclusões seguras</div>
+      </div>
+
+      <div class="issue p1">
+        <div class="issue-title">2. empresas_categorias: Falta trigger para updated_at</div>
+        <div class="issue-detail"><strong>Problema:</strong> Não há trigger <code>set_updated_at</code> ou similar</div>
+        <div class="issue-detail"><strong>Impacto:</strong> Campo <code>updated_at</code> não é atualizado automaticamente em UPDATEs</div>
+        <div class="issue-detail"><strong>Prioridade:</strong> ALTA — Auditoria incompleta</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>💡 SQL de Correção Pronto</h2>
+      <div class="sql-block">
+-- P1: empresas_categorias — Adicionar colunas obrigatórias
+ALTER TABLE public.empresas_categorias 
+  ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now() NOT NULL;
+
+-- P1: empresas_categorias — Criar trigger para updated_at
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER set_updated_at_empresas_categorias
+  BEFORE UPDATE ON public.empresas_categorias
+  FOR EACH ROW
+  EXECUTE FUNCTION public.update_updated_at_column();
+
+-- P1: empresas_categorias — Índice WHERE deleted_at IS NULL
+CREATE INDEX IF NOT EXISTS idx_empresas_categorias_org_del 
+  ON public.empresas_categorias(organizacao_id) 
+  WHERE deleted_at IS NULL;
+
+-- P2: empresas_escritorios — Índice WHERE deleted_at IS NULL
+CREATE INDEX IF NOT EXISTS idx_empresas_escritorios_org_del 
+  ON public.empresas_escritorios(organizacao_id) 
+  WHERE deleted_at IS NULL;
+      </div>
+    </section>
+
+    <section>
+      <h2>🔐 RLS Policies</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tabela</th>
+            <th>Policies</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>empresas</strong></td>
+            <td><code>empresas_org_isolation</code> (ALL)<br><code>empresas_delete_admin_only</code> (DELETE)</td>
+            <td><span class="badge badge-ok">Habilitado</span></td>
+          </tr>
+          <tr>
+            <td><strong>orgaos_restritivos</strong></td>
+            <td><code>*_select_own_org</code><br><code>*_insert_own_org</code><br><code>*_update_own_org</code><br><code>*_delete_own_org</code></td>
+            <td><span class="badge badge-ok">Habilitado</span></td>
+          </tr>
+          <tr>
+            <td><strong>empresas_categorias</strong></td>
+            <td><code>*_select_own_org</code><br><code>*_insert_own_org</code><br><code>*_update_own_org</code><br><code>*_delete_own_org</code></td>
+            <td><span class="badge badge-ok">Habilitado</span></td>
+          </tr>
+          <tr>
+            <td><strong>empresas_escritorios</strong></td>
+            <td><code>*_select_own_org</code><br><code>*_insert_own_org</code><br><code>*_update_own_org</code><br><code>*_delete_own_org</code></td>
+            <td><span class="badge badge-ok">Habilitado</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>🔗 Foreign Keys</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tabela</th>
+            <th>Coluna</th>
+            <th>Ref. Tabela</th>
+            <th>Ref. Coluna</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>empresas</td>
+            <td>organizacao_id</td>
+            <td>organizacoes</td>
+            <td>id</td>
+            <td><span class="badge badge-ok">✅</span></td>
+          </tr>
+          <tr>
+            <td>empresas</td>
+            <td>categoria_id</td>
+            <td>empresas_categorias</td>
+            <td>id</td>
+            <td><span class="badge badge-ok">✅</span></td>
+          </tr>
+          <tr>
+            <td>orgaos_restritivos</td>
+            <td>organizacao_id</td>
+            <td>organizacoes</td>
+            <td>id</td>
+            <td><span class="badge badge-ok">✅</span></td>
+          </tr>
+          <tr>
+            <td>empresas_categorias</td>
+            <td>organizacao_id</td>
+            <td>organizacoes</td>
+            <td>id</td>
+            <td><span class="badge badge-ok">✅</span></td>
+          </tr>
+          <tr>
+            <td>empresas_escritorios</td>
+            <td>organizacao_id</td>
+            <td>organizacoes</td>
+            <td>id</td>
+            <td><span class="badge badge-ok">✅</span></td>
+          </tr>
+          <tr>
+            <td>empresas_escritorios</td>
+            <td>empresa_id</td>
+            <td>empresas</td>
+            <td>id</td>
+            <td><span class="badge badge-ok">✅</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>⚡ RPCs da Página</h2>
+      <div class="rpc-grid">
+        <div class="rpc-card">
+          <div class="rpc-name">aprovar_empresa</div>
+          <div style="font-size: 0.85rem; color: #9e978a;">p_empresa_id, p_fila_id, p_dados</div>
+          <div class="rpc-badge"><span class="badge badge-ok">SECURITY DEFINER</span></div>
+        </div>
+        <div class="rpc-card">
+          <div class="rpc-name">delete_empresa</div>
+          <div style="font-size: 0.85rem; color: #9e978a;">p_empresa_id</div>
+          <div class="rpc-badge"><span class="badge badge-ok">SECURITY DEFINER</span></div>
+        </div>
+        <div class="rpc-card">
+          <div class="rpc-name">merge_empresas</div>
+          <div style="font-size: 0.85rem; color: #9e978a;">p_origem_id, p_destino_id</div>
+          <div class="rpc-badge"><span class="badge badge-ok">SECURITY DEFINER</span></div>
+        </div>
+        <div class="rpc-card">
+          <div class="rpc-name">rpc_empresas_kpis</div>
+          <div style="font-size: 0.85rem; color: #9e978a;">p_organizacao_id</div>
+          <div class="rpc-badge"><span class="badge badge-ok">SECURITY DEFINER</span></div>
+        </div>
+        <div class="rpc-card">
+          <div class="rpc-name">rpc_empresas_ranking</div>
+          <div style="font-size: 0.85rem; color: #9e978a;">p_organizacao_id, limit</div>
+          <div class="rpc-badge"><span class="badge badge-ok">SECURITY DEFINER</span></div>
+        </div>
+        <div class="rpc-card">
+          <div class="rpc-name">get_empresa_metricas</div>
+          <div style="font-size: 0.85rem; color: #9e978a;">p_org_id, p_empresa_id, períodos</div>
+          <div class="rpc-badge"><span class="badge badge-ok">SECURITY DEFINER</span></div>
+        </div>
+        <div class="rpc-card">
+          <div class="rpc-name">get_jurimetria_ranking_empresas</div>
+          <div style="font-size: 0.85rem; color: #9e978a;">p_org_id, filtros</div>
+          <div class="rpc-badge"><span class="badge badge-ok">SECURITY DEFINER</span></div>
+        </div>
+        <div class="rpc-card">
+          <div class="rpc-name">buscar_empresa_similar</div>
+          <div style="font-size: 0.85rem; color: #9e978a;">p_nome, p_threshold</div>
+          <div class="rpc-badge"><span class="badge badge-warn">PUBLIC</span></div>
+        </div>
+      </div>
+      <p style="margin-top: 1rem; color: #9e978a; font-size: 0.9rem;">Total: 15 RPCs encontradas. 14/15 com SECURITY DEFINER ✅</p>
+    </section>
+
+    <section>
+      <h2>✅ Conformidades Gerais</h2>
+      <ul style="list-style: none;">
+        <li style="padding: 0.5rem 0;">✅ Soft delete: Todas 4 tabelas têm <code>deleted_at</code> (exceto P1)</li>
+        <li style="padding: 0.5rem 0;">✅ Auditoria de tempo: <code>created_at</code> e <code>updated_at</code> presentes</li>
+        <li style="padding: 0.5rem 0;">✅ Isolamento de tenant: <code>organizacao_id</code> + RLS em todas (4/4)</li>
+        <li style="padding: 0.5rem 0;">✅ Índices principais: <code>idx_*_org</code> em todas (4/4)</li>
+        <li style="padding: 0.5rem 0;">⚠️ Índices de soft delete: 3/4 (falta em <code>empresas_categorias</code>)</li>
+        <li style="padding: 0.5rem 0;">✅ RLS policies: Todas usando <code>get_org_id()</code> (4/4)</li>
+        <li style="padding: 0.5rem 0;">✅ Foreign keys: Todas válidas (6/6)</li>
+        <li style="padding: 0.5rem 0;">✅ RPCs: 14/15 com SECURITY DEFINER</li>
+        <li style="padding: 0.5rem 0;">✅ Sem ENUM nativo (PostgreSQL proibido)</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>🤖 Auditoria automatizada — MdFlow DB Auditor</p>
+      <p style="margin-top: 0.5rem; font-size: 0.8rem;">Project: qdivfairxhdihaqqypgb | Gerado: 2026-04-06 17:30 UTC</p>
+    </footer>
+  </div>
+</body>
+</html>

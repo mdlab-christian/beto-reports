@@ -1,0 +1,311 @@
+{
+  "metadata": {
+    "auditoria_data": "2026-04-06",
+    "org_teste": "55a0c7ba-1a23-4ae1-b69b-a13811324735",
+    "escopo": ["leads", "processos", "clientes", "icp_reports", "mdzap_*"],
+    "objetivo": "Mapear campos disponíveis para agente ICP Telemetria"
+  },
+  
+  "tabelas_auditadas": {
+    "leads": {
+      "campos_totais": 64,
+      "status": "9.1k de 44 registros com dados demográficos esparsos",
+      "campos_demograficos": {
+        "data_nascimento": {
+          "tipo": "DATE",
+          "preenchimento_pct": 9,
+          "count": "4 de 44",
+          "severidade": "P1"
+        },
+        "profissao": {
+          "tipo": "TEXT",
+          "preenchimento_pct": 2,
+          "count": "1 de 44",
+          "severidade": "P1"
+        },
+        "endereco_estado": {
+          "tipo": "TEXT",
+          "preenchimento_pct": 11,
+          "count": "5 de 44",
+          "severidade": "P1"
+        },
+        "endereco_cidade": {
+          "tipo": "TEXT",
+          "preenchimento_pct": 11,
+          "count": "~5 de 44",
+          "severidade": "P1"
+        }
+      },
+      "campos_valor": {
+        "valor_estimado": {
+          "tipo": "BIGINT",
+          "preenchimento_pct": 0,
+          "status": "SEMPRE NULL",
+          "severidade": "P0"
+        },
+        "icp_score": {
+          "tipo": "SMALLINT",
+          "preenchimento_pct": 100,
+          "status": "PRESENTE, pré-calculado",
+          "severidade": "OK"
+        }
+      },
+      "campos_engajamento": ["ultimo_contato", "last_inbound_at", "last_outbound_at", "wa_last_message_at", "tentativas"],
+      "diagnostico": "Dados demográficos MUITO ESPARSOS. icp_score já preenchido em 100%"
+    },
+    
+    "clientes": {
+      "campos_totais": 59,
+      "status": "3.7k registros com excelente cobertura demográfica",
+      "campos_demograficos": {
+        "data_nascimento": {
+          "tipo": "DATE",
+          "preenchimento_pct": 92,
+          "count": "3424 de 3725",
+          "severidade": "OK"
+        },
+        "profissao": {
+          "tipo": "TEXT",
+          "preenchimento_pct": 45,
+          "count": "1672 de 3725",
+          "severidade": "OK"
+        },
+        "endereco_uf": {
+          "tipo": "TEXT",
+          "preenchimento_pct": 52,
+          "count": "1929 de 3725",
+          "severidade": "OK"
+        },
+        "endereco_cidade": {
+          "tipo": "TEXT",
+          "preenchimento_pct": 52,
+          "count": "~1929 de 3725",
+          "severidade": "OK"
+        },
+        "renda_mensal": {
+          "tipo": "NUMERIC",
+          "preenchimento_pct": 0,
+          "status": "SEMPRE NULL",
+          "severidade": "P1"
+        }
+      },
+      "campos_valor": {
+        "valor_total_estimado_recuperavel": {
+          "tipo": "NUMERIC",
+          "preenchimento_pct": 0,
+          "status": "SEMPRE NULL",
+          "severidade": "P1"
+        },
+        "ia_score_portfolio": {
+          "tipo": "SMALLINT",
+          "preenchimento_pct": "desconhecido",
+          "severidade": "P2"
+        }
+      },
+      "diagnostico": "Dados demográficos EXCELENTES. Sem renda, sem valor estimado recuperável"
+    },
+    
+    "processos": {
+      "campos_totais": 134,
+      "status": "14.3k registros com boa cobertura de valores e fase",
+      "campos_valor": {
+        "valor_causa": {
+          "tipo": "NUMERIC",
+          "preenchimento_pct": 71,
+          "count": "10224 de 14386",
+          "severidade": "OK"
+        },
+        "valor_condenacao": {
+          "tipo": "NUMERIC",
+          "preenchimento_pct": 0,
+          "status": "SEMPRE NULL",
+          "severidade": "P1"
+        },
+        "valor_estimado_recuperavel": {
+          "tipo": "NUMERIC",
+          "preenchimento_pct": "desconhecido",
+          "severidade": "P1"
+        }
+      },
+      "campos_fase": {
+        "fase_processual": {
+          "tipo": "TEXT",
+          "preenchimento_pct": 93,
+          "count": "13315 de 14386",
+          "severidade": "OK"
+        },
+        "etapa_distribuicao": {
+          "tipo": "TEXT",
+          "preenchimento_pct": 100,
+          "status": "OBRIGATÓRIO",
+          "severidade": "OK"
+        }
+      },
+      "campos_acordo": {
+        "acordo_candidato": {
+          "tipo": "BOOLEAN",
+          "severidade": "OK"
+        },
+        "acordo_propensao_pct": {
+          "tipo": "SMALLINT",
+          "severidade": "OK"
+        }
+      },
+      "diagnostico": "Excelente. valor_causa em 71%, fase em 93%, oportunidades de acordo presentes"
+    },
+    
+    "icp_reports": {
+      "campos_totais": 9,
+      "status": "EXISTE mas vazia (0 registros para Midas)",
+      "estrutura": {
+        "id": "UUID",
+        "organizacao_id": "UUID",
+        "data_ref": "DATE",
+        "periodo_inicio": "DATE",
+        "periodo_fim": "DATE",
+        "payload": "JSONB",
+        "total_conversoes": "INTEGER",
+        "source": "TEXT",
+        "created_at": "TIMESTAMPTZ"
+      },
+      "diagnostico": "Tabela pronta para receber dados, mas nunca foi populada"
+    }
+  },
+  
+  "tabelas_mdzap": [
+    "mdzap_ai_modules",
+    "mdzap_audio_messages",
+    "mdzap_conversas_timeline",
+    "mdzap_julia_lab_sessoes",
+    "mdzap_julia_prompts",
+    "mdzap_lead_memory",
+    "mdzap_message_queue",
+    "mdzap_stage_map",
+    "mdzap_user_map"
+  ],
+  "relevancia_mdzap": "mdzap_lead_memory pode armazenar contexto demográfico extraído via IA",
+  
+  "fatores_icp_disponiveis": {
+    "forte": [
+      {
+        "fator": "idade_anos",
+        "fonte": "clientes.data_nascimento",
+        "cobertura_pct": 92,
+        "tipo": "calculado"
+      },
+      {
+        "fator": "profissao",
+        "fonte": "clientes.profissao",
+        "cobertura_pct": 45,
+        "tipo": "direto"
+      },
+      {
+        "fator": "estado_uf",
+        "fonte": "clientes.endereco_uf",
+        "cobertura_pct": 52,
+        "tipo": "direto"
+      },
+      {
+        "fator": "valor_causa",
+        "fonte": "processos.valor_causa",
+        "cobertura_pct": 71,
+        "tipo": "direto"
+      },
+      {
+        "fator": "fase_processual",
+        "fonte": "processos.fase_processual",
+        "cobertura_pct": 93,
+        "tipo": "direto"
+      },
+      {
+        "fator": "icp_score_base",
+        "fonte": "leads.icp_score",
+        "cobertura_pct": 100,
+        "tipo": "pre-calculado"
+      }
+    ],
+    "fraco": [
+      {
+        "fator": "renda_mensal",
+        "fonte": "clientes.renda_mensal",
+        "cobertura_pct": 0,
+        "motivo": "SEMPRE NULL"
+      },
+      {
+        "fator": "valor_estimado_recuperavel",
+        "fonte": "processos.valor_estimado_recuperavel ou clientes.valor_total_estimado_recuperavel",
+        "cobertura_pct": 0,
+        "motivo": "Nunca preenchido"
+      },
+      {
+        "fator": "dados_demograficos_leads",
+        "fonte": "leads.data_nascimento, profissao, estado",
+        "cobertura_pct": 9,
+        "motivo": "Leads recebem pouca qualificação demográfica"
+      }
+    ]
+  },
+  
+  "gaps_criticos": [
+    {
+      "gap": "Sem renda do cliente",
+      "campo": "clientes.renda_mensal",
+      "severidade": "P1",
+      "impacto": "Fator-chave de ICP desaparecido",
+      "solucao": "Enriquecer dados via Advbox ou OlivIA ao onboard"
+    },
+    {
+      "gap": "Sem valor estimado recuperável",
+      "campo": "clientes.valor_total_estimado_recuperavel, processos.valor_estimado_recuperavel",
+      "severidade": "P1",
+      "impacto": "Impossível calcular ROI do cliente",
+      "solucao": "Agregar valores de processos por cliente ou calcular em RPC"
+    },
+    {
+      "gap": "Dados demográficos esparsos em leads",
+      "campo": "leads.data_nascimento, profissao, estado",
+      "severidade": "P1",
+      "impacto": "ICP Telemetria opera com apenas 9-11% dos dados",
+      "solucao": "Integrar OlivIA na qualificação de leads, enriquecer com API externa (Boa Vista, etc)"
+    },
+    {
+      "gap": "Banco/PIX não auditados",
+      "campo": "clientes.banco, pix",
+      "severidade": "P2",
+      "impacto": "Desconhecido preenchimento",
+      "solucao": "Audit manual ou query específica"
+    }
+  ],
+  
+  "recomendacoes": {
+    "tabela_sugerida": "icp_telemetria_snapshots",
+    "proposito": "Snapshot diário/semanal de métricas ICP agregadas por período",
+    "campos_chave": [
+      "id (UUID PK)",
+      "organizacao_id (FK)",
+      "data_snapshot (DATE)",
+      "lead_id, cliente_id, processo_id (references)",
+      "idade_anos (calculado from data_nascimento)",
+      "profissao, estado_uf, sexo, estado_civil",
+      "valor_causa, valor_estimado_recuperavel, renda_mensal",
+      "fase_processual, tempo_dias_caso",
+      "agreement_propensity_pct, ia_success_chance_pct",
+      "icp_score (composite)",
+      "icp_factors (JSONB com detalhe por fator)",
+      "created_at, updated_at, deleted_at"
+    ],
+    "rpc_sugerida": "calcular_icp_agregado(org_id, periodo_dias=90)",
+    "retorna": "tabela com fator, valor_medio, count_nao_nulo, percentual_preenchimento",
+    "frequencia_snapshot": "diária via n8n cron",
+    "integracao_ia": "OlivIA para enriquecer campos faltantes (renda, profissao em leads)"
+  },
+  
+  "proximos_passos": [
+    "Especificação formal (SDD) da tabela icp_telemetria_snapshots",
+    "Decisão: calcular valor_estimado_recuperavel como SUM(valor_causa) ou campo próprio?",
+    "Integração OlivIA para enriquecimento de dados faltantes",
+    "n8n workflow para popular snapshots diariamente",
+    "Validação de integridade dos dados demográficos em clientes (audit de nulls)",
+    "Criação de dashboard de ICP Telemetria baseado em snapshots agregados"
+  ]
+}

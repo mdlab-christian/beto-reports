@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDZap — Relatório Técnico: Sistema de Envio e Recebimento de Mensagens</title>
+<style>
+:root { --bg: #0f172a; --surface: #1e293b; --border: #334155; --text: #e2e8f0; --muted: #94a3b8; --cyan: #22d3ee; --code-bg: #0d1117; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2rem; color: white; margin-bottom: 8px; }
+h2 { font-size: 1.5rem; color: var(--cyan); margin: 48px 0 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+h3 { font-size: 1.1rem; color: #67e8f9; margin: 28px 0 12px; }
+h4 { color: #a5b4fc; margin: 16px 0 8px; }
+p, li { color: var(--text); margin-bottom: 8px; }
+ul, ol { padding-left: 24px; }
+code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; color: #7dd3fc; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; margin: 12px 0 20px; font-size: 0.82em; line-height: 1.5; color: #c9d1d9; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+.badge-file { background: #164e63; color: #67e8f9; }
+.badge-component { background: #312e81; color: #a5b4fc; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; }
+th, td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; font-size: 0.9em; }
+th { background: var(--surface); color: var(--cyan); }
+tr:nth-child(even) { background: rgba(30,41,59,0.5); }
+.diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; font-family: monospace; font-size: 0.8em; white-space: pre; overflow-x: auto; margin: 16px 0; color: #7dd3fc; }
+.subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 32px; }
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 24px 0; }
+.toc a { color: var(--cyan); text-decoration: none; display: block; padding: 4px 0; }
+.toc a:hover { text-decoration: underline; }
+.section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>MDZap — Sistema de Envio e Recebimento de Mensagens</h1>
+<p class="subtitle">Relatório técnico completo para replicação em outro projeto. Gerado em 2026-04-06.</p>
+
+<!-- TOC -->
+<div class="toc">
+<strong style="color:white">Sumário</strong>
+<ol>
+<li><a href="#arch">Arquitetura Geral</a></li>
+<li><a href="#types">Tipagem e Configurações (MEDIA_CONFIG, PendingFile)</a></li>
+<li><a href="#composer">Compositor — Layout e Estados</a></li>
+<li><a href="#text">Envio de Texto</a></li>
+<li><a href="#templates">Templates (atalho /)</a></li>
+<li><a href="#emoji">Emoji Picker</a></li>
+<li><a href="#ai-composer">AI Composer</a></li>
+<li><a href="#attachment-menu">Menu de Anexos (📎)</a></li>
+<li><a href="#single-attach">Fluxo de Arquivo Único (AttachmentPreview modal)</a></li>
+<li><a href="#multi-attach">Fluxo Multi-Arquivo (MultiAttachmentPreview inline)</a></li>
+<li><a href="#drag-drop">Drag &amp; Drop</a></li>
+<li><a href="#paste">Paste de Imagem (Ctrl+V)</a></li>
+<li><a href="#audio-rec">Gravação de Áudio (AudioRecorder)</a></li>
+<li><a href="#audio-fallback">Áudio Fallback (file input)</a></li>
+<li><a href="#upload">Upload para Storage</a></li>
+<li><a href="#api-send">Envio via API (sendWhatsappMessage)</a></li>
+<li><a href="#render-msg">Renderização de Mensagens Recebidas/Enviadas</a></li>
+<li><a href="#image-card">ImageCard — Thumbnail + Lightbox + Download</a></li>
+<li><a href="#doc-card">DocumentCard — PDF Thumbnail + Abrir/Baixar</a></li>
+<li><a href="#audio-player">Audio Player Customizado</a></li>
+<li><a href="#video">Vídeo Player</a></li>
+<li><a href="#signed-urls">Signed URLs (useSignedMediaUrl)</a></li>
+<li><a href="#drafts">Draft por Conversa (LRU 20)</a></li>
+<li><a href="#keyboard">Atalhos de Teclado</a></li>
+<li><a href="#status">Status de Mensagem (sent/delivered/read)</a></li>
+</ol>
+</div>
+
+<!-- 1. ARCH -->
+<h2 id="arch">1. Arquitetura Geral</h2>
+<div class="diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                        ChatInterface.tsx (2730 linhas)          │
+│  Orquestrador central — gerencia estado, handlers, layout      │
+├────────────┬─────────────────────────────┬──────────────────────┤
+│ Left Panel │      Center (Chat Area)     │   Right Panel (CRM)  │
+│ w-80/w-96  │      flex-1                 │   w-80 (toggle)      │
+│            │                             │                      │
+│ Conv List  │ Header (status, assign)     │ Lead Info             │
+│ Filters    │ SearchBar (Ctrl+F)          │ Memory Tab            │
+│ Swipeable  │ Messages (.map render)      │ Sentiment Tab         │
+│ Bulk       │ SmartReplySuggestions       │ Documents Section     │
+│            │ ─── Compositor ───          │ History Panel         │
+│            │ [😊][📎][🤖] [textarea] [▶/🎤]│ Notes                │
+│            │ MultiAttachmentPreview      │                      │
+│            │ AudioRecorder (modo gravação)│                      │
+└────────────┴─────────────────────────────┴──────────────────────┘
+</div>
+
+<h3>Arquivos Envolvidos</h3>
+<table>
+<tr><th>Arquivo</th><th>Propósito</th></tr>
+<tr><td><code>src/components/ChatInterface.tsx</code></td><td>Orquestrador: estado, handlers, layout 3-colunas, renderMessageContent</td></tr>
+<tr><td><code>src/components/chat/AttachmentMenu.tsx</code></td><td>Popover com 4 opções (Imagem, Vídeo, Documento, Áudio)</td></tr>
+<tr><td><code>src/components/chat/AttachmentPreview.tsx</code></td><td>Modal fullscreen para arquivo único (preview + caption + enviar)</td></tr>
+<tr><td><code>src/components/chat/MultiAttachmentPreview.tsx</code></td><td>Tray inline horizontal para múltiplos arquivos</td></tr>
+<tr><td><code>src/components/chat/AudioRecorder.tsx</code></td><td>Gravação de áudio via MediaRecorder + preview + enviar</td></tr>
+<tr><td><code>src/components/chat/ImageCard.tsx</code></td><td>Thumbnail + lightbox + download imagem + download PDF</td></tr>
+<tr><td><code>src/components/chat/DocumentCard.tsx</code></td><td>Card de documento com PDF thumbnail + abrir/baixar</td></tr>
+<tr><td><code>src/components/chat/PdfThumbnail.tsx</code></td><td>Miniatura da 1ª página de PDFs via pdfjs-dist</td></tr>
+<tr><td><code>src/components/chat/useSignedMediaUrl.ts</code></td><td>Hook para gerar signed URLs on-demand com cache 4min</td></tr>
+<tr><td><code>src/components/chat/EmojiPickerMenu.tsx</code></td><td>Popover de emojis</td></tr>
+<tr><td><code>src/components/chat/AIComposerMenu.tsx</code></td><td>Menu de ações IA (melhorar, resumir, traduzir)</td></tr>
+<tr><td><code>src/lib/download.ts</code></td><td>Helpers: downloadBlob() e downloadUrl()</td></tr>
+<tr><td><code>src/types.ts</code></td><td>MEDIA_CONFIG, PendingFile, MediaType, MessageType</td></tr>
+<tr><td><code>src/services/api.ts</code></td><td>api.sendWhatsappMessage() — chama Edge Function</td></tr>
+</table>
+
+<!-- 2. TYPES -->
+<h2 id="types">2. Tipagem e Configurações</h2>
+
+<h3>MEDIA_CONFIG</h3>
+<pre>
+export const MEDIA_CONFIG = {
+  audio: {
+    mimes: new Set(['audio/aac', 'audio/mp4', 'audio/mpeg', 'audio/amr', 'audio/ogg', 'audio/opus']),
+    maxSize: 16 * 1024 * 1024,  // 16MB
+    label: 'Áudio'
+  },
+  image: {
+    mimes: new Set(['image/jpeg', 'image/png']),
+    maxSize: 5 * 1024 * 1024,   // 5MB
+    label: 'Imagem'
+  },
+  video: {
+    mimes: new Set(['video/mp4', 'video/3gpp']),
+    maxSize: 16 * 1024 * 1024,  // 16MB
+    label: 'Vídeo'
+  },
+  document: {
+    mimes: new Set([
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ]),
+    maxSize: 100 * 1024 * 1024, // 100MB
+    label: 'Documento'
+  }
+};
+</pre>
+
+<h3>PendingFile</h3>
+<pre>
+export interface PendingFile {
+  id: string;           // `${Date.now()}-${index}`
+  file: File;           // File object nativo
+  type: MediaType;      // 'image' | 'document' | 'video' | 'audio'
+  inferredMime?: string; // mimetype inferido da extensão
+  status: 'pending' | 'uploading' | 'ready' | 'error';
+  error?: string;
+  blobUrl: string;      // URL.createObjectURL(file) para preview local
+}
+</pre>
+
+<h3>inferMimetypeFromExtension()</h3>
+<pre>
+export function inferMimetypeFromExtension(filename: string): string | null {
+  const ext = filename.split('.').pop()?.toLowerCase();
+  const map: Record&lt;string, string&gt; = {
+    'pdf': 'application/pdf', 'doc': 'application/msword',
+    'docx': 'application/vnd...wordprocessingml.document',
+    'xls': 'application/vnd.ms-excel',
+    'xlsx': 'application/vnd...spreadsheetml.sheet',
+    'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png',
+    'mp4': 'video/mp4', '3gp': 'video/3gpp',
+    'aac': 'audio/aac', 'm4a': 'audio/mp4', 'mp3': 'audio/mpeg',
+    'ogg': 'audio/ogg', 'opus': 'audio/opus'
+  };
+  return map[ext || ''] || null;
+}
+</pre>
+
+<!-- 3. COMPOSITOR -->
+<h2 id="composer">3. Compositor — Layout e Estados</h2>
+
+<h3>3 Modos do Compositor</h3>
+<table>
+<tr><th>Modo</th><th>Quando Ativa</th><th>O que Renderiza</th></tr>
+<tr><td><strong>Normal</strong></td><td>Estado padrão (sem gravação, sem anexo modal)</td><td>[😊] [📎] [🤖] + textarea + [▶ ou 🎤]</td></tr>
+<tr><td><strong>Recording</strong></td><td><code>isRecordingMode = true</code></td><td>AudioRecorder substitui toda a barra</td></tr>
+<tr><td><strong>Attachment (inline)</strong></td><td><code>pendingAttachments.length > 0</code></td><td>MultiAttachmentPreview aparece ACIMA do form</td></tr>
+</table>
+
+<h3>Botão Dinâmico (Send vs Mic)</h3>
+<pre>
+{(inputText.trim() || pendingAttachments.length > 0) ? (
+  // Botão ENVIAR (cyan, circular, ▶)
+  &lt;Button type="submit" className="bg-cyan-600 rounded-full w-12 h-12"&gt;
+    {isSendingAttachment ? &lt;Loader2 animate-spin /&gt; : &lt;Send /&gt;}
+  &lt;/Button&gt;
+) : (
+  // Botão MICROFONE (slate, circular, 🎤)
+  &lt;Button type="button" onClick={() => setIsRecordingMode(true)}&gt;
+    &lt;Mic /&gt;
+  &lt;/Button&gt;
+)}
+</pre>
+
+<h3>Textarea</h3>
+<pre>
+&lt;textarea
+  ref={messageInputRef}
+  value={inputText}
+  onChange={handleInputChange}   // detecta /templates + typing indicator
+  onPaste={handlePasteOnComposer} // intercepta imagens coladas
+  onKeyDown={...}                // Enter=enviar, Shift+Enter=newline, setas=templates
+  placeholder={
+    pendingAttachments.length > 0 ? 'Digite uma legenda...'
+    : activeChat.status === 'nina' ? 'Nina está respondendo...'
+    : 'Digite sua mensagem... (use / para templates)'
+  }
+  className="bg-transparent min-h-[48px] max-h-32 resize-none"
+/&gt;
+</pre>
+
+<!-- 4. TEXT -->
+<h2 id="text">4. Envio de Texto</h2>
+<pre>
+const handleSend = async (e?: React.FormEvent) => {
+  e?.preventDefault();
+  if (isComposing || isSendingAttachment) return;
+  
+  // Se tem anexos pendentes → envia anexos + texto como legenda
+  if (pendingAttachments.length > 0) {
+    await handleSendMultipleAttachments(inputText.trim());
+    setInputText('');
+    clearDraft(activeChat?.id);
+    return;
+  }
+  
+  // Senão → envia texto puro
+  if (!inputText.trim() || !activeChat) return;
+  await sendMessage(activeChat.id, inputText.trim());
+  setInputText('');
+  clearDraft(activeChat.id);
+};
+</pre>
+<p><strong>Fluxo</strong>: <code>handleSend()</code> → <code>sendMessage()</code> (do hook <code>useConversations</code>) → <code>api.sendWhatsappMessage()</code> → Edge Function <code>send-whatsapp-message</code>.</p>
+
+<!-- 5. TEMPLATES -->
+<h2 id="templates">5. Templates (atalho /)</h2>
+<p>Ao digitar <code>/</code> seguido de texto, o compositor detecta o padrão via regex <code>/(^|\s)\/([a-z0-9_]*)$/i</code> e abre o popup <code>TemplateSuggestions</code> com até 5 resultados filtrados por shortcut ou título, ordenados por uso.</p>
+<pre>
+// Detecção no handleInputChange:
+const match = value.match(/(^|\s)\/([a-z0-9_]*)$/i);
+if (match) {
+  setTemplateSearchTerm(match[2].toLowerCase());
+  setShowTemplateSuggestions(true);
+}
+
+// Seleção substitui /comando pelo content com variáveis:
+const applyTemplateVariables = (content: string) =>
+  content.replace(/\{\{nome\}\}/gi, activeChat.contactName)
+         .replace(/\{\{telefone\}\}/gi, activeChat.contactPhone);
+</pre>
+
+<!-- 6. EMOJI -->
+<h2 id="emoji">6. Emoji Picker</h2>
+<p><code>EmojiPickerMenu</code> usa Popover. Ao selecionar, chama <code>insertAtCursor(emoji)</code> que insere na posição do cursor do textarea.</p>
+<pre>
+const insertAtCursor = (text: string) => {
+  setInputText(prev => {
+    const start = el?.selectionStart ?? prev.length;
+    const end = el?.selectionEnd ?? prev.length;
+    return prev.slice(0, start) + text + prev.slice(end);
+  });
+  requestAnimationFrame(() => { el2.focus(); el2.setSelectionRange(pos, pos); });
+};
+</pre>
+
+<!-- 7. AI COMPOSER -->
+<h2 id="ai-composer">7. AI Composer</h2>
+<p>Menu com ações: melhorar, resumir, formalizar, traduzir. Requer texto no textarea. Chama <code>api.composeWhatsappMessage(chatId, raw, action)</code>. Resultado substitui o texto com toast "Desfazer" por 8s.</p>
+
+<!-- 8. ATTACHMENT MENU -->
+<h2 id="attachment-menu">8. Menu de Anexos (📎)</h2>
+<pre>
+const ATTACHMENT_OPTIONS = [
+  { type: 'image',    icon: ImageIcon, label: 'Imagem',           accept: 'image/jpeg,image/png' },
+  { type: 'video',    icon: Video,     label: 'Vídeo',            accept: 'video/mp4,video/3gpp' },
+  { type: 'document', icon: FileText,  label: 'Documento',        accept: '.pdf,.doc,.docx,.xls,.xlsx' },
+  { type: 'audio',    icon: Music,     label: 'Áudio (arquivo)',  accept: 'audio/aac,audio/mp4,...' },
+];
+</pre>
+<p><strong>Comportamento</strong>: Documento aceita <code>multiple</code>. Demais tipos: arquivo único.</p>
+<ul>
+<li><strong>Arquivo único</strong> (imagem/vídeo/áudio via menu): abre <code>AttachmentPreview</code> modal fullscreen.</li>
+<li><strong>Múltiplos documentos</strong>: popula <code>pendingAttachments[]</code> → renderiza <code>MultiAttachmentPreview</code> inline.</li>
+</ul>
+<p>Se o browser retorna <code>file.type</code> vazio ou <code>application/octet-stream</code>, o sistema infere o mimetype pela extensão via <code>inferMimetypeFromExtension()</code>.</p>
+
+<!-- 9. SINGLE ATTACH -->
+<h2 id="single-attach">9. Fluxo de Arquivo Único (AttachmentPreview)</h2>
+<p>Modal fullscreen (<code>fixed inset-0 z-50</code>) com:</p>
+<ul>
+<li>Preview por tipo: <code>&lt;img&gt;</code> para imagem, <code>&lt;video controls&gt;</code> para vídeo, <code>&lt;audio controls&gt;</code> para áudio, ícone FileText para documento</li>
+<li>Input de legenda (exceto áudio)</li>
+<li>Validação: mime contra MEDIA_CONFIG + tamanho máximo → erro visual se inválido</li>
+<li>Botões: Cancelar / Enviar (com Loader2 durante envio)</li>
+</ul>
+<pre>
+// Validação no useEffect:
+const baseMime = inferredMime || file.type.split(';')[0].trim();
+if (!config.mimes.has(baseMime)) → setValidationError(...)
+if (file.size > config.maxSize) → setValidationError(...)
+</pre>
+
+<!-- 10. MULTI ATTACH -->
+<h2 id="multi-attach">10. Fluxo Multi-Arquivo (MultiAttachmentPreview)</h2>
+<p>Tray horizontal acima do form no compositor. Aparece quando <code>pendingAttachments.length > 0</code>.</p>
+<pre>
+// Layout:
+[📎 3 anexos] [thumb1 ×] [thumb2 ×] [thumb3 ×]   [× limpar tudo]
+</pre>
+<ul>
+<li><strong>Imagens</strong>: thumbnail 64x64 clicável → abre lightbox (Dialog) com imagem full-size</li>
+<li><strong>PDFs</strong>: PdfThumbnail 64x64 (miniatura da 1ª página)</li>
+<li><strong>Outros docs</strong>: ícone FileText 64x64</li>
+<li>Botão × individual no hover de cada thumbnail</li>
+<li>Nome truncado em 2 linhas abaixo de cada thumbnail</li>
+<li>Scroll horizontal se > 4 arquivos</li>
+<li>Ao clicar "limpar tudo", revoga todos blobUrls</li>
+</ul>
+<p><strong>Envio</strong>: o botão ▶ do compositor dispara <code>handleSendMultipleAttachments(caption)</code> — envia sequencialmente, atualizando status de cada arquivo (pending → uploading → ready/error).</p>
+
+<!-- 11. DRAG DROP -->
+<h2 id="drag-drop">11. Drag &amp; Drop</h2>
+
+<h3>Prevenção Global</h3>
+<pre>
+// Previne o browser de abrir o arquivo solto fora da zona:
+useEffect(() => {
+  window.addEventListener('dragover', preventGlobalDrop);
+  window.addEventListener('drop', preventGlobalDrop);
+  return () => { ... cleanup };
+}, []);
+</pre>
+
+<h3>Zona de Drop (div central do chat)</h3>
+<pre>
+&lt;div className="flex-1 flex flex-col min-w-0 min-h-0 relative"
+  onDragEnter={(e) => {
+    if (!hasDraggedFiles(e.dataTransfer)) return; // ignora drag de texto
+    dragCounterRef.current++;     // contador resolve flicker de filhos
+    setIsDragOver(true);
+  }}
+  onDragLeave={(e) => {
+    dragCounterRef.current--;
+    if (dragCounterRef.current <= 0) setIsDragOver(false);
+  }}
+  onDrop={(e) => {
+    dragCounterRef.current = 0;
+    setIsDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) ingestDroppedFiles(files);
+  }}
+&gt;
+</pre>
+
+<h3>Overlay Visual</h3>
+<pre>
+{isDragOver && (
+  &lt;div className="absolute inset-0 z-[90] pointer-events-none"&gt;
+    &lt;div className="absolute inset-3 rounded-xl border-2 border-dashed border-cyan-400/60 bg-cyan-500/10 flex items-center justify-center"&gt;
+      &lt;FileText /&gt; &lt;ImageIcon /&gt; Solte aqui para anexar arquivos
+    &lt;/div&gt;
+  &lt;/div&gt;
+)}
+</pre>
+
+<h3>ingestDroppedFiles() — Validação</h3>
+<pre>
+const ingestDroppedFiles = (files: File[]) => {
+  // 1. Filtra tipos aceitos (PDF, DOC, DOCX, XLS, XLSX, JPG, PNG)
+  //    NÃO aceita vídeo/áudio via drop
+  
+  // 2. Valida tamanho por tipo via MEDIA_CONFIG
+  //    Oversized → toast.error com nomes (max 3 exibidos)
+  
+  // 3. Limite: max 10 arquivos
+  
+  // 4. Cria PendingFile[] com blobUrl
+  
+  // 5. Dedup por name+size+lastModified
+  
+  // 6. APPEND ao array existente (acumulativo)
+  setPendingAttachments(prev => [...prev, ...unique]);
+};
+</pre>
+
+<!-- 12. PASTE -->
+<h2 id="paste">12. Paste de Imagem (Ctrl+V)</h2>
+<pre>
+const handlePasteOnComposer = (e: React.ClipboardEvent) => {
+  const imageFiles = extractImagesFromClipboard(e);
+  if (imageFiles.length === 0) return; // texto normal passa
+  e.preventDefault();
+  ingestDroppedFiles(imageFiles); // mesmo pipeline do drag
+};
+
+const extractImagesFromClipboard = (e): File[] => {
+  // Itera clipboardData.items → kind='file' + type starts with 'image/'
+  // Gera nome: se genérico → `colado_{timestamp}_{idx}.{ext}`
+  // Fallback: clipboardData.files
+};
+</pre>
+
+<!-- 13. AUDIO REC -->
+<h2 id="audio-rec">13. Gravação de Áudio (AudioRecorder)</h2>
+<pre>
+// Prioridade de mime:
+const types = ['audio/ogg;codecs=opus', 'audio/mp4', 'audio/mpeg'];
+// Usa o primeiro suportado pelo browser
+
+// 3 estados internos:
+// 1. Idle: "Clique para gravar" + botão [🎤 Gravar]
+// 2. Recording: bolinha vermelha pulsante + timer M:SS + [⏹] + [×]
+// 3. Preview: &lt;audio controls&gt; + [Enviar] + [×]
+
+// Permissão negada: mostra aviso + botão "Anexar" (fallback para file input)
+
+// onRecordingComplete(blob, baseMime):
+//   → upload para chat-media/{conversationId}/audios/{timestamp}-recording.{ext}
+//   → api.sendWhatsappMessage({ messageType: 'audio', storageBucket, storagePath })
+</pre>
+
+<!-- 14. AUDIO FALLBACK -->
+<h2 id="audio-fallback">14. Áudio Fallback (file input)</h2>
+<pre>
+// Input hidden no compositor:
+&lt;input ref={audioFileInputRef} type="file" accept="audio/*" capture="user" /&gt;
+
+// Ativado quando:
+// 1. MediaRecorder não suportado (onFallbackNeeded)
+// 2. Permissão de mic negada → botão "Anexar"
+// Abre o seletor de arquivo nativo do dispositivo
+</pre>
+
+<!-- 15. UPLOAD -->
+<h2 id="upload">15. Upload para Storage</h2>
+<pre>
+// Bucket: 'chat-media' (private, RLS por conversation ownership)
+// Path pattern: {conversationId}/{type}s/{timestamp}-{safeName}
+// Exemplos:
+//   abc123/images/1712345678901-foto_rg.jpg
+//   abc123/documents/1712345678901-contrato.pdf
+//   abc123/audios/1712345678901-recording.ogg
+
+const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+const path = `${activeChat.id}/${type}s/${timestamp}-${safeName}`;
+
+await supabase.storage.from('chat-media').upload(path, file, { contentType: baseMime });
+</pre>
+
+<!-- 16. API SEND -->
+<h2 id="api-send">16. Envio via API</h2>
+<pre>
+// Payload — NUNCA envia mediaUrl (gerada on-demand):
+await api.sendWhatsappMessage({
+  conversationId: activeChat.id,
+  messageType: type,          // 'text' | 'image' | 'audio' | 'video' | 'document'
+  content: caption || undefined,
+  mediaMimetype: baseMime,
+  storageBucket: 'chat-media',
+  storagePath: path,
+  filename: file.name
+  // mediaUrl: INTENCIONALMENTE OMITIDO
+});
+</pre>
+<p>A Edge Function <code>send-whatsapp-message</code> faz: download do Storage → upload para WhatsApp Graph API <code>/media</code> → envia via <code>/messages</code> → salva mensagem no banco com <code>storage_bucket</code> e <code>storage_path</code> no metadata.</p>
+
+<!-- 17. RENDER -->
+<h2 id="render-msg">17. Renderização de Mensagens</h2>
+<pre>
+const renderMessageContent = (msg: UIMessage) => {
+  if (msg.type === MessageType.IMAGE)    → &lt;ImageCard ... /&gt;
+  if (msg.type === MessageType.VIDEO)    → &lt;video src={msg.mediaUrl} controls /&gt;
+  if (msg.type === MessageType.DOCUMENT) → &lt;DocumentCard ... /&gt;
+  if (msg.type === MessageType.AUDIO)    → Player customizado (play/pause/progress/seek)
+  default (TEXT)                         → &lt;p&gt; com highlight de busca se ativo
+};
+</pre>
+<h3>Bubbles</h3>
+<pre>
+// Outgoing humano: bg-gradient-to-br from-cyan-600 to-teal-700 (rounded-tr-sm)
+// Outgoing Nina:   bg-gradient-to-br from-violet-600 to-purple-700 (rounded-tr-sm)
+// Incoming (lead): bg-slate-800 border-slate-700/50 (rounded-tl-sm)
+</pre>
+
+<!-- 18. IMAGE CARD -->
+<h2 id="image-card">18. ImageCard</h2>
+<ul>
+<li><strong>Thumbnail</strong>: <code>max-w-xs max-h-72</code>, clicável, hover overlay com botões rápidos (download + download PDF)</li>
+<li><strong>Loading</strong>: enquanto signed URL não está pronta, mostra Loader2 em placeholder 48x32</li>
+<li><strong>Erro</strong>: fallback para placeholder "Erro Imagem"</li>
+<li><strong>Lightbox</strong>: Dialog com <code>max-h-[70vh]</code>, footer com nome + tamanho + botões "Baixar" e "Baixar PDF"</li>
+<li><strong>Download PDF</strong>: chama Edge Function <code>image-to-pdf</code> com storage_bucket + storage_path</li>
+</ul>
+
+<!-- 19. DOC CARD -->
+<h2 id="doc-card">19. DocumentCard</h2>
+<ul>
+<li>Se PDF → <code>PdfThumbnail</code> (miniatura 48x48 da 1ª página via pdfjs-dist)</li>
+<li>Se outro → ícone FileText</li>
+<li>Nome truncado + tamanho formatado</li>
+<li>Botão "Abrir" (nova aba) + "Baixar" (programático, sem popup)</li>
+<li>URL via <code>useSignedMediaUrl</code> (on-demand)</li>
+</ul>
+
+<!-- 20. AUDIO PLAYER -->
+<h2 id="audio-player">20. Audio Player Customizado</h2>
+<pre>
+// &lt;audio&gt; hidden armazenado em audioRefs.current[msg.id]
+// Play: pausa todos os outros primeiro
+// Progress bar clicável: audio.currentTime = percent * duration
+// Display: currentTime / duration em M:SS
+// Cores adaptativas: outgoing (branco/cyan-100), incoming (cyan-400/slate-400)
+</pre>
+
+<!-- 21. VIDEO -->
+<h2 id="video">21. Vídeo</h2>
+<pre>
+// Renderização simples:
+&lt;video src={msg.mediaUrl} controls className="rounded-lg max-h-72" /&gt;
+// Nota: vídeo usa mediaUrl direta (não signed URL do storage para vídeos legados)
+</pre>
+
+<!-- 22. SIGNED URLS -->
+<h2 id="signed-urls">22. Signed URLs (useSignedMediaUrl)</h2>
+<pre>
+// Hook: useSignedMediaUrl(storageBucket, storagePath, fallbackUrl)
+// Retorna: string | null (URL assinada ou fallback)
+
+// Cache global (module-level Map):
+const urlCache = new Map&lt;string, { url: string; expiresAt: number }&gt;();
+const CACHE_DURATION_MS = 4 * 60 * 1000; // 4min (buffer antes de 5min de expiração)
+
+// Lógica:
+// 1. Se !storageBucket || !storagePath → usa fallbackUrl
+// 2. Se cache válido → usa cache
+// 3. Senão → supabase.storage.from(bucket).createSignedUrl(path, 300) // 5min
+// 4. Salva no cache + retorna
+
+// REGRA: NUNCA persistir signed URL no banco. Sempre gerar on-demand.
+</pre>
+
+<!-- 23. DRAFTS -->
+<h2 id="drafts">23. Draft por Conversa (LRU 20)</h2>
+<pre>
+// draftsRef = useRef&lt;Map&lt;string, { inputText, pendingAttachments }&gt;&gt;()
+// MAX_DRAFTS = 20
+
+// Ao trocar de conversa:
+// 1. Salva draft da conversa anterior (se tem conteúdo)
+// 2. Restaura draft da nova conversa (se existir)
+// 3. Enforce LRU: se > 20 drafts, remove o mais antigo (revoga blobUrls)
+
+// Ao enviar mensagem: clearDraft() remove e revoga blobUrls
+// Ao unmount: cleanup de TODOS os blobUrls (current + drafts)
+</pre>
+
+<!-- 24. KEYBOARD -->
+<h2 id="keyboard">24. Atalhos de Teclado</h2>
+<table>
+<tr><th>Atalho</th><th>Ação</th></tr>
+<tr><td><kbd>Enter</kbd></td><td>Enviar mensagem</td></tr>
+<tr><td><kbd>Shift+Enter</kbd></td><td>Nova linha</td></tr>
+<tr><td><kbd>/comando</kbd></td><td>Abre autocomplete de templates</td></tr>
+<tr><td><kbd>↑ ↓</kbd></td><td>Navega templates (quando popup aberto)</td></tr>
+<tr><td><kbd>Enter</kbd> (com templates)</td><td>Seleciona template</td></tr>
+<tr><td><kbd>Escape</kbd></td><td>Fecha templates / fecha busca</td></tr>
+<tr><td><kbd>Ctrl+F</kbd> / <kbd>Cmd+F</kbd></td><td>Busca na conversa</td></tr>
+<tr><td><kbd>Ctrl+V</kbd> com imagem</td><td>Cola imagem no compositor</td></tr>
+</table>
+
+<!-- 25. STATUS -->
+<h2 id="status">25. Status de Mensagem</h2>
+<pre>
+// Na timeline, abaixo de cada mensagem outgoing:
+msg.status === 'read'      → CheckCheck (cyan-500)     // ✓✓ azul
+msg.status === 'delivered'  → CheckCheck (slate-500)    // ✓✓ cinza
+default (sent)              → Check (slate-500)         // ✓ cinza
+
+// Ícone de remetente:
+msg.fromType === 'nina'  → Bot (violet-400)
+msg.fromType === 'human' → User (cyan-400)
+</pre>
+
+<h2>Fluxo Completo: Envio de Documento</h2>
+<div class="diagram">
+Usuário arrasta PDF para o chat
+       │
+       ▼
+onDragEnter → isDragOver=true → overlay "Solte aqui"
+       │
+       ▼
+onDrop → ingestDroppedFiles([file])
+       │
+       ▼
+Valida tipo (PDF✓) → Valida tamanho (&lt;100MB✓) → Max 10✓
+       │
+       ▼
+Cria PendingFile { id, file, type:'document', blobUrl }
+       │
+       ▼
+setPendingAttachments([...prev, pendingFile])
+       │
+       ▼
+MultiAttachmentPreview renderiza tray com thumbnail
+Usuário digita legenda (opcional) no textarea
+       │
+       ▼
+Clica ▶ → handleSend() → handleSendMultipleAttachments(caption)
+       │
+       ▼
+Para cada arquivo na queue:
+  1. Status → 'uploading'
+  2. supabase.storage.upload(chat-media, path, file)
+  3. api.sendWhatsappMessage({ storageBucket, storagePath, ... })
+  4. Status → 'ready'
+       │
+       ▼
+Revoga blobUrls → Limpa pendingAttachments → Toast "N arquivo(s) enviado(s)"
+       │
+       ▼
+Mensagem aparece na timeline via Realtime subscription
+  → renderMessageContent() → DocumentCard
+  → useSignedMediaUrl() gera URL on-demand
+  → PdfThumbnail mostra miniatura
+</div>
+
+<h2>Fluxo Completo: Recebimento de Imagem</h2>
+<div class="diagram">
+WhatsApp envia webhook com media_id
+       │
+       ▼
+whatsapp-webhook Edge Function:
+  → Recebe payload, salva mensagem no banco
+  → metadata: { media_id, mimetype, ... }
+       │
+       ▼
+nina-orchestrator (se sdr_docs):
+  → downloadAndUploadMedia() baixa mídia do WhatsApp
+  → Upload para chat-media/{conv_id}/images/{ts}-{name}
+  → Atualiza metadata: { storage_bucket, storage_path, ... }
+       │
+       ▼
+Realtime subscription no frontend detecta INSERT em messages
+       │
+       ▼
+useConversations adiciona mensagem à UIConversation
+       │
+       ▼
+renderMessageContent(msg) → msg.type === 'image'
+       │
+       ▼
+ImageCard renderiza:
+  → useSignedMediaUrl(storage_bucket, storage_path, fallbackUrl)
+  → Enquanto carrega: Loader2 placeholder
+  → Quando pronto: &lt;img&gt; thumbnail max-h-72
+  → Hover: botões download + download PDF
+  → Click: lightbox Dialog max-h-70vh
+</div>
+
+<hr style="margin:48px 0; border-color: var(--border)">
+<p style="text-align:center; color:var(--muted); font-size:0.8rem;">
+MDZap — Relatório gerado automaticamente para fins de migração e replicação.<br>
+Baseado na codebase real. Todos os trechos de código são extraídos dos arquivos fonte.
+</p>
+
+</div>
+</body>
+</html>

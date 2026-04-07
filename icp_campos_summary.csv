@@ -1,0 +1,22 @@
+Tabela,Campo,Tipo,Preenchimento_pct,Contagem,Severidade,Categoria,Uso_ICP
+leads,icp_score,SMALLINT,100%,100% dos leads,OK,Scoring,PRIMÁRIO — já pré-calculado
+clientes,data_nascimento,DATE,92%,3424/3725,OK,Demográfico,EXCELENTE para calcular idade
+clientes,profissao,TEXT,45%,1672/3725,OK,Demográfico,BOM para segmentação
+clientes,endereco_uf,TEXT,52%,1929/3725,OK,Demográfico,BOM para localização
+processos,valor_causa,NUMERIC,71%,10224/14386,OK,Financeiro,EXCELENTE base de tamanho
+processos,fase_processual,TEXT,93%,13315/14386,OK,Processual,EXCELENTE para segmentação
+processos,acordo_candidato,BOOLEAN,100%,sempre presente,OK,Oportunidade,BOM para filtragem
+processos,acordo_propensao_pct,SMALLINT,?,desconhecido,P2,Oportunidade,IMPORTANTE para scoring
+leads,data_nascimento,DATE,9%,4/44,P1,Demográfico,CRÍTICO — muito esparso
+leads,profissao,TEXT,2%,1/44,P1,Demográfico,CRÍTICO — praticamente vazio
+leads,endereco_estado,TEXT,11%,5/44,P1,Demográfico,CRÍTICO — muito esparso
+clientes,renda_mensal,NUMERIC,0%,0/3725,P1,Financeiro,GAP CRÍTICO — nunca preenchido
+clientes,valor_total_estimado_recuperavel,NUMERIC,0%,0/3725,P1,Financeiro,GAP CRÍTICO — nunca preenchido
+processos,valor_estimado_recuperavel,NUMERIC,?%,desconhecido,P1,Financeiro,GAP CRÍTICO — desconhecido
+leads,valor_estimado,BIGINT,0%,0/44,P0,Financeiro,NUNCA PREENCHIDO em leads
+clientes,sexo,TEXT,?%,desconhecido,P2,Demográfico,Desconhecido
+clientes,estado_civil,TEXT,?%,desconhecido,P2,Demográfico,Desconhecido
+clientes,banco,TEXT,?%,desconhecido,P2,Pagamento,Desconhecido
+clientes,pix,TEXT,?%,desconhecido,P2,Pagamento,Desconhecido
+processos,restricao_valor,NUMERIC,?%,desconhecido,P2,Restrição,Desconhecido
+icp_reports,payload,JSONB,0%,0 registros,OK,Agregação,Pronto para receber dados

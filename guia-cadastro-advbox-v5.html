@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Definitivo — Cadastro AdvBox v5</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --accent: #7c6dff;
+  --accent2: #a78bfa;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --cyan: #06b6d4;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --border: #2d3348;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+h1 span { color: var(--accent); }
+.subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+h2 { font-size: 20px; font-weight: 600; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+h2 .tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+h3 { font-size: 16px; font-weight: 600; margin: 20px 0 8px; color: var(--accent2); }
+p { margin-bottom: 12px; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card-danger { border-color: var(--red); border-width: 2px; }
+.card-success { border-color: var(--green); }
+.card-warn { border-color: var(--amber); }
+.card-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.card-title .icon { font-size: 18px; }
+
+/* Alert boxes */
+.alert { padding: 16px 20px; border-radius: 8px; margin: 16px 0; font-size: 14px; }
+.alert-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
+.alert-success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); }
+.alert-warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); }
+.alert-info { background: rgba(124,109,255,0.1); border: 1px solid rgba(124,109,255,0.3); }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+th { background: var(--surface2); color: var(--accent2); text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+tr:hover td { background: rgba(124,109,255,0.05); }
+.mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 12px; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: white; }
+.badge-rs { background: #22c55e; }
+.badge-sc { background: #06b6d4; }
+.badge-sp { background: #8b5cf6; }
+.badge-helo { background: #f59e0b; }
+.badge-trf4 { background: #0891b2; }
+
+/* Code */
+pre { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; margin: 12px 0; }
+code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--surface2); padding: 2px 6px; border-radius: 4px; }
+
+/* Flow */
+.flow { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+.flow-step { display: flex; gap: 12px; align-items: flex-start; }
+.flow-num { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+.flow-content { flex: 1; padding-top: 3px; }
+.flow-content strong { color: var(--accent2); }
+
+/* Decision tree */
+.tree { margin: 16px 0; padding-left: 16px; border-left: 2px solid var(--accent); }
+.tree-node { margin: 8px 0; padding: 8px 12px; background: var(--surface); border-radius: 6px; font-size: 13px; }
+.tree-node .condition { color: var(--cyan); font-weight: 600; }
+.tree-node .result { color: var(--green); }
+.tree-arrow { color: var(--muted); font-size: 12px; padding-left: 8px; }
+
+/* Sections */
+.section { margin-bottom: 40px; }
+
+/* Checklist */
+.checklist { list-style: none; padding: 0; }
+.checklist li { padding: 6px 0; padding-left: 24px; position: relative; font-size: 14px; }
+.checklist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 14px; height: 14px; border: 2px solid var(--accent); border-radius: 3px; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+.stat .n { font-size: 32px; font-weight: 700; }
+.stat .l { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* Footer */
+.footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 12px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container { padding: 16px; }
+  h1 { font-size: 22px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  table { font-size: 12px; }
+  td, th { padding: 8px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Guia Definitivo — Cadastro <span>AdvBox</span> v5</h1>
+<p class="subtitle">Automacao de cadastramento de processos com mapeamento correto de Grupo de Acao (OAB) | Atualizado: 01/04/2026</p>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>REGRA #1 — Grupo de Acao <span class="tag" style="background:var(--red)">CRITICO</span></h2>
+
+<div class="alert alert-danger">
+<strong>O campo groups_id (Grupo de Acao) NAO PODE ser alterado via API apos a criacao do processo.</strong><br>
+A API retorna "Dados atualizados com sucesso" mas IGNORA o valor silenciosamente. Se errar, a unica correcao e MANUAL na interface do AdvBox. Portanto: <strong>ACERTAR NA PRIMEIRA VEZ E OBRIGATORIO.</strong>
+</div>
+
+<h3>Por que o Grupo de Acao importa?</h3>
+<ul>
+<li>Vincula o processo ao advogado responsavel (OAB correta)</li>
+<li>Puxa automaticamente o <strong>Tipo de Acao</strong> correto (ex: SP535101 → tipo "SAO PAULO")</li>
+<li>Determina em qual OAB as intimacoes serao recebidas</li>
+<li>Errar = processo vinculado ao advogado/tribunal errado = retrabalho manual</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Mapeamento de Grupos <span class="tag" style="background:var(--accent)">MAPA OFICIAL</span></h2>
+
+<table>
+<thead>
+<tr><th>groups_id</th><th>Nome no AdvBox</th><th>Advogado</th><th>OAB</th><th>Tribunal</th><th>Padrao CNJ</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td class="mono">225949</td>
+  <td><span class="badge badge-rs">CHRISTIAN RS116571</span></td>
+  <td>Christian</td>
+  <td>RS 116.571</td>
+  <td>TJRS</td>
+  <td class="mono">.8.21.</td>
+</tr>
+<tr>
+  <td class="mono">498042</td>
+  <td><span class="badge badge-sc">CHRISTIAN SC74025</span></td>
+  <td>Christian</td>
+  <td>SC 74.025</td>
+  <td>TJSC / TRF4</td>
+  <td class="mono">.8.24. / .4.04.</td>
+</tr>
+<tr>
+  <td class="mono">498044</td>
+  <td><span class="badge badge-sp">CHRISTIAN SP535101</span></td>
+  <td>Christian</td>
+  <td>SP 535.101</td>
+  <td>TJSP</td>
+  <td class="mono">.8.26.</td>
+</tr>
+<tr>
+  <td class="mono">498045</td>
+  <td><span class="badge badge-helo">HELOISA RS131163</span></td>
+  <td>Heloisa</td>
+  <td>RS 131.163</td>
+  <td>TJRS</td>
+  <td class="mono">.8.21.</td>
+</tr>
+<tr>
+  <td class="mono">498046</td>
+  <td><span class="badge badge-helo">HELOISA SC75466</span></td>
+  <td>Heloisa</td>
+  <td>SC 75.466</td>
+  <td>TJSC</td>
+  <td class="mono">.8.24.</td>
+</tr>
+</tbody>
+</table>
+
+<div class="alert alert-warn">
+<strong>Atencao TRF4:</strong> Processos com padrao <code>.4.04.</code> no CNJ sao do TRF4 (Tribunal Regional Federal da 4a Regiao, com sede em SC). Devem ser mapeados para o grupo <strong>SC</strong> do advogado correspondente, NAO para RS.
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Logica de Mapeamento <span class="tag" style="background:var(--green)">ALGORITMO</span></h2>
+
+<h3>Arvore de Decisao</h3>
+<p>O mapeamento depende de DOIS fatores: <strong>(1) Tribunal do CNJ</strong> e <strong>(2) Advogado responsavel</strong>.</p>
+
+<div class="tree">
+  <div class="tree-node">
+    <span class="condition">1. Extrair tribunal do numero CNJ:</span>
+  </div>
+  <div class="tree-arrow">├─</div>
+  <div class="tree-node">
+    CNJ contem <code>.8.21.</code> → <span class="result">Tribunal = TJRS</span>
+  </div>
+  <div class="tree-arrow">├─</div>
+  <div class="tree-node">
+    CNJ contem <code>.8.24.</code> → <span class="result">Tribunal = TJSC</span>
+  </div>
+  <div class="tree-arrow">├─</div>
+  <div class="tree-node">
+    CNJ contem <code>.8.26.</code> → <span class="result">Tribunal = TJSP</span>
+  </div>
+  <div class="tree-arrow">├─</div>
+  <div class="tree-node">
+    CNJ contem <code>.4.04.</code> → <span class="result">Tribunal = TRF4 (tratar como SC)</span>
+  </div>
+  <div class="tree-arrow">└─</div>
+  <div class="tree-node">
+    Outro padrao → <span style="color:var(--red)">PARAR e pedir orientacao</span>
+  </div>
+</div>
+
+<div class="tree" style="margin-top:16px">
+  <div class="tree-node">
+    <span class="condition">2. Determinar advogado (pela planilha ou instrucao):</span>
+  </div>
+  <div class="tree-arrow">├─</div>
+  <div class="tree-node">
+    Advogado = Christian + TJRS → <span class="result">groups_id = 225949</span>
+  </div>
+  <div class="tree-arrow">├─</div>
+  <div class="tree-node">
+    Advogado = Christian + TJSC/TRF4 → <span class="result">groups_id = 498042</span>
+  </div>
+  <div class="tree-arrow">├─</div>
+  <div class="tree-node">
+    Advogado = Christian + TJSP → <span class="result">groups_id = 498044</span>
+  </div>
+  <div class="tree-arrow">├─</div>
+  <div class="tree-node">
+    Advogado = Heloisa + TJRS → <span class="result">groups_id = 498045</span>
+  </div>
+  <div class="tree-arrow">└─</div>
+  <div class="tree-node">
+    Advogado = Heloisa + TJSC → <span class="result">groups_id = 498046</span>
+  </div>
+</div>
+
+<h3>Codigo Python — Funcao de Mapeamento</h3>
+<pre>
+def get_groups_id(cnj: str, advogado: str = 'christian') -> str:
+    """
+    Retorna o groups_id correto baseado no TRIBUNAL do CNJ
+    e no advogado responsavel.
+
+    REGRA CRITICA: Mapear pelo tribunal do CNJ, NUNCA pela OAB da planilha.
+    O groups_id NAO PODE ser alterado apos criacao.
+    """
+    cnj = str(cnj).strip()
+    advogado = advogado.strip().lower()
+
+    # 1. Detectar tribunal pelo padrao CNJ
+    if '.8.21.' in cnj:
+        tribunal = 'RS'
+    elif '.8.24.' in cnj:
+        tribunal = 'SC'
+    elif '.8.26.' in cnj:
+        tribunal = 'SP'
+    elif '.4.04.' in cnj:
+        tribunal = 'SC'   # TRF4 → tratar como SC
+    else:
+        raise ValueError(f'Tribunal desconhecido no CNJ: {cnj}')
+
+    # 2. Mapear advogado + tribunal → groups_id
+    MAPA = {
+        ('christian', 'RS'): '225949',   # CHRISTIAN RS116571
+        ('christian', 'SC'): '498042',   # CHRISTIAN SC74025
+        ('christian', 'SP'): '498044',   # CHRISTIAN SP535101
+        ('heloisa',   'RS'): '498045',   # HELOISA RS131163
+        ('heloisa',   'SC'): '498046',   # HELOISA SC75466
+    }
+
+    # Normalizar nome do advogado
+    if 'helo' in advogado or '131163' in advogado or '75466' in advogado:
+        adv_key = 'heloisa'
+    else:
+        adv_key = 'christian'
+
+    key = (adv_key, tribunal)
+    if key not in MAPA:
+        raise ValueError(f'Combinacao sem mapeamento: {adv_key} + {tribunal}')
+
+    return MAPA[key]
+</pre>
+
+<div class="alert alert-info">
+<strong>Como determinar o advogado?</strong><br>
+- Se a planilha tem coluna "Advogado" ou "OAB": usar o NOME do advogado (Christian ou Heloisa), NAO o numero da OAB para determinar o tribunal<br>
+- Se a planilha so tem OAB: RS116571/SC74025/SP535101 = Christian; RS131163/SC75466 = Heloisa. Mas o TRIBUNAL vem do CNJ<br>
+- Na duvida: se OAB contem "131163" ou "75466" → Heloisa, caso contrario → Christian
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Erro Comum — O Que Deu Errado em 01/04 <span class="tag" style="background:var(--red)">LICAO</span></h2>
+
+<div class="card card-danger">
+<div class="card-title"><span class="icon">&#9888;</span> Erro: Mapeamento por OAB da Planilha</div>
+<p>O script v4 mapeou <code>groups_id</code> pela coluna "OAB Completa" da planilha:</p>
+<pre>
+# ERRADO — v4 fazia isso:
+OAB_TO_GROUP = {
+    'RS 116571': '225949',   # Nao garante tribunal correto!
+    'SP 535101': '498044',
+}
+groups_id = OAB_TO_GROUP[row['oab']]  # Usa OAB, nao tribunal
+</pre>
+<p><strong>Resultado:</strong> 11 processos de SC/TRF4 tinham OAB "RS 116571" na planilha (porque Christian usa a OAB RS como principal) mas eram de tribunais de SC. Foram cadastrados como RS em vez de SC.</p>
+<p>Alem disso, por um comportamento do AdvBox, TODOS os 45 processos nao-SP acabaram com grupo SP535101 — a API ignorou o groups_id enviado na criacao tambem.</p>
+</div>
+
+<div class="card card-success">
+<div class="card-title"><span class="icon">&#10003;</span> Correto: Mapeamento por Tribunal do CNJ</div>
+<pre>
+# CERTO — usar sempre:
+def get_groups_id(cnj, advogado):
+    if '.8.21.' in cnj:   return MAPA[(advogado, 'RS')]
+    elif '.8.24.' in cnj: return MAPA[(advogado, 'SC')]
+    elif '.8.26.' in cnj: return MAPA[(advogado, 'SP')]
+    elif '.4.04.' in cnj: return MAPA[(advogado, 'SC')]  # TRF4 → SC
+</pre>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="n" style="color:var(--green)">62</div><div class="l">Corretos (TJSP)</div></div>
+  <div class="stat"><div class="n" style="color:var(--red)">45</div><div class="l">Errados (TJRS/TJSC/TRF4)</div></div>
+  <div class="stat"><div class="n" style="color:var(--amber)">9</div><div class="l">Duplicados</div></div>
+  <div class="stat"><div class="n" style="color:var(--red)">0%</div><div class="l">Chance de corrigir via API</div></div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Fluxo Completo de Cadastramento <span class="tag" style="background:var(--accent)">PASSO A PASSO</span></h2>
+
+<div class="flow">
+  <div class="flow-step">
+    <div class="flow-num">1</div>
+    <div class="flow-content">
+      <strong>Login AdvBox via Playwright (headless)</strong><br>
+      URL: <code>https://app.advbox.com.br/login</code><br>
+      Credenciais: <code>joao@perinottipazadvogados.com</code> / <code>Joao1234@</code><br>
+      <em>Usar native setter para o campo de senha (contem @).</em><br>
+      Salvar cookies em <code>/tmp/advbox_auth.json</code>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">2</div>
+    <div class="flow-content">
+      <strong>Ler planilha Excel</strong><br>
+      Identificar colunas: CNJ, Parte autora, Parte re, Advogado/OAB.<br>
+      Atencao ao formato: headers podem estar em linhas diferentes (1, 4, etc).
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">3</div>
+    <div class="flow-content">
+      <strong>Pre-validacao (ANTES de criar qualquer processo)</strong><br>
+      Para CADA processo:
+      <ul>
+        <li>Extrair tribunal do CNJ</li>
+        <li>Determinar advogado (Christian ou Heloisa)</li>
+        <li>Calcular groups_id correto</li>
+        <li>Exibir resumo para confirmacao</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">4</div>
+    <div class="flow-content">
+      <strong>Obter CSRF token</strong><br>
+      <code>GET /processos</code> → extrair <code>&lt;meta name="csrf-token" content="..."&gt;</code><br>
+      Tambem extrair XSRF-TOKEN do cookie (URL-decoded).
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">5</div>
+    <div class="flow-content">
+      <strong>Para cada processo:</strong>
+      <ol>
+        <li>Verificar se ja existe: <code>POST /search</code> com o numero CNJ</li>
+        <li>Buscar/criar cliente (parte autora): <code>POST /search</code> → <code>POST /customers</code></li>
+        <li>Buscar/criar parte contraria: mesma logica</li>
+        <li>Criar processo: <code>POST /lawsuits</code> com <strong>groups_id CORRETO</strong></li>
+        <li>Aguardar 1.5s entre requests (anti-bot Cloudflare)</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">6</div>
+    <div class="flow-content">
+      <strong>Validacao pos-criacao</strong><br>
+      Apos criar, verificar <code>GET /lawsuits/{id}/edit</code> e confirmar que o <code>groups_id selected</code> esta correto.
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>APIs AdvBox <span class="tag" style="background:var(--cyan)">REFERENCIA</span></h2>
+
+<h3>Endpoints</h3>
+<table>
+<thead><tr><th>Metodo</th><th>Endpoint</th><th>Funcao</th><th>Notas</th></tr></thead>
+<tbody>
+<tr><td class="mono">POST</td><td class="mono">/search</td><td>Buscar processos/clientes</td><td>Params: <code>search=query</code></td></tr>
+<tr><td class="mono">POST</td><td class="mono">/customers</td><td>Criar cliente</td><td>Precisa <code>customers_origins_id=302582</code> (INTERNET)</td></tr>
+<tr><td class="mono">POST</td><td class="mono">/lawsuits</td><td>Criar processo</td><td><strong>groups_id DEVE estar correto aqui</strong></td></tr>
+<tr><td class="mono">GET</td><td class="mono">/lawsuits/{id}/edit</td><td>Ver dados do processo</td><td>HTML com form — verificar <code>selected</code></td></tr>
+<tr><td class="mono">POST</td><td class="mono">/lawsuits/{id}</td><td>Atualizar processo</td><td>Com <code>_method=PUT</code>. <strong>NAO altera groups_id!</strong></td></tr>
+</tbody>
+</table>
+
+<h3>Headers Obrigatorios</h3>
+<pre>
+session.headers = {
+    'User-Agent': 'Mozilla/5.0 ...',
+    'X-Requested-With': 'XMLHttpRequest',
+    'X-XSRF-TOKEN': urllib.parse.unquote(xsrf_cookie_value),
+    'Accept': 'application/json',
+    'Referer': 'https://app.advbox.com.br/processos',
+}
+</pre>
+
+<h3>Payload de Criacao (POST /lawsuits)</h3>
+<pre>
+data = [
+    ('_token', csrf_token),
+    ('customer', ''),
+    ('customer_type[]', '1'),         # 1=Cliente
+    ('customer_type[]', '3'),         # 3=Contraria
+    ('customer_list[]', customer_id),
+    ('contrary_list[]', contrary_id),
+    ('notes', f'Parte Autora: {cliente} | Parte Contraria: {contraria}'),
+    ('users_id', '140216'),
+    ('groups_id', groups_id),         # ← CRITICO: usar get_groups_id()
+    ('type_lawsuits_id', '1880677'),  # Tipo de acao padrao
+    ('steps_id', '3'),
+    ('stages_id', '789277'),
+    ('process_number', cnj),
+    # Campos opcionais vazios:
+    ('year', ''), ('judiciary', ''), ('county', ''), ('stick', ''),
+    ('courts_id', ''), ('systems_id', ''), ('protocol_number', ''),
+    ('originating_process', ''), ('folder', ''), ('date', ''),
+    ('fees_expec', ''), ('fees_money', ''),
+    ('fees_percentage', ''), ('contingency', ''),
+]
+</pre>
+
+<div class="alert alert-warn">
+<strong>Sobre type_lawsuits_id:</strong> Quando o grupo de acao e selecionado na interface, o AdvBox puxa automaticamente o tipo de acao correspondente. Via API, use <code>1880677</code> como padrao. Se necessario, pode ser ajustado por grupo.
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Deteccao de PJ (Pessoa Juridica) <span class="tag" style="background:var(--muted)">AUXILIAR</span></h2>
+
+<p>Ao criar clientes, usar <code>type=2</code> para PJ e <code>type=1</code> para PF:</p>
+<pre>
+PJ_KEYWORDS = ['S.A', 'LTDA', 'S/A', 'EIRELI', 'BANCO', 'FUNDO', 'CAIXA',
+    'SERVICOS', 'FINANCEIRA', 'COMPANHIA', 'CREDITO', 'ENERGIA',
+    'TELECOMUNICACOES', 'DISTRIBUIDOR', 'PAGAMENTO', 'INVESTIMENTO',
+    'ADMINISTRADORA', 'SEGUROS', 'VERO', 'SERASA', 'BOA VISTA',
+    'QUOD', 'SPC', 'MAGAZINE', 'CASAS BAHIA', 'AMERICANAS']
+
+def is_pj(name: str) -> bool:
+    return any(k in name.upper() for k in PJ_KEYWORDS)
+</pre>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Busca de Clientes — Cuidados <span class="tag" style="background:var(--amber)">ATENCAO</span></h2>
+
+<div class="card card-warn">
+<div class="card-title"><span class="icon">&#9888;</span> Busca retorna matches parciais</div>
+<p>A busca do AdvBox (<code>POST /search</code>) retorna matches parciais ordenados por relevancia. Exemplo:</p>
+<ul>
+<li>Buscar "VERO" retorna "Adilson Fernando Se<strong>vero</strong>" antes de "Vero S.A."</li>
+<li>Solucao: buscar com mais palavras (ex: "VERO S.A") ou validar o resultado</li>
+</ul>
+</div>
+
+<pre>
+def search_customer(session, name):
+    """Busca cliente — usar primeiras 3 palavras para match"""
+    words = name.strip().split()
+    query = ' '.join(words[:3]) if len(words) >= 3 else name
+    results = session.post(BASE_URL + '/search', data={'search': query}).json()
+    customers = results.get('customers', [])
+    if customers:
+        # Verificar se o match faz sentido
+        found_name = customers[0].get('filter', '')
+        if similar_enough(found_name, name):
+            return extract_id(customers[0])
+    return None
+</pre>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Login e Sessao <span class="tag" style="background:var(--cyan)">AUTENTICACAO</span></h2>
+
+<h3>Credenciais</h3>
+<table>
+<thead><tr><th>Campo</th><th>Valor</th><th>Notas</th></tr></thead>
+<tbody>
+<tr><td>Email</td><td class="mono">joao@perinottipazadvogados.com</td><td>Conta com acesso completo</td></tr>
+<tr><td>Senha</td><td class="mono">Joao1234@</td><td>Contem @ — usar native setter</td></tr>
+<tr><td>2FA</td><td>Pode ser acionado</td><td>Headless Playwright normalmente bypassa</td></tr>
+</tbody>
+</table>
+
+<h3>Codigo de Login (Playwright)</h3>
+<pre>
+import asyncio, json
+from playwright.async_api import async_playwright
+
+async def login_advbox():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context()
+        page = await context.new_page()
+
+        await page.goto('https://app.advbox.com.br/login',
+                        wait_until='domcontentloaded', timeout=30000)
+        await asyncio.sleep(3)
+
+        # Usar native setter para campos com @
+        await page.evaluate('''() => {
+            const setter = Object.getOwnPropertyDescriptor(
+                window.HTMLInputElement.prototype, 'value').set;
+            const email = document.querySelector('input[name="email"]');
+            const pwd = document.querySelector('input[name="password"]');
+            setter.call(email, 'joao@perinottipazadvogados.com');
+            email.dispatchEvent(new Event('input', { bubbles: true }));
+            email.dispatchEvent(new Event('change', { bubbles: true }));
+            setter.call(pwd, 'Joao1234@');
+            pwd.dispatchEvent(new Event('input', { bubbles: true }));
+            pwd.dispatchEvent(new Event('change', { bubbles: true }));
+        }''')
+        await asyncio.sleep(1)
+
+        btn = page.locator('button:has-text("Entrar")')
+        await btn.click()
+        await asyncio.sleep(10)
+
+        url = page.url
+        if '2fa' in url:
+            raise Exception('2FA acionado — tentar novamente')
+        if 'login' in url:
+            raise Exception('Login falhou — verificar credenciais')
+
+        cookies = await context.cookies()
+        with open('/tmp/advbox_auth.json', 'w') as f:
+            json.dump(cookies, f)
+
+        await browser.close()
+        return cookies
+</pre>
+
+<div class="alert alert-danger">
+<strong>Sobre 2FA:</strong><br>
+- Sessoes headless normalmente nao acionam 2FA (dispositivo reconhecido)<br>
+- Nao abrir sessao headless=False (visivel) pois pode acionar 2FA<br>
+- Se 2FA for acionado: fechar browser, aguardar alguns minutos, tentar novamente headless<br>
+- NUNCA ter 2 sessoes simultaneas para o mesmo login
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Checklist Pre-Execucao <span class="tag" style="background:var(--green)">VALIDACAO</span></h2>
+
+<p>Antes de executar o cadastramento, verificar TODOS os itens:</p>
+
+<ul class="checklist">
+  <li>Planilha lida corretamente (headers na linha certa)</li>
+  <li>Todas as colunas mapeadas (CNJ, cliente, contraria, advogado)</li>
+  <li>groups_id calculado por TRIBUNAL do CNJ (nao por OAB da planilha)</li>
+  <li>Resumo de processos por tribunal/grupo exibido e conferido</li>
+  <li>Processos TRF4 (.4.04.) mapeados para grupo SC</li>
+  <li>Processos da Heloisa identificados e com grupo correto</li>
+  <li>Login AdvBox realizado com sucesso (sem 2FA)</li>
+  <li>CSRF token obtido</li>
+  <li>Nenhum processo ja existe no AdvBox (verificacao previa)</li>
+  <li>Rate limiting: 1.5s entre requests</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Script Completo — Template v5 <span class="tag" style="background:var(--accent)">PRONTO PARA USO</span></h2>
+
+<pre>
+#!/usr/bin/env python3
+"""
+AdvBox Automation v5 — Template para cadastramento correto
+groups_id mapeado por TRIBUNAL do CNJ (regra obrigatoria)
+"""
+import json, time, re, urllib.parse
+from datetime import datetime
+import openpyxl, requests
+
+# ============================================================
+# CONFIG
+# ============================================================
+STATE_FILE      = '/tmp/advbox_auth.json'
+BASE_URL        = 'https://app.advbox.com.br'
+SLEEP_BETWEEN   = 1.5
+
+# Constantes do AdvBox
+DEFAULT_TYPE_LAWSUIT = '1880677'
+DEFAULT_STEPS_ID     = '3'
+DEFAULT_STAGES_ID    = '789277'
+DEFAULT_USERS_ID     = '140216'
+CUSTOMERS_ORIGIN     = '302582'  # INTERNET
+
+# ============================================================
+# MAPEAMENTO POR TRIBUNAL (REGRA CRITICA)
+# ============================================================
+GROUPS_MAP = {
+    # (advogado, tribunal) → groups_id
+    ('christian', 'RS'): '225949',   # CHRISTIAN RS116571
+    ('christian', 'SC'): '498042',   # CHRISTIAN SC74025
+    ('christian', 'SP'): '498044',   # CHRISTIAN SP535101
+    ('heloisa',   'RS'): '498045',   # HELOISA RS131163
+    ('heloisa',   'SC'): '498046',   # HELOISA SC75466
+}
+
+def extrair_tribunal(cnj: str) -> str:
+    """Extrai tribunal do numero CNJ."""
+    if '.8.21.' in cnj: return 'RS'   # TJRS
+    if '.8.24.' in cnj: return 'SC'   # TJSC
+    if '.8.26.' in cnj: return 'SP'   # TJSP
+    if '.4.04.' in cnj: return 'SC'   # TRF4 → SC
+    raise ValueError(f'Tribunal desconhecido: {cnj}')
+
+def identificar_advogado(oab: str, advogado: str = '') -> str:
+    """Identifica se e Christian ou Heloisa."""
+    texto = f'{oab} {advogado}'.upper()
+    if '131163' in texto or '75466' in texto or 'HELO' in texto:
+        return 'heloisa'
+    return 'christian'
+
+def get_groups_id(cnj: str, oab: str = '', advogado: str = '') -> str:
+    """
+    Retorna groups_id CORRETO baseado no tribunal do CNJ.
+    NUNCA mapear pela OAB da planilha diretamente.
+    """
+    tribunal = extrair_tribunal(cnj)
+    adv = identificar_advogado(oab, advogado)
+    key = (adv, tribunal)
+    if key not in GROUPS_MAP:
+        raise ValueError(f'Sem mapeamento: {adv} + {tribunal}')
+    return GROUPS_MAP[key]
+
+# ============================================================
+# SESSION
+# ============================================================
+def build_session():
+    with open(STATE_FILE) as f:
+        cookies_list = json.load(f)
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json',
+        'Referer': f'{BASE_URL}/processos',
+    })
+    for c in cookies_list:
+        session.cookies.set(c['name'], c['value'],
+                           domain=c.get('domain', 'app.advbox.com.br'))
+        if c['name'] == 'XSRF-TOKEN':
+            session.headers['X-XSRF-TOKEN'] = urllib.parse.unquote(c['value'])
+    return session
+
+def get_csrf(session):
+    r = session.get(f'{BASE_URL}/processos',
+                    headers={'Accept': 'text/html'})
+    m = re.search(r'csrf-token" content="([^"]+)"', r.text)
+    return m.group(1) if m else None
+
+# ============================================================
+# ADVBOX API
+# ============================================================
+def search(session, query):
+    r = session.post(f'{BASE_URL}/search', data={'search': query})
+    r.raise_for_status()
+    return r.json()
+
+def find_lawsuit(session, cnj):
+    data = search(session, cnj.split('-')[0])
+    for l in data.get('lawsuits', []):
+        if cnj in l.get('number', ''):
+            m = re.search(r'lawsuits/(\d+)', l.get('link', ''))
+            return m.group(1) if m else None
+    return None
+
+def find_or_create_customer(session, csrf, name, cache):
+    key = name.strip().upper()
+    if key in cache:
+        return cache[key]
+
+    words = name.strip().split()
+    query = ' '.join(words[:3]) if len(words) >= 3 else name
+    data = search(session, query)
+
+    for c in data.get('customers', []):
+        m = re.search(r'customers/(\d+)', c.get('link', ''))
+        if m:
+            cache[key] = m.group(1)
+            return m.group(1)
+
+    # Criar
+    time.sleep(SLEEP_BETWEEN)
+    tipo = '2' if is_pj(name) else '1'
+    r = session.post(f'{BASE_URL}/customers', data={
+        '_token': csrf, 'name': name, 'type': tipo,
+        'customers_origins_id': CUSTOMERS_ORIGIN,
+        'notes': 'Criado via automacao',
+    })
+
+    try:
+        resp = r.json()
+        link = resp.get('url', '') or resp.get('redirect', '')
+        for pat in [r'customers/(\d+)', r'\?id=(\d+)']:
+            m = re.search(pat, link)
+            if m:
+                cache[key] = m.group(1)
+                return m.group(1)
+    except: pass
+    return None
+
+PJ_KEYWORDS = ['S.A', 'LTDA', 'S/A', 'EIRELI', 'BANCO', 'FUNDO',
+    'CAIXA', 'SERVICOS', 'FINANCEIRA', 'COMPANHIA', 'CREDITO',
+    'ENERGIA', 'TELECOMUNICACOES', 'PAGAMENTO', 'SEGUROS',
+    'VERO', 'SERASA', 'BOA VISTA', 'QUOD', 'SPC']
+
+def is_pj(name):
+    return any(k in name.upper() for k in PJ_KEYWORDS)
+
+def create_lawsuit(session, csrf, cnj, cust_id, contr_id,
+                   cliente, contraria, groups_id):
+    data = [
+        ('_token', csrf),
+        ('customer', ''),
+        ('customer_type[]', '1'),
+        ('customer_type[]', '3'),
+        ('customer_list[]', cust_id),
+        ('contrary_list[]', contr_id),
+        ('notes', f'Parte Autora: {cliente} | Contraria: {contraria}'),
+        ('users_id', DEFAULT_USERS_ID),
+        ('groups_id', groups_id),
+        ('type_lawsuits_id', DEFAULT_TYPE_LAWSUIT),
+        ('steps_id', DEFAULT_STEPS_ID),
+        ('stages_id', DEFAULT_STAGES_ID),
+        ('process_number', cnj),
+    ]
+    # Campos opcionais
+    for f in ['year','judiciary','county','stick','courts_id',
+              'systems_id','protocol_number','originating_process',
+              'folder','date','fees_expec','fees_money',
+              'fees_percentage','contingency']:
+        data.append((f, ''))
+
+    r = session.post(f'{BASE_URL}/lawsuits', data=data)
+    try:
+        resp = r.json()
+        m = re.search(r'lawsuits/(\d+)', resp.get('url', ''))
+        return m.group(1) if m else None, resp.get('message', '')
+    except:
+        return None, f'HTTP {r.status_code}'
+
+def verify_group(session, lawsuit_id, expected_group):
+    """Verifica se o grupo foi aplicado corretamente."""
+    r = session.get(f'{BASE_URL}/lawsuits/{lawsuit_id}/edit',
+                    headers={'Accept': 'text/html'})
+    m = re.search(r'name="groups_id".*?value="(\d+)"[^>]*selected',
+                  r.text, re.S)
+    actual = m.group(1) if m else '?'
+    return actual == expected_group, actual
+
+# ============================================================
+# MAIN — ADAPTAR PARA CADA PLANILHA
+# ============================================================
+def main(excel_file, header_row=1, data_start_row=2,
+         col_cnj=0, col_cliente=1, col_contraria=2,
+         col_oab=None, col_advogado=None):
+    """
+    Parametros adaptaveis por planilha:
+    - header_row: linha dos headers
+    - data_start_row: primeira linha de dados
+    - col_cnj, col_cliente, col_contraria: indices das colunas
+    - col_oab: indice da coluna OAB (para identificar advogado)
+    - col_advogado: indice da coluna advogado
+    """
+    session = build_session()
+    csrf = get_csrf(session)
+    cache = {}
+
+    wb = openpyxl.load_workbook(excel_file)
+    ws = wb.active
+
+    rows = []
+    for row in ws.iter_rows(min_row=data_start_row,
+                            max_row=ws.max_row, values_only=True):
+        if row[col_cnj] and str(row[col_cnj]).strip():
+            cnj = str(row[col_cnj]).strip()
+            cliente = str(row[col_cliente]).strip()
+            contraria = str(row[col_contraria]).strip()
+            oab = str(row[col_oab]).strip() if col_oab else ''
+            advogado = str(row[col_advogado]).strip() if col_advogado else ''
+
+            groups_id = get_groups_id(cnj, oab, advogado)
+            rows.append({
+                'cnj': cnj, 'cliente': cliente, 'contraria': contraria,
+                'groups_id': groups_id, 'oab': oab, 'advogado': advogado,
+            })
+
+    # PRE-VALIDACAO
+    print(f'Total: {len(rows)} processos')
+    by_group = {}
+    for r in rows:
+        by_group.setdefault(r['groups_id'], []).append(r)
+    for gid, procs in sorted(by_group.items()):
+        print(f'  Grupo {gid}: {len(procs)} processos')
+
+    print('\nConfirmar? (Ctrl+C para cancelar)')
+    time.sleep(3)
+
+    # EXECUCAO
+    for i, proc in enumerate(rows, 1):
+        cnj = proc['cnj']
+        groups_id = proc['groups_id']
+
+        print(f'[{i:3d}/{len(rows)}] {cnj} → grupo {groups_id}')
+        time.sleep(SLEEP_BETWEEN)
+
+        # Verificar duplicata
+        existing = find_lawsuit(session, cnj)
+        if existing:
+            print(f'  → Ja existe (ID {existing}), pulando')
+            continue
+
+        # Buscar/criar partes
+        time.sleep(SLEEP_BETWEEN)
+        cid = find_or_create_customer(session, csrf, proc['cliente'], cache)
+        time.sleep(SLEEP_BETWEEN)
+        kid = find_or_create_customer(session, csrf, proc['contraria'], cache)
+
+        if not cid or not kid:
+            print(f'  ✗ Partes nao encontradas')
+            continue
+
+        # Criar processo
+        time.sleep(SLEEP_BETWEEN)
+        lid, msg = create_lawsuit(session, csrf, cnj, cid, kid,
+                                  proc['cliente'], proc['contraria'],
+                                  groups_id)
+
+        if lid:
+            # VERIFICAR grupo aplicado
+            time.sleep(SLEEP_BETWEEN)
+            ok, actual = verify_group(session, lid, groups_id)
+            if ok:
+                print(f'  ✓ ID {lid} — grupo {groups_id} VERIFICADO')
+            else:
+                print(f'  ⚠ ID {lid} — grupo ERRADO! esperado={groups_id} atual={actual}')
+        else:
+            print(f'  ✗ Erro: {msg}')
+</pre>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Resumo das Licoes Aprendidas <span class="tag" style="background:var(--red)">NUNCA ESQUECER</span></h2>
+
+<table>
+<thead><tr><th>#</th><th>Licao</th><th>Consequencia se ignorar</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><strong>groups_id e IMUTAVEL via API</strong></td><td>Correcao manual de cada processo na interface</td></tr>
+<tr><td>2</td><td><strong>Mapear pelo tribunal do CNJ, nao pela OAB da planilha</strong></td><td>Grupo errado = advogado/tribunal errado</td></tr>
+<tr><td>3</td><td><strong>TRF4 (.4.04.) → grupo SC</strong></td><td>Processos TRF4 vao para grupo RS em vez de SC</td></tr>
+<tr><td>4</td><td><strong>Verificar grupo apos criacao</strong></td><td>Nao detecta se a API ignorou o groups_id</td></tr>
+<tr><td>5</td><td><strong>Pre-validacao com resumo por grupo</strong></td><td>Erros passam despercebidos</td></tr>
+<tr><td>6</td><td><strong>Busca retorna matches parciais</strong></td><td>"VERO" encontra "Severo" em vez de "Vero S.A."</td></tr>
+<tr><td>7</td><td><strong>Usar native setter para senha com @</strong></td><td>Login falha ou senha truncada</td></tr>
+<tr><td>8</td><td><strong>1.5s entre requests</strong></td><td>Cloudflare Error 1015 (rate limit)</td></tr>
+<tr><td>9</td><td><strong>Nao abrir browser visivel (headless=False)</strong></td><td>Aciona 2FA</td></tr>
+<tr><td>10</td><td><strong>customers_origins_id=302582 obrigatorio</strong></td><td>Erro 422 ao criar cliente</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ============================================================ -->
+<div class="section">
+<h2>Historico de Execucoes</h2>
+
+<table>
+<thead><tr><th>Data</th><th>Script</th><th>Processos</th><th>Resultado</th><th>Problemas</th></tr></thead>
+<tbody>
+<tr>
+  <td>30/03</td><td>v2</td><td>~200</td>
+  <td><span class="badge" style="background:var(--amber)">Parcial</span></td>
+  <td>groups_id hardcoded 498044 para todos</td>
+</tr>
+<tr>
+  <td>31/03</td><td>v3</td><td>69</td>
+  <td><span class="badge" style="background:var(--green)">OK</span></td>
+  <td>Grupos corretos (verificado). 1 cliente nao encontrado (JOAO PAULO FRACELOSO DIAS)</td>
+</tr>
+<tr>
+  <td>01/04</td><td>v4</td><td>107</td>
+  <td><span class="badge" style="background:var(--red)">Erros</span></td>
+  <td>45 processos com grupo errado (todos SP535101). 9 duplicados. Mapeamento por OAB em vez de tribunal.</td>
+</tr>
+<tr>
+  <td>Proximo</td><td>v5</td><td>—</td>
+  <td><span class="badge" style="background:var(--accent)">Template</span></td>
+  <td>Mapeamento por tribunal. Verificacao pos-criacao. Pre-validacao obrigatoria.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="footer">
+  Gerado por Beto (Claude Code) em 01/04/2026 23:30 | JARBAS Network<br>
+  <strong>Este documento deve ser enviado ao Beto antes de cada novo cadastramento AdvBox.</strong>
+</div>
+
+</div>
+</body>
+</html>

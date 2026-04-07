@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDZap — Arquitetura Completa do Sistema de Conversas</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e; --surface: #1a1714; --card: #201d1a; --border: #2e2b27;
+  --primary: #20c997; --primary-dim: #20c99720; --primary-border: #20c99740;
+  --warn: #f59e0b; --danger: #ef4444; --success: #22c55e; --info: #60a5fa;
+  --violet: #a78bfa; --rose: #f43f5e; --sky: #0ea5e9;
+  --text: #f5f0eb; --muted: #9e9890;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; font-size: 14px; line-height: 1.7; padding: 2rem; max-width: 1400px; margin: 0 auto; }
+.layout { display: flex; gap: 2rem; }
+.sidebar { width: 240px; position: sticky; top: 24px; height: fit-content; flex-shrink: 0; }
+.sidebar a { display: block; padding: 6px 12px; font-size: 12px; color: var(--muted); text-decoration: none; border-left: 2px solid transparent; transition: all .2s; }
+.sidebar a:hover, .sidebar a.active { color: var(--primary); border-left-color: var(--primary); background: var(--primary-dim); }
+.sidebar .group-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 12px 12px 4px; font-weight: 600; }
+main { flex: 1; max-width: 1100px; }
+@media (max-width: 900px) { .sidebar { display: none; } body { padding: 1rem; } }
+h1 { font-family: Manrope, sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 0.25rem; }
+h2 { font-family: Manrope, sans-serif; font-size: 1.4rem; font-weight: 700; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); color: var(--primary); }
+h3 { font-family: Manrope, sans-serif; font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.75rem; }
+h4 { font-size: 0.95rem; font-weight: 600; margin: 1rem 0 0.5rem; color: var(--info); }
+.subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+.card-title { font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+.badge-primary { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary-border); }
+.badge-warn { background: #f59e0b20; color: var(--warn); border: 1px solid #f59e0b40; }
+.badge-danger { background: #ef444420; color: var(--danger); border: 1px solid #ef444440; }
+.badge-success { background: #22c55e20; color: var(--success); border: 1px solid #22c55e40; }
+.badge-info { background: #60a5fa20; color: var(--info); border: 1px solid #60a5fa40; }
+.badge-violet { background: #a78bfa20; color: var(--violet); border: 1px solid #a78bfa40; }
+.badge-muted { background: #9e989020; color: var(--muted); border: 1px solid #9e989040; }
+table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 13px; }
+th { text-align: left; padding: 8px 12px; background: var(--surface); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:hover td { background: var(--surface); }
+code { font-family: var(--mono); font-size: 12px; background: var(--surface); padding: 2px 6px; border-radius: 4px; color: var(--primary); }
+pre { font-family: var(--mono); font-size: 12px; background: var(--surface); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; margin: 0.75rem 0; line-height: 1.6; }
+.flow-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin: 1rem 0; font-family: var(--mono); font-size: 12px; line-height: 1.8; white-space: pre; overflow-x: auto; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+@media (max-width: 768px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+.arrow { color: var(--primary); font-weight: bold; }
+.highlight { background: var(--primary-dim); border-left: 3px solid var(--primary); padding: 0.75rem 1rem; border-radius: 0 8px 8px 0; margin: 0.75rem 0; }
+.warn-box { background: #f59e0b10; border-left: 3px solid var(--warn); padding: 0.75rem 1rem; border-radius: 0 8px 8px 0; margin: 0.75rem 0; }
+.file-ref { font-family: var(--mono); font-size: 11px; color: var(--violet); }
+.section-icon { font-size: 1.2rem; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="group-title">Visao Geral</div>
+  <a href="#overview">Arquitetura Geral</a>
+  <a href="#layout">Layout Visual</a>
+  <a href="#files">Mapa de Arquivos</a>
+  <div class="group-title">Mensagens</div>
+  <a href="#send-text">Envio de Texto</a>
+  <a href="#send-media">Envio de Midia</a>
+  <a href="#send-audio">Gravacao de Audio</a>
+  <a href="#send-link">Envio de Link</a>
+  <a href="#ai-composer">AI Composer</a>
+  <a href="#templates">Templates /</a>
+  <a href="#receive">Recebimento</a>
+  <a href="#bubble">Bubble / Renderizacao</a>
+  <div class="group-title">Interacoes</div>
+  <a href="#drag-drop">Drag and Drop</a>
+  <a href="#paste">Paste de Imagem</a>
+  <a href="#swipe">Swipe to Archive</a>
+  <a href="#reply">Reply / Citacao</a>
+  <a href="#search">Busca na Thread</a>
+  <a href="#smart-replies">Smart Replies</a>
+  <a href="#typing">Typing Indicator</a>
+  <a href="#scroll">Auto-Scroll</a>
+  <div class="group-title">Gestao</div>
+  <a href="#conversas">Lista de Conversas</a>
+  <a href="#status">Status 9 Niveis</a>
+  <a href="#assumir">Assumir / Devolver</a>
+  <a href="#transfer">Transferir</a>
+  <a href="#lead-panel">Lead Panel</a>
+  <div class="group-title">Integracao CRM</div>
+  <a href="#crm-conexoes">Conexoes CRM</a>
+  <a href="#crm-sync">CRM Sync Events</a>
+  <a href="#webhooks">Webhooks n8n</a>
+  <a href="#realtime">Realtime Channels</a>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+<h1>MDZap - Arquitetura Completa</h1>
+<p class="subtitle">Sistema de conversas WhatsApp integrado ao MdFlow. Documento gerado em 2026-04-06. Cobre todos os componentes, hooks, fluxos de envio/recebimento, drag &amp; drop, CRM sync e webhooks.</p>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="overview">1. Arquitetura Geral</h2>
+
+<div class="flow-diagram">
+                         +------------------+
+                         |   MdzapPage      |
+                         | /mdzap (desktop) |
+                         | /mdzap/app (mob) |
+                         +--------+---------+
+                                  |
+                         +--------v---------+
+                         |  MdzapChatPanel   |
+                         |  5 tabs:          |
+                         |  Conversas        |
+                         |  Dashboard        |
+                         |  Julia Lab        |
+                         |  Templates        |
+                         |  Gestao           |
+                         +--------+---------+
+                                  |
+              +-------------------+-------------------+
+              |                   |                   |
+   +----------v------+  +--------v--------+  +-------v--------+
+   | MdzapConversaList|  | MdzapMsgThread  |  | MdzapLeadPanel |
+   | (320px fixo)     |  | (flex-1)        |  | (320px toggle) |
+   +-----------------+  +-----------------+  +----------------+
+</div>
+
+<div class="card">
+  <div class="card-title">Rotas e Responsividade</div>
+  <table>
+    <tr><th>Rota</th><th>Viewport</th><th>Comportamento</th></tr>
+    <tr><td><code>/mdzap</code></td><td>>= 1024px</td><td>Dentro do AppLayout, 3 colunas (lista | thread | lead panel)</td></tr>
+    <tr><td><code>/mdzap/app</code></td><td>&lt; 1024px</td><td>Standalone (fora do AppLayout), stack lista -> thread</td></tr>
+  </table>
+  <p style="margin-top:8px;font-size:12px;color:var(--muted)">Redirect automatico: se viewport &lt; 1024px ao acessar /mdzap, redireciona para /mdzap/app</p>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="layout">2. Layout Visual - Desktop 3 Colunas</h2>
+
+<div class="flow-diagram">
++------------------+------------------------+------------------+
+| LISTA (320px)    | THREAD (flex-1)        | LEAD PANEL(320px)|
+|                  |                        | (toggle via Info)|
+| [Busca]          | [ThreadHeader]         |                  |
+| [Fila|Minhas|All]| [ContextBar CPF/CRM]   | [Avatar+Nome]    |
+| [Filtros]        | [SearchBar] (toggle)   | [Score/Coluna]   |
+| [SwipeableCards] | [Mensagens + Bubbles]  |                  |
+|  - avatar        |  - date separators     | Tabs:            |
+|  - preview       |  - img/video/audio/doc |  Lead            |
+|  - status badge  |  - link cards          |  Memoria         |
+|  - unread count  |  - typing indicator    |  Tom (Sentimento)|
+|  - swipe archive |  - new msg button      |  Historico       |
+| [Ver Arquivadas] | [SmartReplies]         |                  |
+|                  | [Reply Banner]         | [Notas Internas] |
+|                  | [MsgInput]             | [Transfer Modal] |
+|                  |  📎 ✨ [textarea] 🎙 ▶ |                  |
++------------------+------------------------+------------------+
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="files">3. Mapa de Arquivos</h2>
+
+<div class="grid2">
+<div class="card">
+  <div class="card-title">📁 Componentes (34 arquivos)</div>
+  <pre>src/components/mdzap/
+├── MdzapChatPanel.tsx        # Orquestrador principal
+├── MdzapConversaList.tsx     # Lista + filtros + bulk
+├── MdzapConversaFilters.tsx  # Filtros avancados
+├── MdzapSwipeableCard.tsx    # Card com swipe archive
+├── MdzapMsgThread.tsx        # Thread de mensagens
+├── MdzapThreadHeader.tsx     # Header com Assumir/Devolver
+├── MdzapMsgBubble.tsx        # Bubble + AudioPlayer + LinkCard
+├── MdzapMsgInput.tsx         # Area de composicao
+├── MdzapMsgFeedback.tsx      # Thumbs up/down Julia
+├── MdzapAttachmentMenu.tsx   # Menu 📎 (img/video/doc/audio/link)
+├── MdzapMediaPreview.tsx     # Preview antes de enviar
+├── MdzapAudioRecorder.tsx    # Gravacao com MediaRecorder
+├── MdzapLinkInput.tsx        # Input URL + preview Microlink
+├── MdzapAIComposer.tsx       # ✨ Reescrever/Completar/Formal
+├── MdzapSmartReplies.tsx     # Sugestoes IA (3 tons)
+├── MdzapDragOverlay.tsx      # Overlay visual drag
+├── MdzapSearchBar.tsx        # Busca dentro da thread
+├── MdzapContextCard.tsx      # Context card colapsivel
+├── MdzapLeadPanel.tsx        # Painel lead 4 tabs
+├── MdzapLeadMemoryPanel.tsx  # client_memory JSONB
+├── MdzapConversaTimeline.tsx # Timeline de eventos
+├── MdzapTransferModal.tsx    # Modal transferir conversa
+├── MdzapBadgeStatus.tsx      # Badge de status visual
+├── MdzapConnectionIndicator  # Indicador WA conectado
+├── MdzapDashboard.tsx        # KPIs + charts
+├── MdzapJuliaLab.tsx         # Sandbox chat Julia
+├── MdzapGestaoPanel.tsx      # Painel gestao
+├── MdzapKpiWidget.tsx        # Widget KPI individual
+├── MdzapBottomNav.tsx        # Nav mobile
+├── MdzapSendButton.tsx       # Botao envio rapido (CRM)
+├── TemplatesManagerDialog    # CRUD templates
+├── AlertDialogBulkDocuments  # Bulk envio docs
+└── AlertDialogBulkNegotiations # Bulk negociacoes</pre>
+</div>
+<div class="card">
+  <div class="card-title">🪝 Hooks (14 arquivos)</div>
+  <pre>src/hooks/
+├── useMdzapConversas.ts      # RPC fn_mdzap_conversas + 3 RT
+├── useMdzapStatus.ts         # whatsapp_numeros + heartbeat
+├── useMdzapSend.ts           # Webhooks: msg/template/bulk
+└── mdzap/
+    ├── useMdzapMensagens.ts  # Query + RT por conversa
+    ├── useMdzapSendMessage.ts# sendText/sendFile/sendLink
+    ├── useMdzapDragDrop.ts   # Drag & drop de arquivos
+    ├── useMdzapSmartReplies.ts# RPC fn_mdzap_smart_replies
+    ├── useMdzapTyping.ts     # Broadcast typing indicator
+    ├── useMdzapTemplates.ts  # CRUD whatsapp_templates
+    ├── useMdzapMembros.ts    # Lista membros da equipe
+    ├── useMdzapKeyboardShortcuts.ts # Ctrl+/, j/k, Esc
+    ├── useMdzapFaviconBadge.ts     # Badge no favicon
+    ├── useMdzapNewMessageToast.ts  # Toast nova msg
+    └── useMdzapNotificationSound.ts# Som de notificacao</pre>
+  <div class="card-title" style="margin-top:1rem">📋 Types</div>
+  <pre>src/types/mdzap.types.ts
+  - 10 union types (status, direcao, tipo, etc)
+  - WhatsappNumero, WhatsappConversa
+  - WhatsappMensagem (com enviado_por)
+  - MdzapConversaComContexto (RPC)
+  - DTOs: SendMessage, SendTemplate
+  - Bulk: Negotiations, Documents
+  - CrmSyncEvent</pre>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="send-text">4. Envio de Texto</h2>
+
+<div class="card">
+  <div class="card-title">🔄 Fluxo Completo de Envio de Texto</div>
+  <div class="flow-diagram">
+Usuario digita no Textarea
+         |
+    [Enter] (sem Shift)
+         |
+    MdzapMsgThread.enviar()
+         |
+    +----v----+
+    | Limpa   | texto + replyMsg
+    | estado  |
+    +---------+
+         |
+    useMdzapSendMessage.sendText()
+         |
+    +----v-----------+
+    | INSERT otimista | whatsapp_mensagens
+    | direcao: saida  | (aparece imediatamente)
+    | status: pending |
+    | tipo: text      |
+    | metadata.preview|
+    +----------------+
+         |
+    invalidateQueries(['mdzap','mensagens',...])
+         |
+    +----v-----------+
+    | callWebhook    | mdzap/enviar-mensagem
+    | envelope:      |
+    |  numero_id     |
+    |  contato       |
+    |  mensagem      |
+    |  tipo: text    |
+    |  mensagem_id   | (ID do INSERT otimista)
+    +----------------+
+         |
+    n8n faz UPDATE no registro
+    (wa_message_id, status: sent)
+         |
+    Realtime UPDATE -> UI atualiza tick
+  </div>
+  <div class="file-ref">Arquivo: src/hooks/mdzap/useMdzapSendMessage.ts linhas 58-109</div>
+</div>
+
+<div class="highlight">
+  <strong>INSERT Otimista:</strong> A mensagem aparece IMEDIATAMENTE na thread (status: pending, tick de relogio). O webhook n8n recebe o <code>mensagem_id</code> e faz UPDATE (nao INSERT), evitando duplicacao. O status evolui: pending -> sent -> delivered -> read (via realtime).
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="send-media">5. Envio de Midia (Imagem, Video, Documento)</h2>
+
+<div class="card">
+  <div class="card-title">📎 Fluxo de Envio de Arquivo</div>
+  <div class="flow-diagram">
+[3 formas de iniciar]
+  1. Menu 📎 (Popover) -> selecionar tipo -> file input
+  2. Drag & Drop de arquivo(s) na thread
+  3. Paste de imagem (Ctrl+V no textarea)
+         |
+    handleFileSelect(file, tipo)
+         |
+    setPendingFile({ file, tipo })
+         |
+    +----v-----------------+
+    | MdzapMediaPreview    | (modal fullscreen)
+    |  - preview da midia  |
+    |  - campo caption     |
+    |  - barra progresso   |
+    |  - botoes Cancel/Send|
+    +---------------------+
+         |
+    [Enviar] ou [Enter]
+         |
+    useMdzapSendMessage.sendFile()
+         |
+    +----v-----------------+
+    | Validar tamanho      |
+    |  image: max 5MB      |
+    |  video: max 16MB     |
+    |  document: max 100MB |
+    |  audio: max 16MB     |
+    +---------------------+
+         |
+    +----v-----------------+
+    | Upload Storage       | bucket: mdzap-media
+    | path: org/conversa/  |
+    |   timestamp-filename |
+    +---------------------+
+         |
+    getPublicUrl(path)
+         |
+    +----v-----------------+
+    | INSERT otimista      | whatsapp_mensagens
+    |  tipo: image/video/  |
+    |       document/audio |
+    |  metadata.media_url  |
+    |  metadata.filename   |
+    |  metadata.caption    |
+    +---------------------+
+         |
+    callWebhook('mdzap/enviar-mensagem')
+      contexto: mdzap.enviar_midia
+      data.media_url = publicUrl
+      data.mensagem_id = insertedId
+  </div>
+  <div class="file-ref">Arquivo: src/hooks/mdzap/useMdzapSendMessage.ts linhas 111-200</div>
+</div>
+
+<div class="card">
+  <div class="card-title">📎 Menu de Anexos (MdzapAttachmentMenu)</div>
+  <table>
+    <tr><th>Opcao</th><th>Icone</th><th>Accept</th><th>Acao</th></tr>
+    <tr><td>Imagem</td><td>Image</td><td><code>image/jpeg,image/png,image/webp</code></td><td>file input -> onSelectFile</td></tr>
+    <tr><td>Video</td><td>Video</td><td><code>video/mp4,video/3gpp</code></td><td>file input -> onSelectFile</td></tr>
+    <tr><td>Documento</td><td>FileText</td><td><code>.pdf,.doc,.docx,.xls,.xlsx,.txt</code></td><td>file input -> onSelectFile</td></tr>
+    <tr><td>Audio</td><td>Music</td><td><code>audio/aac,mp4,mpeg,amr,ogg,opus</code></td><td>file input -> onSelectFile</td></tr>
+    <tr><td>Foto + Doc</td><td>Images</td><td>combo: seleciona foto, depois doc</td><td>onMultiFileSelected([foto, doc])</td></tr>
+    <tr><td>Link</td><td>Link2</td><td>-</td><td>abre MdzapLinkInput inline</td></tr>
+  </table>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapAttachmentMenu.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="send-audio">6. Gravacao de Audio</h2>
+
+<div class="card">
+  <div class="card-title">🎙 MdzapAudioRecorder</div>
+  <div class="flow-diagram">
+[Mic button] no input
+      |
+  MdzapAudioRecorder renderiza no lugar do input
+      |
+  +---v---+     +--------+     +--------+
+  | Start | --> |Recording| --> | Review |
+  | (mic  |     | ● 0:00 |     | [play] |
+  | btn)  |     | [stop]  |     | [send] |
+  |       |     | [cancel]|     | [trash]|
+  +-------+     +--------+     +--------+
+                                    |
+                              handleSend()
+                                    |
+                              blob -> arrayBuffer -> base64
+                                    |
+                              callWebhook('mdzap/enviar-audio')
+                                data.audio_base64
+                                data.mime_type
+                                data.conversa_id
+                                data.contato_numero
+  </div>
+  <p style="margin-top:8px">
+    <strong>Codec detection:</strong> Testa <code>audio/ogg;codecs=opus</code>, <code>audio/mp4</code>, <code>audio/mpeg</code> via <code>MediaRecorder.isTypeSupported()</code>.
+    Gravacao com chunks a cada 500ms. Timer visual mostra duracao.
+  </p>
+  <p><strong>Fallbacks:</strong> Se MediaRecorder nao suportado ou permissao negada, exibe mensagem de erro inline com icone AlertCircle.</p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapAudioRecorder.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="send-link">7. Envio de Link com Preview</h2>
+
+<div class="card">
+  <div class="card-title">🔗 MdzapLinkInput</div>
+  <div class="flow-diagram">
+[Link no AttachmentMenu]
+      |
+  MdzapLinkInput aparece inline acima do input
+      |
+  Usuario digita URL + [Enter]
+      |
+  fetch(`https://api.microlink.io/?url=...`)
+      |
+  Preview card: imagem + titulo + descricao + dominio
+      |
+  [Enviar link]
+      |
+  useMdzapSendMessage.sendLink()
+      |
+  callWebhook('mdzap/enviar-mensagem')
+    contexto: mdzap.enviar_link
+    data.tipo: 'link'
+    data.link_url, link_title, link_description, link_image
+  </div>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapLinkInput.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="ai-composer">8. AI Composer</h2>
+
+<div class="card">
+  <div class="card-title">✨ MdzapAIComposer</div>
+  <p>Dropdown com 4 acoes IA que transformam o texto digitado:</p>
+  <table>
+    <tr><th>Acao</th><th>Icone</th><th>Instrucao enviada ao n8n</th></tr>
+    <tr><td>Reescrever</td><td>RefreshCw</td><td>Reescreva de forma mais profissional e empatica</td></tr>
+    <tr><td>Completar</td><td>ChevronsRight</td><td>Complete a mensagem de forma natural</td></tr>
+    <tr><td>Tornar formal</td><td>Pen</td><td>Reescreva em tom formal e profissional</td></tr>
+    <tr><td>Traduzir pt->en</td><td>Globe</td><td>Traduza do portugues para ingles</td></tr>
+  </table>
+  <p style="margin-top:8px"><strong>Webhook:</strong> <code>mdzap/ai-composer</code> (SEM prefixo mdflow/). Resposta: <code>response.resultado || response.content || response.message</code></p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapAIComposer.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="templates">9. Templates (Autocomplete /)</h2>
+
+<div class="card">
+  <div class="card-title">/ Templates</div>
+  <p>Ao digitar <code>/</code> no textarea, aparece dropdown com templates da tabela <code>whatsapp_templates</code>. Filtra conforme o usuario digita apos a barra.</p>
+  <p><strong>Variaveis substituidas:</strong> <code>{{nome}}</code>, <code>{{cliente_nome}}</code>, <code>{{data}}</code>, <code>{{hora}}</code></p>
+  <p><strong>Fonte:</strong> Query <code>whatsapp_templates WHERE organizacao_id AND ativo = true</code>, staleTime 30s.</p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapMsgInput.tsx linhas 17-32, 91-131</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="receive">10. Recebimento de Mensagens</h2>
+
+<div class="card">
+  <div class="card-title">📥 Fluxo de Recebimento</div>
+  <div class="flow-diagram">
+WhatsApp Cloud API -> n8n webhook
+         |
+    n8n processa e insere em whatsapp_mensagens
+    (direcao: 'entrada', remetente_tipo: 'user')
+         |
+    Supabase Realtime (postgres_changes INSERT)
+         |
+    2 canais reagem:
+      1. useMdzapMensagens (canal por conversa)
+         -> debounce 300ms -> refetch mensagens
+      2. useMdzapConversas (canal global)
+         -> atualiza ultimo_msg_at no cache
+         |
+    Se conversa != ativa:
+      useMdzapNewMessageToast
+        -> toast com nome do contato
+        -> som de notificacao
+        -> click no toast -> abre conversa
+         |
+    useMdzapFaviconBadge
+      -> atualiza badge no favicon com total nao lidas
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">🔔 Notificacao de Nova Mensagem</div>
+  <table>
+    <tr><th>Feature</th><th>Hook</th><th>Comportamento</th></tr>
+    <tr><td>Toast</td><td>useMdzapNewMessageToast</td><td>Toast com nome do contato, click abre conversa. Ignora conversa ativa e first load.</td></tr>
+    <tr><td>Som</td><td>useMdzapNotificationSound</td><td>Toca som de notificacao ao receber msg em conversa nao ativa</td></tr>
+    <tr><td>Favicon</td><td>useMdzapFaviconBadge</td><td>Badge numerico no favicon com total de nao lidas</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="bubble">11. Renderizacao de Mensagens (Bubble)</h2>
+
+<div class="card">
+  <div class="card-title">💬 MdzapMsgBubble - Tipos de Renderizacao</div>
+  <table>
+    <tr><th>Tipo</th><th>Renderizacao</th><th>Interacao</th></tr>
+    <tr><td><span class="badge badge-primary">text</span></td><td>Texto com whitespace pre-wrap, highlight de busca</td><td>Reply via hover/swipe</td></tr>
+    <tr><td><span class="badge badge-info">image</span></td><td>Thumbnail clicavel (max 200px), lightbox fullscreen</td><td>Click -> ImageLightbox (Dialog), botao Ampliar no hover</td></tr>
+    <tr><td><span class="badge badge-violet">video</span></td><td>Player HTML5 nativo com controls</td><td>Play/pause/seek nativo</td></tr>
+    <tr><td><span class="badge badge-success">audio</span></td><td>AudioPlayer customizado: play/pause, barra progresso, tempo</td><td>Click play, click barra para seek</td></tr>
+    <tr><td><span class="badge badge-warn">document</span></td><td>Card com icone FileText + nome truncado</td><td>Click abre em nova aba</td></tr>
+    <tr><td><span class="badge badge-muted">link</span></td><td>LinkCard: imagem preview, titulo, descricao, dominio</td><td>Click abre URL externa</td></tr>
+  </table>
+
+  <h4>Elementos Visuais da Bubble</h4>
+  <table>
+    <tr><th>Elemento</th><th>Entrada (cliente)</th><th>Saida (Julia/Humano)</th></tr>
+    <tr><td>Posicao</td><td>justify-start</td><td>justify-end</td></tr>
+    <tr><td>Background</td><td><code>bg-card</code></td><td><code>bg-primary/15</code></td></tr>
+    <tr><td>Borda arredondada</td><td><code>rounded-tl-sm</code></td><td><code>rounded-tr-sm</code></td></tr>
+    <tr><td>Borda esquerda</td><td>-</td><td>Julia: <code>border-success</code>, Humano: <code>border-warning</code></td></tr>
+    <tr><td>Label remetente</td><td>-</td><td>Julia: Bot icon + "Julia" (verde), Humano: User icon + nome (amarelo)</td></tr>
+    <tr><td>Status ticks</td><td>-</td><td>pending: Clock, sent: Check, delivered: CheckCheck, read: CheckCheck primary</td></tr>
+    <tr><td>Feedback</td><td>-</td><td>Apenas Julia: thumbs up/down (MdzapMsgFeedback)</td></tr>
+    <tr><td>Reply button</td><td>Direita (hover)</td><td>Esquerda (hover)</td></tr>
+  </table>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapMsgBubble.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="drag-drop">12. Drag & Drop</h2>
+
+<div class="card">
+  <div class="card-title">📂 useMdzapDragDrop</div>
+  <div class="flow-diagram">
+[Arrastar arquivo(s) sobre a thread]
+         |
+    handleDragEnter -> isDragOver = true
+         |
+    MdzapDragOverlay renderiza:
+      - bg-primary/10
+      - border-dashed border-primary
+      - icone Upload + "Solte para enviar"
+         |
+    [Soltar arquivo(s)]
+         |
+    handleDrop()
+      |
+    filterDroppedFiles(files)
+      - Permitidos: image/*, video/*, audio/*, pdf/doc/xls/txt
+      - Rejeitados: toast.warning("X arquivo(s) ignorado(s)")
+      |
+    if (1 arquivo):
+      onFileSelect(file, tipo) -> MdzapMediaPreview
+    if (N arquivos):
+      toast.info("Enviando N arquivo(s)...")
+      onMultiFileSelected(files) -> sendMultipleFiles sequencial
+  </div>
+  <p style="margin-top:8px"><strong>Protecao global:</strong> <code>window.addEventListener('dragover/drop', prevent)</code> impede que arquivos dropados fora da thread abram no browser.</p>
+  <div class="file-ref">Arquivo: src/hooks/mdzap/useMdzapDragDrop.ts</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="paste">13. Paste de Imagem</h2>
+
+<div class="card">
+  <p>No <code>onPaste</code> do textarea, detecta itens do tipo <code>image/*</code> no clipboard. Cria <code>File</code> com nome <code>colado_timestamp.png/jpg</code> e chama <code>onFileSelect</code>.</p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapMsgInput.tsx linhas 133-146</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="swipe">14. Swipe to Archive</h2>
+
+<div class="card">
+  <div class="card-title">👆 MdzapSwipeableCard</div>
+  <div class="flow-diagram">
+[Swipe esquerda no card da conversa]
+         |
+    framer-motion drag="x"
+    dragConstraints: { left: -84px, right: 0 }
+         |
+    if (x <= -48px):
+      snap para x = -84px (ACTION_WIDTH)
+      revela botao Arquivar/Restaurar
+         |
+    [Click no botao]
+      supabase.update({ status: 'arquivada' / 'ativa' })
+      toast.success()
+      snap back x = 0
+  </div>
+  <p style="margin-top:8px"><strong>Preview de ultima mensagem:</strong> Exibe <code>metadata.last_msg_preview</code> ou fallback com emoji por tipo (📷 📄 🎵 🎬).</p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapSwipeableCard.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="reply">15. Reply / Citacao (R1)</h2>
+
+<div class="card">
+  <p><strong>Desktop:</strong> Botao <code>CornerUpLeft</code> aparece no hover da bubble (group-hover). Click seta <code>replyMsg</code>.</p>
+  <p><strong>Mobile:</strong> Swipe-to-reply. Touch swipe direita (entrada) ou esquerda (saida) ate 60px. Ao atingir 50px, dispara <code>onReply()</code>.</p>
+  <p><strong>Banner:</strong> Quando <code>replyMsg</code> esta setado, aparece banner abaixo dos SmartReplies com preview da mensagem e botao X para cancelar.</p>
+  <p><strong>Envio:</strong> O <code>wa_message_id</code> da mensagem citada e enviado como <code>reply_to_wamid</code> no INSERT otimista e no webhook.</p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapMsgBubble.tsx linhas 247-272 | MdzapMsgThread.tsx linhas 429-448</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="search">16. Busca na Thread</h2>
+
+<div class="card">
+  <p>Toggle via botao Search no ThreadHeader. Filtra mensagens cujo <code>metadata.preview</code> contem o termo (min 2 chars). Resultados navegaveis com Prev/Next. Mensagem ativa recebe <code>ring-2 ring-warning</code>, demais matches recebem <code>ring-1 ring-warning/40</code>. ScrollIntoView smooth block center.</p>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="smart-replies">17. Smart Replies</h2>
+
+<div class="card">
+  <div class="card-title">💡 MdzapSmartReplies</div>
+  <p>Chama RPC <code>fn_mdzap_smart_replies(p_org_id, p_conversa_id)</code>. Retorna sugestoes com 3 tons:</p>
+  <table>
+    <tr><th>Tom</th><th>Cor</th><th>Token</th></tr>
+    <tr><td>formal</td><td><span class="badge badge-violet">Violeta</span></td><td><code>chart-2</code></td></tr>
+    <tr><td>friendly</td><td><span class="badge badge-primary">Teal</span></td><td><code>primary</code></td></tr>
+    <tr><td>direct</td><td><span class="badge badge-warn">Amber</span></td><td><code>warning</code></td></tr>
+  </table>
+  <p style="margin-top:8px"><strong>Cache:</strong> Map em memoria com TTL 5 minutos. Botao RefreshCw forca refresh. Pills com <code>hover:scale-105 active:scale-95</code>.</p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapSmartReplies.tsx + src/hooks/mdzap/useMdzapSmartReplies.ts</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="typing">18. Typing Indicator</h2>
+
+<div class="card">
+  <p><strong>Canal:</strong> Supabase broadcast <code>mdzap-typing:{conversaId}</code> (private).</p>
+  <p><strong>Envio:</strong> <code>sendTyping()</code> chamado a cada keystroke no textarea. Envia evento <code>is_typing: true</code>. Apos 2.5s sem digitar, envia <code>is_typing: false</code>.</p>
+  <p><strong>Recepcao:</strong> Outros usuarios aparecem com 3 dots animados + label "Fulano esta digitando...". Cleanup apos 3s sem update.</p>
+  <div class="file-ref">Arquivo: src/hooks/mdzap/useMdzapTyping.ts</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="scroll">19. Auto-Scroll</h2>
+
+<div class="card">
+  <p><strong>Logica:</strong> Se usuario esta no fundo (scrollHeight - scrollTop - clientHeight < 60px), auto-scroll smooth ao receber nova mensagem. Se nao esta no fundo, mostra botao flutuante "Nova mensagem" com ChevronDown. Click no botao scrolla para o final.</p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapMsgThread.tsx linhas 106-128, 409-419</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="conversas">20. Lista de Conversas</h2>
+
+<div class="card">
+  <div class="card-title">📋 MdzapConversaList - Filtros e Views</div>
+  <table>
+    <tr><th>Nivel</th><th>Opcoes</th><th>Logica</th></tr>
+    <tr><td>InboxView (tabs)</td><td>Fila / Minhas / Todas</td><td>
+      Fila: <code>awaiting_human=true AND !assigned_user_id</code><br>
+      Minhas: <code>assigned_user_id = user.user_id</code><br>
+      Todas: todas ativas
+    </td></tr>
+    <tr><td>Ativas/Arquivadas</td><td>Toggle botao</td><td><code>status === 'arquivada'</code></td></tr>
+    <tr><td>Filtros avancados</td><td>Status, Atendimento, Responsavel, Nao lidas</td><td>Composable com MdzapConversaFilters</td></tr>
+    <tr><td>Busca</td><td>Input text (min 2 chars)</td><td>Nome, numero, lead_nome</td></tr>
+    <tr><td>Bulk actions</td><td>Context menu -> checkbox</td><td>Selecao multipla -> Arquivar em lote</td></tr>
+  </table>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapConversaList.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="status">21. Status de Conversa - 9 Niveis</h2>
+
+<div class="card">
+  <table>
+    <tr><th>Prioridade</th><th>Emoji</th><th>Label</th><th>Condicao</th><th>Cor</th></tr>
+    <tr><td>1</td><td>📵</td><td>WA Invalido</td><td><code>metadata.wa_blocked</code></td><td><span class="badge badge-muted">muted</span></td></tr>
+    <tr><td>2</td><td>💬</td><td>Sem conversa</td><td><code>status='sem_conversa' || metadata.sem_conversa</code></td><td><span class="badge badge-muted">muted</span></td></tr>
+    <tr><td>3</td><td>⬛</td><td>Encerrada</td><td><code>status='encerrada'</code></td><td><span class="badge badge-muted">muted</span></td></tr>
+    <tr><td>4</td><td>🟡</td><td>Aguard. Humano</td><td><code>awaiting=true && !assigned</code></td><td><span class="badge badge-warn">warning</span></td></tr>
+    <tr><td>5</td><td>🔴</td><td>Humano</td><td><code>awaiting=true && assigned</code></td><td><span class="badge badge-danger">destructive</span></td></tr>
+    <tr><td>6</td><td>🟢</td><td>Julia Ativa</td><td><code>status='ativa' && !awaiting</code></td><td><span class="badge badge-success">success</span></td></tr>
+    <tr><td>7</td><td>🔄</td><td>Follow-up</td><td><code>metadata.follow_up</code></td><td><span class="badge badge-info">chart-2</span></td></tr>
+    <tr><td>8</td><td>⚡</td><td>Pronto Handoff</td><td><code>metadata.handoff_ready</code></td><td><span class="badge badge-primary">primary</span></td></tr>
+    <tr><td>9</td><td>📱</td><td>WhatsApp</td><td>fallback</td><td><span class="badge badge-muted">muted</span></td></tr>
+  </table>
+  <div class="file-ref">Arquivo: src/lib/mdzap-status.ts</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="assumir">22. Assumir / Devolver Conversa</h2>
+
+<div class="card">
+  <table>
+    <tr><th>Acao</th><th>Webhook</th><th>Quando</th><th>Resultado</th></tr>
+    <tr><td><strong>Assumir</strong></td><td><code>mdzap/assumir-conversa</code></td><td>Sempre visivel. Highlight quando awaiting e sem assigned.</td><td>n8n seta assigned_user_id + awaiting_human=true</td></tr>
+    <tr><td><strong>Devolver Julia</strong></td><td><code>mdzap/devolver-julia</code></td><td>Apenas quando awaiting_human=true</td><td>n8n remove assigned_user_id + seta awaiting_human=false</td></tr>
+  </table>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapMsgThread.tsx linhas 170-225</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="transfer">23. Transferir Conversa</h2>
+
+<div class="card">
+  <p>Modal com select de membros da <code>equipe_juridico</code> (ativo=true) + campo motivo opcional.</p>
+  <p><strong>Webhook:</strong> <code>mdzap/transferir-conversa</code> com <code>data.usuario_id</code>, <code>data.usuario_nome</code>, <code>data.motivo</code>.</p>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapTransferModal.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="lead-panel">24. Lead Panel (4 Tabs)</h2>
+
+<div class="card">
+  <table>
+    <tr><th>Tab</th><th>Conteudo</th></tr>
+    <tr><td><strong>Lead</strong></td><td>
+      - Avatar, nome, numero, score, coluna CRM<br>
+      - Botoes: "Ver no CRM" (navega /crm?lead=ID), "Ver cliente" (/pagina-cliente/id/ID)<br>
+      - Transferir conversa<br>
+      - Notas internas (tabela whatsapp_notas_internas, CRUD com soft delete)
+    </td></tr>
+    <tr><td><strong>Memoria</strong></td><td>MdzapLeadMemoryPanel — exibe client_memory JSONB da conversa</td></tr>
+    <tr><td><strong>Tom (Sentimento)</strong></td><td>
+      SentimentPanel: badge principal (emoji+label+confianca%), barra de progresso, timeline evolucao.<br>
+      11 sentimentos mapeados: receptivo, confiante, positivo, ansioso, neutro, irritado, resistente, desconfiante (com aliases en/pt)
+    </td></tr>
+    <tr><td><strong>Historico</strong></td><td>MdzapConversaTimeline — timeline de eventos da conversa</td></tr>
+  </table>
+  <div class="file-ref">Arquivo: src/components/mdzap/MdzapLeadPanel.tsx</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="crm-conexoes">25. Conexoes com o CRM</h2>
+
+<div class="card">
+  <div class="card-title">🔗 Pontos de Integracao MDZap ↔ CRM</div>
+  <table>
+    <tr><th>Ponto</th><th>Direcao</th><th>Implementacao</th></tr>
+    <tr><td><strong>Lead Panel -> CRM</strong></td><td>MDZap -> CRM</td><td>Botao "Ver no CRM" navega para <code>/crm?lead={lead_id}</code></td></tr>
+    <tr><td><strong>Lead Panel -> Cliente</strong></td><td>MDZap -> CRM</td><td>Botao "Ver cliente" navega para <code>/pagina-cliente/id/{cliente_id}</code></td></tr>
+    <tr><td><strong>MdzapSendButton</strong></td><td>CRM -> MDZap</td><td>Componente embedavel em qualquer pagina. Recebe <code>contato, leadId, clienteId</code>. Popover com textarea para envio rapido via WhatsApp.</td></tr>
+    <tr><td><strong>ClienteDrawer</strong></td><td>CRM -> MDZap</td><td><code>handleMdzap()</code> dispara acao 'mdzap' com displayId do cliente</td></tr>
+    <tr><td><strong>fn_mdzap_conversas</strong></td><td>Dados</td><td>RPC retorna <code>lead_id, lead_nome, lead_coluna, lead_awaiting_human, cliente_id, cliente_nome</code> — JOIN com tabelas leads e clientes</td></tr>
+    <tr><td><strong>useMdzapConversas maps</strong></td><td>Dados</td><td><code>conversaByLead(leadId)</code> e <code>conversaByCliente(clienteId)</code> — lookup rapido via Map</td></tr>
+    <tr><td><strong>Realtime leads</strong></td><td>CRM -> MDZap</td><td>Canal <code>mdzap-leads-rt-{orgId}</code> escuta UPDATE em leads. Quando awaiting_human muda, invalida cache de conversas.</td></tr>
+    <tr><td><strong>Bulk Negociacoes</strong></td><td>MDZap -> CRM</td><td>Webhook <code>mdzap/bulk-negociacoes</code>. Envia propostas de acordo em lote via WhatsApp. Invalida queryKey <code>['acordos']</code>.</td></tr>
+    <tr><td><strong>Bulk Documentos</strong></td><td>MDZap -> CRM</td><td>Webhook <code>mdzap/bulk-documentos</code>. Cobra documentos pendentes em lote. Invalida queryKey <code>['documentos_pendentes']</code>.</td></tr>
+    <tr><td><strong>Lead coluna</strong></td><td>Visual</td><td>Badge da coluna CRM exibida no SwipeableCard e no ContextBar da thread</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="crm-sync">26. CRM Sync Events</h2>
+
+<div class="card">
+  <div class="card-title">🔄 Tabela crm_sync_events</div>
+  <p>Tabela de auditoria que registra eventos de sincronizacao bidirecional entre MDZap e CRM.</p>
+  <table>
+    <tr><th>Campo</th><th>Tipo</th><th>Descricao</th></tr>
+    <tr><td><code>event_type</code></td><td>string</td><td>Tipo do evento (ex: lead_created, status_changed)</td></tr>
+    <tr><td><code>direction</code></td><td>CrmSyncDirection</td><td><code>'inbound'</code> (WA->CRM) ou <code>'outbound'</code> (CRM->WA)</td></tr>
+    <tr><td><code>source</code></td><td>CrmSyncSource</td><td><code>'mdzap'</code> ou <code>'mdflow'</code></td></tr>
+    <tr><td><code>lead_id</code></td><td>UUID FK</td><td>Lead relacionado</td></tr>
+    <tr><td><code>cliente_id</code></td><td>UUID FK</td><td>Cliente relacionado</td></tr>
+    <tr><td><code>payload</code></td><td>JSONB</td><td>Dados do evento</td></tr>
+    <tr><td><code>processed_at</code></td><td>timestamptz</td><td>Quando foi processado</td></tr>
+  </table>
+  <p style="margin-top:8px">Tipo definido em <code>src/types/mdzap.types.ts</code> como <code>CrmSyncEvent</code>.</p>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="webhooks">27. Webhooks n8n</h2>
+
+<div class="card">
+  <div class="card-title">📡 Catalogo de Webhooks MDZap</div>
+  <table>
+    <tr><th>Codigo</th><th>Endpoint</th><th>Contexto</th><th>Timeout</th></tr>
+    <tr><td>WH-01</td><td><code>mdzap/enviar-mensagem</code></td><td>mdzap.enviar_mensagem / mdzap.enviar_midia</td><td>30s</td></tr>
+    <tr><td>WH-02</td><td><code>mdzap/enviar-template</code></td><td>mdzap.enviar_template</td><td>30s</td></tr>
+    <tr><td>WH-03</td><td><code>mdzap/enviar-audio</code></td><td>mdzap.enviar_audio</td><td>30s</td></tr>
+    <tr><td>WH-04</td><td><code>mdzap/ai-composer</code></td><td>-</td><td>30s</td></tr>
+    <tr><td>WH-05</td><td><code>mdzap/assumir-conversa</code></td><td>mdzap.assumir</td><td>30s</td></tr>
+    <tr><td>WH-06</td><td><code>mdzap/devolver-julia</code></td><td>mdzap.devolver</td><td>30s</td></tr>
+    <tr><td>WH-07</td><td><code>mdzap/transferir-conversa</code></td><td>mdzap.transferir_conversa</td><td>30s</td></tr>
+    <tr><td>WH-10</td><td><code>mdzap/bulk-negociacoes</code></td><td>mdzap.bulk_negociacoes</td><td>60s</td></tr>
+    <tr><td>WH-11</td><td><code>mdzap/bulk-documentos</code></td><td>mdzap.bulk_documentos</td><td>60s</td></tr>
+  </table>
+  <div class="warn-box">
+    <strong>Sem prefixo mdflow/:</strong> Todos os webhooks MDZap usam <code>mdzap/...</code> direto, sem o prefixo <code>mdflow/</code> usado por outras paginas.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2 id="realtime">28. Canais Realtime</h2>
+
+<div class="card">
+  <table>
+    <tr><th>Canal</th><th>Tabela</th><th>Evento</th><th>Hook</th><th>Acao</th></tr>
+    <tr><td><code>mdzap-conversas-rt-{orgId}</code></td><td>whatsapp_conversas</td><td>UPDATE</td><td>useMdzapConversas</td><td>setQueryData instantaneo (nao_lidas, status, metadata)</td></tr>
+    <tr><td><code>mdzap-conversas-rt-{orgId}</code></td><td>whatsapp_conversas</td><td>INSERT</td><td>useMdzapConversas</td><td>invalidateQueries (refetch completo)</td></tr>
+    <tr><td><code>mdzap-mensagens-preview-{orgId}</code></td><td>whatsapp_mensagens</td><td>INSERT</td><td>useMdzapConversas</td><td>Atualiza ultimo_msg_at no cache</td></tr>
+    <tr><td><code>mdzap-leads-rt-{orgId}</code></td><td>leads</td><td>UPDATE</td><td>useMdzapConversas</td><td>invalidateQueries (awaiting_human mudou)</td></tr>
+    <tr><td><code>mdzap-thread:{conversaId}</code></td><td>whatsapp_mensagens</td><td>INSERT</td><td>useMdzapMensagens</td><td>debounce 300ms -> refetch mensagens</td></tr>
+    <tr><td><code>mdzap-new-msg-toast-{orgId}</code></td><td>whatsapp_mensagens</td><td>INSERT</td><td>useMdzapNewMessageToast</td><td>Toast + som (se conversa != ativa)</td></tr>
+    <tr><td><code>mdzap-typing:{conversaId}</code></td><td>- (broadcast)</td><td>typing</td><td>useMdzapTyping</td><td>Mostra/esconde indicador de digitacao</td></tr>
+    <tr><td><code>mdzap-numeros-rt</code></td><td>whatsapp_numeros</td><td>UPDATE</td><td>useMdzapStatus</td><td>invalidateQueries (heartbeat/status)</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2>29. Tabelas do Banco Envolvidas</h2>
+
+<div class="card">
+  <table>
+    <tr><th>Tabela</th><th>Uso</th><th>Acesso</th></tr>
+    <tr><td><code>whatsapp_numeros</code></td><td>Instancias WA conectadas</td><td>Query direta + realtime</td></tr>
+    <tr><td><code>whatsapp_conversas</code></td><td>Conversas ativas/arquivadas</td><td>RPC fn_mdzap_conversas + realtime</td></tr>
+    <tr><td><code>whatsapp_mensagens</code></td><td>Historico de mensagens</td><td>Query direta + INSERT otimista + realtime</td></tr>
+    <tr><td><code>whatsapp_templates</code></td><td>Templates de mensagem</td><td>Query direta (ativo=true)</td></tr>
+    <tr><td><code>whatsapp_notas_internas</code></td><td>Notas do atendente</td><td>INSERT/UPDATE/soft-delete direto</td></tr>
+    <tr><td><code>whatsapp_msg_feedback</code></td><td>Feedback thumbs Julia</td><td>Query + INSERT</td></tr>
+    <tr><td><code>leads</code></td><td>awaiting_human + coluna CRM</td><td>Realtime UPDATE</td></tr>
+    <tr><td><code>clientes</code></td><td>Dados do cliente</td><td>Via JOIN no RPC</td></tr>
+    <tr><td><code>equipe_juridico</code></td><td>Membros para transferencia</td><td>Query direta (ativo=true)</td></tr>
+    <tr><td><code>crm_sync_events</code></td><td>Auditoria sync CRM/WA</td><td>-</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2>30. Atalhos de Teclado</h2>
+
+<div class="card">
+  <table>
+    <tr><th>Atalho</th><th>Acao</th></tr>
+    <tr><td><code>Ctrl+/</code></td><td>Foca campo de busca</td></tr>
+    <tr><td><code>j</code> ou <code>↓</code></td><td>Proxima conversa</td></tr>
+    <tr><td><code>k</code> ou <code>↑</code></td><td>Conversa anterior</td></tr>
+    <tr><td><code>Esc</code></td><td>Fecha lead panel (se aberto) ou desfoca busca</td></tr>
+    <tr><td><code>Enter</code></td><td>Envia mensagem (no textarea)</td></tr>
+    <tr><td><code>Shift+Enter</code></td><td>Nova linha no textarea</td></tr>
+    <tr><td><code>Ctrl+Enter</code> / <code>Cmd+Enter</code></td><td>Envia no MdzapSendButton (popover CRM)</td></tr>
+  </table>
+  <div class="file-ref">Arquivo: src/hooks/mdzap/useMdzapKeyboardShortcuts.ts</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<h2>31. Storage</h2>
+
+<div class="card">
+  <p><strong>Bucket:</strong> <code>mdzap-media</code></p>
+  <p><strong>Path pattern:</strong> <code>{organizacao_id}/{conversa_id}/{timestamp}-{safe_filename}</code></p>
+  <p><strong>Upload:</strong> Via <code>supabase.storage.from('mdzap-media').upload()</code> com contentType do arquivo.</p>
+  <p><strong>URL publica:</strong> Via <code>getPublicUrl(path)</code> — enviada ao n8n como <code>media_url</code>.</p>
+</div>
+
+<footer>
+  MDZap Architecture Report — MdFlow / MDX LegalTech<br>
+  Gerado automaticamente em 2026-04-06 | 34 componentes | 14 hooks | 9 webhooks | 8 canais realtime
+</footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MdFlow — Fluxo de Atendimento Completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12100e;--surface:#1a1714;--card:#201d1a;--border:#2e2b27;--primary:#20c997;--primary-dim:#20c99720;--primary-border:#20c99740;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--info:#60a5fa;--violet:#a78bfa;--rose:#f43f5e;--text:#f5f0eb;--muted:#9e9890;--mono:'JetBrains Mono','Fira Code',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.6;padding:0}
+.layout{display:flex;gap:0;min-height:100vh}
+.sidebar{width:240px;position:sticky;top:0;height:100vh;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 1rem;overflow-y:auto}
+.sidebar h3{font-family:Manrope;font-size:13px;font-weight:700;color:var(--primary);margin:1.2rem 0 .5rem;text-transform:uppercase;letter-spacing:.5px}
+.sidebar a{display:block;padding:4px 8px;border-radius:6px;color:var(--muted);text-decoration:none;font-size:12px;transition:.15s}
+.sidebar a:hover{color:var(--text);background:var(--primary-dim)}
+.sidebar a.active{color:var(--primary);background:var(--primary-dim)}
+main{flex:1;max-width:1000px;padding:2rem 2.5rem}
+@media(max-width:800px){.sidebar{display:none}main{padding:1rem}}
+
+h1{font-family:Manrope;font-size:28px;font-weight:800;margin-bottom:.3rem}
+h2{font-family:Manrope;font-size:20px;font-weight:700;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+h3{font-family:Manrope;font-size:16px;font-weight:700;margin:1.5rem 0 .7rem;color:var(--primary)}
+h4{font-size:14px;font-weight:600;margin:1rem 0 .4rem;color:var(--text)}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:1.5rem}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin:.8rem 0}
+.card-title{font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:8px}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600;border:1px solid}
+.badge-primary{background:var(--primary-dim);color:var(--primary);border-color:var(--primary-border)}
+.badge-warn{background:#f59e0b20;color:var(--warn);border-color:#f59e0b40}
+.badge-danger{background:#ef444420;color:var(--danger);border-color:#ef444440}
+.badge-success{background:#22c55e20;color:var(--success);border-color:#22c55e40}
+.badge-info{background:#60a5fa20;color:var(--info);border-color:#60a5fa40}
+.badge-violet{background:#a78bfa20;color:var(--violet);border-color:#a78bfa40}
+.badge-neutral{background:#9e989020;color:var(--muted);border-color:#9e989040}
+
+table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:13px}
+th{text-align:left;padding:8px 10px;background:var(--surface);border-bottom:1px solid var(--border);font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:8px 10px;border-bottom:1px solid var(--border)}
+tr:hover td{background:var(--surface)}
+code,.code{font-family:var(--mono);font-size:12px;background:var(--surface);padding:2px 6px;border-radius:4px;color:var(--primary)}
+
+.flow-diagram{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin:1rem 0;overflow-x:auto}
+.flow-diagram pre{font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--text);white-space:pre}
+.flow-diagram .arrow{color:var(--primary)}
+.flow-diagram .page{color:var(--info)}
+.flow-diagram .action{color:var(--warn)}
+.flow-diagram .data{color:var(--violet)}
+.flow-diagram .note{color:var(--muted)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+
+.step{display:flex;gap:1rem;margin:.7rem 0;align-items:flex-start}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.step-content{flex:1}
+
+.conn-line{border-left:2px solid var(--primary-border);padding-left:1rem;margin-left:13px;margin-bottom:.3rem}
+
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+<div style="font-family:Manrope;font-size:16px;font-weight:800;color:var(--primary);margin-bottom:.5rem">MdFlow</div>
+<div style="font-size:11px;color:var(--muted);margin-bottom:1.5rem">Fluxo de Atendimento</div>
+
+<h3>Visão Geral</h3>
+<a href="#macro">Fluxograma Macro</a>
+<a href="#jornada">Jornada do Lead</a>
+<a href="#paginas">Mapa de Páginas</a>
+
+<h3>Auditoria</h3>
+<a href="#auditoria">Página /auditorias</a>
+<a href="#auditoria-fluxo">Fluxo da Consulta</a>
+<a href="#auditoria-restricoes">Cadastro de Restrições</a>
+
+<h3>CRM</h3>
+<a href="#crm">Página /crm</a>
+<a href="#crm-pipeline">Pipeline Kanban</a>
+<a href="#crm-drawer">ClienteDrawer</a>
+<a href="#crm-abas">Abas por Contexto</a>
+
+<h3>Empresas</h3>
+<a href="#empresas">Página /empresas</a>
+<a href="#empresas-match">Match de Empresas</a>
+
+<h3>Distribuição</h3>
+<a href="#distribuicao">Página /distribuicao</a>
+<a href="#distribuicao-fluxo">Fluxo de Preparação</a>
+
+<h3>Clientes</h3>
+<a href="#clientes">Página /clientes</a>
+<a href="#clientes-drawer">Drawer do Cliente</a>
+
+<h3>Processos</h3>
+<a href="#processos">Página /processos</a>
+
+<h3>MDZap</h3>
+<a href="#mdzap">Integração WhatsApp</a>
+
+<h3>Conexões</h3>
+<a href="#conexoes">Mapa de Dependências</a>
+<a href="#dados">Tabelas e RPCs</a>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+<h1>Fluxo de Atendimento Completo</h1>
+<p class="subtitle">Arquitetura, hierarquia e conexões entre todas as páginas do ciclo de atendimento — da auditoria até o processo judicial.</p>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="macro">🔄 Fluxograma Macro — Lead-to-Process</h2>
+
+<div class="flow-diagram"><pre>
+<span class="note">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="note">│                     FLUXO DE ATENDIMENTO MDFLOW                           │</span>
+<span class="note">└─────────────────────────────────────────────────────────────────────────────┘</span>
+
+<span class="page">  /auditorias</span>          <span class="page">/crm</span>              <span class="page">/distribuicao</span>       <span class="page">/processos</span>
+  ┌──────────┐      ┌──────────────┐     ┌──────────────┐    ┌────────────┐
+  │ Consulta │      │   Pipeline   │     │  Preparação  │    │  Listagem  │
+  │ CPF nos  │─────▶│   Kanban     │────▶│  Documentos  │───▶│  Tabela    │
+  │ Bureaus  │      │  (6 colunas) │     │  Petição IA  │    │  CNJ-based │
+  └──────────┘      └──────────────┘     └──────────────┘    └────────────┘
+       │                   │                    │                   │
+       ▼                   ▼                    ▼                   ▼
+  ┌──────────┐      ┌──────────────┐     ┌──────────────┐    ┌────────────┐
+  │ Resultado│      │ClienteDrawer │     │ModalDistribuir│   │PáginaProc. │
+  │ + PDF    │      │ 7-10 abas    │     │ Checklist     │   │ 8+ abas    │
+  └──────────┘      └──────────────┘     └──────────────┘    └────────────┘
+       │                   │
+       ▼                   ▼
+  ┌──────────┐      ┌──────────────┐         <span class="page">/empresas</span>
+  │ Cadastrar│      │  Restrições  │     ┌──────────────┐
+  │Restrições│─────▶│  + Empresas  │────▶│  Cadastro    │
+  │ + Lead   │      │  match fuzzy │     │  Empresas    │
+  └──────────┘      └──────────────┘     │  + Categorias│
+                                         └──────────────┘
+
+<span class="note">Paralelo:</span>  <span class="page">/mdzap</span> ◄───── WhatsApp bidirecional ─────▶ <span class="page">/crm</span> (sync via crm_sync_events)
+          <span class="page">/clientes</span> ◄── pós-conversão (coluna_crm='convertido') ──▶ <span class="page">/crm</span>
+</pre></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="jornada">📋 Jornada Completa do Lead</h2>
+
+<div class="card">
+<div class="step"><div class="step-num">1</div><div class="step-content">
+<strong>Entrada do Lead</strong><br>
+Origem: formulário manual (<code>ModalNovoLead</code>), WhatsApp (Nina/MDZap), indicação ou marketing.<br>
+Lead criado na tabela <code>leads</code> com <code>coluna_crm = 'novos'</code>.
+</div></div>
+<div class="conn-line"></div>
+
+<div class="step"><div class="step-num">2</div><div class="step-content">
+<strong>Auditoria de Crédito</strong> <span class="badge badge-info">/auditorias</span><br>
+Consulta CPF nos bureaus (Serasa, BoaVista/SCPC, ApiFull 115).<br>
+RPC <code>rpc_disparar_auditoria</code> → n8n consulta bureaus → grava resultado em <code>auditorias.resultado_json</code>.<br>
+Resultado exibe total restrições, valor, PDFs por bureau.
+</div></div>
+<div class="conn-line"></div>
+
+<div class="step"><div class="step-num">3</div><div class="step-content">
+<strong>Cadastro de Restrições</strong> <span class="badge badge-warn">CadastrarRestricoesDrawer</span><br>
+Drawer lateral 640px com cards por restrição encontrada.<br>
+<strong>Match de Empresas</strong> — fuzzy token similarity com 3 níveis:<br>
+🟢 <strong>Alto</strong> (≥0.75 ou variação exata) → aceito automático<br>
+🟡 <strong>Médio</strong> (0.45–0.74) → dropdown aberto para confirmar<br>
+🔴 <strong>Nenhum</strong> → obrigatório selecionar ou criar empresa nova<br>
+Restrições salvas via <code>fn_restricao_salvar</code> RPC. Auto-aprendizado: salva <code>nome_variacoes</code> na empresa.
+</div></div>
+<div class="conn-line"></div>
+
+<div class="step"><div class="step-num">4</div><div class="step-content">
+<strong>Atendimento no CRM</strong> <span class="badge badge-primary">/crm</span><br>
+Pipeline Kanban com 5 colunas ativas + 1 especial:<br>
+<code>novos</code> → <code>em_atendimento</code> → <code>aguardando_documentos</code> → <code>aguardando_assinatura</code> → <code>triagem</code> → [distribuir]<br>
+ClienteDrawer abre com 7 abas (CRM): Dados, Restrições, Documentos, Follow-up, Observações, MDZap, Histórico.
+</div></div>
+<div class="conn-line"></div>
+
+<div class="step"><div class="step-num">5</div><div class="step-content">
+<strong>Triagem e Distribuição</strong> <span class="badge badge-violet">/distribuicao</span><br>
+Quando lead chega em <code>coluna_crm = 'triagem'</code> com restrições processáveis + advogado vinculado:<br>
+→ <code>ModalDistribuirLead</code> (checklist) → cria processo na tabela <code>processos</code><br>
+→ OlivIA gera petição inicial via IA<br>
+→ Processo fica em "Ag. Distribuição" na Central de Distribuição.
+</div></div>
+<div class="conn-line"></div>
+
+<div class="step"><div class="step-num">6</div><div class="step-content">
+<strong>Processos</strong> <span class="badge badge-success">/processos</span><br>
+Listagem com paginação server-side, filtros, KPIs.<br>
+Cada processo tem <code>numero_cnj</code> (identificador canônico) e navega para <code>/processos/:cnjSlug</code>.<br>
+Página do processo com 8+ abas de gestão processual.
+</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="paginas">🗺️ Mapa de Páginas Conectadas</h2>
+
+<table>
+<thead><tr><th>Página</th><th>Rota</th><th>Conecta com</th><th>Tipo de Conexão</th></tr></thead>
+<tbody>
+<tr><td><strong>Auditorias</strong></td><td><code>/auditorias</code></td><td>CRM, Empresas</td><td>Cria lead + restrições vinculadas a empresas</td></tr>
+<tr><td><strong>CRM</strong></td><td><code>/crm</code></td><td>Auditorias, Distribuição, MDZap, Empresas, Clientes</td><td>Hub central — drawer com todas as abas</td></tr>
+<tr><td><strong>Empresas</strong></td><td><code>/empresas</code></td><td>CRM, Auditorias, Restrições</td><td>Cadastro de credores — match fuzzy de restrições</td></tr>
+<tr><td><strong>Distribuição</strong></td><td><code>/distribuicao</code></td><td>CRM, Processos, OlivIA</td><td>Preparação + geração de petição + distribuição</td></tr>
+<tr><td><strong>Clientes</strong></td><td><code>/clientes</code></td><td>CRM (conversão), Processos</td><td>Pós-conversão — gestão permanente do cliente</td></tr>
+<tr><td><strong>Processos</strong></td><td><code>/processos</code></td><td>Distribuição, Clientes, Controller</td><td>Gestão processual completa</td></tr>
+<tr><td><strong>MDZap</strong></td><td><code>/mdzap</code></td><td>CRM (sync bidirecional)</td><td>WhatsApp — conversas vinculadas a leads/clientes</td></tr>
+</tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="auditoria">🔍 Página /auditorias</h2>
+
+<div class="card">
+<div class="card-title">Estrutura da Página</div>
+<p>Arquivo: <code>src/pages/auditorias/index.tsx</code></p>
+
+<h4>Componentes:</h4>
+<table>
+<thead><tr><th>Componente</th><th>Arquivo</th><th>Função</th></tr></thead>
+<tbody>
+<tr><td><code>AuditoriasTabs</code></td><td><code>auditorias_tabs.tsx</code></td><td>3 abas: Dashboard, Histórico, Nova Auditoria</td></tr>
+<tr><td><code>DashboardTab</code></td><td><code>dashboard_tab.tsx</code></td><td>KPIs + gráfico + top fontes</td></tr>
+<tr><td><code>HistoricoTab</code></td><td><code>historico_tab.tsx</code></td><td>Tabela com filtros + paginação</td></tr>
+<tr><td><code>NovaAuditoriaTab</code></td><td><code>nova_auditoria_tab.tsx</code></td><td>Formulário CPF + seleção de bureaus</td></tr>
+<tr><td><code>StatusModal</code></td><td><code>status_modal.tsx</code></td><td>Progress bar da consulta em andamento</td></tr>
+<tr><td><code>ResultModal</code></td><td><code>result_modal.tsx</code></td><td>Resultado: summary banner + PDFs + ações</td></tr>
+<tr><td><code>CadastrarRestricoesDrawer</code></td><td><code>cadastrar_restricoes_drawer.tsx</code></td><td>Sheet lateral para revisão + cadastro</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="auditoria-fluxo">Fluxo da Consulta</h3>
+
+<div class="flow-diagram"><pre>
+<span class="action">NovaAuditoriaTab</span>
+    │  CPF + fontes selecionadas
+    ▼
+<span class="data">rpc_disparar_auditoria(p_cpf, p_bureaus, p_lead_id)</span>
+    │  Cria registro em 'auditorias' (status='pendente')
+    │  Dispara webhook n8n para cada bureau
+    ▼
+<span class="action">StatusModal</span> (polling)
+    │  Monitora auditorias.status via useAuditoriaStatus
+    │  Progress bar: pendente → processando → concluida/erro
+    ▼
+<span class="action">ResultModal</span>
+    │  Lê auditorias.resultado_json:
+    │    • restricoes_total, valor_total_reais
+    │    • bureaus_consultados[], pdf_urls{}
+    │    • restricoes[] (array de RestricaoRaw)
+    │
+    ├──▶ <span class="action">"Baixar PDF"</span> → resultado_json.pdf_urls[bureau]
+    │
+    └──▶ <span class="action">"Criar Lead com Restrições"</span>
+         │  (só aparece quando possui_restricoes=true E lead_id=null)
+         ▼
+    <span class="action">CadastrarRestricoesDrawer</span>
+         │  Carrega empresas da org (match fuzzy)
+         │  Para cada restrição:
+         │    1. Match empresa (alto/medio/nenhum)
+         │    2. Usuário confirma/troca empresa
+         │    3. Se empresa nova → INSERT em 'empresas'
+         │    4. fn_restricao_salvar(p_lead_id, p_empresa_id, ...)
+         │    5. Auto-aprendizado: salva nome_variacoes
+         ▼
+    Lead criado com <span class="data">coluna_crm = 'novos'</span>
+    Restrições vinculadas ao lead_id
+    Auditoria vinculada: <span class="data">auditorias.lead_id = leadId</span>
+</pre></div>
+
+<h3 id="auditoria-restricoes">Match de Empresas — Algoritmo</h3>
+
+<div class="card">
+<div class="card-title">Fuzzy Token Similarity</div>
+<p>Arquivo: <code>src/pages/auditorias/hooks/use_cadastrar_restricoes.ts</code></p>
+
+<h4>Processo:</h4>
+<ol>
+<li><strong>Normalização</strong>: remove acentos, lowercase, split em tokens</li>
+<li><strong>Match exato em <code>nome_variacoes</code></strong>: score = 1.0 → 🟢 alto</li>
+<li><strong>Fuzzy</strong>: Jaccard-like (tokens comuns / max tokens) sobre <code>nome</code>, <code>razao_social</code>, <code>nome_fantasia</code>, <code>nome_variacoes</code></li>
+<li><strong>Classificação</strong>:
+  <br>• ≥0.75 (ou variação ≥0.60) → <span class="badge badge-success">alto</span> aceito automático
+  <br>• 0.45–0.74 → <span class="badge badge-warn">médio</span> dropdown aberto
+  <br>• &lt;0.45 → <span class="badge badge-danger">nenhum</span> seleção obrigatória
+</li>
+</ol>
+
+<h4>Regra Boa Vista (agrupamento especial):</h4>
+<p>Todas restrições com órgão SCPC/Boa Vista geram <strong>1 item extra agrupado</strong> (empresa="Boa Vista", valor=soma total, processável=true), além dos itens individuais.</p>
+
+<h4>Auto-aprendizado:</h4>
+<p>Quando o atendente confirma um match (credor ≠ nome empresa), o nome do credor é salvo em <code>empresas.nome_variacoes[]</code>. Na próxima auditoria, esse credor será reconhecido automaticamente como 🟢 Certeza.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="crm">📊 Página /crm</h2>
+
+<div class="card">
+<div class="card-title">Estrutura — CrmPage.tsx (488 linhas)</div>
+<p>Arquivo: <code>src/pages/crm/CrmPage.tsx</code></p>
+
+<h4>4 Abas Principais:</h4>
+<div class="grid2">
+<div class="card">
+<div class="card-title"><span class="badge badge-primary">Dashboard</span></div>
+<code>CrmDashboard</code> — KPIs agregados do pipeline
+</div>
+<div class="card">
+<div class="card-title"><span class="badge badge-primary">Pipeline</span></div>
+<code>CrmKanban</code> / <code>CrmListView</code> — toggle Kanban ↔ Lista
+</div>
+<div class="card">
+<div class="card-title"><span class="badge badge-danger">Radar</span></div>
+<code>CrmRadar</code> — leads com <code>awaiting_human=true</code> (IA pede intervenção humana)
+</div>
+<div class="card">
+<div class="card-title"><span class="badge badge-neutral">Arquivados</span></div>
+<code>CrmArquivados</code> — leads arquivados com possibilidade de restaurar
+</div>
+</div>
+
+<h4>Modais integrados (10):</h4>
+<table>
+<thead><tr><th>Modal</th><th>Trigger</th><th>Função</th></tr></thead>
+<tbody>
+<tr><td><code>ModalNovoLead</code></td><td>Botão + / tecla N</td><td>Cadastra lead com coluna_crm='novos'</td></tr>
+<tr><td><code>ModalTriagem</code></td><td>Card kanban (triagem)</td><td>Checklists da triagem</td></tr>
+<tr><td><code>ModalArquivar</code></td><td>Menu do card</td><td>Soft archive com motivo</td></tr>
+<tr><td><code>ModalSelecionarEtapa</code></td><td>Bulk action</td><td>Mover múltiplos leads de etapa</td></tr>
+<tr><td><code>ModalSelecionarAtendente</code></td><td>Bulk action</td><td>Atribuir atendente em lote</td></tr>
+<tr><td><code>ModalAIReport</code></td><td>Menu do card</td><td>Relatório IA do lead</td></tr>
+<tr><td><code>ModalDistribuirLead</code></td><td>Card em triagem</td><td>Checklist de distribuição → cria processo</td></tr>
+<tr><td><code>ModalVincularAdvogado</code></td><td>Drawer / menu</td><td>Vincula advogado ao lead</td></tr>
+<tr><td><code>ModalNovaAuditoria</code></td><td>Botão header / card</td><td>Dispara auditoria de crédito</td></tr>
+<tr><td><code>ClienteDrawer</code></td><td>Clique no card</td><td>Sheet lateral com todas as abas</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="crm-pipeline">Pipeline Kanban — Colunas</h3>
+
+<div class="flow-diagram"><pre>
+<span class="page">novos</span> ──▶ <span class="page">em_atendimento</span> ──▶ <span class="page">aguardando_documentos</span> ──▶ <span class="page">aguardando_assinatura</span> ──▶ <span class="page">triagem</span>
+  │                                                                              │
+  │         <span class="note">drag & drop via @dnd-kit</span>                                     │
+  │         <span class="note">CrmLeadCard exibe: nome, CPF, restrições, score, advogado</span>     │
+  │                                                                              ▼
+  │                                                                    ┌─────────────────┐
+  │                                                                    │ Restrições       │
+  │                                                                    │ processáveis?    │
+  │                                                                    │ Advogado          │
+  │                                                                    │ vinculado?        │
+  └── <span class="action">arquivar</span> ──▶ <span class="page">arquivados</span>                                  │ Docs completos?  │
+                                                                       └────────┬────────┘
+                                                                                │ SIM
+                                                                                ▼
+                                                                    <span class="action">ModalDistribuirLead</span>
+                                                                                │
+                                                                                ▼
+                                                                    <span class="page">/distribuicao</span>
+</pre></div>
+
+<h3 id="crm-drawer">ClienteDrawer — Hub Universal</h3>
+
+<div class="card">
+<div class="card-title">ClienteDrawer.tsx (458 linhas)</div>
+<p>Componente compartilhado usado em 3 contextos com abas diferentes.</p>
+<p>Arquivo: <code>src/components/shared/cliente_drawer/ClienteDrawer.tsx</code></p>
+
+<h4>Dados carregados:</h4>
+<ul>
+<li><code>useLeadDetail(leadId)</code> — dados completos do lead (CRM/distribuição)</li>
+<li><code>useCliente(cpfSlug)</code> — dados do cliente por CPF (contexto clientes)</li>
+<li><code>useClienteById(clienteId)</code> — dados por UUID</li>
+<li><code>useRestricoes({ leadId, clienteId })</code> — restrições via RPC <code>fn_restricoes_listar</code></li>
+</ul>
+</div>
+
+<h3 id="crm-abas">Abas por Contexto</h3>
+
+<table>
+<thead><tr><th>Aba</th><th>CRM</th><th>Distribuição</th><th>Clientes</th><th>Componente</th></tr></thead>
+<tbody>
+<tr><td><strong>Dados</strong></td><td>✅</td><td>✅</td><td>✅</td><td><code>ClienteDrawerTabDados</code></td></tr>
+<tr><td><strong>Restrições</strong></td><td>✅ (badge count)</td><td>✅ (filtrada por restricaoId)</td><td>✅ (badge count)</td><td><code>ClienteDrawerTabRestricoes</code></td></tr>
+<tr><td><strong>Documentos</strong></td><td>✅ (Lead docs)</td><td>✅ (Lead docs + restricaoId)</td><td>✅ (Cliente docs)</td><td><code>ClienteDrawerTabDocumentosLead</code> / <code>ClienteDrawerTabDocumentos</code></td></tr>
+<tr><td><strong>Follow-up</strong></td><td>✅</td><td>—</td><td>—</td><td><code>CrmLeadTabFollowup</code></td></tr>
+<tr><td><strong>Observações</strong></td><td>✅</td><td>—</td><td>—</td><td><code>CrmLeadTabAtividades</code></td></tr>
+<tr><td><strong>MDZap</strong></td><td>✅ (lazy)</td><td>—</td><td>—</td><td><code>ClienteDrawerTabMdzap</code></td></tr>
+<tr><td><strong>Jurídico</strong></td><td>—</td><td>—</td><td>✅</td><td><code>ClienteDrawerTabJuridico</code></td></tr>
+<tr><td><strong>Pendentes</strong></td><td>—</td><td>—</td><td>✅</td><td><code>ClienteDrawerTabDocumentosPendentes</code></td></tr>
+<tr><td><strong>Histórico</strong></td><td>✅</td><td>—</td><td>✅</td><td><code>ClienteDrawerTabHistorico</code></td></tr>
+</tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="empresas">🏢 Página /empresas</h2>
+
+<div class="card">
+<div class="card-title">EmpresasPage.tsx (283 linhas)</div>
+<p>Arquivo: <code>src/pages/empresas/EmpresasPage.tsx</code></p>
+
+<h4>5 Abas:</h4>
+<table>
+<thead><tr><th>Aba</th><th>Componente</th><th>Função</th></tr></thead>
+<tbody>
+<tr><td><strong>Dashboard</strong></td><td><code>DashboardKPIs</code> + <code>RankingTable</code></td><td>Métricas de empresas + ranking por restrições</td></tr>
+<tr><td><strong>Empresas</strong></td><td><code>TabEmpresasContent</code></td><td>CRUD de empresas (filtros: ativo/processável/categoria)</td></tr>
+<tr><td><strong>Órgãos Restritivos</strong></td><td><code>TabOrgaosContent</code></td><td>Catálogo de órgãos (Serasa, SPC, Boa Vista, etc)</td></tr>
+<tr><td><strong>Categorias</strong></td><td><code>TabCategoriasContent</code></td><td>Agrupamento lógico de empresas</td></tr>
+<tr><td><strong>Escritórios</strong></td><td><code>TabEscritoriosContent</code></td><td>Escritórios correspondentes</td></tr>
+</tbody>
+</table>
+
+<h4>Import/Export CSV:</h4>
+<p>Export: query direta com filtros → gera CSV client-side. Import: lê CSV → <code>callWebhook('empresas/capturar')</code> em batches de 10.</p>
+</div>
+
+<h3 id="empresas-match">Vínculo Empresas ↔ Restrições</h3>
+
+<div class="flow-diagram"><pre>
+<span class="data">tabela: empresas</span>
+  ├── id, nome, razao_social, nome_fantasia
+  ├── cnpj, processavel (boolean), ativo, status_aprovacao
+  ├── nome_variacoes (text[])  ← <span class="action">auto-aprendizado do CadastrarRestricoesDrawer</span>
+  └── categoria_id → empresas_categorias
+
+<span class="data">tabela: restricoes</span>
+  ├── id, lead_id, cliente_id, empresa_id (FK → empresas)
+  ├── empresa_nome (denormalizado para display)
+  ├── orgao_nome, tipo (comprador/devedor/avalista)
+  ├── valor, data_restricao, codigo_contrato
+  ├── processavel (boolean), motivo_nao_processavel
+  └── processo_id (preenchido após distribuição)
+
+<span class="note">Fluxo de vinculação:</span>
+  Auditoria encontra "BANCO BRADESCO SA" como credor
+       │
+       ▼
+  findBestMatch("BANCO BRADESCO SA", empresas[])
+       │  Compara com nome, razao_social, nome_variacoes
+       │
+       ├── 🟢 Match "Bradesco" (score 0.82) → aceito automático
+       │   └── Salva "BANCO BRADESCO SA" em empresas.nome_variacoes
+       │
+       └── 🔴 Sem match → atendente seleciona ou cria empresa nova
+</pre></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="distribuicao">⚡ Página /distribuicao</h2>
+
+<div class="card">
+<div class="card-title">DistribuicaoPage.tsx (149 linhas)</div>
+
+<h4>4 Abas:</h4>
+<table>
+<thead><tr><th>Aba</th><th>Componente</th><th>Função</th></tr></thead>
+<tbody>
+<tr><td><strong>Dashboard</strong></td><td><code>TabDashboard</code></td><td>KPIs via <code>fn_distribuicao_kpis</code></td></tr>
+<tr><td><strong>Ag. Preparação</strong></td><td><code>TabPreparacao</code></td><td>Processos pendentes de docs/petição</td></tr>
+<tr><td><strong>Ag. Distribuição</strong></td><td><code>TabAguardando</code></td><td>Prontos para protocolar — paginação 50/pag</td></tr>
+<tr><td><strong>Agendados</strong></td><td><code>TabAgendados</code></td><td>Distribuições com data programada</td></tr>
+</tbody>
+</table>
+
+<h4>Realtime:</h4>
+<p>Canal <code>distribuicao-rt</code> escuta <code>processos</code> e <code>processos_agendamentos</code> → invalidate automático.</p>
+</div>
+
+<h3 id="distribuicao-fluxo">Fluxo CRM → Distribuição → Processo</h3>
+
+<div class="flow-diagram"><pre>
+<span class="page">CRM Pipeline</span>
+  Lead em <span class="data">coluna_crm = 'triagem'</span>
+  + restrições processáveis > 0
+  + advogado_id preenchido
+       │
+       ▼
+<span class="action">ModalDistribuirLead</span> (checklist)
+  ☑ Dados pessoais completos
+  ☑ Restrições processáveis selecionadas
+  ☑ Documentos enviados
+  ☑ Advogado vinculado
+       │
+       ▼
+<span class="data">INSERT processos</span>
+  status = 'aguardando_preparacao'
+  cliente_id ← lead convertido
+  restricoes.processo_id ← novo processo
+       │
+       ▼
+<span class="page">/distribuicao</span> > Ag. Preparação
+  ClienteDrawer context='distribuicao' (3 abas: Dados, Restrição, Documentos)
+       │
+       ▼
+  OlivIA gera petição (webhook n8n)
+       │
+       ▼
+  Ag. Distribuição → protocolar no EPROC (JARBAS ou manual)
+       │
+       ▼
+<span class="page">/processos</span>
+  status = 'em_tramitacao'
+  numero_cnj preenchido
+</pre></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="clientes">👤 Página /clientes</h2>
+
+<div class="card">
+<div class="card-title">ClientesPage (index.tsx)</div>
+<p>Arquivo: <code>src/pages/clientes/index.tsx</code></p>
+<p>Listagem de clientes convertidos (pós-CRM). Usa <code>ClienteDrawer</code> com context='clientes' e abas: Dados, Restrições, Jurídico, Documentos, Pendentes, Histórico.</p>
+
+<h4>Rotas:</h4>
+<table>
+<thead><tr><th>Rota</th><th>Componente</th><th>Função</th></tr></thead>
+<tbody>
+<tr><td><code>/clientes</code></td><td>index.tsx</td><td>Listagem com filtros + drawer lateral</td></tr>
+<tr><td><code>/clientes/:cpfSlug</code></td><td>[cpfSlug]/</td><td>Página dedicada do cliente (expandida)</td></tr>
+<tr><td><code>/pagina-cliente/:id</code></td><td>ClienteByIdPage</td><td>Redirect por UUID → CPF slug</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="clientes-drawer">Drawer do Cliente vs Drawer do CRM</h3>
+
+<div class="grid2">
+<div class="card">
+<div class="card-title">context='crm'</div>
+<ul>
+<li>7 abas (incluindo Follow-up, MDZap, Observações)</li>
+<li>Ações: Auditar (A), Vincular Advogado (V)</li>
+<li>Dados vindos de <code>leads</code></li>
+<li>Documentos: <code>ClienteDrawerTabDocumentosLead</code></li>
+<li>Width: 72vw (600–1100px)</li>
+</ul>
+</div>
+<div class="card">
+<div class="card-title">context='clientes'</div>
+<ul>
+<li>6 abas (inclui Jurídico, Pendentes)</li>
+<li>Dados vindos de <code>clientes</code> (pós-conversão)</li>
+<li>Documentos: <code>ClienteDrawerTabDocumentos</code></li>
+<li>Width: 65vw (500–900px)</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="processos">⚖️ Página /processos</h2>
+
+<div class="card">
+<div class="card-title">ProcessosPage (407 linhas)</div>
+<p>Listagem de processos com paginação server-side, KPIs, filtros avançados, bulk actions.</p>
+<p>Navegação para <code>/processos/:cnjSlug</code> (nunca por UUID).</p>
+<p>Import/Export via webhook n8n. Bulk excluir com <code>ConfirmDialog</code>.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="mdzap">💬 MDZap — Integração WhatsApp</h2>
+
+<div class="card">
+<div class="card-title">Conexão CRM ↔ MDZap</div>
+
+<h4>Pontos de integração:</h4>
+<table>
+<thead><tr><th>Componente</th><th>Localização</th><th>Função</th></tr></thead>
+<tbody>
+<tr><td><code>MdzapConnectionIndicator</code></td><td>CRM header</td><td>Badge de status da conexão WhatsApp</td></tr>
+<tr><td><code>ClienteDrawerTabMdzap</code></td><td>Drawer CRM (aba MDZap)</td><td>Conversas do lead dentro do drawer</td></tr>
+<tr><td><code>CrmLeadCard</code> → onMdzap</td><td>Menu do card Kanban</td><td>Navega para /mdzap?lead={id}</td></tr>
+<tr><td><code>useMdzapConversas</code></td><td>Hook global</td><td>RPC <code>fn_mdzap_conversas</code> com lead_id/cliente_id</td></tr>
+<tr><td><code>crm_sync_events</code></td><td>Tabela Supabase</td><td>Eventos bidirecionais CRM ↔ WhatsApp</td></tr>
+</tbody>
+</table>
+
+<h4>Fluxo de sync:</h4>
+<p>Lead no CRM → mensagem WhatsApp via Nina/Atendente → <code>whatsapp_conversas.lead_id</code> vinculado → conversa aparece na aba MDZap do drawer e no /mdzap com contexto do lead.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="conexoes">🔗 Mapa de Dependências entre Páginas</h2>
+
+<div class="flow-diagram"><pre>
+<span class="note">LEGENDA: ──▶ dados fluem  ◄──▶ bidirecional  ···▶ opcional</span>
+
+                        ┌──────────────┐
+                        │  <span class="page">/auditorias</span>  │
+                        │  Consulta CPF│
+                        └──────┬───────┘
+                               │ cria lead + restrições
+                               ▼
+              ┌────────────────────────────────────┐
+              │           <span class="page">/crm</span>                      │
+              │    Pipeline Kanban + Drawer         │
+              │    (hub central de atendimento)     │
+              └──┬────────┬────────┬────────┬──────┘
+                 │        │        │        │
+    ◄────────────┘        │        │        └────────────▶
+    │                     │        │                      │
+    ▼                     ▼        ▼                      ▼
+┌────────┐        ┌──────────┐  ┌────────┐         ┌──────────┐
+│<span class="page">/mdzap</span>  │        │<span class="page">/empresas</span>│  │<span class="page">/clientes</span>│        │<span class="page">/distribuicao</span>│
+│WhatsApp│◄──────▶│Credores  │  │Pós-conv│         │Preparação │
+│Bidirecional│    │Categorias│  │Gestão  │         │Petição    │
+└────────┘        └──────────┘  └───┬────┘         └─────┬─────┘
+                                    │                     │
+                                    │     ┌───────────────┘
+                                    ▼     ▼
+                              ┌──────────────┐
+                              │ <span class="page">/processos</span>    │
+                              │ Gestão       │
+                              │ Processual   │
+                              └──────┬───────┘
+                                     │
+                          ┌──────────┼──────────┐
+                          ▼          ▼          ▼
+                    <span class="page">/controller</span>  <span class="page">/decisoes</span>  <span class="page">/acordos</span>
+                    Intimações   Sentenças   Negociação
+</pre></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="dados">📦 Tabelas e RPCs Envolvidas</h2>
+
+<table>
+<thead><tr><th>Tabela/RPC</th><th>Usado por</th><th>Função</th></tr></thead>
+<tbody>
+<tr><td><code>leads</code></td><td>CRM, Auditorias, MDZap</td><td>Leads ativos com coluna_crm, score, advogado_id</td></tr>
+<tr><td><code>clientes</code></td><td>Clientes, Processos</td><td>Clientes convertidos (pós-CRM)</td></tr>
+<tr><td><code>restricoes</code></td><td>CRM drawer, Auditorias, Distribuição, Empresas</td><td>Negativações vinculadas a lead/cliente/empresa</td></tr>
+<tr><td><code>empresas</code></td><td>Empresas, Auditorias (match)</td><td>Credores com nome_variacoes para auto-aprendizado</td></tr>
+<tr><td><code>auditorias</code></td><td>Auditorias</td><td>Consultas de crédito com resultado_json</td></tr>
+<tr><td><code>auditorias_consultas</code></td><td>Auditorias (ResultModal)</td><td>Detalhe por bureau (status, response_raw)</td></tr>
+<tr><td><code>processos</code></td><td>Distribuição, Processos</td><td>Processos judiciais com numero_cnj</td></tr>
+<tr><td><code>whatsapp_conversas</code></td><td>MDZap, CRM drawer</td><td>Conversas WhatsApp vinculadas por lead_id/cliente_id</td></tr>
+<tr><td><code>whatsapp_mensagens</code></td><td>MDZap</td><td>Mensagens individuais (realtime)</td></tr>
+<tr><td><code>crm_sync_events</code></td><td>CRM, MDZap</td><td>Eventos bidirecionais de sync</td></tr>
+<tr class=""><td colspan="3" style="background:var(--surface);font-weight:600;color:var(--primary)">RPCs</td></tr>
+<tr><td><code>rpc_disparar_auditoria</code></td><td>Auditorias</td><td>Cria auditoria + dispara consulta bureaus</td></tr>
+<tr><td><code>fn_restricao_salvar</code></td><td>Auditorias, CRM</td><td>INSERT/UPDATE restrição (evita RLS direto)</td></tr>
+<tr><td><code>fn_restricoes_listar</code></td><td>CRM drawer, useRestricoes</td><td>Lista restrições filtradas por lead/cliente/processo</td></tr>
+<tr><td><code>fn_mdzap_conversas</code></td><td>MDZap, CRM</td><td>Conversas com joins (lead, cliente, contato)</td></tr>
+<tr><td><code>fn_distribuicao_kpis</code></td><td>Distribuição</td><td>KPIs da central de distribuição</td></tr>
+<tr><td><code>fn_processos_distribuicao_listar</code></td><td>Distribuição</td><td>Processos para preparação/distribuição</td></tr>
+</table>
+
+<h3>Query Keys React Query</h3>
+<table>
+<thead><tr><th>Query Key</th><th>Página</th><th>staleTime</th></tr></thead>
+<tbody>
+<tr><td><code>['auditorias']</code></td><td>/auditorias</td><td>30s</td></tr>
+<tr><td><code>['auditoria_result', id]</code></td><td>ResultModal</td><td>30s</td></tr>
+<tr><td><code>['crm-leads-kanban']</code></td><td>/crm pipeline</td><td>30s</td></tr>
+<tr><td><code>['crm-lead-detail', id]</code></td><td>ClienteDrawer</td><td>30s</td></tr>
+<tr><td><code>['restricoes', orgId, ...]</code></td><td>Drawer (todas)</td><td>30s</td></tr>
+<tr><td><code>['empresas-lista']</code></td><td>/empresas</td><td>30s</td></tr>
+<tr><td><code>['processos_distribuicao']</code></td><td>/distribuicao</td><td>30s</td></tr>
+<tr><td><code>['mdzap','conversas']</code></td><td>/mdzap, drawer</td><td>30s</td></tr>
+</tbody>
+</table>
+
+<footer>
+Gerado em <span id="dt"></span> · MdFlow Architecture Report · MDX LegalTech
+<script>document.getElementById('dt').textContent=new Date().toLocaleString('pt-BR')</script>
+</footer>
+
+</main>
+</div>
+</body>
+</html>

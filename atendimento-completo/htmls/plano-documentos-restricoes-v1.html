@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano Documentos & Restrições — Framework Completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12100e; --card: #1a1714; --surface: #211e1a; --fg: #f2efe8; --muted: #9e978a;
+    --primary: #20c997; --border: #3a3530; --destructive: #ef4444; --warning: #f59e0b;
+    --success: #22c55e; --violet: #a78bfa; --sky: #38bdf8; --rose: #fb7185; --amber: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* HEADER */
+  .header { text-align: center; padding: 48px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+  .header h1 { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 2.2rem; color: var(--fg); margin-bottom: 12px; }
+  .header .subtitle { color: var(--muted); font-size: 1rem; max-width: 700px; margin: 0 auto 20px; }
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .chip { padding: 4px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .chip--status { background: rgba(251, 191, 36, 0.15); color: var(--amber); border: 1px solid rgba(251, 191, 36, 0.3); }
+  .chip--date { background: rgba(158, 151, 138, 0.12); color: var(--muted); border: 1px solid var(--border); }
+  .chip--ctx { background: rgba(32, 201, 151, 0.1); color: var(--primary); border: 1px solid rgba(32, 201, 151, 0.25); }
+
+  /* SECTIONS */
+  .section { margin-bottom: 56px; }
+  .section-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .section h2 { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 1.55rem; margin-bottom: 20px; color: var(--fg); }
+  .section h3 { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 1.15rem; margin: 24px 0 12px; color: var(--fg); }
+  p { color: var(--muted); margin-bottom: 12px; }
+  strong { color: var(--fg); }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .card--surface { background: var(--surface); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+  .card-grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 8px; }
+  .card-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead { background: var(--surface); }
+  th { padding: 10px 14px; text-align: left; font-weight: 600; color: var(--fg); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(32, 201, 151, 0.03); }
+
+  /* CODE / PRE */
+  pre { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; overflow-x: auto; margin: 16px 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; color: var(--muted); }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: rgba(32, 201, 151, 0.08); padding: 2px 6px; border-radius: 4px; color: var(--primary); }
+
+  /* LISTS */
+  ul, ol { padding-left: 24px; margin-bottom: 14px; }
+  li { margin-bottom: 6px; color: var(--muted); }
+  li strong { color: var(--fg); }
+
+  /* CHANGE CARDS */
+  .change-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; position: relative; }
+  .change-card .num { position: absolute; top: 14px; right: 16px; font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: rgba(32, 201, 151, 0.15); }
+  .change-card h4 { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; color: var(--fg); padding-right: 40px; }
+  .change-card p { font-size: 13px; margin-bottom: 0; }
+
+  /* QUESTION CARDS */
+  .q-card { background: rgba(251, 191, 36, 0.06); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 12px; padding: 16px 18px; }
+  .q-card .q-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--amber); font-weight: 600; margin-bottom: 4px; }
+  .q-card p { color: var(--fg); font-size: 14px; margin-bottom: 0; }
+
+  /* PHASE CARDS */
+  .phase { border-left: 3px solid var(--primary); padding-left: 20px; margin-bottom: 24px; }
+  .phase-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+  .phase h4 { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 1.05rem; margin: 4px 0 8px; }
+
+  /* BUG CARDS */
+  .bug-card { background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .bug-card .bug-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--destructive); font-weight: 600; }
+  .bug-card h4 { font-size: 0.95rem; margin: 4px 0 6px; color: var(--fg); }
+  .bug-card p { font-size: 13px; margin-bottom: 0; }
+
+  /* TAGS */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .tag--new { background: rgba(32, 201, 151, 0.12); color: var(--primary); }
+  .tag--mod { background: rgba(167, 139, 250, 0.12); color: var(--violet); }
+  .tag--bug { background: rgba(239, 68, 68, 0.12); color: var(--destructive); }
+  .tag--tier1 { background: rgba(56, 189, 248, 0.12); color: var(--sky); }
+  .tag--tier2 { background: rgba(167, 139, 250, 0.12); color: var(--violet); }
+  .tag--tier3 { background: rgba(251, 113, 133, 0.12); color: var(--rose); }
+
+  /* DIVIDER */
+  hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 32px 0 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+  .footer strong { color: var(--primary); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .header h1 { font-size: 1.5rem; }
+    .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+    pre { font-size: 11px; padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============== HEADER ============== -->
+<div class="header">
+  <h1>Plano Documentos & Restricoes &mdash; Framework Completo</h1>
+  <p class="subtitle">Componentes reutilizaveis, Google Drive obrigatorio, pipeline automatico, 4 contextos unificados</p>
+  <div class="chips">
+    <span class="chip chip--status">Planejamento</span>
+    <span class="chip chip--date">2026-04-06</span>
+    <span class="chip chip--ctx">CRM</span>
+    <span class="chip chip--ctx">Clientes</span>
+    <span class="chip chip--ctx">Processos</span>
+    <span class="chip chip--ctx">Distribuicao</span>
+    <span class="chip chip--ctx">MdZap</span>
+  </div>
+</div>
+
+<!-- ============== SECTION 1 ============== -->
+<div class="section">
+  <div class="section-num">Secao 01</div>
+  <h2>Estado Atual &mdash; Como Funciona Hoje</h2>
+
+  <h3>4 Contextos onde Documentos/Restricoes aparecem</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-label" style="color:var(--sky)">CRM Drawer</div>
+      <div class="card-title">Lead Drawer &rarr; Tab Documentos</div>
+      <p>Componente <code>ClienteDrawerTabDocumentosLead</code> (646 linhas). Upload drag-and-drop, pastas por restricao, geracao de documentos via webhook. Tier 1 + Tier 2.</p>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:var(--violet)">/clientes</div>
+      <div class="card-title">Pagina Cliente &rarr; Secao Documentos</div>
+      <p>Documentos vinculados ao lead/cliente. Hoje mostra apenas docs centrais. Nao mostra docs de processos em tramitacao.</p>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:var(--primary)">/processos Drawer</div>
+      <div class="card-title">Processo &rarr; Sub-tabs Inicial + Tramitacao</div>
+      <p>Sub-tab <strong>Inicial</strong>: docs pre-distribuicao (INICIAL_CATS). Sub-tab <strong>Tramitacao</strong>: docs pos-distribuicao via <code>ProcessoTramitacaoTab</code> (373 linhas). Upload via modal, sem drag-and-drop.</p>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:var(--rose)">/distribuicao</div>
+      <div class="card-title">Distribuicao &rarr; Docs Iniciais Vinculados</div>
+      <p>Leitura dos docs iniciais do processo para validar se esta pronto para distribuicao. RestricaoPastaCard (494 linhas) mostra docs por restricao.</p>
+    </div>
+  </div>
+
+  <h3>3 Tiers de Documentos</h3>
+  <div class="card-grid-3">
+    <div class="card card--surface">
+      <div class="card-label"><span class="tag tag--tier1">TIER 1</span> Central</div>
+      <div class="card-title">restricao_id = NULL</div>
+      <p>Documentos gerais do lead: RG, CPF, comprovante endereco. Pasta "Gerais". Bucket: <code>leads-docs</code>.</p>
+    </div>
+    <div class="card card--surface">
+      <div class="card-label"><span class="tag tag--tier2">TIER 2</span> Restricao</div>
+      <div class="card-title">restricao_id = UUID</div>
+      <p>Documentos vinculados a uma restricao especifica. Organizados em RestricaoPastaCard. Bucket: <code>leads-docs</code>.</p>
+    </div>
+    <div class="card card--surface">
+      <div class="card-label"><span class="tag tag--tier3">TIER 3</span> Gerado n8n</div>
+      <div class="card-title">Origem: webhook / automacao</div>
+      <p>Contratos, procuracoes, comprovantes de auditoria gerados por n8n. Bucket: <code>comprovantes</code>.</p>
+    </div>
+  </div>
+
+  <h3>Tabela SSOT: processos_documentos</h3>
+  <p>Single source of truth para todos os documentos. Campos chave:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Descricao</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>UUID PK</td><td>Identificador unico</td></tr>
+        <tr><td><code>processo_id</code></td><td>UUID FK</td><td>Vinculo com processo (pode ser NULL para docs de lead)</td></tr>
+        <tr><td><code>restricao_id</code></td><td>UUID FK nullable</td><td>NULL = Tier 1 (central), UUID = Tier 2 (restricao)</td></tr>
+        <tr><td><code>pasta</code></td><td>TEXT</td><td>Categoria: Gerais, Procuracao, Contrato, etc.</td></tr>
+        <tr><td><code>nome_arquivo</code></td><td>TEXT</td><td>Nome display do arquivo</td></tr>
+        <tr><td><code>storage_path</code></td><td>TEXT</td><td>Path no Supabase Storage</td></tr>
+        <tr><td><code>drive_file_id</code></td><td>TEXT nullable</td><td>ID do arquivo no Google Drive (quando sincronizado)</td></tr>
+        <tr><td><code>origem</code></td><td>TEXT</td><td>manual, webhook, whatsapp, auditoria</td></tr>
+        <tr><td><code>organizacao_id</code></td><td>UUID FK</td><td>Multi-tenant obrigatorio</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Componentes-Chave Atuais</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Componente</th><th>Linhas</th><th>Responsabilidade</th></tr></thead>
+      <tbody>
+        <tr><td><code>DocumentoItem</code></td><td>195</td><td>Render de item individual: nome, tipo, acoes (download, delete, Drive)</td></tr>
+        <tr><td><code>DocumentosUploadCentral</code></td><td>184</td><td>Dropzone central para upload de docs Tier 1</td></tr>
+        <tr><td><code>RestricaoPastaCard</code></td><td>494</td><td>Card completo de restricao: header empresa, lista docs, upload, gerar doc</td></tr>
+        <tr><td><code>ClienteDrawerTabDocumentosLead</code></td><td>646</td><td>Tab completa no CRM Drawer: Gerais + por restricao + gerar docs</td></tr>
+        <tr><td><code>ProcessoTramitacaoTab</code></td><td>373</td><td>Sub-tab de tramitacao no drawer de processo</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Hooks Existentes</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Hook</th><th>Usado Em</th><th>Responsabilidade</th></tr></thead>
+      <tbody>
+        <tr><td><code>useLeadDocs</code></td><td>CRM</td><td>CRUD docs do lead (Tier 1 + 2)</td></tr>
+        <tr><td><code>useRestricaoDocs</code></td><td>CRM, Processos</td><td>Docs filtrados por restricao_id</td></tr>
+        <tr><td><code>useProcessosDocs</code></td><td>Processos</td><td>Docs do processo (iniciais)</td></tr>
+        <tr><td><code>useProcessoDocumentos</code></td><td>Processos</td><td>Docs de tramitacao</td></tr>
+        <tr><td><code>useGerarDocumento</code></td><td>CRM</td><td>Webhook para gerar doc via n8n</td></tr>
+        <tr><td><code>useGerarContrato</code></td><td>CRM</td><td>Webhook para gerar contrato</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Buckets Supabase Storage</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Bucket</th><th>Conteudo</th><th>Acesso</th></tr></thead>
+      <tbody>
+        <tr><td><code>leads-docs</code></td><td>Tier 1 (central) + Tier 2 (restricao)</td><td>Autenticado + RLS org</td></tr>
+        <tr><td><code>documentos</code></td><td>Tramitacao (privado, pecas processuais)</td><td>Autenticado + RLS org</td></tr>
+        <tr><td><code>comprovantes</code></td><td>Tier 3 (gerados por n8n: auditorias, contratos)</td><td>Service role (n8n)</td></tr>
+        <tr><td><code>mdzap-media</code></td><td>Midias do WhatsApp (chat)</td><td>Service role (n8n)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Tabela restricoes</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Nota</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>UUID PK</td><td></td></tr>
+        <tr><td><code>lead_id</code></td><td>UUID FK</td><td>Vinculo com lead/cliente</td></tr>
+        <tr><td><code>empresa_id</code></td><td>UUID FK nullable</td><td>Pode ser NULL &mdash; empresa_nome e primario</td></tr>
+        <tr><td><code>empresa_nome</code></td><td>TEXT</td><td>Nome display (sempre preenchido)</td></tr>
+        <tr><td><code>orgao_nome</code></td><td>TEXT</td><td>Serasa, SPC, Boa Vista, Quod, SCR, RMC, RCC</td></tr>
+        <tr><td><code>tipo</code></td><td>TEXT</td><td>negativacao, protesto, etc.</td></tr>
+        <tr><td><code>valor</code></td><td>INT8</td><td>Centavos. 1500000 = R$ 15.000,00</td></tr>
+        <tr><td><code>processavel</code></td><td>BOOLEAN</td><td>Se pode virar processo</td></tr>
+        <tr><td><code>processo_id</code></td><td>UUID FK nullable</td><td>Vinculado apos distribuicao</td></tr>
+        <tr><td><code>drive_pasta_id</code></td><td>TEXT nullable</td><td>Pasta no Drive para esta restricao</td></tr>
+        <tr><td><code>deleted_at</code></td><td>TIMESTAMPTZ</td><td>Soft delete</td></tr>
+        <tr><td><code>organizacao_id</code></td><td>UUID FK</td><td>Multi-tenant</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 2 ============== -->
+<div class="section">
+  <div class="section-num">Secao 02</div>
+  <h2>O Que Precisa Mudar &mdash; Visao Geral</h2>
+  <p>11 mudancas necessarias, organizadas por impacto.</p>
+
+  <div class="card-grid" style="margin-top: 20px;">
+    <div class="change-card">
+      <span class="num">01</span>
+      <h4>Google Drive obrigatorio em TODOS os contextos</h4>
+      <p>Todo documento criado/uploaded DEVE ter copia no Drive. Botao "Abrir no Drive" em todas as abas de docs. Pastas nomeadas: <code>{nome_cliente}/{empresa_re} &mdash; {numero_cnj}</code>.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">02</span>
+      <h4>Documentos do WhatsApp &rarr; leads_documentos automaticamente</h4>
+      <p>Pipeline: lead manda foto/PDF no WA &rarr; n8n salva em Documentos Gerais + Drive. Aparece simultaneamente no MdZap e no CRM.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">03</span>
+      <h4>Componentes reutilizaveis shared</h4>
+      <p>Extrair <code>LeadDadosTab</code>, <code>LeadRestricoesTab</code>, <code>LeadDocumentosTab</code> para <code>src/components/shared/lead/</code>. Usados tanto no CRM quanto no MdZap.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">04</span>
+      <h4>MdZap ganha abas Restricoes e Documentos</h4>
+      <p>No Lead Panel do MdZap, abaixo das 4 tabs existentes (Lead/Memoria/Tom/Historico), adicionar Restricoes + Documentos reutilizando shared components.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">05</span>
+      <h4>Documentos auto-convertidos para PDF</h4>
+      <p>Todo documento que nao e PDF, converter automaticamente. Imagens &rarr; PDF, DOCX &rarr; PDF. Manter original como backup.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">06</span>
+      <h4>Pastas Drive nomeadas corretamente</h4>
+      <p>Raiz: <code>{nome_cliente}</code>. Sub-pastas: por restricao. Pos-distribuicao: <code>{numero_cnj} &mdash; {empresa_re}</code>.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">07</span>
+      <h4><span class="tag tag--bug">BUG</span> Auditoria Boa Vista &mdash; comprovante nao salva</h4>
+      <p>Auditoria roda mas nao grava comprovante em docs automaticamente. Falta INSERT no n8n apos gerar comprovante.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">08</span>
+      <h4><span class="tag tag--bug">BUG</span> Valores restricoes errados apos auditoria</h4>
+      <p>Parser n8n extrai valores incorretos das consultas de bureaus. Historico mostra valores divergentes das restricoes.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">09</span>
+      <h4><span class="tag tag--bug">BUG</span> Boa Vista inclui cartorios</h4>
+      <p>Cartorios nao devem ir para restricoes. Regra: excluir registros onde orgao tem natureza de cartorio.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">10</span>
+      <h4>Processos em tramitacao: front de docs igual ao dos iniciais</h4>
+      <p>Sub-tab Tramitacao deve ganhar drag-and-drop, categorias visuais, mesmo visual da sub-tab Inicial. Hoje so tem upload via modal.</p>
+    </div>
+    <div class="change-card">
+      <span class="num">11</span>
+      <h4>/clientes: 2 secoes de docs</h4>
+      <p>Secao 1: docs do lead/cliente (Tier 1 + 2). Secao 2: docs por processo em tramitacao, agrupados por processo.</p>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 3 ============== -->
+<div class="section">
+  <div class="section-num">Secao 03</div>
+  <h2>Fluxograma Completo &mdash; Ciclo de Vida dos Documentos</h2>
+
+<pre>
+  LEAD CADASTRADO
+       |
+       v
+  +----------------------------+
+  | Restricoes cadastradas     |  (manual / CSV / bureau / auditoria)
+  | restricoes table           |
+  +----------------------------+
+       |
+       v
+  +----------------------------+
+  | Pastas criadas             |  Storage bucket: leads-docs
+  | + Google Drive sync        |  Drive: {nome_cliente}/
+  +----------------------------+
+       |
+       +------ Docs WA chegam -----> mdzap-media bucket
+       |       (imagem/PDF)              |
+       |                                 v
+       |                          +-------------------+
+       |                          | n8n pipeline      |  NOVO
+       |                          | INSERT em          |
+       |                          | processos_documentos|
+       |                          | pasta = "Gerais"  |
+       |                          | origem = "whatsapp"|
+       |                          | + syncToDrive     |
+       |                          +-------------------+
+       |                                 |
+       v                                 v
+  +----------------------------+   Aparece em:
+  | Upload manual/drag-drop    |   - MdZap tab Documentos
+  | CRM Drawer                 |   - CRM Drawer tab Docs
+  | pasta = categoria          |
+  | + syncToDrive              |
+  +----------------------------+
+       |
+       v
+  +----------------------------+
+  | AUDITORIA (Boa Vista etc.) |
+  | n8n consulta bureau        |
+  +----------------------------+
+       |
+       +------ Comprovante PDF -----> comprovantes bucket
+       |       (screenshot/resp)          |
+       |                                  v
+       |                          +-------------------+
+       |                          | INSERT em          |  BUGFIX
+       |                          | processos_documentos|
+       |                          | pasta = "Boa Vista"|
+       |                          | origem = "auditoria"|
+       |                          | + syncToDrive     |
+       |                          +-------------------+
+       |
+       v
+  +----------------------------+
+  | DISTRIBUICAO               |
+  | Docs iniciais vinculados   |
+  | ao processo                |
+  | processo_id preenchido     |
+  +----------------------------+
+       |
+       v
+  +----------------------------+
+  | EPROC protocola docs       |
+  | iniciais como pecas        |
+  +----------------------------+
+       |
+       v
+  +----------------------------+
+  | POS-DISTRIBUICAO           |
+  | Sub-tab Tramitacao         |
+  | bucket: documentos         |
+  | Novos docs: intimacoes,    |
+  | decisoes, recursos         |
+  +----------------------------+
+       |
+       v
+  +----------------------------+
+  | TUDO SINCRONIZADO COM      |
+  | GOOGLE DRIVE               |
+  | Pasta: {cliente}/          |
+  |   {empresa} - {CNJ}/      |
+  +----------------------------+
+</pre>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 4 ============== -->
+<div class="section">
+  <div class="section-num">Secao 04</div>
+  <h2>Fluxograma &mdash; Ciclo de Vida das Restricoes</h2>
+
+<pre>
+  CADASTRO
+  (manual / CSV import / bureau consulta / auditoria automatica)
+       |
+       v
+  +-----------------------------+
+  | restricoes table            |
+  | lead_id, empresa_nome,      |
+  | orgao_nome, tipo, valor,    |
+  | processavel                 |
+  +-----------------------------+
+       |
+       +--- Processavel? ---+
+       |                    |
+      SIM                  NAO
+       |                    |
+       v                    v
+  +-----------------+  +-------------------+
+  | Gera pasta docs |  | motivo preenchido |
+  | Storage + Drive |  | ex: "valor baixo" |
+  +-----------------+  | "prescrito"       |
+       |               +-------------------+
+       v
+  +--------------------------+
+  | DISTRIBUICAO             |
+  | vincula processo_id      |
+  | RestricaoPastaCard ativo |
+  +--------------------------+
+       |
+       v
+  +------------------------------------+
+  | 4 CONTEXTOS DE USO                 |
+  |                                    |
+  | CRM:                               |
+  |   CRUD completo, GerarDoc,         |
+  |   Import/Export CSV, toggle        |
+  |   processavel                      |
+  |                                    |
+  | /clientes:                         |
+  |   Visualizacao + toggle processavel|
+  |   + consultar bureaus              |
+  |                                    |
+  | /processos:                        |
+  |   Read-only (vinculadas ao proc)   |
+  |                                    |
+  | /distribuicao:                     |
+  |   Validacao: tem docs suficientes? |
+  +------------------------------------+
+
+  REGRAS ESPECIAIS:
+  +-----------------------------------------+
+  | Boa Vista: cartorios EXCLUIDOS          |
+  | empresa_id: pode ser NULL               |
+  |   (empresa_nome e campo primario)       |
+  | valor: INT8 centavos (parser bugado!)   |
+  | drive_pasta_id: sync com Drive          |
+  +-----------------------------------------+
+</pre>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 5 ============== -->
+<div class="section">
+  <div class="section-num">Secao 05</div>
+  <h2>Componentes Reutilizaveis &mdash; Mapa de Extracao</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Componente</th>
+          <th>Local Atual</th>
+          <th>Usado Hoje Por</th>
+          <th>Sera Usado Por</th>
+          <th>Mudancas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>DocumentoItem</code></td>
+          <td>components/crm/</td>
+          <td>CRM Drawer</td>
+          <td>CRM, MdZap, /clientes, /processos</td>
+          <td><span class="tag tag--mod">EXTRAIR</span> para shared/docs/. Adicionar botao "Abrir no Drive". Prop: <code>showDriveButton</code></td>
+        </tr>
+        <tr>
+          <td><code>DocumentosUploadCentral</code></td>
+          <td>components/crm/</td>
+          <td>CRM Drawer</td>
+          <td>CRM, MdZap, /clientes</td>
+          <td><span class="tag tag--mod">EXTRAIR</span> para shared/docs/. Aceitar prop <code>onUploadComplete</code> com sync Drive</td>
+        </tr>
+        <tr>
+          <td><code>RestricaoPastaCard</code></td>
+          <td>components/crm/</td>
+          <td>CRM Drawer</td>
+          <td>CRM, MdZap (read-only), /clientes</td>
+          <td><span class="tag tag--mod">EXTRAIR</span> para shared/docs/. Props: <code>readOnly</code>, <code>showActions</code></td>
+        </tr>
+        <tr>
+          <td><code>LeadDadosTab</code></td>
+          <td><span class="tag tag--new">NOVO</span></td>
+          <td>&mdash;</td>
+          <td>CRM Drawer, MdZap Lead Panel</td>
+          <td>Extrair dados do lead (nome, CPF, telefone, endereco) do CRM drawer para componente shared</td>
+        </tr>
+        <tr>
+          <td><code>LeadRestricoesTab</code></td>
+          <td><span class="tag tag--new">NOVO</span></td>
+          <td>&mdash;</td>
+          <td>CRM Drawer, MdZap Lead Panel, /clientes</td>
+          <td>Tabela de restricoes com toggle processavel, import CSV, consultar bureau. Props: <code>mode: 'full' | 'readonly'</code></td>
+        </tr>
+        <tr>
+          <td><code>LeadDocumentosTab</code></td>
+          <td><span class="tag tag--new">NOVO</span></td>
+          <td>&mdash;</td>
+          <td>CRM Drawer, MdZap Lead Panel, /clientes</td>
+          <td>Combina DocumentosUploadCentral + RestricaoPastaCard + lista Tier 1. Props: <code>leadId</code>, <code>mode</code></td>
+        </tr>
+        <tr>
+          <td><code>AuditoriaBotao</code></td>
+          <td><span class="tag tag--new">NOVO</span></td>
+          <td>&mdash;</td>
+          <td>CRM, /clientes</td>
+          <td>Botao "Consultar Bureau" que dispara webhook auditoria + salva comprovante automaticamente</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Destino: src/components/shared/lead/</h3>
+<pre>
+src/components/shared/
+  lead/
+    LeadDadosTab.tsx          &larr; dados basicos do lead
+    LeadRestricoesTab.tsx     &larr; tabela restricoes + CRUD
+    LeadDocumentosTab.tsx     &larr; docs centrais + por restricao
+  docs/
+    DocumentoItem.tsx         &larr; item individual de doc
+    DocumentosUploadCentral.tsx &larr; dropzone + upload
+    RestricaoPastaCard.tsx    &larr; card de restricao com docs
+    AuditoriaBotao.tsx        &larr; botao consulta bureau
+    DriveButton.tsx           &larr; "Abrir no Drive" (NOVO)
+</pre>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 6 ============== -->
+<div class="section">
+  <div class="section-num">Secao 06</div>
+  <h2>Google Drive &mdash; Integracao Obrigatoria</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-label" style="color:var(--muted)">ESTADO ATUAL</div>
+      <div class="card-title">Fire-and-Forget via Webhook</div>
+      <p>Webhook <code>sync-storage-drive</code> e chamado apos upload. 3 variantes de DrivePanel existem no codigo. Sync nao e garantido &mdash; falhas silenciosas.</p>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:var(--primary)">ESTADO DESEJADO</div>
+      <div class="card-title">Drive Obrigatorio em Todo Doc</div>
+      <p>TODO upload &rarr; copia no Drive. Botao "Abrir no Drive" em cada <code>DocumentoItem</code>. Campo <code>drive_file_id</code> preenchido ou status "sincronizando".</p>
+    </div>
+  </div>
+
+  <h3>Estrutura de Pastas no Drive</h3>
+<pre>
+Drive Root (Shared ou Service Account)
+  |
+  +-- {Nome do Cliente}/
+  |     |
+  |     +-- Gerais/                          (Tier 1: RG, CPF, comprovantes)
+  |     |
+  |     +-- {Empresa Re 1}/                  (Restricao sem processo)
+  |     |     +-- comprovante_auditoria.pdf
+  |     |     +-- notificacao.pdf
+  |     |
+  |     +-- {Numero CNJ} -- {Empresa Re 2}/  (Restricao com processo)
+  |     |     +-- peticao_inicial.pdf
+  |     |     +-- procuracao.pdf
+  |     |     +-- contrato.pdf
+  |     |     +-- decisao_liminar.pdf
+  |     |
+  |     +-- {Numero CNJ} -- {Empresa Re 3}/
+  |           +-- ...
+</pre>
+
+  <h3>Perguntas Tecnicas sobre Drive</h3>
+  <div class="card" style="border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.04);">
+    <ul>
+      <li><strong>API Key vs Service Account?</strong> &mdash; O webhook atual usa qual credencial?</li>
+      <li><strong>Shared Drive ou Drive pessoal?</strong> &mdash; Equipe precisa acessar diretamente?</li>
+      <li><strong>Quota de API</strong> &mdash; Com ~80-100 processos/dia e docs multiplos, vai bater rate limit?</li>
+      <li><strong>Webhook atual cobre todos os cenarios?</strong> &mdash; Upload manual, n8n gerado, WhatsApp, tramitacao?</li>
+      <li><strong>Fallback se Drive falhar?</strong> &mdash; Doc fica so no Storage com flag "pendente sync"?</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 7 ============== -->
+<div class="section">
+  <div class="section-num">Secao 07</div>
+  <h2>Pipeline MdZap &rarr; Documentos</h2>
+
+<pre>
+  LEAD ENVIA MIDIA NO WHATSAPP
+  (imagem, PDF, documento)
+       |
+       v
+  +----------------------------+
+  | Meta Webhook               |
+  | Recebe mensagem com midia  |
+  +----------------------------+
+       |
+       v
+  +----------------------------+
+  | n8n: mdflow-mdzap-inbound  |
+  | Ja existe: salva mensagem  |
+  | em mdzap_messages          |
+  +----------------------------+
+       |
+       v
+  +----------------------------+
+  | Download media da Meta API |
+  | Salva em mdzap-media bucket|  (JA EXISTE)
+  +----------------------------+
+       |
+       v
+  +--------------------------------------+
+  | NOVO: Verificar se e documento       |
+  | (image/jpeg, image/png,              |
+  |  application/pdf,                    |
+  |  application/msword, etc.)           |
+  +--------------------------------------+
+       |
+       +--- NAO e documento ----> Fim (audio, video, sticker)
+       |
+      SIM
+       |
+       v
+  +--------------------------------------+
+  | NOVO: Converter para PDF se preciso  |
+  | (imagem -> PDF, DOCX -> PDF)         |
+  +--------------------------------------+
+       |
+       v
+  +--------------------------------------+
+  | NOVO: Copiar para leads-docs bucket  |
+  | path: {org_id}/{lead_id}/gerais/     |
+  +--------------------------------------+
+       |
+       v
+  +--------------------------------------+
+  | NOVO: INSERT em processos_documentos |
+  | pasta = "Gerais"                     |
+  | origem = "whatsapp"                  |
+  | restricao_id = NULL (Tier 1)         |
+  +--------------------------------------+
+       |
+       v
+  +--------------------------------------+
+  | NOVO: Sync to Google Drive           |
+  | Pasta: {nome_cliente}/Gerais/        |
+  +--------------------------------------+
+       |
+       v
+  Documento aparece simultaneamente em:
+  +------------------+  +------------------+
+  | MdZap Lead Panel |  | CRM Drawer       |
+  | Tab Documentos   |  | Tab Documentos   |
+  +------------------+  +------------------+
+</pre>
+
+  <p>O pipeline existente de inbound do MdZap ja faz download e salva a mensagem. O que falta e a <strong>bifurcacao</strong>: alem de salvar como mensagem de chat, tambem salvar como documento do lead quando o tipo de midia e imagem ou documento.</p>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 8 ============== -->
+<div class="section">
+  <div class="section-num">Secao 08</div>
+  <h2>Bugs Conhecidos</h2>
+
+  <div class="bug-card">
+    <span class="bug-id">BUG-001</span>
+    <h4>Valores de restricoes errados apos auditoria</h4>
+    <p>Parser n8n que extrai dados da consulta Boa Vista/Serasa gera valores incorretos. Ex: restricao de R$ 1.500,00 aparece como R$ 150.000,00 ou R$ 15,00. O campo <code>valor</code> (INT8 centavos) recebe valor errado na conversao.</p>
+    <p style="margin-top:6px"><strong>Onde:</strong> n8n workflow de auditoria, no de parsing. <strong>Impacto:</strong> Todas restricoes importadas automaticamente tem valor errado.</p>
+  </div>
+
+  <div class="bug-card">
+    <span class="bug-id">BUG-002</span>
+    <h4>Comprovante de auditoria nao salva em documentos</h4>
+    <p>Quando a auditoria roda (consulta bureau), o comprovante (screenshot/PDF do resultado) e gerado mas NAO e inserido na tabela <code>processos_documentos</code>. Falta um no INSERT no workflow n8n apos gerar o comprovante.</p>
+    <p style="margin-top:6px"><strong>Onde:</strong> n8n workflow de auditoria, apos no de geracao de comprovante. <strong>Impacto:</strong> Comprovantes perdidos, nao aparecem nos docs.</p>
+  </div>
+
+  <div class="bug-card">
+    <span class="bug-id">BUG-003</span>
+    <h4>Historico de auditorias mostra valores divergentes</h4>
+    <p>O historico de auditorias (log de consultas) mostra valores diferentes dos que estao na tabela <code>restricoes</code>. Provavelmente o parser grava um valor no historico e outro na restricao, ou a atualizacao sobrescreve com parse diferente.</p>
+    <p style="margin-top:6px"><strong>Onde:</strong> n8n workflow + possivelmente frontend de historico. <strong>Impacto:</strong> Confusao operacional, dados inconsistentes.</p>
+  </div>
+
+  <div class="bug-card">
+    <span class="bug-id">BUG-004</span>
+    <h4>Boa Vista inclui cartorios nas restricoes</h4>
+    <p>Consulta Boa Vista retorna registros de cartorios (protestos em cartorio, etc.) e eles sao importados como restricoes processaveis. Cartorios NAO devem virar restricoes &mdash; devem ser filtrados no parser.</p>
+    <p style="margin-top:6px"><strong>Onde:</strong> n8n workflow de consulta Boa Vista, no de filtragem. <strong>Impacto:</strong> Restricoes falsas, processos desnecessarios.</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 9 ============== -->
+<div class="section">
+  <div class="section-num">Secao 09</div>
+  <h2>Plano de Execucao &mdash; 5 Fases</h2>
+
+  <div class="phase">
+    <span class="phase-num">Fase 1 &mdash; Bugfixes Criticos</span>
+    <h4>Corrigir bugs de auditoria + parser</h4>
+    <p><strong>Estimativa:</strong> 1-2 sessoes</p>
+    <ul>
+      <li><strong>BUG-001:</strong> Corrigir parser de valores no n8n (conversao centavos)</li>
+      <li><strong>BUG-002:</strong> Adicionar INSERT em processos_documentos apos gerar comprovante</li>
+      <li><strong>BUG-003:</strong> Unificar fonte de verdade de valores (restricoes table = SSOT)</li>
+      <li><strong>BUG-004:</strong> Adicionar filtro de cartorios no parser Boa Vista</li>
+    </ul>
+    <p><strong>Resultado:</strong> Auditorias funcionando corretamente, comprovantes salvos, valores corretos.</p>
+  </div>
+
+  <div class="phase">
+    <span class="phase-num">Fase 2 &mdash; Backend Prep</span>
+    <h4>Schema, webhooks, Drive API</h4>
+    <p><strong>Estimativa:</strong> 1-2 sessoes</p>
+    <ul>
+      <li>Verificar/ajustar schema <code>processos_documentos</code> (campo <code>origem</code> com novos valores: whatsapp, auditoria)</li>
+      <li>Novo webhook n8n: <code>mdflow-mdzap-doc-pipeline</code> (bifurcacao do inbound)</li>
+      <li>Verificar/configurar Drive API (service account, shared drive, permissoes)</li>
+      <li>Webhook <code>sync-storage-drive</code>: validar que cobre upload manual + n8n + WA</li>
+      <li>RPC para buscar docs por lead_id (cross-contexto: CRM + MdZap + /clientes)</li>
+    </ul>
+    <p><strong>Resultado:</strong> Backend pronto para receber docs de qualquer origem.</p>
+  </div>
+
+  <div class="phase">
+    <span class="phase-num">Fase 3 &mdash; Extrair Componentes Shared</span>
+    <h4>DocumentoItem, RestricaoPastaCard, Lead tabs &rarr; shared/</h4>
+    <p><strong>Estimativa:</strong> 2-3 sessoes</p>
+    <ul>
+      <li>Extrair <code>DocumentoItem</code> &rarr; <code>shared/docs/DocumentoItem.tsx</code></li>
+      <li>Extrair <code>DocumentosUploadCentral</code> &rarr; <code>shared/docs/</code></li>
+      <li>Extrair <code>RestricaoPastaCard</code> &rarr; <code>shared/docs/</code></li>
+      <li>Criar <code>LeadDadosTab</code>, <code>LeadRestricoesTab</code>, <code>LeadDocumentosTab</code></li>
+      <li>Criar <code>DriveButton</code> (novo componente shared)</li>
+      <li>Refatorar CRM Drawer para usar componentes shared</li>
+      <li>Verificar que CRM funciona identicamente apos refactor</li>
+    </ul>
+    <p><strong>Resultado:</strong> Componentes prontos para reuso. CRM intacto.</p>
+  </div>
+
+  <div class="phase">
+    <span class="phase-num">Fase 4 &mdash; Integracao MdZap</span>
+    <h4>Abas novas + pipeline WA &rarr; docs</h4>
+    <p><strong>Estimativa:</strong> 2-3 sessoes</p>
+    <ul>
+      <li>Adicionar abas <strong>Restricoes</strong> e <strong>Documentos</strong> no MdZap Lead Panel</li>
+      <li>Usar <code>LeadRestricoesTab</code> (mode: 'readonly' ou 'full'?)</li>
+      <li>Usar <code>LeadDocumentosTab</code> (mode: 'readonly' ou com upload?)</li>
+      <li>Implementar pipeline n8n: WA media &rarr; processos_documentos + Drive</li>
+      <li>Testar: lead envia foto no WA &rarr; aparece em Docs no MdZap + CRM</li>
+    </ul>
+    <p><strong>Resultado:</strong> MdZap com docs e restricoes. Pipeline WA automatico.</p>
+  </div>
+
+  <div class="phase">
+    <span class="phase-num">Fase 5 &mdash; Polish + Drive Everywhere</span>
+    <h4>Botao Drive, conversao PDF, pastas corretas, /clientes</h4>
+    <p><strong>Estimativa:</strong> 2-3 sessoes</p>
+    <ul>
+      <li>Botao "Abrir no Drive" em todo <code>DocumentoItem</code></li>
+      <li>Conversao automatica para PDF (definir onde: n8n? edge function?)</li>
+      <li>Naming correto de pastas no Drive</li>
+      <li>Pagina /clientes: 2 secoes de docs (lead + por processo)</li>
+      <li>ProcessoTramitacaoTab: ganhar drag-and-drop</li>
+      <li>Testes end-to-end: upload &rarr; Drive &rarr; visualizacao em todos contextos</li>
+    </ul>
+    <p><strong>Resultado:</strong> Framework completo. Docs sincronizados everywhere.</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 10 ============== -->
+<div class="section">
+  <div class="section-num">Secao 10</div>
+  <h2>Webhooks &mdash; Novos e Modificados</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Webhook</th>
+          <th>Status</th>
+          <th>Metodo</th>
+          <th>Descricao</th>
+          <th>Mudanca</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>sync-storage-drive</code></td>
+          <td><span class="tag tag--mod">MODIFICAR</span></td>
+          <td>POST</td>
+          <td>Sync arquivo Storage &rarr; Google Drive</td>
+          <td>Validar que cobre todos os cenarios. Adicionar retry em falha. Preencher <code>drive_file_id</code> no callback.</td>
+        </tr>
+        <tr>
+          <td><code>mdflow-mdzap-inbound</code></td>
+          <td><span class="tag tag--mod">MODIFICAR</span></td>
+          <td>POST</td>
+          <td>Recebe mensagens do WhatsApp</td>
+          <td>Adicionar bifurcacao: se midia e imagem/PDF/doc, tambem inserir em processos_documentos.</td>
+        </tr>
+        <tr>
+          <td><code>mdflow-auditoria-*</code></td>
+          <td><span class="tag tag--mod">MODIFICAR</span></td>
+          <td>POST</td>
+          <td>Consultas bureaus (Boa Vista, Serasa, etc.)</td>
+          <td>Fix parser valores. Fix INSERT comprovante. Fix filtro cartorios.</td>
+        </tr>
+        <tr>
+          <td><code>mdflow-gerar-documento</code></td>
+          <td>Existente</td>
+          <td>POST</td>
+          <td>Gera doc via template (contrato, procuracao)</td>
+          <td>Adicionar sync Drive apos gerar.</td>
+        </tr>
+        <tr>
+          <td><code>mdflow-gerar-contrato</code></td>
+          <td>Existente</td>
+          <td>POST</td>
+          <td>Gera contrato PDF</td>
+          <td>Adicionar sync Drive apos gerar.</td>
+        </tr>
+        <tr>
+          <td><code>mdflow-doc-convert-pdf</code></td>
+          <td><span class="tag tag--new">NOVO</span></td>
+          <td>POST</td>
+          <td>Converte arquivo para PDF</td>
+          <td>Recebe storage_path, converte, salva PDF, atualiza registro.</td>
+        </tr>
+        <tr>
+          <td><code>mdflow-drive-create-folder</code></td>
+          <td><span class="tag tag--new">NOVO</span></td>
+          <td>POST</td>
+          <td>Cria pasta no Drive com naming correto</td>
+          <td>Chamado no cadastro de lead e na distribuicao.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 11 ============== -->
+<div class="section">
+  <div class="section-num">Secao 11</div>
+  <h2>Realtime Channels Envolvidos</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Channel</th>
+          <th>Tabela</th>
+          <th>Filter</th>
+          <th>Usado Em</th>
+          <th>Eventos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>processos_documentos-{orgId}</code></td>
+          <td>processos_documentos</td>
+          <td><code>organizacao_id=eq.{orgId}</code></td>
+          <td>CRM, /clientes, /processos, MdZap</td>
+          <td>INSERT, UPDATE, DELETE</td>
+        </tr>
+        <tr>
+          <td><code>restricoes-{orgId}</code></td>
+          <td>restricoes</td>
+          <td><code>organizacao_id=eq.{orgId}</code></td>
+          <td>CRM, /clientes, MdZap</td>
+          <td>INSERT, UPDATE, DELETE</td>
+        </tr>
+        <tr>
+          <td><code>mdzap_messages-{orgId}</code></td>
+          <td>mdzap_messages</td>
+          <td><code>organizacao_id=eq.{orgId}</code></td>
+          <td>MdZap</td>
+          <td>INSERT (novas mensagens)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Quando um documento e inserido via pipeline WA (n8n), o channel <code>processos_documentos</code> emite INSERT e tanto o MdZap quanto o CRM atualizam automaticamente via <code>queryClient.invalidateQueries</code>.</p>
+</div>
+
+<hr>
+
+<!-- ============== SECTION 12 ============== -->
+<div class="section">
+  <div class="section-num">Secao 12</div>
+  <h2>Perguntas Pendentes (CRITICAL)</h2>
+  <p style="margin-bottom: 20px;">Todas as questoes abaixo precisam de resposta antes de iniciar a implementacao.</p>
+
+  <div class="card-grid" style="grid-template-columns: 1fr;">
+
+    <div class="q-card">
+      <div class="q-id">Q1 &mdash; Google Drive API</div>
+      <p>Precisamos de API key / service account para o Drive? O webhook <code>sync-storage-drive</code> atual usa qual credencial? E Shared Drive ou Drive pessoal do Christian?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q2 &mdash; Conversao automatica para PDF</div>
+      <p>Onde implementar? n8n (node de conversao)? Edge function Supabase? LibreOffice headless no Mac Mini? Quais formatos suportar: DOCX, imagem (JPG/PNG), ou mais?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q3 &mdash; Documentos do WhatsApp</div>
+      <p>TODOS os tipos de midia devem virar documento (audio, video, imagem, PDF) ou so imagem + PDF/DOC? Audio de voz do WA vira documento?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q4 &mdash; Pasta Drive naming</div>
+      <p>Confirmar formato exato das pastas: <code>{nome_cliente}/{empresa_re} - {numero_cnj}</code>? Ou <code>{nome_cliente}/{numero_cnj} -- {empresa_re}</code>? E quando nao tem processo ainda?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q5 &mdash; MdZap Lead sem cadastro</div>
+      <p>Se o contato do WhatsApp NAO tem lead vinculado, as abas Restricoes e Documentos ficam vazias? Ou cria lead automaticamente? Ou nem mostra as abas?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q6 &mdash; Abas Restricoes/Documentos no MdZap</div>
+      <p>TabGroup separado abaixo das 4 tabs existentes (Lead / Memoria / Tom / Historico)? Ou incluir na mesma linha, totalizando 6 tabs? Ou dentro da tab Lead como sub-tabs?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q7 &mdash; ProcessoTramitacaoTab</div>
+      <p>Deve ganhar drag-and-drop igual ao Inicial? Hoje so tem upload via modal. Categorias de tramitacao sao as mesmas do INICIAL_CATS ou diferentes?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q8 &mdash; Boa Vista cartorios</div>
+      <p>Regra exata de exclusao: excluir registros onde <code>orgao_nome</code> contem "cartorio" / "cartório"? Ou e pelo tipo do registro retornado pela API Boa Vista? Qual campo especifico?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q9 &mdash; /clientes docs de tramitacao</div>
+      <p>/clientes deve mostrar documentos de tramitacao agrupados por processo? Ou so docs do lead/cliente (Tier 1 + 2)? Se mostrar tramitacao, e read-only ou permite upload?</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q10 &mdash; Prioridade de execucao</div>
+      <p>Bugs primeiro (Fase 1) e depois componentes shared (Fase 3)? Ou componentes shared primeiro para ja ter a base pronta? Depende: se bugs estao atrapalhando operacao diaria, priorizar bugs.</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q11 &mdash; Token Meta WhatsApp</div>
+      <p>O token de acesso da Meta (<code>META_ACCESS_TOKEN</code>) ja foi renovado no Railway? Tokens de sistema expiram em ~60 dias. Se expirado, pipeline MdZap nao funciona.</p>
+    </div>
+
+    <div class="q-card">
+      <div class="q-id">Q12 &mdash; Documentos outbound MdZap</div>
+      <p>Documentos ENVIADOS pelo escritorio via MdZap (outbound) tambem devem ser salvos em <code>processos_documentos</code>? Ou so documentos recebidos (inbound)?</p>
+    </div>
+
+  </div>
+</div>
+
+<hr>
+
+<!-- ============== FOOTER ============== -->
+<div class="footer">
+  <p><strong>MdFlow</strong> &middot; Plano Documentos & Restricoes v1 &middot; 2026-04-06 &middot; Status: <span style="color:var(--amber)">PLANEJAMENTO</span> &middot; Aguardando respostas</p>
+</div>
+
+</div>
+</body>
+</html>

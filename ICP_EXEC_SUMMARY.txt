@@ -1,0 +1,171 @@
+================================================================================
+                    EXECUTIVE SUMMARY — ICP TELEMETRIA AUDIT
+================================================================================
+Data:     2026-04-06
+Org:      55a0c7ba-1a23-4ae1-b69b-a13811324735 (Midas)
+Escopo:   leads (44), clientes (3.7k), processos (14.3k), icp_reports, mdzap_*
+Objetivo: Mapear campos disponíveis para agente ICP Ideal Customer Profile
+
+================================================================================
+                              RESPOSTA RÁPIDA
+================================================================================
+
+1. CAMPOS DEMOGRÁFICOS DISPONÍVEIS? 
+   ✅ EXCELENTE em clientes:
+      - data_nascimento: 92% (3424/3725) → pode calcular idade
+      - profissao: 45% (1672/3725) → segmentação por tipo
+      - estado_uf: 52% (1929/3725) → localização regional
+   
+   ❌ PÉSSIMO em leads:
+      - data_nascimento: 9% (4/44) — crítico esparso
+      - profissao: 2% (1/44) — praticamente vazio
+      - estado: 11% (5/44) — crítico esparso
+
+2. CAMPOS DE VALOR DISPONÍVEIS?
+   ✅ BOM em processos:
+      - valor_causa: 71% (10224/14386) — base sólida
+      - acordo_candidato: 100% presente
+      - acordo_propensao_pct: presente mas integridade desconhecida
+   
+   ❌ NÃO EXISTEM em clientes/leads:
+      - renda_mensal: 0% — SEMPRE NULL
+      - valor_estimado_recuperavel: 0% — SEMPRE NULL (crítico!)
+      - valor_estimado (leads): 0% — SEMPRE NULL
+
+3. TABELA ICP JÁ EXISTE?
+   ✅ SIM: icp_reports
+      - 9 campos estruturados (id, org_id, periodo, payload, etc)
+      - Mas: 0 registros (nunca foi populada)
+
+4. TABELAS MDZAP PARA ENRIQUECIMENTO?
+   ✅ SIM: 9 tabelas presentes
+      - mdzap_lead_memory: pode armazenar contexto demográfico
+      - mdzap_conversas_timeline: histórico de interações
+
+================================================================================
+                            FATORES ICP VIÁVEIS
+================================================================================
+
+FORÇA ✅ (Use imediatamente):
+────────────────────────────
+1. idade_anos                   ← clientes.data_nascimento (92% cob)
+2. profissao                    ← clientes.profissao (45% cob)
+3. estado_uf                    ← clientes.endereco_uf (52% cob)
+4. valor_causa                  ← processos.valor_causa (71% cob)
+5. fase_processual              ← processos.fase_processual (93% cob)
+6. icp_score_base               ← leads.icp_score (100% pré-calculado)
+7. acordo_candidato             ← processos.acordo_candidato (100% presente)
+8. tempo_dias_caso              ← calculado from created_at/status_changed_at
+
+FRAQUEZA ❌ (Requer enriquecimento P1):
+────────────────────────────────────────
+1. renda_mensal                 ← NUNCA preenchido (0%)
+2. valor_estimado_recuperavel   ← NUNCA preenchido (0%)
+3. dados_demograficos_leads     ← MUITO esparso (9-11%)
+
+================================================================================
+                         PROBLEMAS CRÍTICOS (P0/P1)
+================================================================================
+
+P0 - BLOQUEADOR IMEDIATO:
+   • leads.valor_estimado NUNCA preenchido
+   • Impossível estimar valor em leads diretos
+
+P1 - IMPORTANTES PARA ICP:
+   • clientes.renda_mensal SEMPRE NULL
+     └─ Fator-chave de ICP faltando
+     └─ Solução: Enriquecer via Advbox API ou OlivIA na onboard
+   
+   • clientes.valor_total_estimado_recuperavel SEMPRE NULL
+     └─ Impossível calcular ROI cliente
+     └─ Solução: Agregar SUM(valor_causa) de processos por cliente
+   
+   • leads: dados demográficos ~9% preenchimento
+     └─ Leads recebem pouca qualificação
+     └─ Solução: Integrar OlivIA na qualificação + enriquecimento de terceiro
+
+P2 - REVISAR DEPOIS:
+   • Preenchimento de sexo/estado_civil em clientes (desconhecido)
+   • Preenchimento de restricao_valor em processos
+   • Integridade de acordo_propensao_pct
+
+================================================================================
+                        ARQUITETURA RECOMENDADA
+================================================================================
+
+NOVA TABELA: icp_telemetria_snapshots
+   Propósito: Snapshot diário/semanal de métricas agregadas
+   Frequência: Daily via n8n cron
+   
+   Campos:
+   ├─ id, organizacao_id, data_snapshot
+   ├─ Demográfico: idade_anos, profissao, estado_uf, sexo, estado_civil
+   ├─ Financeiro: valor_causa, valor_estimado_recuperavel, renda_mensal
+   ├─ Processual: fase_processual, tempo_dias_caso
+   ├─ Oportunidade: agreement_propensity_pct, ia_success_chance_pct
+   ├─ Scoring: icp_score, icp_factors (JSONB)
+   └─ Audit: created_at, updated_at, deleted_at
+
+RPC: calcular_icp_agregado(org_id, periodo_dias=90)
+   Retorna: fator, valor_medio, count_não_nulo, percentual_preenchimento
+   Propósito: Análise histórica por período
+
+INTEGRAÇÃO: OlivIA
+   Quando: Documento onboard cliente ou lead sem dados
+   O quê enriquecer: profissão, data nascimento, renda estimada
+
+================================================================================
+                        PRÓXIMOS PASSOS (ORDENADO)
+================================================================================
+
+1. [IMEDIATO] Especificação formal (SDD) da tabela icp_telemetria_snapshots
+   Entrega: docs/spec/icp_telemetria.md
+
+2. [CRÍTICO] Decisão: como calcular valor_estimado_recuperavel?
+   Opção A: SUM(processos.valor_causa) por cliente
+   Opção B: Campo próprio em clientes (requer migração)
+   Recomendação: Opção A (rápido)
+
+3. [CRÍTICO] Criar RPC para agregar valor_estimado_recuperavel
+   Nome: fn_cliente_valor_recuperavel_total
+   Query: SUM(processos.valor_causa) WHERE cliente_id = X AND deleted_at IS NULL
+
+4. [P1] Integração OlivIA para enriquecimento de leads
+   Onde: Ao receber novo lead via mdzap
+   O quê extrair: profissão, idade (aprox), renda (aprox)
+
+5. [P1] n8n workflow para popular icp_telemetria_snapshots
+   Trigger: Daily 01:00 UTC
+   Lógica: Loop de clientes → agregação de fatores → INSERT snapshot
+
+6. [P2] Dashboard ICP Telemetria baseado em snapshots
+   Métricas: evolução de idade média, profissão, valor, fase
+   Período: rolling 90 dias
+
+7. [P2] Validação de integridade dos dados demográficos em clientes
+   Audit: count de NULLs por campo
+   Ação: relatório semanal de cobertura
+
+================================================================================
+                            CONCLUSÃO
+================================================================================
+
+✅ ICP Telemetria é IMPLEMENTÁVEL com dados atuais
+
+✅ Bases sólidas presentes:
+   • Clientes: dados demográficos excelentes (92% idade, 45% profissão)
+   • Processos: valores (71% valor_causa) e fase (93%)
+   • Leads: icp_score já pré-calculado (100%)
+
+❌ Gaps críticos que precisam ser resolvidos:
+   • Renda cliente não capturada (0%) ← P1
+   • Valor estimado recuperável não calculado (0%) ← P1
+   • Dados demográficos em leads muito esparsos (9-11%) ← P1
+
+📊 Recomendação: Começar com tabela icp_telemetria_snapshots usando dados
+   sólidos (idade, profissão, valor_causa, fase) e depois integrar
+   enriquecimento progressivo via OlivIA para campos faltantes.
+
+Estimativa: 2-3 sprints para MVP (tabela + RPC + n8n workflow + validação)
+
+================================================================================

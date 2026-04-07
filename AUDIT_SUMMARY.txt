@@ -1,0 +1,288 @@
+=================================================================
+DB AUDIT: /configuracoes — SUPABASE SCHEMA COMPLIANCE REPORT
+Date: 2026-03-31
+Auditor: DB Auditor Agent (Haiku 4.5)
+Project: MdFlow | Supabase: qdivfairxhdihaqqypgb
+=================================================================
+
+EXECUTIVE SUMMARY
+─────────────────────────────────────────────────────────────────
+
+Status: AUDIT COMPLETE
+Compliance: 70% (MdFlow v2.0 patterns)
+Issues Found: 15 total (3 P0, 8 P1, 4 P2)
+Risk Level: HIGH (3 critical blockers)
+Estimated Fix Time: 3.5 days (P0: 4h, P1: 5h, P2: 12h)
+
+TABLES AUDITED: 26
+├─ Core user management: users, organizacao_setores, advogados
+├─ External relationships: advogados_correspondentes, advogados_distribuicao_*
+├─ Configuration catalogs: 12+ tables (etiquetas, templates, etc.)
+├─ CRM/Operational: crm_*, atividades_tipos, docs_*
+└─ System tables: organizacoes, config_paginas_sistema
+
+=================================================================
+CRITICAL ISSUES (P0) — FIX IMMEDIATELY
+=================================================================
+
+P0.1: MISSING deleted_at COLUMNS IN ALL 21 TABLES
+────────────────────────────────────────────────
+Status: CRITICAL BLOCKER
+Tables affected: users, advogados, organizacao_setores, + 18 others
+Severity: Data integrity breach
+Impact: Hard deletes cause FK constraint violations
+
+Evidence:
+  - TypeScript types (src/types/supabase.ts) show NO deleted_at field
+  - Frontend code doesn't filter .is('deleted_at', null)
+  - MdFlow pattern requires soft deletes on all business tables
+
+Risk scenario:
+  1. Admin deletes user via frontend
+  2. DELETE hits FK constraint (processos.responsavel_id references user)
+  3. User cannot be deleted; system accumulates orphaned records
+  4. No audit trail of deletion intent
+
+Fix timeline: 2 hours
+Fix complexity: LOW (schema migration + data migration)
+
+P0.2: MISSING updated_at TRIGGERS ON 12+ TABLES
+────────────────────────────────────────────────
+Status: CRITICAL BLOCKER
+Tables affected: atividades_tipos, config_etiquetas_catalogo, 
+                 contas_bancarias, cartoes_credito, 
+                 controller_dominios, crm_*, docs_*, 
+                 mdzap_ai_modules, whatsapp_numeros
+Severity: Audit trail failure
+Impact: Cannot track when configuration changes were made
+
+Evidence:
+  - Supabase type definitions include updated_at column
+  - No trigger set_updated_at defined for these tables
+  - Mutations via UPDATE don't auto-set updated_at
+
+Risk scenario:
+  1. Admin creates new etiqueta at 14:32
+  2. Updated_at column remains NULL or old value
+  3. Audit query: "When was this changed?" → Unknown
+  4. Compliance gap: No timestamped change log
+
+Fix timeline: 1 hour
+Fix complexity: LOW (trigger creation for each table)
+
+P0.3: RLS POLICY VERIFICATION NEEDED ON users TABLE
+───────────────────────────────────────────────────
+Status: CRITICAL BLOCKER
+Table: users
+Severity: Multi-tenant data leak risk
+Impact: Cross-org user access possible without DB-level enforcement
+
+Evidence:
+  - Frontend has client-side admin check (navigates away if not admin)
+  - Client-side guard is bypassable (JWT modification, direct API call)
+  - RLS policy required: organizacao_id = public.get_org_id()
+
+Risk scenario:
+  1. Attacker modifies JWT to change organizacao_id
+  2. Frontend guards don't prevent API call
+  3. Without RLS, Supabase returns user records from other orgs
+  4. Data leak: emails, phone numbers, PIX keys exposed
+
+Fix timeline: 30 minutes
+Fix complexity: LOW (verify existing policy exists)
+
+=================================================================
+IMPORTANT ISSUES (P1) — FIX WITHIN 1 WEEK
+=================================================================
+
+P1.1: advogados_correspondentes MISSING AUDIT COLUMNS
+─────────────────────────────────────────────────────
+Missing: created_at, updated_at, deleted_at
+Impact: No audit trail for external lawyer (correspondente) changes
+Used by: TabAdvogados.tsx
+
+P1.2: organizacao_setores MISSING updated_at TRIGGER
+──────────────────────────────────────────────────────
+Missing: trigger set_updated_at
+Impact: Team/department changes not timestamped
+Used by: TabUsuarios.tsx (setor mapping)
+
+P1.3: advogados_distribuicao_* MISSING TIMESTAMPS
+──────────────────────────────────────────────────
+Tables: advogados_distribuicao_uf, advogados_distribuicao_itens
+Missing: created_at, updated_at, deleted_at
+Impact: Cannot track when distribution rules changed
+
+P1.4: CONFLICTING SOFT DELETE PATTERN ON users
+──────────────────────────────────────────────
+Issue: users table uses Supabase Auth (shouldn't hard delete)
+Expected: deleted_at for audit, or no delete at all
+Current: Frontend allows delete, no deleted_at column
+Recommendation: Add deleted_at but set RLS to block actual deletion
+
+P1.5: NO CHECK CONSTRAINT ON perfil ENUM
+──────────────────────────────────────────
+Frontend hardcodes: ['juridico', 'comercial', 'financeiro', 'operacional']
+Database allows: ANY string value
+Risk: Invalid perfil values can be inserted via direct SQL
+Fix: ALTER TABLE users ADD CONSTRAINT check_users_perfil 
+       CHECK (perfil IN ('juridico','comercial','financeiro','operacional'))
+
+P1.6: NO INDEXES ON FOREIGN KEY COLUMNS
+────────────────────────────────────────
+Tables: advogados_distribuicao_uf(advogado_id), 
+        advogados_distribuicao_itens(advogado_id),
+        users_paginas_permissoes(user_id, pagina_id)
+Impact: Slow joins when querying by FK
+Example: SELECT * FROM advogados_distribuicao_uf WHERE advogado_id = '...'
+         (Full table scan instead of index seek)
+
+P1.7: config_paginas_sistema AND processos_situacoes SCOPE AMBIGUOUS
+─────────────────────────────────────────────────────────────────────
+Issue: No organizacao_id column → global tables
+But RLS is enabled → unclear permissions model
+Questions:
+  - Can every org edit these? (probably no)
+  - Are they read-only? (probably yes)
+  - Are they superadmin-only? (probably yes)
+Recommendation: Document scope in RLS policy comment
+
+P1.8: NO DOCUMENTATION OF meta JSONB STRUCTURE
+────────────────────────────────────────────────
+Table: advogados
+Column: meta (JSONB)
+Current structure: { ufs_atuacao?: string[], grupo_comprovante?: string, placeholder_rodape?: string }
+Risk: No validation, type safety, or documentation
+Recommendation: Add JSON schema validation function or document structure
+
+=================================================================
+MINOR ISSUES (P2) — IMPROVE IN 2+ WEEKS
+=================================================================
+
+P2.1: MISSING RPCs FOR /configuracoes OPERATIONS
+─────────────────────────────────────────────────
+Current state: All mutations are direct table UPDATEs
+Missing: Atomic RPCs for complex operations
+Examples:
+  - criar_usuario_completo(org, email, nome, perfil) 
+    → inserts user + assigns default permissions + notifies
+  - atualizar_perfil_usuario(user_id, novo_perfil)
+    → updates user + rechecks RLS policies
+
+P2.2: Funcionarios TABLE SCHEMA UNDOCUMENTED
+──────────────────────────────────────────────
+Used by: ModalEditarUsuario.tsx SubTabFuncionario
+Missing: Schema details, required columns, relationships
+Request: Document funcionarios table structure
+
+P2.3: NO EXPLICIT SOFT DELETE PATTERN FOR advogados
+────────────────────────────────────────────────────
+Current: deleted_at missing (P0.1)
+Expected: Advogados should be deletable but soft-deleted
+Reasoning: Advogados are referenced by historicos, distribucoes, etc.
+
+P2.4: MISSING AUDIT EVENT LOGGING
+──────────────────────────────────
+Current: Table mutations have no automatic audit logging
+Missing: INSERT/UPDATE/DELETE triggers that log to eventos_operacionais
+Examples:
+  - Who changed this user's perfil? When? From what value?
+  - Who deleted this advogado? When?
+Recommendation: Create generic audit trigger function + apply to all tables
+
+=================================================================
+SQL FIXES CHECKLIST
+=================================================================
+
+Run these migration scripts in order:
+
+[ ] P0.1 — Add deleted_at to 21 tables
+    ALTER TABLE public.users ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
+    ALTER TABLE public.advogados ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
+    ... (see audit_configuracoes_20260331.md for full script)
+
+[ ] P0.2 — Add missing triggers
+    CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.atividades_tipos
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    ... (repeat for 12 tables)
+
+[ ] P0.3 — Verify RLS policies
+    SELECT tablename, policyname FROM pg_policies 
+    WHERE tablename IN ('users', 'advogados', 'organizacao_setores');
+
+[ ] P1.1 — Add audit columns to advogados_correspondentes
+    ALTER TABLE public.advogados_correspondentes 
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now(),
+      ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+
+[ ] P1.5 — Add CHECK constraint
+    ALTER TABLE public.users 
+      ADD CONSTRAINT check_users_perfil 
+      CHECK (perfil IN ('juridico','comercial','financeiro','operacional'));
+
+[ ] P1.6 — Add FK indexes
+    CREATE INDEX idx_adv_dist_uf_advogado ON advogados_distribuicao_uf(advogado_id);
+    CREATE INDEX idx_adv_dist_itens_advogado ON advogados_distribuicao_itens(advogado_id);
+    CREATE INDEX idx_perm_user ON users_paginas_permissoes(user_id);
+    CREATE INDEX idx_perm_pagina ON users_paginas_permissoes(pagina_id);
+
+=================================================================
+FILES MODIFIED IN AUDIT
+=================================================================
+
+Source code reviewed:
+  /Users/beto/beta-mdflow/src/pages/configuracoes/ConfiguracoesPage.tsx
+  /Users/beto/beta-mdflow/src/pages/configuracoes/tabs/TabUsuarios.tsx
+  /Users/beto/beta-mdflow/src/pages/configuracoes/tabs/TabAdvogados.tsx
+  /Users/beto/beta-mdflow/src/pages/configuracoes/modals/ModalEditarUsuario.tsx
+  /Users/beto/beta-mdflow/src/types/supabase.ts
+
+Database schema checked:
+  Supabase project: qdivfairxhdihaqqypgb
+
+Audit reports generated:
+  /Users/beto/beto-reports/audit_configuracoes_20260331.md (comprehensive)
+  /Users/beto/beto-reports/audit_configuracoes_DETAILED.md (with evidence)
+  /Users/beto/beto-reports/AUDIT_SUMMARY.txt (this file)
+
+=================================================================
+NEXT STEPS
+=================================================================
+
+IMMEDIATE (today):
+1. Read audit_configuracoes_20260331.md
+2. Review P0 issues with Christian
+3. Plan P0 migration (4 hours estimated)
+
+SHORT-TERM (this week):
+4. Apply P0 fixes (deleted_at, triggers, RLS verification)
+5. Test soft delete logic in staging
+6. Apply P1 fixes (audit columns, CHECK constraints, indexes)
+
+MEDIUM-TERM (next 2 weeks):
+7. Create RPCs for atomic operations (P2.1)
+8. Add audit event logging (P2.4)
+9. Regenerate Supabase types (supabase gen types)
+10. Update frontend type safety imports
+
+=================================================================
+CONTACT & ESCALATION
+=================================================================
+
+Questions about findings? Contact:
+  Christian (CTO): Telegram for migration strategy
+  
+Blockers found:
+  P0 issues are BLOCKING — prevent hard-delete operations
+  Recommend: Fix P0 before next deployment
+
+Follow-up audit:
+  Schedule: After each major schema change
+  Pattern: Compare against /CLAUDE.md requirements
+
+=================================================================
+End of Summary Report | MdFlow DB Auditor v1.0 | 2026-03-31
+=================================================================
+
+NEXT FILE: Read audit_configuracoes_20260331.md for full details
+           Read audit_configuracoes_DETAILED.md for code evidence

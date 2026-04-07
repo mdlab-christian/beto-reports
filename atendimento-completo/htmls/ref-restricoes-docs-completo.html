@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdFlow — Restrições & Documentos: Arquitetura Completa</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12100e;--surface:#1a1714;--card:#201d1a;--border:#2e2b27;--primary:#20c997;--primary-dim:#20c99720;--primary-border:#20c99740;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--info:#60a5fa;--text:#f5f0eb;--muted:#9e9890;--mono:'JetBrains Mono','Fira Code',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.6;padding:0}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:240px;background:#0d0b09;border-right:1px solid var(--border);padding:1.5rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.sidebar h2{font-family:Manrope;font-size:13px;font-weight:700;color:var(--primary);margin-bottom:1rem;letter-spacing:.5px;text-transform:uppercase}
+.sidebar a{display:block;color:var(--muted);text-decoration:none;font-size:12px;padding:4px 8px;border-radius:4px;margin-bottom:2px;transition:.2s}
+.sidebar a:hover,.sidebar a.active{color:var(--text);background:var(--primary-dim)}
+.sidebar .group-label{font-size:10px;text-transform:uppercase;color:var(--primary);margin-top:12px;margin-bottom:4px;letter-spacing:.8px;font-weight:600}
+main{flex:1;max-width:960px;padding:2rem 2.5rem}
+h1{font-family:Manrope;font-size:28px;font-weight:800;margin-bottom:4px}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:1.5rem}
+.meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:3px 12px;font-size:11px;color:var(--muted)}
+.meta-chip.primary{border-color:var(--primary-border);color:var(--primary)}
+.section{margin-bottom:2.5rem}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:1rem;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-icon{width:24px;height:24px;background:var(--primary-dim);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:12px;font-weight:700}
+.section-title{font-family:Manrope;font-size:16px;font-weight:700}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.75rem}
+.card-title{font-family:Manrope;font-size:13px;font-weight:700;margin-bottom:6px}
+.badge{display:inline-block;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:600;margin-right:4px}
+.badge-primary{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)}
+.badge-warn{background:#f59e0b20;color:var(--warn);border:1px solid #f59e0b40}
+.badge-danger{background:#ef444420;color:var(--danger);border:1px solid #ef444440}
+.badge-success{background:#22c55e20;color:var(--success);border:1px solid #22c55e40}
+.badge-info{background:#60a5fa20;color:var(--info);border:1px solid #60a5fa40}
+.badge-neutral{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem}
+th{text-align:left;padding:8px 10px;background:var(--surface);color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover{background:var(--surface)}
+.code-block{background:#0d0b09;border:1px solid var(--border);border-radius:6px;padding:12px 16px;font-family:var(--mono);font-size:11px;line-height:1.7;overflow-x:auto;margin:8px 0}
+.c-comment{color:#6a6560}.c-key{color:#60a5fa}.c-val{color:var(--primary)}.c-str{color:#f59e0b}.c-kw{color:#c084fc}
+.flow-diagram{background:#0d0b09;border:1px solid var(--border);border-radius:8px;padding:16px;font-family:var(--mono);font-size:11px;line-height:1.8;overflow-x:auto;white-space:pre;color:var(--muted);margin:12px 0}
+.flow-diagram .highlight{color:var(--primary);font-weight:600}
+.flow-diagram .warn{color:var(--warn)}
+.flow-diagram .danger{color:var(--danger)}
+.flow-diagram .info{color:var(--info)}
+.flow-diagram .success{color:var(--success)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);color:var(--muted);font-size:11px;text-align:center}
+@media(max-width:720px){.sidebar{display:none}main{padding:1rem}.grid2,.grid3{grid-template-columns:1fr}}
+.conn-line{border-left:2px solid var(--primary-border);padding-left:12px;margin-left:8px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<h2>Navegacao</h2>
+<span class="group-label">Restricoes</span>
+<a href="#restricoes-overview">Visao Geral</a>
+<a href="#restricoes-data">Modelo de Dados</a>
+<a href="#restricoes-flow">Fluxograma Cadastro</a>
+<a href="#restricoes-pages">Onde Aparecem</a>
+<a href="#restricoes-empresas">Conexao Empresas</a>
+<a href="#restricoes-crm">Restricoes no CRM</a>
+<a href="#restricoes-hooks">Hooks & RPCs</a>
+<span class="group-label">Documentos</span>
+<a href="#docs-overview">Visao Geral 3 Tiers</a>
+<a href="#docs-flow">Fluxograma Upload</a>
+<a href="#docs-components">Componentes</a>
+<a href="#docs-dragdrop">Drag & Drop</a>
+<a href="#docs-subtabs">Sub-Tabs Inicial vs Tramitacao</a>
+<a href="#docs-pages">Todas as Paginas c/ Docs</a>
+<a href="#docs-storage">Buckets & Storage</a>
+<a href="#docs-hooks">Hooks & Queries</a>
+<span class="group-label">Conexoes</span>
+<a href="#conexoes-map">Mapa Completo</a>
+<a href="#conexoes-realtime">Realtime Channels</a>
+<a href="#conexoes-webhooks">Webhooks n8n</a>
+<span class="group-label">Pendencias</span>
+<a href="#pendencias">Build Errors & Fixes</a>
+</aside>
+
+<main>
+<h1>Restricoes & Documentos</h1>
+<p class="subtitle">Arquitetura completa: fluxos, conexoes, componentes e dados</p>
+<div class="meta-row">
+<span class="meta-chip primary">MdFlow SaaS</span>
+<span class="meta-chip">2026-04-06</span>
+<span class="meta-chip">34 arquivos mapeados</span>
+<span class="meta-chip">3 Tiers de documentos</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- RESTRICOES -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="section" id="restricoes-overview">
+<div class="section-header"><div class="section-icon">R</div><div class="section-title">Restricoes — Visao Geral</div></div>
+<div class="card">
+<p>Restricoes sao negativacoes (Serasa, SPC, Boa Vista, Bacen/SCR, RMC, RCC) vinculadas a um <strong>cliente</strong> ou <strong>lead</strong>. Cada restricao pode ter um <strong>processo</strong> vinculado apos distribuicao. Restricoes <strong>processaveis</strong> geram pastas de documentos e podem receber peticoes via OlivIA.</p>
+</div>
+<div class="grid3">
+<div class="card"><div class="card-title">Fontes de Cadastro</div>
+<p style="font-size:12px">1. Manual (modal NovaRestricaoModal)<br>2. Importacao CSV (ImportarRestricoesCSVModal)<br>3. Consulta Bureaus (webhook n8n)<br>4. Auditoria CPF automatica (use_cadastrar_restricoes)</p>
+</div>
+<div class="card"><div class="card-title">Estados</div>
+<span class="badge badge-success">Processavel</span>
+<span class="badge badge-warn">Nao Processavel</span>
+<span class="badge badge-primary">Com Processo</span>
+<span class="badge badge-danger">Sem Processo</span>
+</div>
+<div class="card"><div class="card-title">Tipos (Bureau)</div>
+<p style="font-size:11px;font-family:var(--mono)">serasa | spc | boa_vista | bacen | scr | rmc | rcc | outro</p>
+<p style="font-size:11px;margin-top:4px;color:var(--muted)">Derivado do campo orgao_nome via deriveBureauTipo()</p>
+</div>
+</div>
+</div>
+
+<div class="section" id="restricoes-data">
+<div class="section-header"><div class="section-icon">D</div><div class="section-title">Modelo de Dados — Tabela restricoes</div></div>
+<table>
+<thead><tr><th>Campo</th><th>Tipo</th><th>Descricao</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--mono);color:var(--primary)">id</td><td>UUID PK</td><td>Identificador unico</td></tr>
+<tr><td style="font-family:var(--mono)">organizacao_id</td><td>UUID FK</td><td>Tenant isolation</td></tr>
+<tr><td style="font-family:var(--mono)">cliente_id</td><td>UUID FK</td><td>Vinculo com cliente (pagina /clientes)</td></tr>
+<tr><td style="font-family:var(--mono)">lead_id</td><td>UUID FK</td><td>Vinculo com lead (CRM)</td></tr>
+<tr><td style="font-family:var(--mono)">empresa_id</td><td>UUID FK</td><td>Vinculo com tabela empresas</td></tr>
+<tr><td style="font-family:var(--mono)">empresa_nome</td><td>TEXT</td><td>Nome do credor/empresa (ex: Banco Itau)</td></tr>
+<tr><td style="font-family:var(--mono)">orgao_nome</td><td>TEXT</td><td>Bureau de origem (Serasa, SPC, etc)</td></tr>
+<tr><td style="font-family:var(--mono)">tipo</td><td>TEXT CHECK</td><td>comprador | devedor | fiador | avalista</td></tr>
+<tr><td style="font-family:var(--mono)">codigo_contrato</td><td>TEXT</td><td>Numero do contrato no bureau</td></tr>
+<tr><td style="font-family:var(--mono)">valor</td><td>INT8</td><td>Valor em centavos (1500000 = R$15.000)</td></tr>
+<tr><td style="font-family:var(--mono)">data_restricao</td><td>DATE</td><td>Data da negativacao</td></tr>
+<tr><td style="font-family:var(--mono)">processavel</td><td>BOOLEAN</td><td>Se pode ser usada em peticao</td></tr>
+<tr><td style="font-family:var(--mono)">motivo_nao_processavel</td><td>TEXT</td><td>Motivo quando processavel=false</td></tr>
+<tr><td style="font-family:var(--mono)">processo_id</td><td>UUID FK</td><td>Processo vinculado apos distribuicao</td></tr>
+<tr><td style="font-family:var(--mono)">drive_pasta_id</td><td>TEXT</td><td>ID da pasta no Google Drive</td></tr>
+<tr><td style="font-family:var(--mono)">deleted_at</td><td>TIMESTAMPTZ</td><td>Soft delete</td></tr>
+</tbody>
+</table>
+<div class="card">
+<div class="card-title">RPCs Disponiveis</div>
+<div class="code-block">
+<span class="c-kw">fn_restricoes_listar</span>(p_organizacao_id, p_cliente_id, p_lead_id, p_processo_id, p_apenas_processaveis, p_apenas_sem_processo)
+<span class="c-comment">-- Listagem universal com filtros combinaveis</span>
+
+<span class="c-kw">fn_restricao_salvar</span>(p_organizacao_id, p_empresa_nome, p_orgao_nome, p_tipo, p_codigo_contrato, p_data_restricao, p_valor, ...)
+<span class="c-comment">-- Upsert: se p_id fornecido = update, senao = insert</span>
+
+<span class="c-kw">fn_restricoes_por_cliente</span>(p_cliente_id, p_organizacao_id)
+<span class="c-comment">-- Listagem simplificada para pagina /clientes</span>
+</div>
+</div>
+</div>
+
+<div class="section" id="restricoes-flow">
+<div class="section-header"><div class="section-icon">F</div><div class="section-title">Fluxograma — Ciclo de Vida da Restricao</div></div>
+<div class="flow-diagram">
+<span class="highlight">CADASTRO</span>
+  │
+  ├─ <span class="info">Manual</span> ─── NovaRestricaoModal → supabase.insert('restricoes') → invalidate ['cliente-restricoes']
+  │
+  ├─ <span class="info">CSV</span> ────── ImportarRestricoesCSVModal → parse CSV → supabase.insert(batch) → invalidate
+  │
+  ├─ <span class="info">Bureaus</span> ── Btn "Consultar Bureaus" → webhook 'clientes/consultar_restricoes'
+  │             → n8n consulta Serasa/SPC/BoaVista → INSERT restricoes
+  │             → pollWebhookRequest() → invalidate ['cliente-restricoes']
+  │
+  └─ <span class="info">Auditoria</span> use_cadastrar_restricoes.ts (pagina /auditorias)
+               → buildRestricaoItemsComRegras() → fn_restricao_salvar RPC
+
+<span class="highlight">EDICAO</span>
+  │
+  ├─ EditarRestricaoModal → supabase.update('restricoes').eq('id', id)
+  ├─ FormRestricao (CRM drawer) → useSalvarRestricao() → fn_restricao_salvar RPC
+  └─ Toggle Processavel → supabase.update({ processavel: bool }).eq('id', uid)
+
+<span class="highlight">EXCLUSAO</span>
+  │
+  └─ useExcluirRestricao() → supabase.update({ deleted_at: now() }).eq('id', id)
+     <span class="c-comment">Soft delete — nunca hard delete</span>
+
+<span class="highlight">DISTRIBUICAO (vinculacao com processo)</span>
+  │
+  ├─ /distribuicao → ModalCriarProcesso → cria processo com restricao_id
+  │   campos: restricao_tipo, restricao_contrato, restricao_data, restricao_valor
+  │
+  └─ processo.restricao_id → aponta para restricoes.id
+     <span class="warn">NOTA: restricoes.processo_id NEM SEMPRE eh preenchido (fallback necessario)</span>
+
+<span class="highlight">GERACAO DE DOCUMENTOS</span>
+  │
+  └─ GerarDocModal (CRM drawer) → useGerarContrato()
+     tipos: contrato_empresa | contrato_orgao | contrato_midas
+     → webhook n8n → gera PDF → status: gerando → disponivel
+</div>
+</div>
+
+<div class="section" id="restricoes-pages">
+<div class="section-header"><div class="section-icon">P</div><div class="section-title">Onde Aparecem as Restricoes</div></div>
+<table>
+<thead><tr><th>Pagina/Contexto</th><th>Componente</th><th>O que Mostra</th><th>Acoes</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="badge badge-primary">/clientes/:cpf</span></td>
+<td style="font-family:var(--mono);font-size:11px">ClienteTabRestricoes</td>
+<td>Todas restricoes do cliente. Separadas em "Com processo" e "Aguardando distribuicao". Cards com badge tipo, valor, toggle processavel.</td>
+<td>Adicionar, Importar CSV, Consultar Bureaus, Editar, Toggle processavel</td>
+</tr>
+<tr>
+<td><span class="badge badge-info">CRM Drawer</span></td>
+<td style="font-family:var(--mono);font-size:11px">ClienteDrawerTabRestricoes</td>
+<td>Restricoes do lead (apenasSemProcesso=true). KPIs: total, processaveis, valor total. Import/Export CSV.</td>
+<td>Adicionar (multi-add), Editar, Excluir, Gerar Documento, Import/Export</td>
+</tr>
+<tr>
+<td><span class="badge badge-warn">/distribuicao</span></td>
+<td style="font-family:var(--mono);font-size:11px">ClienteDrawerTabRestricoes (restricaoId filtrado)</td>
+<td>Apenas a restricao especifica do processo sendo distribuido</td>
+<td>Visualizacao + Gerar Documento</td>
+</tr>
+<tr>
+<td><span class="badge badge-success">/processos Drawer</span></td>
+<td style="font-family:var(--mono);font-size:11px">ProcessoTabRestricoes</td>
+<td>Restricoes vinculadas ao processo (via processoId ou fallback restricao_id)</td>
+<td>Somente visualizacao (read-only)</td>
+</tr>
+<tr>
+<td><span class="badge badge-neutral">/empresas Modal</span></td>
+<td style="font-family:var(--mono);font-size:11px">ModalEmpresaDetalhe</td>
+<td>Opt-outs (clientes_empresas_optout) — NAO restricoes diretamente</td>
+<td>Visualizacao de clientes que optaram por nao processar essa empresa</td>
+</tr>
+<tr>
+<td><span class="badge badge-neutral">/relatorios</span></td>
+<td style="font-family:var(--mono);font-size:11px">TabRestricoes (modal detalhe)</td>
+<td>Tabela com restricoes do relatorio. Status editavel (ativa/excluida/nova). Paginacao 100 registros.</td>
+<td>Alterar status, salvar em lote</td>
+</tr>
+<tr>
+<td><span class="badge badge-neutral">/auditorias</span></td>
+<td style="font-family:var(--mono);font-size:11px">use_cadastrar_restricoes</td>
+<td>Cadastro automatico via auditoria CPF. Regras especiais Boa Vista (agrupamento)</td>
+<td>Cadastro automatico em lote</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="section" id="restricoes-empresas">
+<div class="section-header"><div class="section-icon">E</div><div class="section-title">Conexao Restricoes ↔ Empresas</div></div>
+<div class="card">
+<div class="card-title">Vinculo entre Restricoes e Empresas</div>
+<div class="flow-diagram">
+<span class="highlight">restricoes</span>
+  ├── empresa_id (UUID FK) ──→ <span class="info">empresas.id</span>
+  └── empresa_nome (TEXT) ───→ nome do credor (denormalizado)
+
+<span class="highlight">empresas</span> (pagina /empresas)
+  ├── id, nome, razao_social, cnpj
+  ├── processos_count, valor_total (via RPC rpc_empresa_metricas)
+  └── clientes_empresas_optout ── clientes que recusaram processar
+
+<span class="warn">COMO FUNCIONA:</span>
+  1. Restricao eh cadastrada com empresa_nome (texto livre)
+  2. Auditoria pode vincular empresa_id via match de nome
+  3. Pagina /empresas agrupa restricoes e processos por empresa
+  4. ModalEmpresaDetalhe mostra processos + opt-outs (nao restricoes diretas)
+
+<span class="danger">IMPORTANTE:</span>
+  - empresa_id pode ser NULL (maioria dos cadastros manuais)
+  - empresa_nome eh o campo PRIMARIO usado em todo o frontend
+  - Ao editar via FormRestricao, empresa_id pode ser passado opcionalmente
+  - fn_restricao_salvar aceita p_empresa_id para vincular
+</div>
+</div>
+</div>
+
+<div class="section" id="restricoes-crm">
+<div class="section-header"><div class="section-icon">C</div><div class="section-title">Restricoes no CRM</div></div>
+<div class="flow-diagram">
+<span class="highlight">CRM DRAWER (ClienteDrawer.tsx)</span>
+  │
+  ├── Tab "Restricoes" → <span class="info">ClienteDrawerTabRestricoes</span>
+  │     ├── useRestricoes({ leadId, apenasSemProcesso: true })
+  │     ├── KPIs: Total | Processaveis | Valor Total
+  │     ├── Import/Export CSV via ImportExportBar
+  │     ├── Adicionar via ModalAdicionarRestricoes (multi-add)
+  │     ├── Editar via FormRestricao (inline modal)
+  │     ├── Excluir via useExcluirRestricao (soft delete + confirm)
+  │     └── Gerar Doc via GerarDocModal → useGerarContrato
+  │
+  ├── Tab "Documentos" → <span class="info">ClienteDrawerTabDocumentosLead</span>
+  │     └── Restricoes processaveis viram <span class="success">PASTAS</span> (RestricaoPastaCard)
+  │         Cada pasta = accordion com docs Tier 2
+  │         Drag & Drop de arquivo sobre pasta = upload Tier 2
+  │
+  └── Tab "Documentos" (/clientes context) → <span class="info">ClienteDrawerTabDocumentos</span>
+        └── Mesma logica de pastas por restricao processavel
+            + Mostra CNJ/empresa do processo vinculado no header da pasta
+</div>
+</div>
+
+<div class="section" id="restricoes-hooks">
+<div class="section-header"><div class="section-icon">H</div><div class="section-title">Hooks de Restricoes</div></div>
+<table>
+<thead><tr><th>Hook</th><th>Arquivo</th><th>Query Key</th><th>Usado Em</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useRestricoes</td><td>src/hooks/useRestricoes.ts</td><td>['restricoes', orgId, ...]</td><td>CRM drawer, distribuicao, processo</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useSalvarRestricao</td><td>src/hooks/useRestricoes.ts</td><td>mutation → invalidate ['restricoes']</td><td>FormRestricao, auditorias</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useExcluirRestricao</td><td>src/hooks/useRestricoes.ts</td><td>mutation → invalidate ['restricoes']</td><td>CRM drawer tab restricoes</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useClienteRestricoes</td><td>src/hooks/useClienteRestricoes.ts</td><td>['cliente-restricoes', clienteId]</td><td>ClienteTabRestricoes (/clientes)</td></tr>
+</tbody>
+</table>
+<div class="card">
+<div class="card-title">Diferenca entre useRestricoes vs useClienteRestricoes</div>
+<p style="font-size:12px"><strong>useRestricoes:</strong> Usa RPC <code>fn_restricoes_listar</code>. Aceita filtros combinaveis (leadId, clienteId, processoId, apenasProcessaveis, apenasSemProcesso). Usado no CRM e distribuicao.</p>
+<p style="font-size:12px;margin-top:6px"><strong>useClienteRestricoes:</strong> Query direta <code>supabase.from('restricoes').select('*, processos(numero_cnj)')</code>. Retorna tipo Restricao com campos derivados (restricao_tipo via deriveBureauTipo). Usado na pagina /clientes.</p>
+<p style="font-size:12px;margin-top:6px;color:var(--warn)"><strong>ATENÇÃO:</strong> Os dois hooks retornam tipos DIFERENTES de Restricao (hooks/useRestricoes.Restricao vs types/cliente.types.Restricao).</p>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- DOCUMENTOS -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="section" id="docs-overview">
+<div class="section-header"><div class="section-icon">D</div><div class="section-title">Documentos — Sistema de 3 Tiers</div></div>
+<div class="grid3">
+<div class="card" style="border-left:3px solid var(--info)">
+<div class="card-title">Tier 1 — Central</div>
+<span class="badge badge-info">documento_lead</span>
+<p style="font-size:11px;margin-top:6px">Docs gerais do lead/cliente.<br>restricao_id = NULL<br>Bucket: <code>leads-docs</code><br>Upload via DocumentosUploadCentral<br>Aparece em TODAS as pastas</p>
+</div>
+<div class="card" style="border-left:3px solid var(--warn)">
+<div class="card-title">Tier 2 — Restricao</div>
+<span class="badge badge-warn">documento_restricao</span>
+<p style="font-size:11px;margin-top:6px">Docs especificos por restricao.<br>restricao_id = UUID da restricao<br>Bucket: <code>leads-docs</code><br>Upload via RestricaoPastaCard ou Drag&Drop<br>Isolado na pasta da restricao</p>
+</div>
+<div class="card" style="border-left:3px solid var(--primary)">
+<div class="card-title">Tier 3 — Gerado</div>
+<span class="badge badge-primary">comprovante / procuracao / contrato</span>
+<p style="font-size:11px;margin-top:6px">Gerado por n8n via webhook.<br>Bucket: <code>comprovantes</code> ou <code>documentos</code><br>Gerado por useGerarContrato / useGerarDocumento<br>Status: pendente → gerando → disponivel/erro</p>
+</div>
+</div>
+<div class="card">
+<div class="card-title">Tabela processos_documentos</div>
+<div class="code-block">
+<span class="c-key">id</span>             UUID PK
+<span class="c-key">processo_id</span>    UUID FK (NULL para Tier 1/2 pre-distribuicao)
+<span class="c-key">restricao_id</span>   UUID FK (NULL para Tier 1, preenchido para Tier 2)
+<span class="c-key">lead_id</span>        UUID FK
+<span class="c-key">cliente_id</span>     UUID FK
+<span class="c-key">organizacao_id</span> UUID FK
+<span class="c-key">categoria</span>      TEXT <span class="c-comment">-- documento_lead | documento_restricao | comprovante_restricao | procuracao | contrato_honorarios | peticao_inicial</span>
+<span class="c-key">tipo</span>           TEXT <span class="c-comment">-- upload | gerado | importado | eproc</span>
+<span class="c-key">tipo_documento</span> TEXT <span class="c-comment">-- rg | cpf | cnh | comprovante_residencia | outro</span>
+<span class="c-key">status</span>         TEXT <span class="c-comment">-- pendente | gerando | disponivel | processando | falhou | erro</span>
+<span class="c-key">arquivo_url</span>    TEXT <span class="c-comment">-- storage path (nao URL publica)</span>
+<span class="c-key">google_drive_id</span> TEXT <span class="c-comment">-- ID do arquivo no Google Drive (sync)</span>
+<span class="c-key">nome</span>           TEXT
+<span class="c-key">deleted_at</span>     TIMESTAMPTZ <span class="c-comment">-- soft delete</span>
+</div>
+</div>
+</div>
+
+<div class="section" id="docs-flow">
+<div class="section-header"><div class="section-icon">F</div><div class="section-title">Fluxograma — Upload de Documentos</div></div>
+<div class="flow-diagram">
+<span class="highlight">UPLOAD TIER 1 (Central)</span>
+  Usuario arrasta/seleciona arquivo na <span class="info">DocumentosUploadCentral</span>
+  │
+  ├── 1. Validacao: tipo aceito? (JPG/PNG/PDF/DOCX) tamanho < 20MB?
+  ├── 2. Selecionar categoria (dropdown): RG, CPF, CNH, Comprovante, etc.
+  ├── 3. Upload para Supabase Storage:
+  │      bucket: <span class="success">'leads-docs'</span>
+  │      path: <span class="c-str">${orgId}/leads/${leadId}/${timestamp}_${filename}</span>
+  │        ou: <span class="c-str">${orgId}/clientes/${clienteId}/${timestamp}_${filename}</span>
+  ├── 4. INSERT processos_documentos:
+  │      processo_id: <span class="danger">NULL</span>, restricao_id: <span class="danger">NULL</span>
+  │      categoria: 'documento_lead', tipo: 'upload'
+  ├── 5. invalidateQueries(['lead-docs-upload', ...])
+  └── 6. <span class="warn">syncToDrive</span> (background, fire-and-forget)
+         webhook 'sync-storage-drive' → n8n copia para Google Drive
+
+<span class="highlight">UPLOAD TIER 2 (Pasta Restricao)</span>
+  <span class="info">Dentro do RestricaoPastaCard</span> — drop zone interna ou botao Upload
+  │
+  ├── 1. Arquivo selecionado/arrastado
+  ├── 2. Nomes predefinidos: 'Comprovante' | 'Contrato Assinado' | 'Outro'
+  ├── 3. Upload para Storage:
+  │      path: <span class="c-str">${orgId}/leads/${leadId}/restricoes/${restricaoId}/${timestamp}_${filename}</span>
+  │        ou: <span class="c-str">${orgId}/clientes/${clienteId}/restricoes/${restricaoId}/${timestamp}_${filename}</span>
+  ├── 4. INSERT processos_documentos:
+  │      processo_id: <span class="danger">NULL</span>, restricao_id: <span class="success">UUID</span>
+  │      categoria: 'documento_restricao', tipo: 'upload'
+  ├── 5. invalidateQueries(['restricao-docs-upload', restricaoId, ...])
+  └── 6. <span class="warn">syncToDrive</span> se clienteId presente
+
+<span class="highlight">UPLOAD TIER 2 (Drag & Drop sobre Card)</span>
+  <span class="info">No componente pai</span> (ClienteDrawerTabDocumentos / ClienteDrawerTabDocumentosLead)
+  │
+  ├── 1. onDragOver no card → setDragOverId(restricaoId)
+  ├── 2. Visual: borda verde + "Solte aqui"
+  ├── 3. onDrop → handleDropOnCard(e, restricaoId)
+  ├── 4. Mesmo fluxo de Storage + INSERT que o Tier 2 interno
+  └── 5. Diferenca: nao mostra dropdown de nome (usa file.name direto)
+
+<span class="highlight">GERACAO TIER 3</span>
+  <span class="info">useGerarContrato</span> / <span class="info">useGerarDocumento</span>
+  │
+  ├── 1. Usuario clica "Gerar Documento" (GerarDocModal ou DocumentoCard)
+  ├── 2. Escolhe tipo: contrato_empresa | contrato_orgao | contrato_midas
+  │      ou categoria: procuracao | contrato_honorarios | peticao_inicial
+  ├── 3. webhook n8n gera PDF
+  ├── 4. Status: pendente → gerando → disponivel/erro
+  └── 5. Polling via refetchInterval(3000) quando status='gerando'
+</div>
+</div>
+
+<div class="section" id="docs-components">
+<div class="section-header"><div class="section-icon">C</div><div class="section-title">Componentes de Documentos</div></div>
+<table>
+<thead><tr><th>Componente</th><th>Arquivo</th><th>Funcao</th><th>Features</th></tr></thead>
+<tbody>
+<tr>
+<td style="font-family:var(--mono);color:var(--primary)">DocumentoItem</td>
+<td style="font-size:11px">shared/cliente_drawer/tabs/DocumentoItem.tsx</td>
+<td>Linha compacta de 1 documento</td>
+<td>Abrir, Baixar, Renomear inline, Soft delete c/ undo 3s</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);color:var(--primary)">DocumentosUploadCentral</td>
+<td style="font-size:11px">shared/cliente_drawer/tabs/DocumentosUploadCentral.tsx</td>
+<td>Drop zone Tier 1</td>
+<td>Drag&Drop, seletor arquivo, dropdown categoria, validacao tipo/tamanho</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);color:var(--primary)">RestricaoPastaCard</td>
+<td style="font-size:11px">shared/cliente_drawer/tabs/RestricaoPastaCard.tsx</td>
+<td>Accordion por restricao (Tier 2)</td>
+<td>Drag&Drop, upload interno, multi-select, bulk download/delete, cor especial Boa Vista</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);color:var(--primary)">DocumentosPanel</td>
+<td style="font-size:11px">shared/documentos/DocumentosPanel.tsx</td>
+<td>Painel de docs do processo (Tier 3)</td>
+<td>Cards por categoria, gerar todos pendentes, vinculacao advogado</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);color:var(--primary)">DocumentoCard</td>
+<td style="font-size:11px">shared/documentos/DocumentoCard.tsx</td>
+<td>Card individual por categoria</td>
+<td>Status badge, botao gerar, abrir arquivo</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);color:var(--primary)">DocumentosClientePanel</td>
+<td style="font-size:11px">shared/documentos/DocumentosClientePanel.tsx</td>
+<td>Painel multi-processo (/clientes)</td>
+<td>Accordions por processo, selecao em lote, gerar em lote</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);color:var(--primary)">ProcessoTramitacaoTab</td>
+<td style="font-size:11px">processo/tabs/ProcessoTramitacaoTab.tsx</td>
+<td>Tabela docs pos-distribuicao</td>
+<td>Filtros categoria, selecao multipla, bulk download, realtime, upload modal</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);color:var(--primary)">DocumentosLeadPaineis</td>
+<td style="font-size:11px">shared/cliente_drawer/tabs/DocumentosLeadPaineis.tsx</td>
+<td>Paineis auxiliares CRM</td>
+<td>ComprovanteAuditoria, RestricaoSection (Tier 3), DrivePanel, ContratoMidas</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="section" id="docs-dragdrop">
+<div class="section-header"><div class="section-icon">D</div><div class="section-title">Drag & Drop — Mapa Completo</div></div>
+<table>
+<thead><tr><th>Componente</th><th>Contexto</th><th>Tipo D&D</th><th>O que Acontece</th></tr></thead>
+<tbody>
+<tr>
+<td style="font-family:var(--mono);font-size:11px">DocumentosUploadCentral</td>
+<td>CRM, /clientes drawer</td>
+<td><span class="badge badge-success">Drop Zone</span></td>
+<td>Arquivo solto → fila com seletor de categoria → upload Tier 1</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);font-size:11px">RestricaoPastaCard (interno)</td>
+<td>Dentro do accordion aberto</td>
+<td><span class="badge badge-success">Drop Zone</span></td>
+<td>Arquivo solto → fila com nomes predefinidos → upload Tier 2</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);font-size:11px">RestricaoPastaCard (externo)</td>
+<td>Card fechado ou aberto</td>
+<td><span class="badge badge-warn">Card Drag Over</span></td>
+<td>Arquivo arrastado sobre card → borda verde + "Solte aqui" → upload Tier 2 (nome = filename)</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);font-size:11px">ProcessoTabDocumentos InicialTab</td>
+<td>Drawer do processo, sub-tab Inicial</td>
+<td><span class="badge badge-warn">Card Drag Over</span></td>
+<td>Mesmo que RestricaoPastaCard externo — upload com processo_id=NULL para a restricao</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);font-size:11px">ProcessoTramitacaoTab</td>
+<td>Drawer do processo, sub-tab Tramitacao</td>
+<td><span class="badge badge-danger">SEM D&D</span></td>
+<td>Upload apenas via botao + DocumentUploadModal</td>
+</tr>
+<tr>
+<td style="font-family:var(--mono);font-size:11px">ClienteTabDocumentosUnificada</td>
+<td>Pagina /clientes</td>
+<td><span class="badge badge-danger">SEM D&D proprio</span></td>
+<td>Usa ClienteDrawerTabDocumentos que TEM D&D</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="section" id="docs-subtabs">
+<div class="section-header"><div class="section-icon">S</div><div class="section-title">Sub-Tabs: Inicial vs Tramitacao</div></div>
+<div class="card">
+<div class="card-title">Regra das Duas Sub-Tabs (ProcessoTabDocumentos)</div>
+<div class="flow-diagram">
+<span class="highlight">ProcessoTabDocumentos.tsx</span> — Drawer do Processo, Aba "Documentos"
+  │
+  ├── <span class="success">Sub-tab "Inicial"</span> (InicialTab)
+  │     │
+  │     ├── Documentos PRE-distribuicao
+  │     ├── Mostra <span class="info">RestricaoPastaCard</span> da restricao vinculada
+  │     ├── useRestricaoDocs(restricaoId, leadId, orgId, clienteId)
+  │     ├── Drag & Drop sobre a pasta → upload Tier 2
+  │     ├── processo_id = <span class="danger">NULL</span> no INSERT (doc eh da restricao, nao do processo)
+  │     │
+  │     └── <span class="warn">Se nao tem restricao vinculada</span> → empty state:
+  │           "Nenhuma restricao vinculada a este processo"
+  │           "Vincule uma restricao na aba Restricoes"
+  │
+  └── <span class="info">Sub-tab "Tramitacao"</span> (ProcessoTramitacaoTab)
+        │
+        ├── Documentos POS-distribuicao
+        ├── useProcessoDocumentos(processoId)
+        ├── Filtra: exclui categorias INICIAL_CATS:
+        │     peticao_inicial, procuracao_orgao, procuracao,
+        │     comprovante_restricao, documento_restricao, banco,
+        │     cartao, documento_lead, negativacao
+        ├── Tabela com colunas: Nome, Origem, Status, Tamanho, Data
+        ├── Filtros: Todos | Peticoes | Procuracoes | Comprovantes | Outros
+        ├── Selecao multipla → bulk download (delay 400ms entre downloads)
+        ├── Upload via DocumentUploadModal (botao, sem D&D)
+        ├── Download: signed URL bucket 'documentos' (300s expiracao)
+        ├── Realtime: channel tram-docs-${processoId}
+        └── Permissoes: canUpload (juridico/operacional/admin), canDelete (juridico/admin)
+
+<span class="warn">REGRA DE SEPARACAO:</span>
+  - Categoria tem PRIORIDADE sobre tipo
+  - Se categoria IN INICIAL_CATS → aparece em "Inicial" (mesmo se tipo='gerado')
+  - Se categoria NOT IN INICIAL_CATS → aparece em "Tramitacao"
+  - Docs com processo_id=NULL + restricao_id → "Inicial"
+  - Docs com processo_id=UUID + categoria tramitacao → "Tramitacao"
+</div>
+</div>
+</div>
+
+<div class="section" id="docs-pages">
+<div class="section-header"><div class="section-icon">M</div><div class="section-title">Todas as Paginas com Documentos</div></div>
+<table>
+<thead><tr><th>Pagina</th><th>Componente</th><th>Tiers</th><th>Drag&Drop</th><th>Sub-tabs</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="badge badge-info">CRM Drawer</span></td>
+<td style="font-family:var(--mono);font-size:11px">ClienteDrawerTabDocumentosLead</td>
+<td>1 + 2 + 3</td>
+<td><span class="badge badge-success">SIM</span> (Central + Pastas)</td>
+<td>Nao (secoes continuas)</td>
+</tr>
+<tr>
+<td><span class="badge badge-primary">/clientes Drawer</span></td>
+<td style="font-family:var(--mono);font-size:11px">ClienteDrawerTabDocumentos</td>
+<td>1 + 2</td>
+<td><span class="badge badge-success">SIM</span> (Central + Pastas)</td>
+<td>Nao</td>
+</tr>
+<tr>
+<td><span class="badge badge-primary">/clientes Page</span></td>
+<td style="font-family:var(--mono);font-size:11px">ClienteTabDocumentosUnificada</td>
+<td>1 + 2 + 3</td>
+<td><span class="badge badge-success">SIM</span> (via drawer interno)</td>
+<td>Secoes: Arquivos, Docs Gerados, Docs por Restricao</td>
+</tr>
+<tr>
+<td><span class="badge badge-warn">/distribuicao Drawer</span></td>
+<td style="font-family:var(--mono);font-size:11px">ClienteDrawerTabDocumentosLead (context=distribuicao)</td>
+<td>1 + 2 + 3</td>
+<td><span class="badge badge-success">SIM</span></td>
+<td>Nao (restricaoId filtrado)</td>
+</tr>
+<tr>
+<td><span class="badge badge-success">/processos Drawer</span></td>
+<td style="font-family:var(--mono);font-size:11px">ProcessoTabDocumentos</td>
+<td>2 (Inicial) + Tram</td>
+<td><span class="badge badge-success">SIM</span> (sub-tab Inicial)</td>
+<td><span class="badge badge-primary">SIM: Inicial | Tramitacao</span></td>
+</tr>
+<tr>
+<td><span class="badge badge-neutral">/decisoes Modal</span></td>
+<td style="font-family:var(--mono);font-size:11px">TabDocumentos (decisoes)</td>
+<td>texto + arquivo</td>
+<td><span class="badge badge-danger">NAO</span></td>
+<td>Nao</td>
+</tr>
+<tr>
+<td><span class="badge badge-neutral">/configuracoes</span></td>
+<td style="font-family:var(--mono);font-size:11px">TabDocumentos (configuracoes)</td>
+<td>Templates</td>
+<td><span class="badge badge-danger">NAO</span></td>
+<td>Nao</td>
+</tr>
+<tr>
+<td><span class="badge badge-neutral">/controller</span></td>
+<td style="font-family:var(--mono);font-size:11px">ControllerDocumentos + V3DrawerTabDocumentos</td>
+<td>Pendentes</td>
+<td><span class="badge badge-danger">NAO</span></td>
+<td>Nao</td>
+</tr>
+<tr>
+<td><span class="badge badge-neutral">/documentos_pendentes</span></td>
+<td style="font-family:var(--mono);font-size:11px">Sequencial mode</td>
+<td>Upload resolve</td>
+<td><span class="badge badge-danger">NAO</span></td>
+<td>Nao</td>
+</tr>
+<tr>
+<td><span class="badge badge-neutral">OlivIA v3</span></td>
+<td style="font-family:var(--mono);font-size:11px">UploadDocumentosV3</td>
+<td>Analise IA</td>
+<td><span class="badge badge-success">SIM</span></td>
+<td>Nao</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="section" id="docs-storage">
+<div class="section-header"><div class="section-icon">B</div><div class="section-title">Buckets & Storage</div></div>
+<div class="grid2">
+<div class="card" style="border-left:3px solid var(--info)">
+<div class="card-title">leads-docs</div>
+<p style="font-size:11px">Tier 1 + Tier 2<br>Docs de leads e clientes pre-distribuicao<br>Upload via DocumentosUploadCentral e RestricaoPastaCard<br>Acesso: signed URL via getSignedUrl(path, 'leads-docs')</p>
+</div>
+<div class="card" style="border-left:3px solid var(--primary)">
+<div class="card-title">documentos</div>
+<p style="font-size:11px">Docs de tramitacao (processo)<br>Upload via DocumentUploadModal<br>Acesso: <strong>PRIVADO</strong> — signed URL obrigatorio<br>Nunca usar getPublicUrl()</p>
+</div>
+<div class="card" style="border-left:3px solid var(--warn)">
+<div class="card-title">comprovantes</div>
+<p style="font-size:11px">Tier 3 gerados por n8n<br>Contratos, procuracoes<br>Gerados via useGerarContrato</p>
+</div>
+<div class="card" style="border-left:3px solid var(--muted)">
+<div class="card-title">mdzap-media</div>
+<p style="font-size:11px">Midias do WhatsApp<br>Usado pelo MdZap (chat)</p>
+</div>
+</div>
+<div class="card">
+<div class="card-title">Padrao de Path no Storage</div>
+<div class="code-block">
+<span class="c-comment">// Tier 1 (central)</span>
+<span class="c-str">${orgId}/leads/${leadId}/${timestamp}_${filename}</span>
+<span class="c-str">${orgId}/clientes/${clienteId}/${timestamp}_${filename}</span>
+
+<span class="c-comment">// Tier 2 (restricao)</span>
+<span class="c-str">${orgId}/leads/${leadId}/restricoes/${restricaoId}/${timestamp}_${filename}</span>
+<span class="c-str">${orgId}/clientes/${clienteId}/restricoes/${restricaoId}/${timestamp}_${filename}</span>
+
+<span class="c-comment">// Tramitacao (processo)</span>
+<span class="c-str">${orgId}/processos/${processoId}/${timestamp}_${filename}</span>
+</div>
+</div>
+</div>
+
+<div class="section" id="docs-hooks">
+<div class="section-header"><div class="section-icon">H</div><div class="section-title">Hooks de Documentos</div></div>
+<table>
+<thead><tr><th>Hook</th><th>Arquivo</th><th>Query Key</th><th>Descricao</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useLeadDocs</td><td style="font-size:11px">documentos_lead_hooks.ts</td><td>['lead-docs-upload', leadId, orgId, clienteId]</td><td>Tier 1 — docs centrais</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useRestricaoDocs</td><td style="font-size:11px">documentos_lead_hooks.ts</td><td>['restricao-docs-upload', restricaoId, leadId, orgId, clienteId]</td><td>Tier 2 — docs por restricao + inclui Tier 1</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useClienteDados</td><td style="font-size:11px">documentos_lead_hooks.ts</td><td>['cliente-drawer-dados', clienteId]</td><td>Drive folder, contrato Midas URL</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useComprovanteAuditoria</td><td style="font-size:11px">documentos_lead_hooks.ts</td><td>['lead-comprovante-auditoria', leadId, orgId]</td><td>PDF da consulta CPF</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useProcessosDocs</td><td style="font-size:11px">documentos_lead_hooks.ts</td><td>['crm-processos-docs', clienteId, orgId, leadId]</td><td>Tier 3 — docs gerados por processo</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useDocumentosProcesso</td><td style="font-size:11px">hooks/useDocumentosProcesso.ts</td><td>['documentos-processo', processoId]</td><td>Todos docs de um processo (todas categorias)</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useProcessoDocumentos</td><td style="font-size:11px">hooks/useProcessoDocumentos.ts</td><td>['processo-documentos', processoId, orgId]</td><td>Docs tramitacao com delete mutation</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useGerarDocumento</td><td style="font-size:11px">hooks/useGerarDocumento.ts</td><td>mutation</td><td>Gera doc via n8n (procuracao, contrato, peticao)</td></tr>
+<tr><td style="font-family:var(--mono);color:var(--primary)">useGerarContrato</td><td style="font-size:11px">hooks/useGerarContrato.ts</td><td>mutation</td><td>Gera contrato por restricao (CRM)</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CONEXOES -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="section" id="conexoes-map">
+<div class="section-header"><div class="section-icon">M</div><div class="section-title">Mapa de Conexoes Completo</div></div>
+<div class="flow-diagram">
+<span class="highlight">RESTRICOES → DOCUMENTOS</span>
+  restricoes.id ──→ processos_documentos.restricao_id
+  <span class="c-comment">Cada restricao processavel vira uma PASTA no tab Documentos</span>
+  <span class="c-comment">useRestricoes() alimenta a lista de pastas</span>
+  <span class="c-comment">useRestricaoDocs() busca docs da pasta</span>
+
+<span class="highlight">RESTRICOES → PROCESSOS</span>
+  processos.restricao_id ──→ restricoes.id
+  <span class="c-comment">Vinculo na distribuicao (ModalCriarProcesso)</span>
+  restricoes.processo_id ──→ processos.id
+  <span class="warn">NOTA: NEM SEMPRE preenchido — fallback via processos.restricao_id</span>
+
+<span class="highlight">RESTRICOES → EMPRESAS</span>
+  restricoes.empresa_id ──→ empresas.id (opcional)
+  restricoes.empresa_nome → texto livre do credor
+  <span class="c-comment">/empresas agrupa por empresa, mostra processos + opt-outs</span>
+
+<span class="highlight">RESTRICOES → LEADS/CLIENTES</span>
+  restricoes.lead_id ──→ leads.id (CRM)
+  restricoes.cliente_id ──→ clientes.id (pagina /clientes)
+  <span class="c-comment">Lead se converte em Cliente → restricoes podem ter ambos</span>
+
+<span class="highlight">DOCUMENTOS → PROCESSOS</span>
+  processos_documentos.processo_id ──→ processos.id
+  <span class="c-comment">Tier 1/2: processo_id = NULL (pre-distribuicao)</span>
+  <span class="c-comment">Tier 3 / Tramitacao: processo_id = UUID</span>
+
+<span class="highlight">DOCUMENTOS → GOOGLE DRIVE</span>
+  webhook 'sync-storage-drive' ── sincroniza para Drive
+  processos_documentos.google_drive_id ── ID no Drive
+  clientes.google_drive_folder_id ── Pasta raiz do cliente
+
+<span class="highlight">DOCUMENTOS → CLIENTES/LEADS (realtime)</span>
+  channel processos-documentos-cliente-${clienteId}
+  <span class="c-comment">Qualquer INSERT/UPDATE/DELETE → invalida queries de docs</span>
+</div>
+</div>
+
+<div class="section" id="conexoes-realtime">
+<div class="section-header"><div class="section-icon">R</div><div class="section-title">Realtime Channels</div></div>
+<table>
+<thead><tr><th>Channel</th><th>Tabela</th><th>Filtro</th><th>Componente</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--mono);font-size:11px">processos-documentos-cliente-${clienteId}</td><td>processos_documentos</td><td>cliente_id=eq.${clienteId}</td><td>ClienteDrawerTabDocumentos</td></tr>
+<tr><td style="font-family:var(--mono);font-size:11px">tram-docs-${processoId}</td><td>processos_documentos</td><td>processo_id=eq.${processoId}</td><td>ProcessoTramitacaoTab</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="section" id="conexoes-webhooks">
+<div class="section-header"><div class="section-icon">W</div><div class="section-title">Webhooks n8n Relacionados</div></div>
+<table>
+<thead><tr><th>Webhook</th><th>Descricao</th><th>Disparado Por</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--mono);font-size:11px;color:var(--primary)">clientes/consultar_restricoes</td><td>Consulta bureaus (Serasa, SPC, Boa Vista)</td><td>ClienteTabRestricoes btn "Consultar Bureaus"</td></tr>
+<tr><td style="font-family:var(--mono);font-size:11px;color:var(--primary)">sync-storage-drive</td><td>Sincroniza arquivo do Storage para Google Drive</td><td>Upload Tier 1/2 (fire-and-forget)</td></tr>
+<tr><td style="font-family:var(--mono);font-size:11px;color:var(--primary)">gerar-contrato</td><td>Gera contrato PDF por restricao</td><td>useGerarContrato (GerarDocModal)</td></tr>
+<tr><td style="font-family:var(--mono);font-size:11px;color:var(--primary)">gerar-documento</td><td>Gera procuracao/contrato/peticao</td><td>useGerarDocumento (DocumentoCard)</td></tr>
+<tr><td style="font-family:var(--mono);font-size:11px;color:var(--primary)">mdzap/bulk-documentos</td><td>Envio em massa de docs via WhatsApp</td><td>MdZap bulk actions</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PENDENCIAS -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="section" id="pendencias">
+<div class="section-header"><div class="section-icon">!</div><div class="section-title">Build Errors Pendentes</div></div>
+<div class="card" style="border-left:3px solid var(--danger)">
+<div class="card-title">Erros de Tipo no types.ts (pre-existentes)</div>
+<p style="font-size:12px;color:var(--muted)">Multiplos erros TS2345/TS2769 em arquivos que fazem <code>supabase.from('restricoes').insert/update</code> sem cast. Causa: types.ts gerado nao inclui colunas novas (restricoes, organizacoes_features, etc). Solucao: regenerar types.ts via <code>supabase gen types</code> ou usar <code>as any</code> cast.</p>
+<table style="margin-top:8px">
+<thead><tr><th>Arquivo</th><th>Erro</th></tr></thead>
+<tbody>
+<tr><td style="font-family:var(--mono);font-size:10px">NovaRestricaoModal.tsx:75</td><td>insert restricoes — 'organizacao_id' nao existe no tipo</td></tr>
+<tr><td style="font-family:var(--mono);font-size:10px">EditarRestricaoModal.tsx:103</td><td>update restricoes — Record nao assignable</td></tr>
+<tr><td style="font-family:var(--mono);font-size:10px">ClienteTabRestricoes.tsx:89</td><td>update { processavel } nao assignable</td></tr>
+<tr><td style="font-family:var(--mono);font-size:10px">ForumTab.tsx:92,139</td><td>.map nao existe no Result de RPC</td></tr>
+<tr><td style="font-family:var(--mono);font-size:10px">ModalFeatureFlag.tsx:90</td><td>insert organizacoes_features</td></tr>
+<tr><td style="font-family:var(--mono);font-size:10px">ModalIntegracao.tsx:195,205</td><td>insert/update integracoes_org</td></tr>
+<tr><td style="font-family:var(--mono);font-size:10px">ClienteTabDadosVinculos.tsx</td><td>Multiplos .eq() com tipo incompativel</td></tr>
+<tr><td style="font-family:var(--mono);font-size:10px">ClienteTabFinanceiro.tsx:86-87</td><td>.eq() tipo incompativel</td></tr>
+<tr><td style="font-family:var(--mono);font-size:10px">ClienteTabHistorico.tsx:149</td><td>insert clientes_historico</td></tr>
+</tbody>
+</table>
+<p style="font-size:11px;margin-top:8px;color:var(--warn)">Solucao recomendada: adicionar <code>as any</code> nos parametros de insert/update/eq ou regenerar o types.ts.</p>
+</div>
+</div>
+
+<footer>
+MdFlow — Relatorio gerado em 2026-04-06 | Restricoes & Documentos: Arquitetura Completa<br>
+34 arquivos analisados | 3 Tiers | 10 paginas com documentos | 9 hooks mapeados
+</footer>
+
+</main>
+</div>
+</body>
+</html>

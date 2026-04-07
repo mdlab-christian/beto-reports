@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdFlow — Documentos & Restrições — Arquitetura Completa</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e; --surface: #1a1714; --card: #201d1a; --border: #2e2b27;
+  --primary: #20c997; --primary-dim: #20c99720; --primary-border: #20c99740;
+  --warn: #f59e0b; --danger: #ef4444; --success: #22c55e; --info: #60a5fa;
+  --text: #f5f0eb; --muted: #9e9890; --mono: 'JetBrains Mono', monospace;
+  --violet: #a78bfa; --rose: #f43f5e; --sky: #0ea5e9; --lime: #84cc16;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; font-size: 14px; line-height: 1.6; padding: 2rem; max-width: 1400px; margin: 0 auto; }
+h1 { font-family: Manrope, sans-serif; font-weight: 800; font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
+h2 { font-family: Manrope, sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--text); margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+h3 { font-family: Manrope, sans-serif; font-weight: 600; font-size: 1.1rem; color: var(--primary); margin: 1.5rem 0 0.75rem; }
+h4 { font-size: 0.95rem; font-weight: 600; color: var(--text); margin: 1rem 0 0.5rem; }
+.subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+.layout { display: flex; gap: 2rem; }
+.sidebar { width: 240px; position: sticky; top: 24px; height: fit-content; flex-shrink: 0; }
+.sidebar a { display: block; padding: 4px 12px; font-size: 12px; color: var(--muted); text-decoration: none; border-left: 2px solid transparent; transition: all 0.2s; }
+.sidebar a:hover, .sidebar a.active { color: var(--primary); border-left-color: var(--primary); background: var(--primary-dim); }
+.sidebar .group { margin-top: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 0 12px; }
+main { flex: 1; max-width: 1100px; }
+@media (max-width: 820px) { .sidebar { display: none; } .layout { flex-direction: column; } }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 500; border: 1px solid; }
+.badge-primary { background: var(--primary-dim); color: var(--primary); border-color: var(--primary-border); }
+.badge-warn { background: #f59e0b20; color: var(--warn); border-color: #f59e0b40; }
+.badge-danger { background: #ef444420; color: var(--danger); border-color: #ef444440; }
+.badge-success { background: #22c55e20; color: var(--success); border-color: #22c55e40; }
+.badge-info { background: #60a5fa20; color: var(--info); border-color: #60a5fa40; }
+.badge-neutral { background: #9e989020; color: var(--muted); border-color: #9e989040; }
+.badge-violet { background: #a78bfa20; color: var(--violet); border-color: #a78bfa40; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 0.75rem 0; }
+th { text-align: left; padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--border); color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:hover td { background: var(--surface); }
+
+.code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-family: var(--mono); font-size: 12px; line-height: 1.7; overflow-x: auto; margin: 0.75rem 0; white-space: pre; }
+.c-comment { color: #6b7280; } .c-key { color: var(--primary); } .c-val { color: var(--warn); } .c-str { color: var(--info); } .c-kw { color: var(--violet); }
+
+.flow-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; font-family: var(--mono); font-size: 12px; line-height: 1.8; overflow-x: auto; white-space: pre; margin: 1rem 0; }
+.flow-diagram .arrow { color: var(--primary); } .flow-diagram .node { color: var(--info); } .flow-diagram .action { color: var(--warn); } .flow-diagram .label { color: var(--muted); }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+@media (max-width: 768px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+.tier-label { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+.tier-1 { background: #20c99715; color: var(--primary); border: 1px solid var(--primary-border); }
+.tier-2 { background: #a78bfa15; color: var(--violet); border: 1px solid #a78bfa40; }
+.tier-3 { background: #f59e0b15; color: var(--warn); border: 1px solid #f59e0b40; }
+
+.context-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; margin-right: 6px; margin-bottom: 4px; }
+.ctx-crm { background: #20c99715; color: var(--primary); }
+.ctx-cliente { background: #60a5fa15; color: var(--info); }
+.ctx-processo { background: #a78bfa15; color: var(--violet); }
+.ctx-distribuicao { background: #f59e0b15; color: var(--warn); }
+
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="sidebar">
+  <div class="group">Visão Geral</div>
+  <a href="#overview">Arquitetura Geral</a>
+  <a href="#tiers">Sistema de Tiers</a>
+  <a href="#contexts">Contextos de Uso</a>
+
+  <div class="group">Documentos</div>
+  <a href="#files-docs">Mapa de Arquivos</a>
+  <a href="#upload-flow">Fluxo de Upload</a>
+  <a href="#upload-central">Upload Central (Tier 1)</a>
+  <a href="#pasta-restricao">Pasta Restrição (Tier 2)</a>
+  <a href="#geracao">Geração de Docs (Tier 3)</a>
+  <a href="#documento-item">DocumentoItem</a>
+  <a href="#tramitacao">Tramitação</a>
+  <a href="#drive-sync">Google Drive Sync</a>
+  <a href="#cliente-docs">ClienteTabDocumentos</a>
+
+  <div class="group">Restrições</div>
+  <a href="#restricoes-overview">Visão Geral</a>
+  <a href="#restricoes-hooks">Hooks & RPC</a>
+  <a href="#restricoes-processo">ProcessoTabRestricoes</a>
+  <a href="#restricoes-cliente">ClienteTabRestricoes</a>
+  <a href="#restricoes-crm">CRM Restricoes</a>
+
+  <div class="group">Conexões</div>
+  <a href="#conexoes">Mapa de Conexões</a>
+  <a href="#webhooks">Webhooks n8n</a>
+  <a href="#realtime">Realtime</a>
+  <a href="#storage">Storage Buckets</a>
+</aside>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main>
+
+<h1>Documentos & Restrições</h1>
+<p class="subtitle">Arquitetura completa das abas de Documentos e Restrições em todos os drawers do MdFlow — CRM, Cliente, Processo e Distribuição.</p>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="overview">1. Arquitetura Geral</h2>
+
+<div class="card">
+<p>As abas de <strong>Documentos</strong> e <strong>Restrições</strong> aparecem em 4 contextos diferentes do MdFlow, cada um com variações de funcionalidade:</p>
+
+<div style="margin-top: 1rem;">
+<span class="context-chip ctx-crm">CRM (LeadDrawer)</span>
+<span class="context-chip ctx-distribuicao">Distribuição</span>
+<span class="context-chip ctx-cliente">Página Cliente</span>
+<span class="context-chip ctx-processo">Drawer Processo</span>
+</div>
+
+<p style="margin-top: 1rem;">Todos compartilham os mesmos componentes base (<code>DocumentoItem</code>, <code>RestricaoPastaCard</code>, <code>DocumentosUploadCentral</code>) e hooks (<code>documentos_lead_hooks.ts</code>), mas cada contexto orquestra de forma diferente.</p>
+</div>
+
+<div class="flow-diagram">
+<span class="label">                    ┌─────────────────────────────────────────────────────┐</span>
+<span class="label">                    │           TABELA: processos_documentos              │</span>
+<span class="label">                    │  (fonte única de dados para todos os contextos)     │</span>
+<span class="label">                    └────────────────────┬────────────────────────────────┘</span>
+<span class="arrow">                                         │</span>
+<span class="arrow">              ┌──────────────┬───────────┼───────────┬──────────────┐</span>
+<span class="arrow">              ▼              ▼           ▼           ▼              ▼</span>
+<span class="node">         useLeadDocs   useRestricaoDocs  useProcessosDocs  useProcessoDocumentos</span>
+<span class="label">         (Tier 1)      (Tier 2)          (Tier 3)          (Tramitação)</span>
+<span class="arrow">              │              │           │           │              │</span>
+<span class="arrow">              ▼              ▼           ▼           ▼              ▼</span>
+<span class="action">      DocumentosUpload  RestricaoPasta  RestricaoSection  ProcessoTramitacaoTab</span>
+<span class="action">        Central           Card          (gerados n8n)     (pós-distribuição)</span>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="tiers">2. Sistema de Tiers</h2>
+
+<div class="grid3">
+  <div class="card">
+    <div class="tier-label tier-1">TIER 1 — Central</div>
+    <p style="font-size:13px; color: var(--muted); margin-top:8px;">Documentos gerais do lead/cliente. Aparecem em <strong>todas</strong> as pastas de restrição automaticamente.</p>
+    <table>
+      <tr><td style="color:var(--muted)">restricao_id</td><td><code>null</code></td></tr>
+      <tr><td style="color:var(--muted)">categoria</td><td><code>documento_lead</code></td></tr>
+      <tr><td style="color:var(--muted)">bucket</td><td><code>leads-docs</code></td></tr>
+      <tr><td style="color:var(--muted)">path</td><td><code>{org}/leads/{lead}/{ts}_{file}</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="tier-label tier-2">TIER 2 — Restrição</div>
+    <p style="font-size:13px; color: var(--muted); margin-top:8px;">Documentos específicos de uma restrição. Ficam apenas na pasta da restrição correspondente.</p>
+    <table>
+      <tr><td style="color:var(--muted)">restricao_id</td><td><code>{uuid}</code></td></tr>
+      <tr><td style="color:var(--muted)">categoria</td><td><code>documento_restricao</code></td></tr>
+      <tr><td style="color:var(--muted)">bucket</td><td><code>leads-docs</code></td></tr>
+      <tr><td style="color:var(--muted)">path</td><td><code>{org}/leads/{lead}/restricoes/{rid}/{ts}_{file}</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="tier-label tier-3">TIER 3 — Gerado</div>
+    <p style="font-size:13px; color: var(--muted); margin-top:8px;">Documentos gerados por n8n (contratos, procurações, petições). Associados a processo.</p>
+    <table>
+      <tr><td style="color:var(--muted)">processo_id</td><td><code>{uuid}</code></td></tr>
+      <tr><td style="color:var(--muted)">categoria</td><td><code>contrato_empresa / contrato_orgao</code></td></tr>
+      <tr><td style="color:var(--muted)">bucket</td><td><code>comprovantes</code></td></tr>
+      <tr><td style="color:var(--muted)">gerado via</td><td><code>useGerarContrato → webhook n8n</code></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="contexts">3. Contextos de Uso</h2>
+
+<table>
+<thead>
+<tr><th>Contexto</th><th>Componente Principal</th><th>Tier 1</th><th>Tier 2</th><th>Tier 3</th><th>Funcionalidades Extras</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td><span class="badge badge-primary">CRM</span></td>
+  <td><code>ClienteDrawerTabDocumentosLead</code></td>
+  <td>✅</td><td>✅</td><td>✅</td>
+  <td>Comprovante Auditoria, Gerar Procuração/Contrato, Contrato Midas, Drive Panel, Batch "Gerar Tudo"</td>
+</tr>
+<tr>
+  <td><span class="badge badge-warn">Distribuição</span></td>
+  <td><code>ClienteDrawerTabDocumentosLead</code> (context='distribuicao')</td>
+  <td>✅</td><td>✅ (filtrado)</td><td>✅</td>
+  <td>Gerar Petição Inicial, Gerar Comprovantes, filtro por restricaoId específico</td>
+</tr>
+<tr>
+  <td><span class="badge badge-info">Cliente</span></td>
+  <td><code>ClienteTabDocumentosUnificada</code></td>
+  <td>✅</td><td>✅</td><td>—</td>
+  <td>Docs Pessoais (RG/CNH), Google Drive criar/sincronizar, Upload Modal, Status doc, Seleção múltipla</td>
+</tr>
+<tr>
+  <td><span class="badge badge-violet">Processo</span></td>
+  <td><code>ProcessoTabDocumentos</code></td>
+  <td>—</td><td>✅ (pasta única)</td><td>—</td>
+  <td>Sub-tabs Inicial/Tramitação, ProcessoTramitacaoTab (tabela completa pós-distribuição)</td>
+</tr>
+</tbody>
+</table>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="files-docs">4. Mapa de Arquivos — Documentos</h2>
+
+<table>
+<thead>
+<tr><th>Arquivo</th><th>Linhas</th><th>Responsabilidade</th><th>Usado por</th></tr>
+</thead>
+<tbody>
+<tr><td><code>documentos_lead_hooks.ts</code></td><td>324</td><td>5 hooks: useLeadDocs, useRestricaoDocs, useClienteDados, useComprovanteAuditoria, useProcessosDocs</td><td>CRM, Cliente, Processo, Distribuição</td></tr>
+<tr><td><code>DocumentoItem.tsx</code></td><td>195</td><td>Linha compacta: renomear inline, abrir, baixar, soft-delete com undo (3s)</td><td>Todos os contextos</td></tr>
+<tr><td><code>DocumentosUploadCentral.tsx</code></td><td>184</td><td>Drop zone + fila de categorias + upload por categoria</td><td>CRM, Cliente</td></tr>
+<tr><td><code>RestricaoPastaCard.tsx</code></td><td>494</td><td>Card accordion: docs + upload interno + drag&drop + multi-select + bulk delete/download</td><td>CRM, Cliente, Processo</td></tr>
+<tr><td><code>DocumentosLeadPaineis.tsx</code></td><td>328</td><td>ComprovanteAuditoriaPanel, RestricaoSection (Tier 3), DrivePanel, ContratoMidasPanel</td><td>CRM</td></tr>
+<tr><td><code>ClienteDrawerTabDocumentosLead.tsx</code></td><td>646</td><td>Orquestrador principal CRM/Distribuição — coordena tiers 1/2/3, geração, batch</td><td>CRM, Distribuição</td></tr>
+<tr><td><code>ClienteDrawerTabDocumentos.tsx</code></td><td>351</td><td>Versão clientes — resolve lead_id, realtime channel, upload central + pastas</td><td>Página Cliente</td></tr>
+<tr><td><code>ProcessoTabDocumentos.tsx</code></td><td>202</td><td>Sub-tabs Inicial (pasta restrição) + Tramitação</td><td>Drawer Processo</td></tr>
+<tr><td><code>ProcessoTramitacaoTab.tsx</code></td><td>373</td><td>Tabela pós-distribuição: filtros, upload modal, bulk select, signed URLs</td><td>Drawer Processo</td></tr>
+<tr><td><code>ClienteTabDocumentosUnificada.tsx</code></td><td>359</td><td>3 seções: Google Drive + Docs Pessoais + Por Restrição</td><td>Página Cliente</td></tr>
+<tr><td><code>useProcessoDocumentos.ts</code></td><td>75</td><td>Query + deleteMutation para docs de tramitação</td><td>ProcessoTramitacaoTab</td></tr>
+<tr><td><code>useDocumentosPorContexto.ts</code></td><td>42</td><td>RPC fn_documentos_por_contexto — busca docs por contexto tipo</td><td>Genérico</td></tr>
+</tbody>
+</table>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="upload-flow">5. Fluxo de Upload — Diagrama Completo</h2>
+
+<div class="flow-diagram">
+<span class="label">  USUÁRIO                           FRONTEND                         SUPABASE                   N8N</span>
+<span class="label">  ──────                           ────────                         ────────                   ───</span>
+<span class="label">                                                                                              </span>
+<span class="action">  1. Drag & Drop / Click           </span>
+<span class="arrow">     ─────────────────────────▶  </span><span class="node">adicionarArquivos()</span>
+<span class="label">                                      │</span>
+<span class="label">                                      ▼</span>
+<span class="action">                                   Validar:</span>
+<span class="label">                                   • Tipo aceito? (JPG, PNG, PDF, DOCX)</span>
+<span class="label">                                   • Google Apps? → Rejeitar</span>
+<span class="label">                                   • > 20MB? → Rejeitar</span>
+<span class="label">                                      │</span>
+<span class="label">                                      ▼</span>
+<span class="action">  2. Escolher categoria            </span><span class="node">setPendentes([ {file, categoria} ])</span>
+<span class="label">     (RG, CPF, CNH, Contrato...)       │</span>
+<span class="label">                                      ▼</span>
+<span class="action">  3. Confirmar "Enviar"            </span><span class="node">handleUploadCentral() ou handleEnviar()</span>
+<span class="label">                                      │</span>
+<span class="label">                                      ├──▶ </span><span class="node">sanitizarNomeArquivo()</span><span class="label"> → NFD + lowercase + no spaces</span>
+<span class="label">                                      │</span>
+<span class="label">                                      ├──▶ </span><span class="action">supabase.storage.from('leads-docs').upload(path, file)</span>
+<span class="arrow">                                      │         ─────────────────────────────────▶  </span><span class="node">Bucket: leads-docs</span>
+<span class="label">                                      │</span>
+<span class="label">                                      ├──▶ </span><span class="action">supabase.from('processos_documentos').insert({...})</span>
+<span class="arrow">                                      │         ─────────────────────────────────▶  </span><span class="node">DB: processos_documentos</span>
+<span class="label">                                      │</span>
+<span class="label">                                      ├──▶ </span><span class="action">queryClient.invalidateQueries()</span>
+<span class="label">                                      │</span>
+<span class="label">                                      └──▶ </span><span class="action">syncToDrive() — fire & forget</span>
+<span class="arrow">                                                ────────────────────────────────────────▶  </span><span class="node">sync-storage-drive</span>
+<span class="label">                                                                                          (webhook n8n)</span>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="upload-central">6. Upload Central — DocumentosUploadCentral.tsx</h2>
+
+<div class="card">
+<h4>Componente Visual</h4>
+<div class="flow-diagram">
+<span class="node">┌────────────────────────────────────────────────┐</span>
+<span class="node">│  ☁ Arraste arquivos ou clique para selecionar  │</span>
+<span class="node">│  JPG, PNG, PDF, DOCX · até 20MB                │</span>
+<span class="node">│       (border-dashed, hover → border-primary)   │</span>
+<span class="node">└────────────────────────────────────────────────┘</span>
+<span class="label">                      │ drop/click</span>
+<span class="label">                      ▼</span>
+<span class="node">┌────────────────────────────────────────────────┐</span>
+<span class="node">│  📄 arquivo.pdf                           [×]  │</span>
+<span class="node">│  [▼ Selecione a categoria... ▼]                │</span>
+<span class="node">│  • RG (Identidade)    • CPF    • CNH            │</span>
+<span class="node">│  • Comp. Residência   • Comp. Renda             │</span>
+<span class="node">│  • Procuração  • Contrato  • Extrato  • Outros  │</span>
+<span class="node">│  [ ☁ Enviar ]                                  │</span>
+<span class="node">└────────────────────────────────────────────────┘</span>
+</div>
+
+<h4>Categorias aceitas (CATEGORIAS_DOCUMENTO)</h4>
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+  <span class="badge badge-primary">RG (Identidade)</span>
+  <span class="badge badge-primary">CPF</span>
+  <span class="badge badge-primary">CNH</span>
+  <span class="badge badge-info">Comprovante de Residência</span>
+  <span class="badge badge-info">Comprovante de Renda</span>
+  <span class="badge badge-warn">Procuração</span>
+  <span class="badge badge-warn">Contrato</span>
+  <span class="badge badge-violet">Extrato Bancário</span>
+  <span class="badge badge-neutral">Outros</span>
+</div>
+
+<h4 style="margin-top:1rem">Lógica Interna</h4>
+<ol style="font-size:13px; color:var(--muted); padding-left:1.5rem; line-height:2;">
+  <li>Usuário faz drop ou click → <code>adicionarArquivos()</code> valida tipo MIME e tamanho</li>
+  <li>Arquivos aceitos entram na fila <code>pendentes[]</code> com categoria vazia</li>
+  <li>Usuário seleciona categoria via <code>&lt;select&gt;</code> dropdown</li>
+  <li>Ao clicar "Enviar" → <code>confirmarUpload(idx)</code> remove da fila e chama <code>onUpload(file, categoria)</code></li>
+  <li>Upload imediato após escolha da categoria — sem botão extra de confirmação</li>
+</ol>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="pasta-restricao">7. Pasta Restrição — RestricaoPastaCard.tsx</h2>
+
+<div class="card">
+<h4>Componente Visual</h4>
+<div class="flow-diagram">
+<span class="node">┌─────────────────────────────────────────────────────┐</span>
+<span class="node">│ ▶ 🏢 Serasa Experian    Nº 12345 · R$1.500 · 01/03  │  [3] </span>
+<span class="node">│                                                      │  [🗑]</span>
+<span class="node">└─────────────────────────────────────────────────────┘</span>
+<span class="label">              │ click → toggle accordion</span>
+<span class="label">              ▼</span>
+<span class="node">┌─────────────────────────────────────────────────────┐</span>
+<span class="node">│ ▼ 🏢 Serasa Experian    Nº 12345 · R$1.500 · 01/03  │</span>
+<span class="node">│─────────────────────────────────────────────────────│</span>
+<span class="node">│  ☐ Selecionar múltiplos                              │</span>
+<span class="node">│  📄 RG (Identidade)        [🔗] [⬇] [✏] [🗑]       │</span>
+<span class="node">│  📄 Comprovante Residência  [🔗] [⬇] [✏] [🗑]       │</span>
+<span class="node">│  📄 Contrato Assinado       [🔗] [⬇] [✏] [🗑]       │</span>
+<span class="node">│                                                      │</span>
+<span class="node">│  ┌──────────────────────────────────────────┐        │</span>
+<span class="node">│  │  ⬆ Upload específico desta restrição     │        │</span>
+<span class="node">│  └──────────────────────────────────────────┘        │</span>
+<span class="node">└─────────────────────────────────────────────────────┘</span>
+</div>
+
+<h4>Funcionalidades</h4>
+<table>
+<tr><td><span class="badge badge-primary">Accordion</span></td><td>Toggle abrir/fechar com ChevronRight/ChevronDown</td></tr>
+<tr><td><span class="badge badge-info">Drag & Drop</span></td><td>Drop de arquivo sobre o card header → upload Tier 2 direto</td></tr>
+<tr><td><span class="badge badge-violet">Multi-Select</span></td><td>Botão "Selecionar múltiplos" → checkboxes + bulk download/delete</td></tr>
+<tr><td><span class="badge badge-warn">Upload Interno</span></td><td>Drop zone dentro do card com nomes predefinidos: Comprovante, Contrato Assinado, Outro</td></tr>
+<tr><td><span class="badge badge-success">Drive Sync</span></td><td>Após upload, fire-and-forget webhook <code>sync-storage-drive</code></td></tr>
+<tr><td><span class="badge badge-danger">Excluir Restrição</span></td><td>Botão 🗑 no header (quando <code>onDeleteRestricao</code> fornecido)</td></tr>
+<tr><td><span class="badge badge-warn">Boa Vista</span></td><td>Cor especial <code>#fbbf24</code> quando empresa contém "boa vista" (exceção legítima DS)</td></tr>
+</table>
+
+<h4>Nomes predefinidos para upload</h4>
+<div class="code-block"><span class="c-kw">const</span> <span class="c-key">NOMES_RESTRICAO</span> = [<span class="c-str">'Comprovante'</span>, <span class="c-str">'Contrato Assinado'</span>, <span class="c-str">'Outro'</span>]</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="geracao">8. Geração de Documentos — Tier 3</h2>
+
+<div class="card">
+<h4>Webhooks de Geração por Contexto</h4>
+<table>
+<thead><tr><th>Contexto</th><th>Tipo</th><th>Webhook</th><th>Timeout</th></tr></thead>
+<tbody>
+<tr><td><span class="badge badge-primary">CRM</span></td><td>Procuração</td><td><code>mdflow/doc/gerar-procuracao-orgao</code></td><td>120s</td></tr>
+<tr><td><span class="badge badge-primary">CRM</span></td><td>Contrato</td><td><code>mdflow/doc/gerar-contrato-honorarios</code></td><td>120s</td></tr>
+<tr><td><span class="badge badge-warn">Distribuição</span></td><td>Petição Inicial</td><td><code>mdflow/doc/gerar-peticao-inicial</code></td><td>120s</td></tr>
+<tr><td><span class="badge badge-warn">Distribuição</span></td><td>Comprovantes</td><td><code>mdflow/doc/gerar-comprovantes</code></td><td>120s</td></tr>
+<tr><td><span class="badge badge-primary">CRM</span></td><td>Contrato Midas</td><td><code>mdflow/doc/gerar-contrato-midas</code></td><td>default</td></tr>
+<tr><td><span class="badge badge-primary">CRM</span></td><td>Contrato Empresa (Tier3)</td><td>via <code>useGerarContrato</code></td><td>default</td></tr>
+</tbody>
+</table>
+
+<h4>Fluxo Batch "Gerar Tudo"</h4>
+<div class="flow-diagram">
+<span class="action">handleGerarTudo()</span>
+<span class="label">  │</span>
+<span class="label">  ├── setBatchProgress({ done: 0, total: N })</span>
+<span class="label">  │</span>
+<span class="label">  ├── for each restrição processável:</span>
+<span class="label">  │     └── </span><span class="action">gerar({ leadId, restricaoId, tipo: 'contrato_empresa', oab })</span>
+<span class="label">  │           └── setBatchProgress({ done: done+1, total: N })</span>
+<span class="label">  │</span>
+<span class="label">  ├── setBatchProgress(null)</span>
+<span class="label">  └── invalidateQueries(['crm-processos-docs', ...])</span>
+</div>
+
+<h4>Status de Documento Gerado</h4>
+<div style="display:flex; gap:8px; flex-wrap:wrap;">
+  <span class="badge badge-neutral">pendente</span>
+  <span class="badge badge-primary">gerando</span>
+  <span class="badge badge-success">disponível</span>
+  <span class="badge badge-danger">erro</span>
+</div>
+<p style="font-size:12px; color:var(--muted); margin-top:8px;">Docs "processando" há >5min são automaticamente marcados como "erro" no hook <code>useProcessosDocs</code>. Polling a cada 3s quando algum doc está "gerando".</p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="documento-item">9. DocumentoItem — Componente Atômico</h2>
+
+<div class="card">
+<div class="flow-diagram">
+<span class="node">┌──────────────────────────────────────────────────────────┐</span>
+<span class="node">│  📄 RG (Identidade)                [🔗] [⬇] [✏] [🗑]  │</span>
+<span class="node">│     ↑ nome truncado          ações hover-only ↑         │</span>
+<span class="node">└──────────────────────────────────────────────────────────┘</span>
+<span class="label">                  │ click ✏ (Renomear)</span>
+<span class="label">                  ▼</span>
+<span class="node">┌──────────────────────────────────────────────────────────┐</span>
+<span class="node">│  📄 [RG (Identidade)_________]           [✓] [✕]        │</span>
+<span class="node">│     ↑ input editável inline               ↑              │</span>
+<span class="node">└──────────────────────────────────────────────────────────┘</span>
+</div>
+
+<h4>Ações</h4>
+<table>
+<tr><td>🔗 <strong>Abrir</strong></td><td><code>resolveUrl()</code> → <code>window.open(url, '_blank')</code></td></tr>
+<tr><td>⬇ <strong>Baixar</strong></td><td><code>fetch(url) → blob → anchor.click()</code> — fallback: window.open se CORS</td></tr>
+<tr><td>✏ <strong>Renomear</strong></td><td>Inline input, Enter=salvar, Escape=cancelar. UPDATE <code>processos_documentos.nome</code></td></tr>
+<tr><td>🗑 <strong>Excluir</strong></td><td>Soft-delete com undo 3s via <code>toast('Documento removido', { action: 'Desfazer' })</code></td></tr>
+</table>
+
+<h4>Resolução de URL (prioridade)</h4>
+<div class="code-block"><span class="c-comment">// 1. google_drive_id (storage interno) → getSignedUrl('leads-docs')</span>
+<span class="c-comment">// 2. arquivo_url começa com http → URL direta</span>
+<span class="c-comment">// 3. arquivo_url (storage path) → getSignedUrl('leads-docs')</span></div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="tramitacao">10. Tramitação — ProcessoTramitacaoTab.tsx</h2>
+
+<div class="card">
+<p>Documentos pós-distribuição do processo. Separa docs "iniciais" (pré-distribuição) dos de tramitação pela categoria.</p>
+
+<h4>Categorias classificadas como Inicial (nunca aparecem em Tramitação)</h4>
+<div class="code-block"><span class="c-kw">const</span> <span class="c-key">INICIAL_CATS</span> = [
+  <span class="c-str">'peticao_inicial'</span>, <span class="c-str">'procuracao_orgao'</span>, <span class="c-str">'procuracao'</span>,
+  <span class="c-str">'comprovante_restricao'</span>, <span class="c-str">'documento_restricao'</span>, <span class="c-str">'banco'</span>,
+  <span class="c-str">'cartao'</span>, <span class="c-str">'documento_lead'</span>, <span class="c-str">'negativacao'</span>,
+]</div>
+
+<h4>Filtros de Categoria (UI)</h4>
+<div style="display:flex; gap:6px; flex-wrap:wrap;">
+  <span class="badge badge-primary">Todos</span>
+  <span class="badge badge-info">Petições</span>
+  <span class="badge badge-violet">Procurações</span>
+  <span class="badge badge-warn">Comprovantes</span>
+  <span class="badge badge-neutral">Outros</span>
+</div>
+
+<h4>Tipo e Status de Documento</h4>
+<div class="grid2">
+  <div>
+    <p style="font-size:12px; font-weight:600; margin-bottom:6px;">Tipos</p>
+    <span class="badge badge-primary" style="margin:2px">Gerado</span>
+    <span class="badge badge-info" style="margin:2px">Upload</span>
+    <span class="badge badge-warn" style="margin:2px">Importado</span>
+    <span class="badge badge-violet" style="margin:2px">EPROC</span>
+  </div>
+  <div>
+    <p style="font-size:12px; font-weight:600; margin-bottom:6px;">Status</p>
+    <span class="badge badge-success" style="margin:2px">Disponível</span>
+    <span class="badge badge-warn" style="margin:2px">Processando</span>
+    <span class="badge badge-danger" style="margin:2px">Falhou</span>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="drive-sync">11. Google Drive Sync</h2>
+
+<div class="card">
+<h4>Padrão fire-and-forget</h4>
+<div class="code-block"><span class="c-kw">const</span> <span class="c-key">syncToDrive</span> = (path, bucket, nome, docId) => {
+  <span class="c-kw">if</span> (!lead.cliente_id) <span class="c-kw">return</span>
+  <span class="c-key">callWebhook</span>(<span class="c-str">'sync-storage-drive'</span>, {
+    entidade_tipo: <span class="c-str">'cliente'</span>,
+    entidade_id: lead.cliente_id,
+    entidade_nome: lead.nome,
+    organizacao_id,
+    arquivos: [{ path, bucket, nome, doc_id: docId }],
+  }).<span class="c-key">catch</span>(() => { <span class="c-comment">/* silencioso — Storage é source of truth */</span> })
+}</div>
+
+<h4>3 painéis de Drive</h4>
+<table>
+<tr><td><code>DrivePanel</code></td><td>CRM — criar pasta / abrir Drive</td></tr>
+<tr><td><code>ClienteTabDocumentosUnificada</code> §1</td><td>Página Cliente — criar + sincronizar + verificar root org</td></tr>
+<tr><td><code>ContratoMidasPanel</code></td><td>CRM — gerar contrato Midas via webhook dedicado</td></tr>
+</table>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="cliente-docs">12. Página Cliente — Tab Documentos Unificada</h2>
+
+<div class="card">
+<h4>3 Seções</h4>
+<div class="flow-diagram">
+<span class="node">┌─────────────────────────────────────────────────────┐</span>
+<span class="node">│  SEÇÃO 1 — Google Drive                             │</span>
+<span class="node">│  [📁 Pasta criada ✅ Conectado]  [Abrir] [Sincronizar]│</span>
+<span class="node">│  ─ ou ─                                              │</span>
+<span class="node">│  [📁 Pasta não criada]  [Criar Pasta Google Drive]   │</span>
+<span class="node">├─────────────────────────────────────────────────────┤</span>
+<span class="node">│  SEÇÃO 2 — Documentos Pessoais (N)         [Upload]  │</span>
+<span class="node">│  [☐ Selecionar tudo]  [Baixar N selecionado(s)]      │</span>
+<span class="node">│  ☐ 📄 RG frente.pdf    | Aprovado  | 01/03 [👁][⬇]  │</span>
+<span class="node">│  ☐ 📸 comp_residencia  | Pendente  | 28/02 [👁][⬇]  │</span>
+<span class="node">│  ☐ 📄 extrato_jan      | Entregue  | 15/02 [👁][⬇]  │</span>
+<span class="node">├─────────────────────────────────────────────────────┤</span>
+<span class="node">│  SEÇÃO 3 — Documentos por Restrição                  │</span>
+<span class="node">│  → ClienteDrawerTabDocumentos (Upload Central + Pastas)│</span>
+<span class="node">└─────────────────────────────────────────────────────┘</span>
+</div>
+
+<h4>Status de Documento Pessoal</h4>
+<div style="display:flex; gap:6px; flex-wrap:wrap;">
+  <span class="badge badge-warn">Pendente</span>
+  <span class="badge badge-primary">Entregue</span>
+  <span class="badge badge-success">Aprovado</span>
+  <span class="badge badge-danger">Rejeitado</span>
+  <span class="badge badge-info">Processando</span>
+</div>
+
+<p style="font-size:12px; color:var(--muted); margin-top:12px;"><strong>Acesso privado:</strong> Docs pessoais usam RPC <code>get_documento_signed_url</code> → signed URL 15min. Bucket <code>documentos</code> é privado — <code>getPublicUrl()</code> proibido.</p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="restricoes-overview">13. Restrições — Visão Geral</h2>
+
+<div class="card">
+<p>Uma <strong>restrição</strong> representa uma negativação (Serasa, SPC, Boa Vista, etc.) vinculada a um cliente/lead. Restrições <strong>processáveis</strong> viram pastas de documentos e podem gerar processos judiciais.</p>
+
+<h4>Modelo de Dados (tabela <code>restricoes</code>)</h4>
+<table>
+<thead><tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr></thead>
+<tbody>
+<tr><td><code>id</code></td><td>UUID</td><td>PK</td></tr>
+<tr><td><code>empresa_id</code> / <code>empresa_nome</code></td><td>UUID / TEXT</td><td>Empresa que negativou</td></tr>
+<tr><td><code>orgao_id</code> / <code>orgao_nome</code></td><td>UUID / TEXT</td><td>Bureau (Serasa, SPC, etc.)</td></tr>
+<tr><td><code>tipo</code></td><td>TEXT CHECK</td><td>comprador / devedor / fiador / avalista</td></tr>
+<tr><td><code>codigo_contrato</code></td><td>TEXT</td><td>Código do contrato original</td></tr>
+<tr><td><code>data_restricao</code></td><td>DATE</td><td>Data da negativação</td></tr>
+<tr><td><code>valor</code></td><td>INT8 (centavos)</td><td>Valor da dívida</td></tr>
+<tr><td><code>processavel</code></td><td>BOOLEAN</td><td>Se pode virar processo</td></tr>
+<tr><td><code>motivo_nao_processavel</code></td><td>TEXT</td><td>Razão quando não processável</td></tr>
+<tr><td><code>processo_id</code></td><td>UUID FK</td><td>Processo vinculado (se distribuído)</td></tr>
+<tr><td><code>drive_pasta_id</code> / <code>drive_pasta_url</code></td><td>TEXT</td><td>Pasta Drive da restrição</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="restricoes-hooks">14. Hooks de Restrições</h2>
+
+<div class="card">
+<h4>useRestricoes — Hook Principal (RPC)</h4>
+<div class="code-block"><span class="c-key">useRestricoes</span>({
+  organizacaoId,     <span class="c-comment">// obrigatório</span>
+  clienteId?,        <span class="c-comment">// filtro por cliente</span>
+  leadId?,           <span class="c-comment">// filtro por lead</span>
+  processoId?,       <span class="c-comment">// filtro por processo</span>
+  apenasProcessaveis?, <span class="c-comment">// default false</span>
+  apenasSemProcesso?,  <span class="c-comment">// default false</span>
+})
+<span class="c-comment">// → chama RPC fn_restricoes_listar</span>
+<span class="c-comment">// → retorna Restricao[]</span></div>
+
+<h4>Mutations</h4>
+<table>
+<tr><td><code>useSalvarRestricao</code></td><td>RPC <code>fn_restricao_salvar</code> — criar/editar</td></tr>
+<tr><td><code>useExcluirRestricao</code></td><td>Soft delete <code>deleted_at = now()</code></td></tr>
+</table>
+
+<h4>Hook especializado — useClienteRestricoes</h4>
+<p style="font-size:12px; color:var(--muted);">Usado na <code>ClienteTabRestricoes</code>. Retorna dados enriquecidos: <code>restricao_tipo</code>, <code>restricao_orgao</code>, <code>restricao_valor</code>, <code>distribuido</code>, <code>numero_cnj</code>, <code>coluna_crm</code>.</p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="restricoes-processo">15. ProcessoTabRestricoes</h2>
+
+<div class="card">
+<div class="flow-diagram">
+<span class="node">┌─────────────────────────────────────────────────────┐</span>
+<span class="node">│  🏢 Serasa Experian        [Devedor] [Serasa]        │</span>
+<span class="node">│  Nº 12345   01/03/2026   R$ 15.000,00               │</span>
+<span class="node">│  ✅ Processável                                      │</span>
+<span class="node">├─────────────────────────────────────────────────────┤</span>
+<span class="node">│  🏢 SPC                    [Comprador] [SPC]         │</span>
+<span class="node">│  Nº 67890   15/02/2026   R$ •••••                   │</span>
+<span class="node">│  ⚠ Não processável — Valor inferior ao mínimo        │</span>
+<span class="node">└─────────────────────────────────────────────────────┘</span>
+</div>
+
+<p style="font-size:13px; color:var(--muted);">Busca via <code>useRestricoes({ processoId })</code> com fallback: se retorna vazio mas <code>processo.restricao_id</code> existe, faz query direta <code>restricoes.id = restricao_id</code>.</p>
+<p style="font-size:13px; color:var(--muted); margin-top:4px;">Valores monetários respeitam <code>acesso_financeiro</code> — mascarados quando <code>false</code>.</p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="restricoes-cliente">16. ClienteTabRestricoes — Página Cliente</h2>
+
+<div class="card">
+<h4>Funcionalidades</h4>
+<table>
+<tr><td><span class="badge badge-primary">Consultar Bureaus</span></td><td>Webhook <code>clientes/consultar_restricoes</code> → polling via <code>pollWebhookRequest</code></td></tr>
+<tr><td><span class="badge badge-info">Toggle Processável</span></td><td>Switch inline com mutation direta no Supabase</td></tr>
+<tr><td><span class="badge badge-violet">Editar</span></td><td><code>EditarRestricaoModal</code></td></tr>
+<tr><td><span class="badge badge-success">Adicionar</span></td><td><code>NovaRestricaoModal</code></td></tr>
+<tr><td><span class="badge badge-warn">Importar CSV</span></td><td><code>ImportarRestricoesCSVModal</code></td></tr>
+</table>
+
+<h4>Organização Visual</h4>
+<div class="flow-diagram">
+<span class="node">┌─────────────────────────────────────────────────────────┐</span>
+<span class="node">│  Restrições  [12 total]    [+ Adicionar] [📤 CSV] [🔄] │</span>
+<span class="node">├─────────────────────────────────────────────────────────┤</span>
+<span class="node">│  ⚖ Com processo (3)                                     │</span>
+<span class="node">│  ┌──────────┐ ┌──────────┐ ┌──────────┐                │</span>
+<span class="node">│  │ Serasa    │ │ SPC      │ │ Boa Vista│                │</span>
+<span class="node">│  │ R$15.000  │ │ R$8.200  │ │ R$3.500  │                │</span>
+<span class="node">│  │ ⚖ CNJ... │ │ ⚖ CNJ... │ │ ⚖ CNJ... │                │</span>
+<span class="node">│  │ [✓ Proc] │ │ [✓ Proc] │ │ [✓ Proc] │                │</span>
+<span class="node">│  └──────────┘ └──────────┘ └──────────┘                │</span>
+<span class="node">│                                                         │</span>
+<span class="node">│  ⏳ Aguardando distribuição (9)                          │</span>
+<span class="node">│  ┌──────────┐ ┌──────────┐ ...                         │</span>
+<span class="node">│  │ Quod     │ │ BCB      │                              │</span>
+<span class="node">│  │ R$2.100  │ │ R$5.800  │                              │</span>
+<span class="node">│  │ [✓ Proc] │ │ [✗ Proc] │                              │</span>
+<span class="node">│  └──────────┘ └──────────┘                              │</span>
+<span class="node">└─────────────────────────────────────────────────────────┘</span>
+</div>
+
+<h4>Tipos de Bureau (badge)</h4>
+<div style="display:flex; gap:6px; flex-wrap:wrap;">
+  <span class="badge badge-danger">Serasa</span>
+  <span class="badge badge-danger">SPC</span>
+  <span class="badge badge-warn">Boa Vista</span>
+  <span class="badge badge-info">Bacen/SCR</span>
+  <span class="badge badge-warn">RMC</span>
+  <span class="badge badge-warn">RCC</span>
+  <span class="badge badge-neutral">Outro</span>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="restricoes-crm">17. CRM — Restrições como Pastas</h2>
+
+<div class="card">
+<p>No CRM, restrições processáveis são renderizadas como <strong>pastas accordion</strong> na aba Documentos. Cada pasta:</p>
+<ul style="font-size:13px; color:var(--muted); padding-left:1.5rem; line-height:2;">
+  <li>Mostra docs Tier 2 específicos + docs Tier 1 centrais (aparecem em todas as pastas)</li>
+  <li>Suporta drag & drop de arquivo → upload Tier 2 direto</li>
+  <li>Upload interno com nomes predefinidos (Comprovante, Contrato Assinado, Outro)</li>
+  <li>Botão excluir restrição (soft delete via <code>useExcluirRestricao</code>)</li>
+  <li>Multi-select com bulk download/delete</li>
+</ul>
+
+<h4>Fluxo Drop sobre Pasta (CRM)</h4>
+<div class="flow-diagram">
+<span class="action">handleDropOnCard(e, restricaoId)</span>
+<span class="label">  │</span>
+<span class="label">  ├── Validar: Google Apps? → Rejeitar</span>
+<span class="label">  ├── Validar: > 20MB? → Rejeitar</span>
+<span class="label">  ├── sanitizarNomeArquivo(file.name)</span>
+<span class="label">  │</span>
+<span class="label">  ├── path = {org}/leads/{lead}/restricoes/{rid}/{ts}_{file}</span>
+<span class="label">  ├── </span><span class="node">supabase.storage.from('leads-docs').upload(path, file)</span>
+<span class="label">  │</span>
+<span class="label">  ├── </span><span class="node">supabase.from('processos_documentos').insert({</span>
+<span class="label">  │     restricao_id, lead_id, categoria: 'documento_restricao',</span>
+<span class="label">  │     tipo: 'upload', status: 'disponivel'</span>
+<span class="label">  │   })</span>
+<span class="label">  │</span>
+<span class="label">  ├── invalidateQueries(['restricao-docs-upload', ...])</span>
+<span class="label">  └── syncToDrive() — fire & forget</span>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="conexoes">18. Mapa de Conexões — Docs & Restrições</h2>
+
+<div class="card">
+<div class="flow-diagram">
+<span class="label">                        ┌─────────────────┐</span>
+<span class="label">                        │   LEADS (CRM)   │</span>
+<span class="label">                        └────────┬────────┘</span>
+<span class="label">                                 │ lead_id</span>
+<span class="label">               ┌─────────────────┼─────────────────┐</span>
+<span class="label">               ▼                 ▼                 ▼</span>
+<span class="node">        ┌──────────────┐  ┌──────────────┐  ┌──────────────┐</span>
+<span class="node">        │  restricoes   │  │ processos_   │  │  processos   │</span>
+<span class="node">        │              │  │ documentos   │  │              │</span>
+<span class="node">        └──────┬───────┘  └──────┬───────┘  └──────┬───────┘</span>
+<span class="label">               │                 │                 │</span>
+<span class="label">               │ restricao_id    │ processo_id     │ restricao_id</span>
+<span class="label">               └────────┬────────┘                 │</span>
+<span class="label">                        ▼                          │</span>
+<span class="label">                 processos_documentos ◄─────────────┘</span>
+<span class="label">                 (tabela central de docs)</span>
+<span class="label">                        │</span>
+<span class="label">               ┌────────┼────────┐</span>
+<span class="label">               ▼        ▼        ▼</span>
+<span class="node">          leads-docs  comprovantes  documentos</span>
+<span class="node">           (bucket)    (bucket)     (bucket)</span>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="webhooks">19. Webhooks n8n Envolvidos</h2>
+
+<div class="card">
+<table>
+<thead><tr><th>Webhook</th><th>Ação</th><th>Chamado por</th><th>Timeout</th></tr></thead>
+<tbody>
+<tr><td><code>sync-storage-drive</code></td><td>Sincroniza arquivo(s) para Google Drive</td><td>Upload Tier1/2, Drive Panel, Clientes</td><td>default</td></tr>
+<tr><td><code>mdflow/doc/gerar-procuracao-orgao</code></td><td>Gera procuração para órgão</td><td>CRM botão topo</td><td>120s</td></tr>
+<tr><td><code>mdflow/doc/gerar-contrato-honorarios</code></td><td>Gera contrato de honorários</td><td>CRM botão topo</td><td>120s</td></tr>
+<tr><td><code>mdflow/doc/gerar-peticao-inicial</code></td><td>Gera petição inicial</td><td>Distribuição botão topo</td><td>120s</td></tr>
+<tr><td><code>mdflow/doc/gerar-comprovantes</code></td><td>Gera comprovantes</td><td>Distribuição botão topo</td><td>120s</td></tr>
+<tr><td><code>mdflow/doc/gerar-contrato-midas</code></td><td>Gera contrato Midas</td><td>CRM ContratoMidasPanel</td><td>default</td></tr>
+<tr><td><code>clientes/consultar_restricoes</code></td><td>Consulta bureaus (Serasa, SPC, Boa Vista)</td><td>ClienteTabRestricoes</td><td>60s poll</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="realtime">20. Realtime</h2>
+
+<div class="card">
+<p>Um canal realtime está configurado em <code>ClienteDrawerTabDocumentos</code>:</p>
+<div class="code-block"><span class="c-key">supabase</span>.channel(<span class="c-str">`processos-documentos-cliente-${clienteId}`</span>)
+  .<span class="c-key">on</span>(<span class="c-str">'postgres_changes'</span>, {
+    event: <span class="c-str">'*'</span>,
+    schema: <span class="c-str">'public'</span>,
+    table: <span class="c-str">'processos_documentos'</span>,
+    filter: <span class="c-str">`cliente_id=eq.${clienteId}`</span>,
+  }, () => {
+    queryClient.invalidateQueries({ queryKey: [<span class="c-str">'lead-docs-upload'</span>] })
+    queryClient.invalidateQueries({ queryKey: [<span class="c-str">'restricao-docs-upload'</span>] })
+  })
+  .subscribe()</div>
+<p style="font-size:12px; color:var(--muted); margin-top:8px;">Cleanup obrigatório via <code>return () => supabase.removeChannel(channel)</code>. Ativado apenas quando <code>clienteId</code> disponível. Garante que uploads por outro dispositivo/aba atualizam instantaneamente.</p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2 id="storage">21. Storage Buckets</h2>
+
+<div class="card">
+<table>
+<thead><tr><th>Bucket</th><th>Acesso</th><th>Usado para</th><th>Path Pattern</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>leads-docs</code></td>
+  <td><span class="badge badge-warn">Privado</span></td>
+  <td>Todos uploads Tier 1 e Tier 2</td>
+  <td><code>{org}/leads/{lead}/{ts}_{file}</code><br><code>{org}/leads/{lead}/restricoes/{rid}/{ts}_{file}</code></td>
+</tr>
+<tr>
+  <td><code>comprovantes</code></td>
+  <td><span class="badge badge-warn">Privado</span></td>
+  <td>Documentos gerados Tier 3 (contratos, procurações)</td>
+  <td>Gerado por n8n</td>
+</tr>
+<tr>
+  <td><code>documentos</code></td>
+  <td><span class="badge badge-danger">Estritamente Privado</span></td>
+  <td>Docs pessoais do cliente (RG, CNH, etc.)</td>
+  <td><code>{org}/clientes/{ts}_{file}</code></td>
+</tr>
+</tbody>
+</table>
+<p style="font-size:12px; color:var(--muted); margin-top:8px;"><strong>Regra de segurança:</strong> Bucket <code>documentos</code> é estritamente privado. Acesso apenas via <code>createSignedUrl()</code> ou RPC <code>get_documento_signed_url</code>. <code>getPublicUrl()</code> proibido.</p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<h2>22. Query Keys — React Query</h2>
+
+<div class="card">
+<table>
+<thead><tr><th>Query Key</th><th>Hook</th><th>Dados</th></tr></thead>
+<tbody>
+<tr><td><code>['lead-docs-upload', leadId, orgId]</code></td><td>useLeadDocs</td><td>Docs Tier 1</td></tr>
+<tr><td><code>['restricao-docs-upload', rId, leadId, orgId]</code></td><td>useRestricaoDocs</td><td>Docs Tier 2 + Tier 1</td></tr>
+<tr><td><code>['crm-processos-docs', clienteId, orgId, leadId]</code></td><td>useProcessosDocs</td><td>Processos + docs Tier 3</td></tr>
+<tr><td><code>['lead-comprovante-auditoria', leadId, orgId]</code></td><td>useComprovanteAuditoria</td><td>Comprovante de auditoria</td></tr>
+<tr><td><code>['cliente-drawer-dados', clienteId]</code></td><td>useClienteDados</td><td>Drive folder ID, contrato Midas</td></tr>
+<tr><td><code>['restricoes', orgId, ...]</code></td><td>useRestricoes</td><td>Restrições via RPC</td></tr>
+<tr><td><code>['cliente-restricoes', clienteId]</code></td><td>useClienteRestricoes</td><td>Restrições enriquecidas</td></tr>
+<tr><td><code>['processo-documentos', processoId, orgId]</code></td><td>useProcessoDocumentos</td><td>Docs de tramitação</td></tr>
+<tr><td><code>['restricao-fallback-tab', restricaoId]</code></td><td>inline query</td><td>Fallback restrição do processo</td></tr>
+</tbody>
+</table>
+<p style="font-size:12px; color:var(--muted); margin-top:8px;">Todos os hooks usam <code>staleTime: 30_000</code> (30s) conforme convenção MdFlow.</p>
+</div>
+
+<footer>
+  MdFlow — Documentos & Restrições Architecture Report | Gerado em 2026-04-06 | MDX LegalTech
+</footer>
+
+</main>
+</div>
+</body>
+</html>

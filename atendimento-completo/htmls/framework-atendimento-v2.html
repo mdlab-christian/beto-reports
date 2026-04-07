@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework Atendimento Completo v2 — MdFlow</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --card: #1a1f33;
+  --border: #2a2f45;
+  --text: #e8e6f0;
+  --muted: #8a8699;
+  --accent: #7c6dff;
+  --accent2: #20c997;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --info: #38bdf8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.6; }
+.container { max-width:1400px; margin:0 auto; padding:2rem; }
+h1 { font-family:'Manrope',sans-serif; font-size:2.2rem; color:var(--accent); margin-bottom:.5rem; }
+h2 { font-family:'Manrope',sans-serif; font-size:1.6rem; color:var(--accent2); margin:2.5rem 0 1rem; border-bottom:2px solid var(--border); padding-bottom:.5rem; }
+h3 { font-size:1.2rem; color:var(--accent); margin:1.5rem 0 .75rem; }
+h4 { font-size:1rem; color:var(--warning); margin:1rem 0 .5rem; }
+.subtitle { color:var(--muted); font-size:1rem; margin-bottom:2rem; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin:1rem 0; }
+.card-accent { border-left:4px solid var(--accent); }
+.card-green { border-left:4px solid var(--accent2); }
+.card-warn { border-left:4px solid var(--warning); }
+.card-danger { border-left:4px solid var(--danger); }
+.card-info { border-left:4px solid var(--info); }
+.grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:1rem; }
+.grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1rem; }
+table { width:100%; border-collapse:collapse; margin:1rem 0; font-size:.9rem; }
+th { background:var(--surface); color:var(--accent); text-align:left; padding:.75rem; border:1px solid var(--border); }
+td { padding:.75rem; border:1px solid var(--border); vertical-align:top; }
+tr:hover td { background:rgba(124,109,255,0.05); }
+code { background:var(--surface); color:var(--accent2); padding:.15rem .4rem; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:.85rem; }
+pre { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1.25rem; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.8rem; line-height:1.8; white-space:pre; }
+.badge { display:inline-block; padding:.2rem .6rem; border-radius:999px; font-size:.75rem; font-weight:600; }
+.b-accent { background:rgba(124,109,255,0.2); color:var(--accent); }
+.b-green { background:rgba(32,201,151,0.2); color:var(--accent2); }
+.b-warn { background:rgba(245,158,11,0.2); color:var(--warning); }
+.b-danger { background:rgba(239,68,68,0.2); color:var(--danger); }
+.b-info { background:rgba(56,189,248,0.2); color:var(--info); }
+.flow { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin:1rem 0; }
+.flow pre { background:transparent; border:none; padding:0; }
+.page { color:var(--accent); font-weight:700; }
+.action { color:var(--accent2); font-weight:600; }
+.data { color:var(--warning); }
+.note { color:var(--muted); font-style:italic; }
+ul, ol { margin:.5rem 0 .5rem 1.5rem; }
+li { margin:.3rem 0; }
+.toc { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin:1.5rem 0; }
+.toc a { color:var(--accent2); text-decoration:none; }
+.toc a:hover { text-decoration:underline; }
+.sdr-card { text-align:center; padding:2rem; }
+.sdr-card .emoji { font-size:2.5rem; margin-bottom:.5rem; }
+.sdr-card .name { font-size:1.3rem; font-weight:700; color:var(--accent); }
+.phase-num { display:inline-flex; width:32px; height:32px; align-items:center; justify-content:center; background:var(--accent); color:white; border-radius:50%; font-weight:700; font-size:.9rem; margin-right:.5rem; }
+.q { background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:8px; padding:1rem; margin:.5rem 0; }
+.q strong { color:var(--warning); }
+footer { text-align:center; color:var(--muted); margin-top:3rem; padding:2rem; border-top:1px solid var(--border); font-size:.85rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Framework Atendimento Completo v2</h1>
+<p class="subtitle">MdFlow - Fluxo integrado MdZap + CRM + Distribuicao + Clientes + Processos<br>
+<span class="badge b-warn">FASE: PLANEJAMENTO</span> <span class="badge b-danger">NAO EXECUTAR CODIGO</span> Gerado: 06/04/2026</p>
+
+<div class="toc">
+<strong>Indice</strong>
+<ol>
+<li><a href="#visao">Visao Geral do Fluxo</a></li>
+<li><a href="#sdrs">3 Agentes SDR no MdZap</a></li>
+<li><a href="#jornada">Jornada Completa do Lead (6 Etapas)</a></li>
+<li><a href="#paginas">Mapa de Paginas e Conexoes</a></li>
+<li><a href="#mdzap">MdZap - Estrutura e Integracao</a></li>
+<li><a href="#auditoria">Auditoria e Restricoes</a></li>
+<li><a href="#crm">CRM Pipeline e Drawer</a></li>
+<li><a href="#distribuicao">Distribuicao e OlivIA</a></li>
+<li><a href="#documentos">Sistema de Documentos (3 Tiers)</a></li>
+<li><a href="#drive">Google Drive - Integracao Obrigatoria</a></li>
+<li><a href="#shared">Componentes Shared (Reutilizaveis)</a></li>
+<li><a href="#bugs">Bugs Conhecidos a Corrigir</a></li>
+<li><a href="#fases">Fases de Execucao Propostas</a></li>
+<li><a href="#perguntas">Perguntas Pendentes</a></li>
+</ol>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="visao">1. Visao Geral do Fluxo</h2>
+
+<div class="card card-accent">
+<p>O atendimento completo conecta <strong>5 paginas principais</strong> em um fluxo linear com ramificacoes. O ponto de entrada e o <strong>MdZap</strong> (WhatsApp) onde a SDR Julia faz o primeiro contato. O fluxo termina em <strong>/processos</strong> com a distribuicao no EPROC.</p>
+</div>
+
+<div class="flow">
+<pre>
+  <span class="data">CRIATIVO WHATSAPP</span>              <span class="note">Cliente ve anuncio e manda CPF</span>
+         |
+         v
+  ┌──────────────────────────────────────────────────────┐
+  |  <span class="page">MDZAP</span> (WhatsApp)                                    |
+  |  SDR Julia recebe CPF, cria lead, dispara auditoria  |
+  |  Coleta docs, valida restricoes, qualifica lead       |
+  └──────────────────────┬───────────────────────────────┘
+                         |
+                         v
+  ┌──────────────────────────────────────────────────────┐
+  |  <span class="action">AUDITORIA BOA VISTA</span>                                 |
+  |  Consulta bureaus, cria restricoes automaticamente    |
+  |  Match fuzzy com empresas, calcula processabilidade   |
+  └──────────────────────┬───────────────────────────────┘
+                         |
+                         v
+  ┌──────────────────────────────────────────────────────┐
+  |  <span class="page">CRM PIPELINE</span>                                        |
+  |  novos → em_atendimento → ag_docs → ag_assinatura    |
+  |  → triagem → ModalDistribuirLead                      |
+  └──────────────────────┬───────────────────────────────┘
+                         |
+                         v
+  ┌──────────────────────────────────────────────────────┐
+  |  <span class="page">DISTRIBUICAO</span>                                        |
+  |  Preparacao (docs + peticao OlivIA) → Ag. Dist.       |
+  |  → Protocolo EPROC (JARBAS ou manual)                 |
+  └──────────────────────┬───────────────────────────────┘
+                         |
+                         v
+  ┌──────────────────────────────────────────────────────┐
+  |  <span class="page">PROCESSOS</span>                                           |
+  |  em_tramitacao → /controller → /decisoes → /acordos   |
+  └──────────────────────────────────────────────────────┘
+</pre>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="sdrs">2. Tres Agentes SDR no MdZap</h2>
+
+<p>O MdZap tera 3 agentes SDR, cada um com perfil e comportamento diferente. A Julia e o agente principal para o fluxo de atendimento de negativacao.</p>
+
+<div class="grid3">
+<div class="card card-green sdr-card">
+  <div class="emoji">👩‍💼</div>
+  <div class="name">Julia (SDR Principal)</div>
+  <p style="color:var(--muted);margin:.5rem 0">Atendimento completo negativacao</p>
+  <ul style="text-align:left;font-size:.9rem">
+    <li>Recebe CPF do criativo WhatsApp</li>
+    <li>Dispara auditoria Boa Vista</li>
+    <li>Apresenta restricoes ao cliente</li>
+    <li>Coleta documentos obrigatorios</li>
+    <li>Qualifica e move no pipeline CRM</li>
+    <li>Agenda assinatura de contrato</li>
+  </ul>
+  <span class="badge b-green">PRIORIDADE 1</span>
+</div>
+
+<div class="card card-accent sdr-card">
+  <div class="emoji">🤖</div>
+  <div class="name">SDR 2 (A definir)</div>
+  <p style="color:var(--muted);margin:.5rem 0">Segundo agente SDR</p>
+  <ul style="text-align:left;font-size:.9rem">
+    <li>Perfil e comportamento TBD</li>
+    <li>Pode ser especializado por canal</li>
+    <li>Ou por tipo de servico</li>
+    <li>Aguardando definicao do Christian</li>
+  </ul>
+  <span class="badge b-accent">PENDENTE</span>
+</div>
+
+<div class="card card-accent sdr-card">
+  <div class="emoji">🤖</div>
+  <div class="name">SDR 3 (A definir)</div>
+  <p style="color:var(--muted);margin:.5rem 0">Terceiro agente SDR</p>
+  <ul style="text-align:left;font-size:.9rem">
+    <li>Perfil e comportamento TBD</li>
+    <li>Pode ser nicho especifico</li>
+    <li>Ou atendimento pos-venda</li>
+    <li>Aguardando definicao do Christian</li>
+  </ul>
+  <span class="badge b-accent">PENDENTE</span>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="jornada">3. Jornada Completa do Lead (6 Etapas)</h2>
+
+<div class="card card-green">
+<h3><span class="phase-num">1</span> Primeiro Contato (MdZap)</h3>
+<table>
+<tr><th>Item</th><th>Detalhe</th></tr>
+<tr><td>Gatilho</td><td>Cliente ve criativo no Instagram/Facebook/Google e clica no link WhatsApp</td></tr>
+<tr><td>Mensagem padrao</td><td>Mensagem pre-preenchida com CPF do cliente (ou cliente digita o CPF)</td></tr>
+<tr><td>Agente</td><td>SDR Julia recebe no MdZap, detecta CPF na mensagem</td></tr>
+<tr><td>Acao automatica</td><td><code>INSERT leads</code> com CPF, <code>coluna_crm='novos'</code>, <code>origem='whatsapp'</code></td></tr>
+<tr><td>Vinculacao</td><td><code>whatsapp_conversas.lead_id</code> = novo lead criado</td></tr>
+<tr><td>Pagina</td><td><code>/mdzap</code> - coluna esquerda (lista conversas) + thread central</td></tr>
+</table>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">2</span> Auditoria de Credito</h3>
+<table>
+<tr><th>Item</th><th>Detalhe</th></tr>
+<tr><td>Gatilho</td><td>Julia detecta CPF valido OU atendente clica "Auditar" no lead panel</td></tr>
+<tr><td>Webhook</td><td><code>rpc_disparar_auditoria</code> → n8n consulta Boa Vista (bureau principal)</td></tr>
+<tr><td>Resultado</td><td>JSON com restricoes brutas do bureau</td></tr>
+<tr><td>Processamento</td><td>Para cada restricao: match fuzzy com <code>empresas</code>, criar em <code>restricoes</code></td></tr>
+<tr><td>Regra Boa Vista</td><td>Agrupar todas do orgao "SCPC/Boa Vista" em 1 item extra (soma valores). <strong>Excluir cartorios</strong> (nao sao processaveis)</td></tr>
+<tr><td>Match empresas</td><td>Score >= 0.75: auto. 0.45-0.74: confirmar. &lt;0.45: manual</td></tr>
+<tr><td>Auto-aprendizado</td><td>Credor confirmado salva em <code>empresas.nome_variacoes[]</code></td></tr>
+<tr><td>Componente</td><td><code>CadastrarRestricoesDrawer</code> para revisao manual</td></tr>
+</table>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">3</span> Qualificacao e Coleta (MdZap + CRM)</h3>
+<table>
+<tr><th>Item</th><th>Detalhe</th></tr>
+<tr><td>Julia apresenta</td><td>Restricoes encontradas, valores, empresas. Explica o servico.</td></tr>
+<tr><td>Lead panel (MdZap)</td><td>Aba Dados (edicao completa), Aba Restricoes (badge count), Aba Documentos (upload + D&D), Aba Historico</td></tr>
+<tr><td>Docs obrigatorios</td><td>RG/CNH, comprovante endereco, comprovante restricao (print tela)</td></tr>
+<tr><td>Docs do WA</td><td>Imagens/PDFs enviados no chat salvam automaticamente em <code>leads_documentos</code></td></tr>
+<tr><td>CRM sync</td><td>Lead move para <code>em_atendimento</code> → <code>aguardando_documentos</code></td></tr>
+<tr><td>Componentes shared</td><td><code>RestricaoPastaCard</code>, <code>DocumentoItem</code>, <code>DocumentosUploadCentral</code></td></tr>
+</table>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">4</span> Assinatura e Triagem (CRM)</h3>
+<table>
+<tr><th>Item</th><th>Detalhe</th></tr>
+<tr><td>Docs completos</td><td>Lead move para <code>aguardando_assinatura</code></td></tr>
+<tr><td>Contrato</td><td>Gerado via template, enviado por WhatsApp para assinatura digital</td></tr>
+<tr><td>Pos-assinatura</td><td>Lead move para <code>triagem</code></td></tr>
+<tr><td>Checklist triagem</td><td>Restricoes processaveis? Advogado vinculado? Docs completos?</td></tr>
+<tr><td>Modal</td><td><code>ModalDistribuirLead</code> — converte lead em cliente + cria processo</td></tr>
+<tr><td>Conversao</td><td><code>INSERT clientes</code> a partir do lead, <code>INSERT processos</code> com <code>status='aguardando_preparacao'</code></td></tr>
+</table>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">5</span> Preparacao e Distribuicao</h3>
+<table>
+<tr><th>Item</th><th>Detalhe</th></tr>
+<tr><td>Pagina</td><td><code>/distribuicao</code> → Aba "Ag. Preparacao"</td></tr>
+<tr><td>Drawer</td><td><code>ClienteDrawer</code> context='distribuicao' (3 abas: Dados, Restricao, Documentos)</td></tr>
+<tr><td>Peticao</td><td>OlivIA gera peticao inicial automaticamente via webhook n8n</td></tr>
+<tr><td>Docs tier</td><td>Tier 1 (lead_docs) + Tier 2 (restricao_docs) ja coletados. Tier 3 (peticao) gerado.</td></tr>
+<tr><td>Protocolo</td><td>JARBAS protocola no EPROC automaticamente OU advogado faz manual</td></tr>
+<tr><td>Resultado</td><td><code>processos.numero_cnj</code> preenchido, <code>status='em_tramitacao'</code></td></tr>
+</table>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">6</span> Tramitacao (Processos)</h3>
+<table>
+<tr><th>Item</th><th>Detalhe</th></tr>
+<tr><td>Pagina</td><td><code>/processos</code> → <code>/processos/:cnjSlug</code></td></tr>
+<tr><td>Fluxo pos</td><td><code>/controller</code> (intimacoes) → <code>/decisoes</code> (sentencas) → <code>/acordos</code> (negociacao)</td></tr>
+<tr><td>Docs tramitacao</td><td>Documentos novos via <code>ProcessoTramitacaoTab</code> (separados de docs iniciais)</td></tr>
+<tr><td>Drive</td><td>Todos os docs sincronizados com Google Drive do escritorio</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="paginas">4. Mapa de Paginas e Conexoes</h2>
+
+<div class="flow">
+<pre>
+<span class="note">LEGENDA: ──▶ dados fluem   ◄──▶ bidirecional   ···▶ opcional/futuro</span>
+
+                              ┌─────────────────┐
+                              |   <span class="data">CRIATIVO WA</span>    |
+                              |   (Instagram/    |
+                              |    Facebook)     |
+                              └────────┬────────┘
+                                       |  CPF
+                                       v
+                    ┌──────────────────────────────────────┐
+                    |            <span class="page">/mdzap</span>                    |
+                    |  SDR Julia  |  SDR 2  |  SDR 3      |
+                    |  ─────────────────────────────────── |
+                    |  Lista | Thread | Lead Panel         |
+                    |  (4 abas: Dados,Restr,Docs,Hist)     |
+                    └───┬──────────────┬───────────────────┘
+                        |              |
+           cria lead    |              | docs WA → leads_documentos
+           + auditoria  |              | sync bidirecional
+                        v              v
+         ┌─────────────────┐    ┌──────────────┐
+         |  <span class="action">AUDITORIA</span>      |    |  <span class="data">STORAGE</span>     |
+         |  Boa Vista      |    |  leads-docs  |
+         |  → restricoes   |    |  mdzap-media |
+         |  → empresas     |    |  → Drive     |
+         └────────┬────────┘    └──────────────┘
+                  |
+                  v
+    ┌──────────────────────────────────────────┐
+    |              <span class="page">/crm</span>                        |
+    |  Pipeline Kanban (5 colunas)             |
+    |  ─────────────────────────────────────── |
+    |  novos → atendimento → docs → assinatura |
+    |  → triagem → [ModalDistribuirLead]       |
+    |  ─────────────────────────────────────── |
+    |  ClienteDrawer (7 abas incl. MDZap)      |
+    |  10 modais integrados                    |
+    └────────┬──────────────┬──────────────────┘
+             |              |
+             |              | converte lead → cliente
+             |              | cria processo
+             v              v
+    ┌────────────┐  ┌──────────────────────────┐
+    | <span class="page">/empresas</span>  |  |     <span class="page">/distribuicao</span>         |
+    | Credores   |  |  Preparacao → Ag. Dist.  |
+    | Match fuzzy|  |  OlivIA (peticao)        |
+    | Categorias |  |  JARBAS (protocolo)      |
+    └────────────┘  └─────────────┬────────────┘
+                                  |
+                    ┌─────────────┤
+                    v             v
+           ┌────────────┐  ┌──────────────┐
+           | <span class="page">/clientes</span>  |  |  <span class="page">/processos</span>  |
+           | Pos-conv   |  |  Tramitacao  |
+           | Gestao     |  |  CNJ slug    |
+           | 6 abas     |  └──────┬───────┘
+           └────────────┘         |
+                           ┌──────┼──────────┐
+                           v      v          v
+                     <span class="page">/controller</span> <span class="page">/decisoes</span> <span class="page">/acordos</span>
+                     Intimacoes  Sentencas  Negociacao
+                                             |
+                                             v
+                                       <span class="page">/financeiro</span>
+                                       <span class="page">/execucoes</span>
+</pre>
+</div>
+
+<h3>Tabela de Conexoes Diretas</h3>
+<table>
+<thead><tr><th>De</th><th>Para</th><th>Tipo</th><th>Mecanismo</th></tr></thead>
+<tbody>
+<tr><td>/mdzap</td><td>/crm</td><td>Bidirecional</td><td><code>crm_sync_events</code>, <code>whatsapp_conversas.lead_id</code>, aba MDZap no drawer</td></tr>
+<tr><td>/mdzap</td><td>Auditoria</td><td>Trigger</td><td>Julia detecta CPF → <code>rpc_disparar_auditoria</code></td></tr>
+<tr><td>/mdzap</td><td>Storage</td><td>Auto-save</td><td>Docs enviados no chat → <code>leads_documentos</code> → bucket <code>leads-docs</code></td></tr>
+<tr><td>Auditoria</td><td>/crm</td><td>Dados</td><td>Cria <code>restricoes</code> vinculadas ao lead, match com <code>empresas</code></td></tr>
+<tr><td>/crm</td><td>/empresas</td><td>Lookup</td><td>Match fuzzy credor → empresa, <code>nome_variacoes</code> auto-learn</td></tr>
+<tr><td>/crm</td><td>/distribuicao</td><td>Conversao</td><td><code>ModalDistribuirLead</code> → INSERT cliente + processo</td></tr>
+<tr><td>/crm</td><td>/clientes</td><td>Conversao</td><td>Lead vira cliente ao distribuir</td></tr>
+<tr><td>/distribuicao</td><td>/processos</td><td>Protocolo</td><td>EPROC (JARBAS/manual) → <code>numero_cnj</code> + <code>status='em_tramitacao'</code></td></tr>
+<tr><td>/distribuicao</td><td>OlivIA</td><td>Webhook</td><td>Gera peticao inicial automaticamente</td></tr>
+<tr><td>/processos</td><td>/controller</td><td>Intimacoes</td><td>Captura intimacoes EPROC → gera atividades</td></tr>
+<tr><td>/processos</td><td>/decisoes</td><td>Sentencas</td><td>Decisoes favoraveis → proximo passo</td></tr>
+<tr><td>/acordos</td><td>/financeiro</td><td>Pagamento</td><td>Acordo fechado → lancamento financeiro automatico</td></tr>
+<tr><td>Todos docs</td><td>Google Drive</td><td>Sync</td><td>Webhook <code>sync-storage-drive</code> fire-and-forget</td></tr>
+</tbody>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="mdzap">5. MdZap - Estrutura e Integracao</h2>
+
+<div class="grid2">
+<div class="card card-accent">
+<h3>Layout 3 Colunas</h3>
+<table>
+<tr><th>Coluna</th><th>Width</th><th>Conteudo</th></tr>
+<tr><td>Lista conversas</td><td>320px fixo</td><td>Filtros, busca, lista com badge unread, status SDR</td></tr>
+<tr><td>Thread mensagens</td><td>flex-1</td><td>Mensagens, compositor (texto/audio/media), templates</td></tr>
+<tr><td>Lead Panel</td><td>320px toggle</td><td>4 abas (Dados, Restricoes, Documentos, Historico) - <strong>FECHADO por default</strong></td></tr>
+</table>
+</div>
+
+<div class="card card-accent">
+<h3>Arquitetura Atual</h3>
+<ul>
+<li><strong>34 componentes</strong>, 14 hooks, 9 webhooks</li>
+<li><strong>8 canais realtime</strong> (mensagens, status, typing, etc)</li>
+<li>Webhooks prefix: <code>mdzap/</code> (NAO <code>mdflow/</code>)</li>
+<li>INSERT otimista: mensagem aparece imediato (status: pending)</li>
+<li>n8n faz UPDATE (nao INSERT) com <code>wa_message_id</code></li>
+</ul>
+</div>
+</div>
+
+<div class="card card-info">
+<h3>Lead Panel - Detalhamento (Lado Direito MdZap)</h3>
+<p>O lead panel e o hub de informacoes do lead dentro do MdZap. Deve ser <strong>identico</strong> ao ClienteDrawer do CRM em termos de dados exibidos, porem em formato vertical (panel) em vez de sheet lateral.</p>
+
+<h4>Aba Dados</h4>
+<ul>
+<li>Edicao completa do lead (nome, CPF, email, telefone, endereco)</li>
+<li>Score de qualificacao</li>
+<li>Advogado vinculado</li>
+<li>Status no pipeline CRM</li>
+<li>Botao de auditoria rapida</li>
+</ul>
+
+<h4>Aba Restricoes</h4>
+<ul>
+<li>Badge com contagem de restricoes</li>
+<li>Lista usando <code>RestricaoPastaCard</code> (componente shared)</li>
+<li>Expandir: sub-restricoes por empresa</li>
+<li>Valores, orgao, tipo, processavel</li>
+<li>Reutilizar da aba Restricoes do CRM drawer</li>
+</ul>
+
+<h4>Aba Documentos</h4>
+<ul>
+<li>Upload via <code>DocumentosUploadCentral</code> (componente shared)</li>
+<li>Drag and drop de arquivos</li>
+<li>Docs enviados no chat aparecem aqui automaticamente</li>
+<li>Rename inline dos documentos</li>
+<li>Separacao: Docs Iniciais vs por Restricao</li>
+<li>Cada doc com <code>DocumentoItem</code> (componente shared)</li>
+</ul>
+
+<h4>Aba Historico</h4>
+<ul>
+<li>Timeline de acoes no lead</li>
+<li>Mudancas de etapa CRM</li>
+<li>Auditorias realizadas</li>
+<li>Documentos enviados</li>
+</ul>
+</div>
+
+<h3>9 Webhooks MdZap</h3>
+<table>
+<thead><tr><th>Webhook</th><th>Funcao</th><th>Endpoint</th></tr></thead>
+<tbody>
+<tr><td>enviar-mensagem</td><td>Envia texto/media via Meta API</td><td><code>mdzap/enviar-mensagem</code></td></tr>
+<tr><td>enviar-template</td><td>Envia template aprovado Meta</td><td><code>mdzap/enviar-template</code></td></tr>
+<tr><td>enviar-audio</td><td>Envia audio gravado</td><td><code>mdzap/enviar-audio</code></td></tr>
+<tr><td>ai-composer</td><td>IA sugere resposta baseada em contexto</td><td><code>mdzap/ai-composer</code></td></tr>
+<tr><td>assumir-conversa</td><td>Humano assume da IA</td><td><code>mdzap/assumir-conversa</code></td></tr>
+<tr><td>devolver-julia</td><td>Devolve conversa para SDR Julia</td><td><code>mdzap/devolver-julia</code></td></tr>
+<tr><td>transferir-conversa</td><td>Transfere entre atendentes</td><td><code>mdzap/transferir-conversa</code></td></tr>
+<tr><td>bulk-negociacoes</td><td>Operacoes em lote</td><td><code>mdzap/bulk-negociacoes</code></td></tr>
+<tr><td>bulk-documentos</td><td>Upload/processamento em lote</td><td><code>mdzap/bulk-documentos</code></td></tr>
+</tbody>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="auditoria">6. Auditoria e Restricoes</h2>
+
+<div class="card card-warn">
+<h3>Fluxo de Auditoria</h3>
+<pre>
+CPF do lead
+    |
+    v
+<span class="action">rpc_disparar_auditoria</span>
+    |
+    v
+n8n consulta Boa Vista (bureau principal)
+    |
+    v
+Retorna JSON com restricoes brutas
+    |
+    v
+Para cada restricao:
+    |
+    ├── Match fuzzy com tabela <span class="data">empresas</span>
+    |   ├── >= 0.75: <span class="action">aceito automatico</span> (salva nome_variacoes)
+    |   ├── 0.45-0.74: <span class="action">confirmar com atendente</span>
+    |   └── &lt; 0.45: <span class="action">selecao manual ou criar empresa</span>
+    |
+    ├── Regra Boa Vista especial:
+    |   ├── Agrupar todas do orgao SCPC/Boa Vista
+    |   ├── Criar 1 item extra (empresa="Boa Vista", valor=soma)
+    |   └── <span class="action">EXCLUIR CARTORIOS</span> (nao processaveis)
+    |
+    └── INSERT em <span class="data">restricoes</span>
+        ├── lead_id = UUID do lead
+        ├── empresa_id = match encontrado
+        ├── empresa_nome = nome denormalizado
+        ├── orgao_nome, tipo, valor, data_restricao
+        ├── processavel = boolean
+        └── motivo_nao_processavel (se false)
+</pre>
+</div>
+
+<h3>Tabela restricoes - Schema</h3>
+<table>
+<thead><tr><th>Campo</th><th>Tipo</th><th>Uso</th></tr></thead>
+<tbody>
+<tr><td><code>id</code></td><td>UUID PK</td><td>Identificador unico</td></tr>
+<tr><td><code>organizacao_id</code></td><td>UUID FK</td><td>Multi-tenant (RLS)</td></tr>
+<tr><td><code>lead_id</code></td><td>UUID FK</td><td>Vinculo com lead (pre-conversao)</td></tr>
+<tr><td><code>cliente_id</code></td><td>UUID FK</td><td>Vinculo com cliente (pos-conversao)</td></tr>
+<tr><td><code>empresa_id</code></td><td>UUID FK</td><td>Empresa credora matched</td></tr>
+<tr><td><code>empresa_nome</code></td><td>TEXT</td><td>Nome denormalizado para display</td></tr>
+<tr><td><code>orgao_nome</code></td><td>TEXT</td><td>Orgao restritivo (Serasa, SPC, Boa Vista, etc)</td></tr>
+<tr><td><code>tipo</code></td><td>TEXT CHECK</td><td>comprador, devedor, avalista</td></tr>
+<tr><td><code>codigo_contrato</code></td><td>TEXT</td><td>Codigo do contrato no bureau</td></tr>
+<tr><td><code>valor</code></td><td>INT8</td><td>Centavos (1500000 = R$ 15.000,00)</td></tr>
+<tr><td><code>data_restricao</code></td><td>TIMESTAMPTZ</td><td>Data da negativacao</td></tr>
+<tr><td><code>processavel</code></td><td>BOOLEAN</td><td>Se pode virar processo</td></tr>
+<tr><td><code>motivo_nao_processavel</code></td><td>TEXT</td><td>Razao se processavel=false</td></tr>
+<tr><td><code>processo_id</code></td><td>UUID FK</td><td>Preenchido apos distribuicao</td></tr>
+<tr><td><code>drive_pasta_id</code></td><td>TEXT</td><td>ID da pasta no Google Drive</td></tr>
+<tr><td><code>deleted_at</code></td><td>TIMESTAMPTZ</td><td>Soft delete</td></tr>
+</tbody>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="crm">7. CRM Pipeline e Drawer</h2>
+
+<div class="card card-accent">
+<h3>Pipeline (5 Colunas)</h3>
+<pre>
+<span class="page">novos</span> ──▶ <span class="page">em_atendimento</span> ──▶ <span class="page">aguardando_documentos</span> ──▶ <span class="page">aguardando_assinatura</span> ──▶ <span class="page">triagem</span>
+  |                                                                              |
+  |         <span class="note">drag & drop via @dnd-kit</span>                                             |
+  |         <span class="note">CrmLeadCard: nome, CPF, restricoes, score, advogado</span>                  |
+  |                                                                              v
+  |                                                                    ┌─────────────────┐
+  |                                                                    | Restricoes       |
+  |                                                                    | processaveis?    |
+  |                                                                    | Advogado         |
+  |                                                                    | vinculado?       |
+  └── <span class="action">arquivar</span> ──▶ <span class="data">arquivados</span>                                  | Docs completos?  |
+                                                                       └────────┬────────┘
+                                                                                | SIM
+                                                                                v
+                                                                    <span class="action">ModalDistribuirLead</span>
+                                                                                |
+                                                                                v
+                                                                    <span class="page">/distribuicao</span>
+</pre>
+</div>
+
+<h3>ClienteDrawer - Abas por Contexto</h3>
+<table>
+<thead><tr><th>Aba</th><th>CRM</th><th>Distribuicao</th><th>Clientes</th><th>MdZap Panel</th><th>Componente</th></tr></thead>
+<tbody>
+<tr><td><strong>Dados</strong></td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td><code>ClienteDrawerTabDados</code></td></tr>
+<tr><td><strong>Restricoes</strong></td><td>✅ badge</td><td>✅ filtrada</td><td>✅ badge</td><td>✅ badge</td><td><code>ClienteDrawerTabRestricoes</code></td></tr>
+<tr><td><strong>Documentos</strong></td><td>✅ Lead</td><td>✅ Lead+restr</td><td>✅ Cliente</td><td>✅ Lead</td><td><code>ClienteDrawerTabDocumentosLead</code></td></tr>
+<tr><td><strong>Follow-up</strong></td><td>✅</td><td>-</td><td>-</td><td>-</td><td><code>CrmLeadTabFollowup</code></td></tr>
+<tr><td><strong>Observacoes</strong></td><td>✅</td><td>-</td><td>-</td><td>-</td><td><code>CrmLeadTabAtividades</code></td></tr>
+<tr><td><strong>MDZap</strong></td><td>✅ lazy</td><td>-</td><td>-</td><td>N/A</td><td><code>ClienteDrawerTabMdzap</code></td></tr>
+<tr><td><strong>Juridico</strong></td><td>-</td><td>-</td><td>✅</td><td>-</td><td><code>ClienteDrawerTabJuridico</code></td></tr>
+<tr><td><strong>Pendentes</strong></td><td>-</td><td>-</td><td>✅</td><td>-</td><td><code>ClienteDrawerTabDocumentosPendentes</code></td></tr>
+<tr><td><strong>Historico</strong></td><td>✅</td><td>-</td><td>✅</td><td>✅</td><td><code>ClienteDrawerTabHistorico</code></td></tr>
+</tbody>
+</table>
+
+<div class="card card-info">
+<p><strong>Decisao critica:</strong> O Lead Panel do MdZap deve compartilhar os mesmos componentes do ClienteDrawer, adaptando apenas o layout (vertical panel 320px vs sheet lateral 72vw). Os dados e hooks sao identicos.</p>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="distribuicao">8. Distribuicao e OlivIA</h2>
+
+<div class="card card-green">
+<h3>Fluxo Completo</h3>
+<pre>
+<span class="page">CRM Pipeline</span> (triagem)
+    |
+    v
+<span class="action">ModalDistribuirLead</span> (checklist)
+    ☑ Dados pessoais completos
+    ☑ Restricoes processaveis selecionadas
+    ☑ Documentos enviados
+    ☑ Advogado vinculado
+    |
+    v
+<span class="data">INSERT processos</span> (status='aguardando_preparacao')
+<span class="data">INSERT clientes</span> (conversao lead → cliente)
+<span class="data">UPDATE restricoes</span> SET processo_id = novo_processo
+    |
+    v
+<span class="page">/distribuicao</span> > Ag. Preparacao
+    ClienteDrawer context='distribuicao' (3 abas)
+    |
+    v
+<span class="action">OlivIA gera peticao</span> (webhook n8n)
+    Tier 3 doc: peticao_inicial
+    |
+    v
+<span class="page">/distribuicao</span> > Ag. Distribuicao
+    |
+    v
+<span class="action">JARBAS protocola</span> no EPROC (ou manual)
+    |
+    v
+<span class="data">UPDATE processos</span> SET numero_cnj, status='em_tramitacao'
+    |
+    v
+<span class="page">/processos</span>
+</pre>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="documentos">9. Sistema de Documentos (3 Tiers)</h2>
+
+<div class="grid3">
+<div class="card card-green">
+<h3>Tier 1 - Docs do Lead</h3>
+<ul>
+<li><code>restricao_id = null</code></li>
+<li>RG, CNH, comprovante endereco</li>
+<li>Docs gerais do lead</li>
+<li>Bucket: <code>leads-docs</code></li>
+<li>Contexto: CRM drawer, MdZap panel</li>
+</ul>
+</div>
+
+<div class="card card-accent">
+<h3>Tier 2 - Docs da Restricao</h3>
+<ul>
+<li><code>restricao_id = UUID</code></li>
+<li>Comprovante de restricao</li>
+<li>Print da tela do bureau</li>
+<li>Bucket: <code>leads-docs</code></li>
+<li>Contexto: RestricaoPastaCard</li>
+</ul>
+</div>
+
+<div class="card card-warn">
+<h3>Tier 3 - Docs Gerados</h3>
+<ul>
+<li><code>processo_id = UUID</code></li>
+<li>Peticao inicial, procuracao</li>
+<li>Gerados via n8n/OlivIA</li>
+<li>Bucket: <code>documentos</code></li>
+<li>Contexto: /distribuicao, /processos</li>
+</ul>
+</div>
+</div>
+
+<h3>Tabela unica: processos_documentos</h3>
+<p>SSOT para TODOS os documentos em TODOS os contextos.</p>
+<table>
+<thead><tr><th>Campo</th><th>Tier 1</th><th>Tier 2</th><th>Tier 3</th></tr></thead>
+<tbody>
+<tr><td><code>lead_id</code></td><td>UUID</td><td>UUID</td><td>null</td></tr>
+<tr><td><code>cliente_id</code></td><td>null → UUID</td><td>null → UUID</td><td>UUID</td></tr>
+<tr><td><code>restricao_id</code></td><td>null</td><td>UUID</td><td>null</td></tr>
+<tr><td><code>processo_id</code></td><td>null</td><td>null</td><td>UUID</td></tr>
+<tr><td><code>categoria</code></td><td>documento_lead, etc</td><td>comprovante_restricao</td><td>peticao_inicial, etc</td></tr>
+<tr><td><code>bucket</code></td><td>leads-docs</td><td>leads-docs</td><td>documentos</td></tr>
+</tbody>
+</table>
+
+<h3>INICIAL_CATS (9 categorias - nunca em Tramitacao)</h3>
+<div class="card">
+<code>peticao_inicial</code>, <code>procuracao_orgao</code>, <code>procuracao</code>, <code>comprovante_restricao</code>, <code>documento_restricao</code>, <code>banco</code>, <code>cartao</code>, <code>documento_lead</code>, <code>negativacao</code>
+</div>
+
+<h3>Visibilidade por Contexto</h3>
+<table>
+<thead><tr><th>Contexto</th><th>Tier 1</th><th>Tier 2</th><th>Tier 3</th><th>Separacao</th></tr></thead>
+<tbody>
+<tr><td>CRM Drawer</td><td>✅</td><td>✅</td><td>-</td><td>Docs Iniciais (Tier 1) + Por Restricao (Tier 2)</td></tr>
+<tr><td>MdZap Panel</td><td>✅</td><td>✅</td><td>-</td><td>Identico ao CRM Drawer</td></tr>
+<tr><td>/clientes</td><td>✅</td><td>✅</td><td>✅ (se processo)</td><td>Tudo do cliente</td></tr>
+<tr><td>/distribuicao</td><td>✅</td><td>✅ filtrado</td><td>✅ gerado</td><td>Docs necessarios para peticao</td></tr>
+<tr><td>/processos</td><td>✅ iniciais</td><td>✅ iniciais</td><td>✅</td><td>Iniciais vs Tramitacao</td></tr>
+</tbody>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="drive">10. Google Drive - Integracao Obrigatoria</h2>
+
+<div class="card card-danger">
+<h3>REGRA: Todo documento DEVE ir pro Drive</h3>
+<p>Nao importa o contexto (MdZap, CRM, distribuicao, processos), todo documento salvo no Supabase Storage deve ser sincronizado automaticamente com o Google Drive do escritorio.</p>
+</div>
+
+<div class="card card-info">
+<h3>Estrutura de Pastas no Drive</h3>
+<pre>
+MP Advocacia/
+  └── Clientes/
+      └── {CPF} - {Nome}/
+          ├── Documentos Pessoais/     (Tier 1)
+          ├── Restricoes/
+          |   ├── {Empresa 1}/         (Tier 2)
+          |   ├── {Empresa 2}/
+          |   └── ...
+          └── Processos/
+              └── {CNJ}/
+                  ├── Iniciais/        (Tier 1+2 copiados)
+                  └── Tramitacao/      (Tier 3)
+</pre>
+</div>
+
+<h3>Mecanismo de Sync</h3>
+<table>
+<thead><tr><th>Aspecto</th><th>Detalhe</th></tr></thead>
+<tbody>
+<tr><td>Trigger</td><td>Webhook n8n <code>sync-storage-drive</code> fire-and-forget</td></tr>
+<tr><td>Quando</td><td>Apos qualquer upload/geracao de documento</td></tr>
+<tr><td>Autenticacao</td><td>Service Account Google (a investigar)</td></tr>
+<tr><td>Conversao PDF</td><td>Automatica para imagens enviadas (jpg, png → pdf)</td></tr>
+<tr><td>Pastas</td><td>Criadas automaticamente baseado em restricoes do lead</td></tr>
+<tr><td>Campo</td><td><code>restricoes.drive_pasta_id</code> referencia pasta no Drive</td></tr>
+</tbody>
+</table>
+
+<div class="q">
+<strong>INVESTIGAR:</strong> Como conectar ao Google Drive?
+<ul>
+<li>Service Account com Domain-Wide Delegation?</li>
+<li>OAuth2 com refresh token do escritorio?</li>
+<li>Webhook listener do Drive para sync bidirecional?</li>
+<li>Limite de API (quotas do Google)?</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="shared">11. Componentes Shared (Reutilizaveis)</h2>
+
+<p>Estes componentes devem funcionar identicamente em MdZap, CRM, Distribuicao, Clientes e Processos.</p>
+
+<table>
+<thead><tr><th>Componente</th><th>LOC Atual</th><th>Usado em</th><th>Funcao</th></tr></thead>
+<tbody>
+<tr><td><code>DocumentoItem</code></td><td>195</td><td>CRM, MdZap, Clientes, Processos</td><td>Card individual de documento (preview, download, rename, delete)</td></tr>
+<tr><td><code>DocumentosUploadCentral</code></td><td>184</td><td>CRM, MdZap, Clientes</td><td>Area de upload com drag-and-drop, selecao de categoria</td></tr>
+<tr><td><code>RestricaoPastaCard</code></td><td>494</td><td>CRM, MdZap, Distribuicao</td><td>Card de restricao expansivel com docs tier 2 internos</td></tr>
+<tr><td><code>ClienteDrawerTabDados</code></td><td>~300</td><td>CRM, MdZap Panel, Distribuicao, Clientes</td><td>Formulario de dados do lead/cliente</td></tr>
+<tr><td><code>ClienteDrawerTabRestricoes</code></td><td>~250</td><td>CRM, MdZap Panel, Distribuicao, Clientes</td><td>Lista de restricoes com badges e filtros</td></tr>
+<tr><td><code>ClienteDrawerTabDocumentosLead</code></td><td>646</td><td>CRM, MdZap Panel, Distribuicao</td><td>Docs do lead: Iniciais + por Restricao</td></tr>
+<tr><td><code>AuditoriaBotao</code></td><td>~80</td><td>CRM, MdZap Panel</td><td>Botao que dispara auditoria Boa Vista</td></tr>
+</tbody>
+</table>
+
+<div class="card card-info">
+<h3>Estrategia de Extracao</h3>
+<p>Os componentes acima ja existem parcialmente dentro do CRM drawer. O trabalho e:</p>
+<ol>
+<li>Extrair para <code>src/components/shared/</code> se ainda nao estao la</li>
+<li>Parametrizar por <code>context</code> (crm, mdzap, distribuicao, clientes)</li>
+<li>Hooks devem aceitar tanto <code>leadId</code> quanto <code>clienteId</code></li>
+<li>Layout adapta: Sheet lateral (CRM/Clientes) vs Panel vertical (MdZap)</li>
+<li>Funcionalidade identica em todos os contextos</li>
+</ol>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="bugs">12. Bugs Conhecidos a Corrigir</h2>
+
+<table>
+<thead><tr><th>#</th><th>Bug</th><th>Detalhe</th><th>Prioridade</th></tr></thead>
+<tbody>
+<tr><td>1</td><td class="badge b-danger">Valores restricoes errados</td><td>Auditoria retorna valores incorretos ou com formatacao errada. Verificar parsing do JSON do bureau + conversao centavos.</td><td>P0</td></tr>
+<tr><td>2</td><td class="badge b-danger">Comprovante nao salva</td><td>Upload de comprovante de restricao (Tier 2) nao persiste em <code>processos_documentos</code>. Verificar hook <code>useRestricaoDocs</code>.</td><td>P0</td></tr>
+<tr><td>3</td><td class="badge b-warn">Boa Vista inclui cartorios</td><td>Regra de agrupamento Boa Vista esta incluindo cartorios como restricoes processaveis. Cartorios devem ser excluidos.</td><td>P1</td></tr>
+<tr><td>4</td><td class="badge b-warn">Historico inconsistente</td><td>Aba Historico do drawer mostra dados inconsistentes com as restricoes reais do lead.</td><td>P1</td></tr>
+</tbody>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="fases">13. Fases de Execucao Propostas</h2>
+
+<div class="card card-danger">
+<p><strong>REGRA ABSOLUTA:</strong> NAO executar nenhuma fase ate que TODOS os planos estejam 100% aprovados pelo CTO.</p>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">1</span> Fix Bugs Criticos</h3>
+<ul>
+<li>Corrigir valores restricoes (parsing + centavos)</li>
+<li>Corrigir comprovante nao salvando</li>
+<li>Excluir cartorios da regra Boa Vista</li>
+<li>Corrigir historico inconsistente</li>
+</ul>
+<span class="badge b-danger">ANTES de qualquer feature nova</span>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">2</span> Componentes Shared</h3>
+<ul>
+<li>Extrair 7 componentes para <code>shared/</code></li>
+<li>Parametrizar por context</li>
+<li>Garantir funcionamento identico em CRM drawer</li>
+<li>Testes de regressao no CRM</li>
+</ul>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">3</span> MdZap Lead Panel</h3>
+<ul>
+<li>Implementar panel direito com 4 abas</li>
+<li>Reutilizar componentes shared</li>
+<li>Auto-save docs do WhatsApp</li>
+<li>Botao auditoria rapida</li>
+<li>Edicao completa do lead</li>
+<li>Toggle open/close (fechado por default)</li>
+</ul>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">4</span> SDR Julia (IA)</h3>
+<ul>
+<li>Fluxo automatico: detectar CPF → criar lead → auditoria</li>
+<li>Apresentar restricoes no chat</li>
+<li>Solicitar documentos</li>
+<li>Mover no pipeline CRM automaticamente</li>
+<li>Handoff para humano quando necessario</li>
+</ul>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">5</span> Google Drive Integration</h3>
+<ul>
+<li>Configurar service account</li>
+<li>Webhook sync-storage-drive</li>
+<li>Criacao automatica de pastas</li>
+<li>Conversao PDF automatica</li>
+<li>Campo drive_pasta_id nas restricoes</li>
+</ul>
+</div>
+
+<div class="card card-green">
+<h3><span class="phase-num">6</span> Fluxo End-to-End</h3>
+<ul>
+<li>Teste completo MdZap → CRM → Distribuicao → Processos</li>
+<li>Verificar todos os tier de documentos</li>
+<li>Verificar sync Drive em todos os contextos</li>
+<li>Teste com dados reais (staging)</li>
+<li>Validar com equipe (Julia simulada)</li>
+</ul>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2 id="perguntas">14. Perguntas Pendentes</h2>
+
+<h3>Framework Geral (8 perguntas)</h3>
+
+<div class="q"><strong>Q1:</strong> O SDR 2 e SDR 3 terao qual perfil? Outro tipo de servico (ex: revisional, trabalhista)? Ou sao agentes especializados por canal (Instagram vs Google)?</div>
+
+<div class="q"><strong>Q2:</strong> A auditoria deve ser SOMENTE Boa Vista ou tambem Serasa/SPC/Quod? Se multiplos bureaus, qual a prioridade?</div>
+
+<div class="q"><strong>Q3:</strong> O contrato e assinado digitalmente (ex: Clicksign, DocuSign) ou e um PDF simples que o cliente assina e manda foto?</div>
+
+<div class="q"><strong>Q4:</strong> Quando Julia detecta que o lead nao tem restricoes processaveis, qual o fluxo? Arquiva automaticamente? Oferece outro servico?</div>
+
+<div class="q"><strong>Q5:</strong> O lead panel do MdZap deve permitir CRIAR restricoes manualmente (alem das da auditoria)?</div>
+
+<div class="q"><strong>Q6:</strong> A conversao lead → cliente na distribuicao: cria um registro NOVO em <code>clientes</code> ou atualiza o <code>lead</code> existente com flag convertido?</div>
+
+<div class="q"><strong>Q7:</strong> Os 3 SDRs compartilham o mesmo numero WhatsApp ou cada um tera numero proprio?</div>
+
+<div class="q"><strong>Q8:</strong> Existe meta de SLA? Ex: tempo maximo entre primeiro contato e distribuicao?</div>
+
+<h3>Documentos e Restricoes (12 perguntas)</h3>
+
+<div class="q"><strong>D1:</strong> A tabela <code>processos_documentos</code> e realmente o SSOT unico ou existe <code>leads_documentos</code> separada?</div>
+
+<div class="q"><strong>D2:</strong> Quando o lead vira cliente, os docs Tier 1/2 sao COPIADOS ou apenas o <code>cliente_id</code> e preenchido no registro existente?</div>
+
+<div class="q"><strong>D3:</strong> O bucket <code>mdzap-media</code> e separado de <code>leads-docs</code>. Docs do WhatsApp devem ir pra qual bucket?</div>
+
+<div class="q"><strong>D4:</strong> A conversao automatica pra PDF (imagens) e feita no n8n ou no frontend? Qual lib?</div>
+
+<div class="q"><strong>D5:</strong> O rename inline de documentos atualiza so o <code>nome</code> no banco ou tambem renomeia o arquivo no Storage?</div>
+
+<div class="q"><strong>D6:</strong> Docs da tramitacao (Tier 3) podem ser deletados por quem? So admin? Qualquer advogado do processo?</div>
+
+<div class="q"><strong>D7:</strong> O <code>RestricaoPastaCard</code> (494 linhas) precisa de refactor pra ficar abaixo de 300 linhas? Ou o tamanho atual e aceitavel?</div>
+
+<div class="q"><strong>D8:</strong> A aba "Documentos Pendentes" em /clientes lista pendencias de QUAL tier? So Tier 1 (pessoais) ou tambem Tier 2 (restricao)?</div>
+
+<div class="q"><strong>D9:</strong> Google Drive: queremos sync BIDIRECIONAL (Drive → MdFlow) ou so UNIDIRECIONAL (MdFlow → Drive)?</div>
+
+<div class="q"><strong>D10:</strong> Se um documento e excluido no MdFlow, deve ser excluido tambem no Drive? Ou soft-delete so no MdFlow?</div>
+
+<div class="q"><strong>D11:</strong> Qual o limite de tamanho de arquivo por upload? O Storage tem config atual?</div>
+
+<div class="q"><strong>D12:</strong> A pasta no Drive e criada quando? Na auditoria (quando restricao surge)? No primeiro upload? Na distribuicao?</div>
+
+<footer>
+Framework Atendimento Completo v2 · MdFlow · MDX LegalTech · Gerado: 06/04/2026
+<br>Status: <strong>PLANEJAMENTO</strong> — Nao executar ate aprovacao completa
+</footer>
+
+</div>
+</body>
+</html>

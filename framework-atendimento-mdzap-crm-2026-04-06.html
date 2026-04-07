@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Framework Atendimento — MdZap + CRM Integrado</title>
+<style>
+  :root {
+    --bg: #12100e; --card: #1a1714; --surface: #211e1a; --sidebar: #0d0b09;
+    --fg: #f2efe8; --muted: #9e978a; --primary: #20c997; --border: #3a3530;
+    --destructive: #ef4444; --warning: #f59e0b; --success: #22c55e;
+    --violet: #a78bfa; --sky: #38bdf8; --rose: #fb7185; --lime: #a3e635; --amber: #fbbf24;
+    --primary-dim: rgba(32,201,151,0.1); --primary-border: rgba(32,201,151,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--fg); font-family:'Inter',-apple-system,sans-serif; line-height:1.7; }
+
+  .header { background:linear-gradient(135deg,var(--sidebar),var(--card)); border-bottom:1px solid var(--border); padding:48px 40px; text-align:center; }
+  .header-badge { display:inline-block; background:var(--primary-dim); color:var(--primary); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; padding:4px 14px; border-radius:20px; border:1px solid var(--primary-border); letter-spacing:1px; text-transform:uppercase; margin-bottom:16px; }
+  .header h1 { font-family:'Manrope',sans-serif; font-size:34px; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px; }
+  .header .subtitle { color:var(--muted); font-size:15px; max-width:800px; margin:0 auto; }
+  .header .meta { margin-top:20px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+  .header .meta-item { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); padding:5px 12px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border); }
+  .header .meta-item span { color:var(--primary); font-weight:600; }
+
+  .main { max-width:1300px; margin:0 auto; padding:40px 24px; }
+  .section { margin-bottom:56px; }
+  .section-title { font-family:'Manrope',sans-serif; font-size:22px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:12px; }
+  .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; font-size:14px; font-weight:800; background:var(--primary-dim); color:var(--primary); border:1px solid var(--primary-border); }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:16px; }
+  .card-title { font-family:'Manrope',sans-serif; font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+  .card p, .card li { font-size:13px; color:var(--muted); margin-bottom:6px; }
+  .card strong { color:var(--fg); }
+
+  .highlight { background:var(--primary-dim); border-left:3px solid var(--primary); padding:14px 18px; border-radius:0 10px 10px 0; margin:16px 0; }
+  .highlight p { color:var(--fg) !important; font-size:13px; }
+  .warn-box { background:rgba(245,158,11,0.08); border-left:3px solid var(--warning); padding:14px 18px; border-radius:0 10px 10px 0; margin:16px 0; }
+  .warn-box p { color:var(--warning) !important; font-size:13px; }
+  .danger-box { background:rgba(239,68,68,0.08); border-left:3px solid var(--destructive); padding:14px 18px; border-radius:0 10px 10px 0; margin:16px 0; }
+  .danger-box p { color:var(--destructive) !important; font-size:13px; }
+
+  .flow { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin:16px 0; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:2; white-space:pre; overflow-x:auto; color:var(--sky); }
+  .flow .accent { color:var(--primary); font-weight:700; }
+  .flow .warn { color:var(--warning); }
+  .flow .dim { color:var(--muted); }
+  .flow .rose { color:var(--rose); }
+
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; }
+  th { text-align:left; padding:10px 14px; background:var(--surface); color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border); }
+  td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tr:hover td { background:rgba(255,255,255,0.02); }
+  code { font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--surface); padding:2px 6px; border-radius:4px; color:var(--primary); }
+
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
+  .badge-new { background:rgba(32,201,151,0.15); color:var(--primary); }
+  .badge-change { background:rgba(167,139,250,0.15); color:var(--violet); }
+  .badge-critical { background:rgba(239,68,68,0.15); color:var(--destructive); }
+  .badge-phase { background:rgba(56,189,248,0.15); color:var(--sky); }
+
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  @media (max-width:900px) { .grid2,.grid3 { grid-template-columns:1fr; } }
+
+  .question-card { background:rgba(251,191,36,0.06); border:1px solid rgba(251,191,36,0.2); border-radius:10px; padding:16px; margin-bottom:12px; }
+  .question-card .q { font-weight:700; color:var(--amber); font-size:13px; margin-bottom:4px; }
+  .question-card .context { font-size:12px; color:var(--muted); }
+
+  .phase-label { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; padding:3px 10px; border-radius:6px; font-weight:600; margin-bottom:8px; }
+  .phase-1 { background:rgba(56,189,248,0.12); color:var(--sky); }
+  .phase-2 { background:rgba(167,139,250,0.12); color:var(--violet); }
+  .phase-3 { background:rgba(32,201,151,0.12); color:var(--primary); }
+  .phase-4 { background:rgba(251,191,36,0.12); color:var(--amber); }
+
+  .footer { text-align:center; padding:40px 24px; border-top:1px solid var(--border); margin-top:48px; }
+  .footer p { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+  .footer .logo { color:var(--primary); font-weight:700; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">Framework + Fluxograma</div>
+  <h1>Atendimento MdZap + CRM Integrado</h1>
+  <p class="subtitle">Plano completo de integra&ccedil;&atilde;o: SDR Julia, auditoria pelo MdZap, componentes reutiliz&aacute;veis (dados/restri&ccedil;&otilde;es/documentos), documentos autom&aacute;ticos, sync bidirecional MdZap &harr; CRM.</p>
+  <div class="meta">
+    <div class="meta-item">Status: <span>PLANEJAMENTO</span></div>
+    <div class="meta-item">P&aacute;ginas: <span>/mdzap + /crm</span></div>
+    <div class="meta-item">Data: <span>2026-04-06</span></div>
+    <div class="meta-item">Fase: <span>Investiga&ccedil;&atilde;o</span></div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 1: VISAO GERAL -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">1</span> Vis&atilde;o Geral — O Que Muda</div>
+
+  <div class="card">
+    <div class="card-title">Conceito Central</div>
+    <p><strong>O MdZap deixa de ser s&oacute; chat e vira o SDR completo da Julia.</strong> O atendente faz TUDO sem sair da tela de conversa: cadastra lead, faz auditoria Boa Vista, edita dados, gerencia restri&ccedil;&otilde;es e documentos. Tudo conectado em tempo real com o CRM via componentes reutiliz&aacute;veis.</p>
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-new">NOVO</span> Auditoria no MdZap</div>
+      <p>Bot&atilde;o de auditoria Boa Vista direto no painel do lead. Faz a auditoria sem sair do chat.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-new">NOVO</span> Abas Restri&ccedil;&otilde;es + Docs</div>
+      <p>Duas novas abas no Lead Panel do MdZap. Componentes reutiliz&aacute;veis do ClienteDrawer do CRM.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-change">MUDA</span> Docs do Lead Autom&aacute;ticos</div>
+      <p>Todo documento que o lead manda no WhatsApp salva automaticamente em Documentos (pasta geral). Auditoria salva na pasta Boa Vista.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-change">MUDA</span> Lead Panel Fechado por Default</div>
+      <p>Painel de info do lead n&atilde;o abre por default. S&oacute; abre quando clicar.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-change">MUDA</span> Edi&ccedil;&atilde;o Completa de Lead</div>
+      <p>Editar TODOS os dados do lead direto pelo MdZap. Salva no backend em tempo real.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-critical">BUG</span> Valores Auditoria Errados</div>
+      <p>Os valores das restri&ccedil;&otilde;es n&atilde;o est&atilde;o puxando certo ap&oacute;s auditoria. Comprovante n&atilde;o salva em documentos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 2: FLUXOGRAMA PRINCIPAL -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">2</span> Fluxograma — Jornada Completa do Atendimento</div>
+
+  <div class="flow">
+<span class="dim">// ══════════════════════════════════════════════════════════════════</span>
+<span class="dim">// FLUXO COMPLETO: Lead chega via WhatsApp → Atendimento → CRM</span>
+<span class="dim">// ══════════════════════════════════════════════════════════════════</span>
+
+<span class="accent">FASE 1 — PRIMEIRO CONTATO</span>
+<span class="dim">─────────────────────────────</span>
+  Lead manda mensagem no WhatsApp
+       │
+       ▼
+  Julia (IA) responde automaticamente
+  Julia pede o CPF do lead na conversa  ◄── <span class="warn">Template/Criativo j&aacute; pede CPF</span>
+       │
+       ▼
+  Lead envia CPF
+       │
+       ▼
+  Julia extrai CPF da mensagem → valida formato
+       │
+  ┌────┴───────────────────────────────┐
+  │  CPF v&aacute;lido?                        │
+  │  SIM → salva no lead_metadata      │
+  │  N&Atilde;O  → Julia pede novamente         │
+  └────┬───────────────────────────────┘
+       │
+       ▼
+  Conversa continua (qualifica&ccedil;&atilde;o)
+
+
+<span class="accent">FASE 2 — LEAD INTERESSADO → AUDITORIA</span>
+<span class="dim">──────────────────────────────────────</span>
+  Atendente assume conversa (ou Julia detecta interesse)
+       │
+       ▼
+  Atendente abre Lead Panel (clique, n&atilde;o default)
+       │
+       ▼
+  ┌─────────────────────────────────────────────────────┐
+  │  LEAD PANEL (MdZap)                                 │
+  │                                                     │
+  │  [Tab Lead] [Tab Mem&oacute;ria] [Tab Tom] [Tab Hist&oacute;rico] │
+  │  ─────────────────────────────────────────────────  │
+  │  [Tab Restri&ccedil;&otilde;es]  [Tab Documentos]  ◄── <span class="accent">NOVAS</span>       │
+  │                                                     │
+  │  [ <span class="accent">Bot&atilde;o Auditoria Boa Vista</span> ]  ◄── <span class="warn">Componente CRM</span>  │
+  │  (mesmo bot&atilde;o do CRM, reutiliz&aacute;vel)                 │
+  └─────────────────────────────────────────────────────┘
+       │
+       ▼
+  Clica "Auditoria Boa Vista"
+       │
+       ▼
+  ┌─────────────────────────────────────────┐
+  │  AUDITORIA (modal/inline no MdZap)      │
+  │  - Usa CPF do lead (j&aacute; salvo)           │
+  │  - Consulta Boa Vista (CPF Completo)    │
+  │  - Retorna restri&ccedil;&otilde;es com valores       │
+  └───────────┬─────────────────────────────┘
+              │
+     ┌────────┼────────────────────┐
+     │        │                    │
+     ▼        ▼                    ▼
+  <span class="accent">Restri&ccedil;&otilde;es</span>    <span class="accent">Comprovante PDF</span>     <span class="accent">Lead cadastrado</span>
+  salvas na      salvo em Docs        no CRM (coluna
+  aba Restri-    pasta "Boa Vista"    "Novos/Atendimento")
+  &ccedil;&otilde;es do lead   automaticamente
+
+
+<span class="accent">FASE 3 — DOCUMENTOS DO LEAD (AUTOM&Aacute;TICO)</span>
+<span class="dim">────────────────────────────────────────────</span>
+  Lead manda documento/foto no WhatsApp
+       │
+       ▼
+  ┌─────────────────────────────────────────┐
+  │  PIPELINE AUTOM&Aacute;TICO                    │
+  │                                         │
+  │  1. Mensagem chega (tipo: image/doc)    │
+  │  2. Media salva em Storage (mdzap-media)│
+  │  3. <span class="accent">C&oacute;pia salva em Documentos do Lead</span>  │
+  │     → pasta "Documentos Gerais"         │
+  │     → nome: original do arquivo         │
+  │     → status: pendente_classifica&ccedil;&atilde;o    │
+  │  4. Aparece na aba Documentos do MdZap  │
+  │  5. Aparece na aba Documentos do CRM    │
+  │     (componente reutiliz&aacute;vel = mesma UI) │
+  └─────────────────────────────────────────┘
+       │
+       ▼
+  Atendente pode renomear/classificar direto
+  (clicar no doc → editar nome/pasta)
+
+
+<span class="accent">FASE 4 — EDI&Ccedil;&Atilde;O COMPLETA DO LEAD</span>
+<span class="dim">────────────────────────────────────</span>
+  ┌──────────────────────────────────────────────────────┐
+  │  COMPONENTES REUTILIZ&Aacute;VEIS (shared)                  │
+  │                                                      │
+  │  ClienteDrawer (CRM)  ◄──── MESMOS ────►  Lead Panel │
+  │                              COMPONENTES   (MdZap)   │
+  │                                                      │
+  │  Tab Dados ────────────────► Tab Lead (edit&aacute;vel)     │
+  │  Tab Restri&ccedil;&otilde;es ──────────► Tab Restri&ccedil;&otilde;es          │
+  │  Tab Documentos ────────────► Tab Documentos          │
+  │                                                      │
+  │  <span class="warn">Qualquer edi&ccedil;&atilde;o em um = atualiza o outro</span>            │
+  │  <span class="warn">Mesmo hook, mesmo service, mesmo Supabase query</span>     │
+  └──────────────────────────────────────────────────────┘
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 3: LAYOUT NOVO LEAD PANEL -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">3</span> Layout — Novo Lead Panel do MdZap</div>
+
+  <div class="flow">
+┌─────────────────────────────────────────┐
+│  LEAD PANEL (320px, toggle)             │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  Avatar + Nome + Telefone       │    │
+│  │  CPF: •••.•••.123-45            │    │
+│  │  Score: ★★★★☆  Coluna: Novos   │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌──────────────────────────────────┐   │
+│  │ [<span class="accent">Auditoria Boa Vista</span>]  ◄── bot&atilde;o │   │
+│  └──────────────────────────────────┘   │
+│                                         │
+│  ┌──┬────────┬─────┬──────────┐         │
+│  │Lead│Mem&oacute;ria│Tom  │Hist&oacute;rico│  ◄── tabs existentes
+│  └──┴────────┴─────┴──────────┘         │
+│  [Conte&uacute;do da tab selecionada]          │
+│                                         │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   │
+│                                         │
+│  ┌──────────┬───────────┐               │
+│  │<span class="accent">Restri&ccedil;&otilde;es</span>│<span class="accent">Documentos</span> │  ◄── <span class="warn">NOVAS ABAS</span>
+│  └──────────┴───────────┘               │
+│  [Conte&uacute;do: componente reutiliz&aacute;vel      │
+│   do ClienteDrawer do CRM]              │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ Notas Internas                  │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+  </div>
+
+  <div class="highlight">
+    <p><strong>Regra:</strong> Lead Panel aberto por default = <code>false</code>. S&oacute; abre ao clicar no bot&atilde;o Info no ThreadHeader.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 4: COMPONENTES REUTILIZAVEIS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">4</span> Componentes Reutiliz&aacute;veis — CRM &harr; MdZap</div>
+
+  <div class="card">
+    <div class="card-title">Arquitetura de Componentes Compartilhados</div>
+    <table>
+      <tr><th>Componente</th><th>Contextos</th><th>Dados</th><th>Edi&ccedil;&atilde;o</th></tr>
+      <tr>
+        <td><code>LeadDadosTab</code></td>
+        <td>CRM Drawer, MdZap Lead Panel</td>
+        <td>leads (nome, cpf, email, telefone, endereco, obs)</td>
+        <td>Inline edit. Salva via <code>useLeadMutations</code></td>
+      </tr>
+      <tr>
+        <td><code>LeadRestricoesTab</code></td>
+        <td>CRM Drawer, MdZap Lead Panel</td>
+        <td>leads_restricoes (bureau, empresa, valor, tipo)</td>
+        <td>Listagem + edit. Populada pela auditoria</td>
+      </tr>
+      <tr>
+        <td><code>LeadDocumentosTab</code></td>
+        <td>CRM Drawer, MdZap Lead Panel</td>
+        <td>leads_documentos (arquivo, tipo, pasta, nome)</td>
+        <td>Rename, reclassificar pasta. Upload manual + auto do WA</td>
+      </tr>
+      <tr>
+        <td><code>AuditoriaBotao</code></td>
+        <td>CRM Drawer, MdZap Lead Panel</td>
+        <td>Dispara auditoria Boa Vista via webhook</td>
+        <td>CPF do lead → webhook → retorna restri&ccedil;&otilde;es + PDF</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="flow">
+<span class="dim">// ESTRUTURA DE ARQUIVOS PROPOSTA</span>
+
+src/components/shared/lead/
+├── LeadDadosTab.tsx           <span class="dim">// Edi&ccedil;&atilde;o de dados do lead</span>
+├── LeadRestricoesTab.tsx      <span class="dim">// Lista de restri&ccedil;&otilde;es (populada por auditoria)</span>
+├── LeadDocumentosTab.tsx      <span class="dim">// Documentos com pastas (Boa Vista, Gerais, etc)</span>
+├── AuditoriaBotao.tsx         <span class="dim">// Bot&atilde;o + modal de auditoria Boa Vista</span>
+└── types.ts                   <span class="dim">// Props compartilhadas</span>
+
+<span class="dim">// USO NO CRM:</span>
+src/components/crm/ClienteDrawer.tsx
+  → <span class="accent">&lt;LeadDadosTab leadId={lead.id} /&gt;</span>
+  → <span class="accent">&lt;LeadRestricoesTab leadId={lead.id} /&gt;</span>
+  → <span class="accent">&lt;LeadDocumentosTab leadId={lead.id} /&gt;</span>
+
+<span class="dim">// USO NO MDZAP:</span>
+src/components/mdzap/MdzapLeadPanel.tsx
+  → <span class="accent">&lt;LeadDadosTab leadId={conversa.lead_id} /&gt;</span>
+  → <span class="accent">&lt;LeadRestricoesTab leadId={conversa.lead_id} /&gt;</span>
+  → <span class="accent">&lt;LeadDocumentosTab leadId={conversa.lead_id} /&gt;</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 5: FLUXO DOCUMENTOS AUTOMATICOS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">5</span> Fluxo — Documentos Autom&aacute;ticos do WhatsApp</div>
+
+  <div class="flow">
+<span class="accent">FLUXO: Documento recebido via WhatsApp → Salvo em Docs do Lead</span>
+<span class="dim">═══════════════════════════════════════════════════════════════</span>
+
+  Lead manda foto/PDF/doc no WhatsApp
+       │
+       ▼
+  n8n recebe webhook do WhatsApp Cloud API
+       │
+       ▼
+  n8n faz download da m&iacute;dia (Graph API)
+       │
+       ├──► <span class="accent">1. Salva em mdzap-media (Storage)</span>
+       │    path: {org}/{conversa}/{timestamp}-{filename}
+       │
+       ├──► <span class="accent">2. INSERT em whatsapp_mensagens</span>
+       │    tipo: image/document/audio
+       │    metadata: { storage_path, filename }
+       │
+       └──► <span class="accent">3. INSERT em leads_documentos</span>  ◄── <span class="warn">NOVO</span>
+            lead_id: conversa.lead_id
+            tipo_documento: inferido (image→foto, pdf→documento)
+            pasta: "Documentos Gerais"
+            nome: filename original
+            storage_path: mesmo path do mdzap-media
+            status: "pendente_classificacao"
+            origem: "whatsapp"
+            mensagem_id: FK → whatsapp_mensagens.id
+
+
+<span class="accent">FLUXO: Auditoria → Comprovante salvo automaticamente</span>
+<span class="dim">═══════════════════════════════════════════════════════</span>
+
+  Atendente clica "Auditoria Boa Vista"
+       │
+       ▼
+  Webhook: crm/auditoria-boa-vista
+    data: { lead_id, cpf }
+       │
+       ▼
+  n8n consulta API Boa Vista (CPF Completo)
+       │
+       ├──► <span class="accent">1. Atualiza/cria restri&ccedil;&otilde;es do lead</span>
+       │    leads_restricoes: bureau, empresa, valor_original, tipo
+       │    <span class="rose">⚠ BUG: valores n&atilde;o puxando certo → investigar</span>
+       │
+       ├──► <span class="accent">2. Gera PDF comprovante da auditoria</span>
+       │
+       └──► <span class="accent">3. INSERT em leads_documentos</span>
+            pasta: "Boa Vista"
+            nome: "Auditoria CPF Completo - {data}"
+            tipo_documento: "comprovante_auditoria"
+            <span class="rose">⚠ BUG: n&atilde;o est&aacute; salvando → corrigir no n8n</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 6: FUNCIONALIDADES MDZAP (EXISTENTES) -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">6</span> Funcionalidades MdZap — Estado Atual (2 Fontes)</div>
+
+  <div class="card">
+    <div class="card-title">Projeto Anterior (Lovable Cloud separado)</div>
+    <p>Chat completo com: compositor 3 modos (normal/recording/attachment), drag&amp;drop, paste Ctrl+V, templates /, emoji picker, AI composer, multi-attachment preview, signed URLs, drafts LRU 20, audio recorder com fallback, document card com PDF thumbnail.</p>
+    <p><strong>Diferença chave:</strong> Usava <code>chat-media</code> bucket + Edge Functions + api.sendWhatsappMessage(). Tudo por features Lovable Cloud.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Projeto Atual (MdFlow integrado)</div>
+    <p>34 componentes, 14 hooks, 9 webhooks, 8 canais realtime. Layout 3 colunas. Usa <code>mdzap-media</code> bucket + webhooks n8n. INSERT otimista + UPDATE via n8n. 9 n&iacute;veis de status de conversa.</p>
+    <p><strong>Funcionalidades do atual:</strong> Swipe to archive, smart replies (3 tons), typing indicator, link preview (Microlink), busca na thread, bulk negocia&ccedil;&otilde;es/documentos, transfer modal, feedback Julia (thumbs), keyboard shortcuts (j/k, Ctrl+/), favicon badge, notification sound.</p>
+  </div>
+
+  <div class="highlight">
+    <p><strong>Estrat&eacute;gia:</strong> Manter a arquitetura do projeto atual (MdFlow integrado, webhooks n8n) e trazer funcionalidades maduras do projeto anterior que ainda n&atilde;o existem no atual (ex: multi-attachment preview, drag&amp;drop melhorado, paste de imagem).</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 7: BUGS CONHECIDOS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">7</span> Bugs Conhecidos — Corrigir Antes</div>
+
+  <table>
+    <tr><th>#</th><th>Bug</th><th>Onde</th><th>Impacto</th><th>Causa Prov&aacute;vel</th></tr>
+    <tr>
+      <td><span class="badge badge-critical">BUG-1</span></td>
+      <td><strong>Valores das restri&ccedil;&otilde;es errados ap&oacute;s auditoria</strong></td>
+      <td>CRM → Auditorias → Restri&ccedil;&otilde;es</td>
+      <td>Valores n&atilde;o batem com o comprovante Boa Vista</td>
+      <td>Parser do retorno da API Boa Vista no n8n (campo valor_original vs valor_atual?)</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-critical">BUG-2</span></td>
+      <td><strong>Comprovante de auditoria n&atilde;o salva em Documentos</strong></td>
+      <td>n8n → leads_documentos</td>
+      <td>Comprovante PDF gerado mas n&atilde;o inserido na tabela de documentos</td>
+      <td>Falta INSERT em leads_documentos no workflow n8n de auditoria</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-critical">BUG-3</span></td>
+      <td><strong>Hist&oacute;rico de auditorias mostra documento mas valores diferentes da aba restri&ccedil;&otilde;es</strong></td>
+      <td>CRM → Hist&oacute;rico</td>
+      <td>Inconsist&ecirc;ncia visual entre hist&oacute;rico e restri&ccedil;&otilde;es</td>
+      <td>Hist&oacute;rico usa snapshot do momento, restri&ccedil;&otilde;es s&atilde;o recalculadas?</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 8: WEBHOOKS NECESSARIOS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">8</span> Webhooks — Novos e Modificados</div>
+
+  <table>
+    <tr><th>Webhook</th><th>Status</th><th>Contexto</th><th>O Que Faz</th></tr>
+    <tr>
+      <td><code>crm/auditoria-boa-vista</code></td>
+      <td><span class="badge badge-change">MODIFICAR</span></td>
+      <td>crm.auditoria</td>
+      <td>Adicionar: INSERT em leads_documentos (pasta Boa Vista) + corrigir parser de valores</td>
+    </tr>
+    <tr>
+      <td><code>mdzap/salvar-documento-lead</code></td>
+      <td><span class="badge badge-new">NOVO</span></td>
+      <td>mdzap.documento_recebido</td>
+      <td>Quando lead manda m&iacute;dia no WA → copia para leads_documentos (pasta Gerais)</td>
+    </tr>
+    <tr>
+      <td><code>mdzap/enviar-mensagem</code></td>
+      <td><span class="badge badge-change">MODIFICAR</span></td>
+      <td>mdzap.enviar_mensagem</td>
+      <td>Ap&oacute;s sucesso, se tipo=image/document, trigger salvar-documento-lead</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 9: PLANO DE EXECUCAO -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">9</span> Plano de Execu&ccedil;&atilde;o — 4 Fases</div>
+
+  <div class="card">
+    <span class="phase-label phase-1">FASE 1 — BUGS + BACKEND</span>
+    <div class="card-title">Corrigir bugs existentes + preparar backend</div>
+    <ul>
+      <li>Investigar e corrigir BUG-1 (valores restri&ccedil;&otilde;es errados)</li>
+      <li>Corrigir BUG-2 (comprovante n&atilde;o salva em documentos)</li>
+      <li>Verificar schema <code>leads_documentos</code> — campos necess&aacute;rios: <code>pasta, origem, mensagem_id, status</code></li>
+      <li>Criar/ajustar webhook <code>mdzap/salvar-documento-lead</code></li>
+      <li>Ajustar workflow auditoria Boa Vista no n8n</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <span class="phase-label phase-2">FASE 2 — COMPONENTES REUTILIZ&Aacute;VEIS</span>
+    <div class="card-title">Extrair do CRM e tornar shared</div>
+    <ul>
+      <li>Extrair <code>LeadDadosTab</code> do ClienteDrawer → <code>src/components/shared/lead/</code></li>
+      <li>Extrair <code>LeadRestricoesTab</code> → componente que lista restri&ccedil;&otilde;es com edit</li>
+      <li>Extrair <code>LeadDocumentosTab</code> → componente com pastas, rename, upload</li>
+      <li>Extrair <code>AuditoriaBotao</code> → bot&atilde;o que dispara auditoria</li>
+      <li>Verificar que CRM continua funcionando com os novos shared components</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <span class="phase-label phase-3">FASE 3 — INTEGRA&Ccedil;&Atilde;O MDZAP</span>
+    <div class="card-title">Montar as novas abas no Lead Panel</div>
+    <ul>
+      <li>Lead Panel: default fechado (n&atilde;o abre automaticamente)</li>
+      <li>Adicionar bot&atilde;o "Auditoria Boa Vista" no topo do panel</li>
+      <li>Adicionar aba "Restri&ccedil;&otilde;es" (abaixo das 4 tabs existentes)</li>
+      <li>Adicionar aba "Documentos" (ao lado de Restri&ccedil;&otilde;es)</li>
+      <li>Habilitar edi&ccedil;&atilde;o inline de dados do lead na tab Lead</li>
+      <li>Pipeline autom&aacute;tico: doc recebido no WA → salva em leads_documentos</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <span class="phase-label phase-4">FASE 4 — POLISH + TESTES</span>
+    <div class="card-title">Garantir tudo 100% funcional</div>
+    <ul>
+      <li>Testar fluxo completo: lead manda CPF → auditoria → restri&ccedil;&otilde;es + docs salvos</li>
+      <li>Testar sync bidirecional: editar no MdZap → verificar no CRM (e vice-versa)</li>
+      <li>Testar docs autom&aacute;ticos: lead manda foto → aparece em Documentos</li>
+      <li>Testar rename de documento e mudan&ccedil;a de pasta</li>
+      <li>Rodar page-loop no /mdzap e /crm</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 10: PERGUNTAS PENDENTES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">10</span> Perguntas para Definir Antes de Come&ccedil;ar</div>
+
+  <div class="grid2">
+    <div class="question-card">
+      <div class="q">Q1 — Auditoria: s&oacute; Boa Vista por enquanto?</div>
+      <div class="context">Voc&ecirc; mencionou que Serasa n&atilde;o vamos programar ainda. Confirma que s&oacute; "CPF Completo" (Boa Vista)?</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q">Q2 — Onde fica a auditoria no MdZap?</div>
+      <div class="context">Modal sobre o chat (como no CRM)? Ou inline expandido dentro do Lead Panel? O painel tem 320px — modal pode ser melhor para n&atilde;o ficar apertado.</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q">Q3 — Lead sem cadastro no CRM: o que acontece?</div>
+      <div class="context">Se a conversa no MdZap ainda n&atilde;o tem lead vinculado, as abas Restri&ccedil;&otilde;es/Documentos ficam vazias com "Cadastre o lead primeiro"? Ou cria lead automaticamente ap&oacute;s ter CPF?</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q">Q4 — Documentos do WA: TODOS salvam ou s&oacute; imagem/PDF?</div>
+      <div class="context">&Aacute;udios e v&iacute;deos tamb&eacute;m devem ir para leads_documentos? Ou s&oacute; imagem + documento (PDF/DOC)?</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q">Q5 — Abas Restri&ccedil;&otilde;es/Docs: mesma se&ccedil;&atilde;o ou separada das tabs existentes?</div>
+      <div class="context">Voc&ecirc; falou "embaixo do lead, mem&oacute;ria, tom e hist&oacute;rico". S&atilde;o tabs separadas com um divisor visual? Ou &eacute; uma TabGroup diferente (duas linhas de tabs)?</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q">Q6 — Pastas de documentos: quais al&eacute;m de "Boa Vista" e "Gerais"?</div>
+      <div class="context">No CRM j&aacute; existem pastas por restri&ccedil;&atilde;o (RestricaoPastaCard). Queremos o mesmo sistema no MdZap ou simplificado (s&oacute; Boa Vista + Gerais)?</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q">Q7 — O token Meta do MdZap j&aacute; foi renovado?</div>
+      <div class="context">Antes de testar qualquer coisa no MdZap, o token Meta no Railway precisa estar v&aacute;lido. Isso j&aacute; foi feito?</div>
+    </div>
+
+    <div class="question-card">
+      <div class="q">Q8 — Agentes SDR diferentes: escopo agora ou futuro?</div>
+      <div class="context">Voc&ecirc; mencionou "criar agentes diferentes, a Julia vai ser direto com o CRM". Isso entra neste plano ou &eacute; uma fase futura?</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 11: PROXIMO PASSO -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="num">11</span> Pr&oacute;ximo Passo</div>
+
+  <div class="card">
+    <ol style="padding-left:20px;">
+      <li><strong>Responder as 8 perguntas acima</strong> — define escopo exato</li>
+      <li><strong>Enviar instru&ccedil;&otilde;es sobre abas de restri&ccedil;&otilde;es e documentos</strong> — como devem se comportar</li>
+      <li><strong>Testar MdZap atual</strong> — voc&ecirc; mencionou que vai testar, fazer v&iacute;deo do outro MdZap</li>
+      <li><strong>Enviar contexto de outras p&aacute;ginas</strong> — o que mais quer incluir</li>
+      <li><strong>Ap&oacute;s tudo definido</strong> → atualizar este framework com escopo final → iniciar Fase 1</li>
+    </ol>
+  </div>
+
+  <div class="warn-box">
+    <p><strong>Regra:</strong> N&atilde;o come&ccedil;amos a codar at&eacute; o plano estar 100% definido. Planejamos primeiro, executamos depois.</p>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  <p><span class="logo">MdFlow</span> &middot; Framework Atendimento MdZap + CRM &middot; 2026-04-06 &middot; Status: PLANEJAMENTO</p>
+  <p style="margin-top:8px;">Aguardando respostas + instru&ccedil;&otilde;es de restri&ccedil;&otilde;es/documentos + testes do MdZap atual</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page-Loop v3.0 — Arquitetura Completa</title>
+<style>
+  :root {
+    --bg: #12100e;
+    --card: #1a1714;
+    --surface: #211e1a;
+    --sidebar: #0d0b09;
+    --fg: #f2efe8;
+    --muted: #9e978a;
+    --primary: #20c997;
+    --border: #3a3530;
+    --destructive: #ef4444;
+    --warning: #f59e0b;
+    --success: #22c55e;
+    --violet: #a78bfa;
+    --sky: #38bdf8;
+    --rose: #fb7185;
+    --lime: #a3e635;
+    --amber: #fbbf24;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--sidebar) 0%, var(--card) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 40px;
+    text-align: center;
+  }
+  .header-badge {
+    display: inline-block;
+    background: rgba(32,201,151,0.12);
+    color: var(--primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(32,201,151,0.25);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--fg) 0%, var(--muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header .subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .header .meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .header .meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .header .meta-item span { color: var(--primary); font-weight: 600; }
+
+  /* MAIN */
+  .main { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 48px;
+  }
+  .section-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+  }
+  .kpi-value {
+    font-family: 'Manrope', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.1;
+  }
+  .kpi-value.violet { color: var(--violet); }
+  .kpi-value.sky { color: var(--sky); }
+  .kpi-value.amber { color: var(--amber); }
+  .kpi-value.rose { color: var(--rose); }
+  .kpi-value.lime { color: var(--lime); }
+  .kpi-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  /* PIPELINE */
+  .pipeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .phase {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+  .phase:hover { border-color: var(--primary); }
+  .phase-connector {
+    width: 2px;
+    height: 16px;
+    background: var(--border);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    margin-top: -16px;
+    margin-bottom: -16px;
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .phase-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Manrope', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .phase-number.f0 { background: rgba(56,189,248,0.15); color: var(--sky); border: 1px solid rgba(56,189,248,0.3); }
+  .phase-number.f1 { background: rgba(167,139,250,0.15); color: var(--violet); border: 1px solid rgba(167,139,250,0.3); }
+  .phase-number.f2 { background: rgba(32,201,151,0.15); color: var(--primary); border: 1px solid rgba(32,201,151,0.3); }
+  .phase-number.f3 { background: rgba(251,191,36,0.15); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
+  .phase-number.f4 { background: rgba(251,113,133,0.15); color: var(--rose); border: 1px solid rgba(251,113,133,0.3); }
+  .phase-number.fin { background: rgba(163,230,53,0.15); color: var(--lime); border: 1px solid rgba(163,230,53,0.3); }
+
+  .phase-info h3 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .phase-info .desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .phase-time {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 4px 10px;
+    background: var(--surface);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  /* SKILLS INSIDE PHASE */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    border-radius: 3px 0 0 3px;
+  }
+  .skill-card.new::before { background: var(--primary); }
+  .skill-card.improved::before { background: var(--violet); }
+  .skill-card.kept::before { background: var(--muted); }
+
+  .skill-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: 4px;
+  }
+  .skill-version {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .skill-version.new { background: rgba(32,201,151,0.15); color: var(--primary); }
+  .skill-version.improved { background: rgba(167,139,250,0.15); color: var(--violet); }
+  .skill-version.kept { background: rgba(158,151,138,0.15); color: var(--muted); }
+
+  .skill-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .skill-features {
+    margin-top: 10px;
+    list-style: none;
+  }
+  .skill-features li {
+    font-size: 11px;
+    color: var(--muted);
+    padding: 3px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+  .skill-features li::before {
+    content: '+';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* RULES */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 12px;
+  }
+  .rule-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .rule-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    background: rgba(32,201,151,0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .rule-text {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* DEPRECATED */
+  .deprecated-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .deprecated-card {
+    background: rgba(239,68,68,0.05);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 10px;
+    padding: 14px;
+    position: relative;
+  }
+  .deprecated-card .old {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--destructive);
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+  .deprecated-card .arrow {
+    color: var(--muted);
+    font-size: 12px;
+    margin: 4px 0;
+  }
+  .deprecated-card .new-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* PAGES TABLE */
+  .pages-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .pages-table th {
+    background: var(--surface);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .pages-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .pages-table tr:last-child td { border-bottom: none; }
+  .pages-table .route {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .pages-table .tables {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .pages-table .focus {
+    color: var(--fg);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .pages-table .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .tag.never { background: rgba(239,68,68,0.15); color: var(--destructive); }
+  .tag.reviewed { background: rgba(32,201,151,0.15); color: var(--primary); }
+  .tag.partial { background: rgba(251,191,36,0.15); color: var(--amber); }
+
+  /* FLOW DIAGRAM */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .flow-box {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    text-align: center;
+    min-width: 100px;
+  }
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .flow-box.highlight {
+    border-color: var(--primary);
+    background: rgba(32,201,151,0.08);
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .flow-box.loop {
+    border-color: var(--amber);
+    background: rgba(251,191,36,0.08);
+    color: var(--amber);
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+  }
+  .footer p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .footer .logo { color: var(--primary); font-weight: 700; }
+
+  /* CHANGES LIST */
+  .changes {
+    columns: 2;
+    column-gap: 24px;
+    list-style: none;
+  }
+  .changes li {
+    break-inside: avoid;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 6px 0;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .changes li::before {
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .changes li.add::before { content: '+'; color: var(--primary); }
+  .changes li.change::before { content: '~'; color: var(--violet); }
+  .changes li.remove::before { content: '-'; color: var(--destructive); }
+  .changes li.fix::before { content: '*'; color: var(--amber); }
+
+  @media (max-width: 768px) {
+    .header { padding: 32px 20px; }
+    .header h1 { font-size: 26px; }
+    .main { padding: 24px 16px; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .rules-grid { grid-template-columns: 1fr; }
+    .changes { columns: 1; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .phase-time { display: none; }
+    .flow-row { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-badge">Architecture Overview</div>
+  <h1>page-loop v3.0</h1>
+  <p class="subtitle">Orquestrador de qualidade MdFlow — 5 fases, 12 sub-skills, pre-flight obrigatório, backend-first, QA loop, deep front unificado, veredicto formal.</p>
+  <div class="meta">
+    <div class="meta-item">Skills: <span>12 ativas</span></div>
+    <div class="meta-item">Novas: <span>3</span></div>
+    <div class="meta-item">Melhoradas: <span>8</span></div>
+    <div class="meta-item">Deprecadas: <span>4</span></div>
+    <div class="meta-item">Commit: <span>6aaa5b41</span></div>
+    <div class="meta-item">Data: <span>2026-04-06</span></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value">5</div>
+      <div class="kpi-label">Fases</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value violet">12</div>
+      <div class="kpi-label">Skills Ativas</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value sky">3</div>
+      <div class="kpi-label">Novas Skills</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value amber">~40%</div>
+      <div class="kpi-label">Menos Tokens</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value rose">2 max</div>
+      <div class="kpi-label">QA Loops</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value lime">3-4h</div>
+      <div class="kpi-label">Tempo Total</div>
+    </div>
+  </div>
+
+  <!-- FLOW DIAGRAM -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon" style="background:rgba(32,201,151,0.12); border-radius:10px;">&#9654;</span>
+      Fluxo de Execução
+    </div>
+    <div class="flow-row">
+      <div class="flow-box highlight">F0<br>Preflight</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-box" style="border-color:var(--violet);color:var(--violet);">F1<br>Backend</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-box loop">F2<br>QA Loop<br><small>max 2x</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-box" style="border-color:var(--amber);color:var(--amber);">F3<br>Deep Front</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-box" style="border-color:var(--rose);color:var(--rose);">F4<br>Senior</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-box highlight">Finalize<br>+ Report</div>
+    </div>
+  </div>
+
+  <!-- PIPELINE PHASES -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon" style="background:rgba(56,189,248,0.12);">&#128736;</span>
+      Fases &amp; Sub-Skills
+    </div>
+
+    <div class="pipeline">
+
+      <!-- FASE 0 -->
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number f0">F0</div>
+          <div class="phase-info">
+            <h3>Pre-flight</h3>
+            <div class="desc">Valida ambiente antes de gastar tokens. Check critico falhou = loop bloqueado.</div>
+          </div>
+          <div class="phase-time">~5 min</div>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-card new">
+            <div class="skill-name">page-preflight</div>
+            <div class="skill-version new">NEW v1.0</div>
+            <div class="skill-desc">7 checks obrigatorios. Falha em check critico = loop abortado.</div>
+            <ul class="skill-features">
+              <li>Spec existe (BLOQUEANTE)</li>
+              <li>Dev server porta 8080 (BLOQUEANTE)</li>
+              <li>TypeScript compila sem erros (BLOQUEANTE)</li>
+              <li>Supabase token valido</li>
+              <li>Pasta reports existe</li>
+              <li>Git limpo</li>
+              <li>Pagina carrega no browser</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 1 -->
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number f1">F1</div>
+          <div class="phase-info">
+            <h3>Backend First</h3>
+            <div class="desc">Corrige schema antes do QA — evita falsos positivos. Schema errado = bugs fantasma.</div>
+          </div>
+          <div class="phase-time">~30 min</div>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-card improved">
+            <div class="skill-name">page-backend-tester</div>
+            <div class="skill-version improved">v2.0 &#8594; v3.0</div>
+            <div class="skill-desc">Auditoria completa: schema, RPCs, RLS, webhooks, spec drift.</div>
+            <ul class="skill-features">
+              <li>Multi-tenant test obrigatorio (R7)</li>
+              <li>Soft-delete enforcement (R8)</li>
+              <li>TypeScript compilation check (PASSO 0B)</li>
+              <li>Silent-drop audit (PASSO 3D)</li>
+              <li>Spec-to-schema diff (PASSO 7)</li>
+            </ul>
+          </div>
+          <div class="skill-card improved">
+            <div class="skill-name">page-backend-executor</div>
+            <div class="skill-version improved">v2.0 (paths)</div>
+            <div class="skill-desc">Aplica fixes como SQL migrations. Loop ate nota &ge; 9 (max 3 ciclos).</div>
+            <ul class="skill-features">
+              <li>Report paths atualizados ~/beto-reports/</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 2 -->
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number f2">F2</div>
+          <div class="phase-info">
+            <h3>QA Funcional</h3>
+            <div class="desc">Loop test&#8594;fix ate limpo ou max 2 iteracoes. P0 apos 2 loops = pendencia documentada.</div>
+          </div>
+          <div class="phase-time">~45 min &times; loops</div>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-card improved">
+            <div class="skill-name">page-qa-tester</div>
+            <div class="skill-version improved">v7.1 &#8594; v8.0</div>
+            <div class="skill-desc">QA profundo via browser + Supabase. Spec-aware. Mega relatorio HTML.</div>
+            <ul class="skill-features">
+              <li>Grupo A0: TypeScript compilation (P0 se erros)</li>
+              <li>Grupo O: Cross-context (ClienteDrawer tabs)</li>
+              <li>Grupo P: Documento tiers (Tier 1/2/3, INICIAL_CATS)</li>
+              <li>Grupo Q: Silent-drop audit (payload vs RPC)</li>
+              <li>Empresas removida da lista IGNORAR</li>
+            </ul>
+          </div>
+          <div class="skill-card improved">
+            <div class="skill-name">page-executor</div>
+            <div class="skill-version improved">v3.2 &#8594; v4.0</div>
+            <div class="skill-desc">Corrige bugs P0&#8594;P1&#8594;P2, commit por fix. 1 bug = 1 commit.</div>
+            <ul class="skill-features">
+              <li>Step 3c-SILENT: Silent-drop check em RPCs</li>
+              <li>Step 3c-CROSSPAGE: Cross-page impact check</li>
+              <li>Report paths atualizados</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 3 -->
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number f3">F3</div>
+          <div class="phase-info">
+            <h3>Deep Front</h3>
+            <div class="desc">Auditoria profunda UI/UX + interacao. Skills unificadas (merge de 4 em 2).</div>
+          </div>
+          <div class="phase-time">~45 min</div>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-card new">
+            <div class="skill-name">page-deep-front-audit</div>
+            <div class="skill-version new">NEW v1.0</div>
+            <div class="skill-desc">Merge de deep-explorer + page-front. Codigo + visual. 9 categorias. NAO altera codigo.</div>
+            <ul class="skill-features">
+              <li>13 grep checks (violacoes DS)</li>
+              <li>5 breakpoints (375/640/768/1024/1440)</li>
+              <li>9 categorias com nota 0-10</li>
+              <li>Formula ponderada com peso por categoria</li>
+              <li>Cross-context analysis</li>
+              <li>P0 penalty -1.0 por issue na nota</li>
+            </ul>
+          </div>
+          <div class="skill-card new">
+            <div class="skill-name">page-deep-front-executor</div>
+            <div class="skill-version new">NEW v1.0</div>
+            <div class="skill-desc">Merge de polisher + front-executor. Aplica CSS&#8594;JSX&#8594;funcional. Commit por fix.</div>
+            <ul class="skill-features">
+              <li>4 categorias execucao: CSS, JSX, Hook, Backend</li>
+              <li>8 categorias conteudo (UI/UX/FUNC/STATE/...)</li>
+              <li>Quality loop max 3 ciclos, target &ge;9.0</li>
+              <li>Templates completos (empty state, skeleton, etc)</li>
+              <li>Backend required = pendencia documentada</li>
+            </ul>
+          </div>
+          <div class="skill-card improved">
+            <div class="skill-name">page-front-tester</div>
+            <div class="skill-version improved">v1.0 &#8594; v2.0</div>
+            <div class="skill-desc">Cobertura total de interacoes. 13 grupos (A-N). Cada elemento testado.</div>
+            <ul class="skill-features">
+              <li>Grupo L: Keyboard/a11y (tab, focus, ESC, aria)</li>
+              <li>Grupo M: Cross-context (shared components)</li>
+              <li>Grupo N: Edge cases (chars, paste, F5, etc)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 4 -->
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number f4">F4</div>
+          <div class="phase-info">
+            <h3>Palavra Final</h3>
+            <div class="desc">Senior review com contexto maximo. Veredicto formal: PRONTA / QUASE / NAO PRONTA.</div>
+          </div>
+          <div class="phase-time">~60 min</div>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-card improved">
+            <div class="skill-name">page-senior-review</div>
+            <div class="skill-version improved">v1.0 &#8594; v2.0</div>
+            <div class="skill-desc">&ge;80 checks. Todos reports anteriores como contexto. Veredicto obrigatorio.</div>
+            <ul class="skill-features">
+              <li>&ge;80 checks obrigatorios</li>
+              <li>Veredicto: PRONTA (&ge;8.5) / QUASE (7-8.4) / NAO PRONTA (&lt;7)</li>
+              <li>P0 penalty: qualquer P0 = NAO PRONTA</li>
+            </ul>
+          </div>
+          <div class="skill-card improved">
+            <div class="skill-name">page-senior-executor</div>
+            <div class="skill-version improved">v2.0 (paths)</div>
+            <div class="skill-desc">Executa backend + frontend + n8n. Loop ate &ge;9 em todas as 8 areas.</div>
+            <ul class="skill-features">
+              <li>Report paths atualizados ~/beto-reports/</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENCERRAMENTO -->
+      <div class="phase">
+        <div class="phase-header">
+          <div class="phase-number fin">&#10003;</div>
+          <div class="phase-info">
+            <h3>Encerramento</h3>
+            <div class="desc">Coleta reports, atualiza core HTML, gera loop-report final. Unico HTML aberto no browser.</div>
+          </div>
+          <div class="phase-time">~15 min</div>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-card improved">
+            <div class="skill-name">page-finalize</div>
+            <div class="skill-version improved">v3.0 &#8594; v4.0</div>
+            <div class="skill-desc">Backup before update. Verifica reports existem. Veredicto integration.</div>
+            <ul class="skill-features">
+              <li>R2: Backup obrigatorio antes de atualizar core</li>
+              <li>R3: Verifica existencia dos reports</li>
+              <li>R4: Integracao com veredicto do senior-review</li>
+            </ul>
+          </div>
+          <div class="skill-card kept">
+            <div class="skill-name">page-review</div>
+            <div class="skill-version kept">v1.0 (mantida)</div>
+            <div class="skill-desc">Entry point para revisao. Cria/abre arquivo de pendencias manuais.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- REGRAS ABSOLUTAS -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon" style="background:rgba(239,68,68,0.12);">&#9888;</span>
+      Regras Absolutas
+    </div>
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rule-id">R1</div>
+        <div class="rule-text">Executar cada skill conforme seu SKILL.md. Nao atalhar, nao pular passos internos.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-id">R2</div>
+        <div class="rule-text">Se skill falha com erro grave, parar e reportar. Nunca continuar no escuro.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-id">R3</div>
+        <div class="rule-text">P0 bloqueante = resolver ANTES de avancar fase. Nunca arrastar P0.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-id">R4</div>
+        <div class="rule-text">Dashboard atualizado apos cada skill completar.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-id">R5</div>
+        <div class="rule-text">page-finalize SEMPRE o ultimo passo. Nunca pular.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-id">R6</div>
+        <div class="rule-text">NAO abrir HTML no browser durante o loop. Unico open = loop-report no encerramento.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-id">R7</div>
+        <div class="rule-text">Maximo 2 loops QA. Se apos 2 loops tem P0, documentar e avancar.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-id">R8</div>
+        <div class="rule-text">Veredicto do senior-review e lei. NAO PRONTA = documentar no loop-report.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPRECATED -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon" style="background:rgba(239,68,68,0.12);">&#128465;</span>
+      Skills Deprecadas
+    </div>
+    <div class="deprecated-grid">
+      <div class="deprecated-card">
+        <div class="old">page-deep-explorer</div>
+        <div class="arrow">&#8594; substituida por</div>
+        <div class="new-name">page-deep-front-audit</div>
+      </div>
+      <div class="deprecated-card">
+        <div class="old">page-front</div>
+        <div class="arrow">&#8594; substituida por</div>
+        <div class="new-name">page-deep-front-audit</div>
+      </div>
+      <div class="deprecated-card">
+        <div class="old">page-polisher</div>
+        <div class="arrow">&#8594; substituida por</div>
+        <div class="new-name">page-deep-front-executor</div>
+      </div>
+      <div class="deprecated-card">
+        <div class="old">page-front-executor</div>
+        <div class="arrow">&#8594; substituida por</div>
+        <div class="new-name">page-deep-front-executor</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6 PAGES -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon" style="background:rgba(167,139,250,0.12);">&#128196;</span>
+      6 Paginas Prioritarias
+    </div>
+    <table class="pages-table">
+      <thead>
+        <tr>
+          <th>Rota</th>
+          <th>Tabelas</th>
+          <th>Foco Principal</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="route">/distribuicao</td>
+          <td class="tables">processos, distribuicao_fila, distribuicao_lotes</td>
+          <td class="focus">NUNCA revisada. Maior gap. Fluxo OlivIA peticao inicial. Pendencia aceita: peticao via OlivIA (n8n).</td>
+          <td><span class="tag never">Nunca revisada</span></td>
+        </tr>
+        <tr>
+          <td class="route">/empresas</td>
+          <td class="tables">empresas, empresas_contatos</td>
+          <td class="focus">CRUD empresas + contatos, vinculo processos. Decidir webhooks antes.</td>
+          <td><span class="tag partial">Parcial</span></td>
+        </tr>
+        <tr>
+          <td class="route">/crm</td>
+          <td class="tables">leads, leads_atividades, leads_documentos</td>
+          <td class="focus">Kanban DnD, conversao lead&#8594;cliente, sync MdZap. 3 blockers pendentes. Pendencia aceita: geracao contrato/procuracao.</td>
+          <td><span class="tag partial">3 blockers</span></td>
+        </tr>
+        <tr>
+          <td class="route">/clientes</td>
+          <td class="tables">clientes, clientes_restricoes, documentos</td>
+          <td class="focus">ClienteDrawer 4 tabs, RestricaoPastaCard, 3-tier docs, INICIAL_CATS. Revisada ate v3 (nota 9.3).</td>
+          <td><span class="tag reviewed">Nota 9.3</span></td>
+        </tr>
+        <tr>
+          <td class="route">/processos</td>
+          <td class="tables">processos, processos_restricoes, processos_documentos, processos_eventos</td>
+          <td class="focus">Listagem com filtros avancados, drawer 8+ tabs, cegueira financeira.</td>
+          <td><span class="tag reviewed">Revisada</span></td>
+        </tr>
+        <tr>
+          <td class="route">/mdzap</td>
+          <td class="tables">mdzap_conversas, mdzap_mensagens, mdzap_templates</td>
+          <td class="focus">Chat interface, message list, template sending. PRE-REQUISITO: renovar token Meta no Railway.</td>
+          <td><span class="tag reviewed">Revisada</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CHANGELOG v2→v3 -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon" style="background:rgba(163,230,53,0.12);">&#128221;</span>
+      Changelog v2.0 &#8594; v3.0
+    </div>
+    <ul class="changes">
+      <li class="add">Pre-flight obrigatorio (FASE 0) — nunca pode ser pulado</li>
+      <li class="add">Backend-first (FASE 1) — corrige schema ANTES do QA</li>
+      <li class="add">QA loop max 2 iteracoes — previne loops infinitos</li>
+      <li class="add">Veredicto formal: PRONTA / QUASE / NAO PRONTA</li>
+      <li class="add">page-preflight: 7 checks de ambiente (3 bloqueantes)</li>
+      <li class="add">page-deep-front-audit: merge de 2 skills em 1</li>
+      <li class="add">page-deep-front-executor: merge de 2 skills em 1</li>
+      <li class="add">TypeScript compilation como gate obrigatorio (P0 se falha)</li>
+      <li class="add">Silent-drop audit (frontend payload vs RPC signature)</li>
+      <li class="add">Cross-context testing (ClienteDrawer tabs per context)</li>
+      <li class="add">Documento tier validation (Tier 1/2/3, INICIAL_CATS)</li>
+      <li class="add">Multi-tenant test obrigatorio no backend-tester</li>
+      <li class="add">Soft-delete enforcement no backend-tester</li>
+      <li class="add">Keyboard/a11y tests (tab order, focus, ESC, aria)</li>
+      <li class="add">Edge case tests (special chars, paste, F5, double-click)</li>
+      <li class="change">Report paths: ~/jarbas-reports/beto/ &#8594; ~/beto-reports/</li>
+      <li class="change">page-qa-tester v7.1 &#8594; v8.0 (+4 grupos)</li>
+      <li class="change">page-executor v3.2 &#8594; v4.0 (+silent-drop, +cross-page)</li>
+      <li class="change">page-front-tester v1.0 &#8594; v2.0 (+3 grupos)</li>
+      <li class="change">page-backend-tester v2.0 &#8594; v3.0 (+5 checks)</li>
+      <li class="change">page-senior-review v1.0 &#8594; v2.0 (80+ checks, veredicto)</li>
+      <li class="change">page-finalize v3.0 &#8594; v4.0 (+backup, +veredicto)</li>
+      <li class="remove">page-deep-explorer (deprecated)</li>
+      <li class="remove">page-front (deprecated)</li>
+      <li class="remove">page-polisher (deprecated)</li>
+      <li class="remove">page-front-executor (deprecated)</li>
+      <li class="fix">~40% reducao de tokens por eliminar auditorias redundantes</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p><span class="logo">MdFlow</span> &middot; page-loop v3.0 Architecture &middot; 2026-04-06 &middot; Commit 6aaa5b41</p>
+  <p style="margin-top:8px;">12 skills ativas &middot; 5 fases &middot; ~40% menos tokens que v2 &middot; veredicto formal</p>
+</div>
+
+</body>
+</html>

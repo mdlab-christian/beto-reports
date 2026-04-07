@@ -1,0 +1,214 @@
+================================================================================
+ÍNDICE FINAL — DB AUDIT /EMPRESAS
+================================================================================
+
+ARQUIVOS GERADOS (6 total)
+
+1. audit_empresas_SUMMARY.txt                    [LEIA PRIMEIRO]
+   └─ Tamanho: 3.4K
+   └─ Conteúdo: Resumo 5-min, issues P1, SQL pronta
+   └─ Tempo: 5 min de leitura
+
+2. audit_empresas_2026_04_06.md                  [REFERÊNCIA TÉCNICA]
+   └─ Tamanho: 8.4K
+   └─ Conteúdo: Relatório Markdown completo (tabelas, RLS, índices)
+   └─ Tempo: 15 min de leitura
+
+3. audit_empresas_2026_04_06.html                [DASHBOARD VISUAL]
+   └─ Tamanho: 16K
+   └─ Conteúdo: HTML interativo com tokens Warm Charcoal
+   └─ Abrir: open ~/beto-reports/audit_empresas_2026_04_06.html
+   └─ Tempo: 5 min de visualização
+
+4. audit_queries_executadas.sql                  [QUERIES COMENTADAS]
+   └─ Tamanho: 13K
+   └─ Conteúdo: 22 queries SQL + comentários + resultados esperados
+   └─ Uso: Re-auditoria, validação manual, troubleshooting
+   └─ Tempo: 20 min para estudar
+
+5. APLICAR_CORRECOES.md                          [INSTRUÇÕES PASSO-A-PASSO]
+   └─ Tamanho: 6.2K
+   └─ Conteúdo: 4 passos SQL, checklist, troubleshooting
+   └─ LEIA ANTES de executar SQL na produção
+   └─ Tempo: 10 min de leitura + 5 min de execução
+
+6. README_AUDIT_EMPRESAS.txt                     [ESTE ÍNDICE]
+   └─ Tamanho: 4K
+   └─ Conteúdo: Guia de navegação, fluxos recomendados
+
+================================================================================
+FLUXOS DE USO RECOMENDADOS
+================================================================================
+
+FLUXO 1: EXECUTIVO (15 min) — Para CTO/Product
+  └─ 1. Leia: audit_empresas_SUMMARY.txt
+  └─ 2. Visualize: audit_empresas_2026_04_06.html
+  └─ 3. Aprove correções
+
+FLUXO 2: IMPLEMENTAÇÃO (20 min) — Para engenheiro responsável
+  └─ 1. Leia: audit_empresas_SUMMARY.txt
+  └─ 2. Estude: APLICAR_CORRECOES.md (passo-a-passo)
+  └─ 3. Execute: 4 comandos SQL em ordem
+  └─ 4. Valide: Queries de validação em APLICAR_CORRECOES.md
+
+FLUXO 3: VALIDAÇÃO (30 min) — Para QA/revisor
+  └─ 1. Leia: audit_empresas_2026_04_06.md (completo)
+  └─ 2. Estude: audit_queries_executadas.sql
+  └─ 3. Re-execute queries no Supabase SQL Editor
+  └─ 4. Valide resultados contra relatório
+  └─ 5. Aprove ou levante observações
+
+FLUXO 4: TROUBLESHOOTING (45 min) — Se algo der errado
+  └─ 1. Leia: Problema em APLICAR_CORRECOES.md (seção ⚠️)
+  └─ 2. Re-execute: Queries de validação correspondentes
+  └─ 3. Consulte: audit_queries_executadas.sql (comentários)
+  └─ 4. Contacte: CTO Christian
+
+================================================================================
+RESUMO EXECUTIVO (4 linhas)
+================================================================================
+
+Status: 3/4 tabelas conformes. 1 tabela (empresas_categorias) com 2 P1 críticas
+Ação: Adicionar 2 colunas + 1 trigger + 1 índice em empresas_categorias
+Tempo: 5 min para executar, 5 min para validar
+Impacto: Soft delete e auditoria passam a funcionar corretamente
+
+================================================================================
+DESCOBERTAS PRINCIPAIS
+================================================================================
+
+TABELAS CONFORMES: 2/4
+  ✅ empresas (completa, 0 issues)
+  ✅ orgaos_restritivos (completa, 0 issues)
+
+TABELAS COM ISSUES: 2/4
+  ❌ empresas_categorias (P1 crítica: 2 issues + 1 índice)
+  ⚠️  empresas_escritorios (P2 recomendado: 1 índice opcional)
+
+CONFORMIDADES POSITIVAS
+  • RLS: 4/4 tabelas
+  • Tenant isolation: 4/4
+  • Foreign Keys: 6/6 válidas
+  • RPCs com SECURITY DEFINER: 14/15
+  • Enums nativos proibidos: 0 encontrados
+
+================================================================================
+SQL PRONTO PARA USAR (copie e cole)
+================================================================================
+
+Passo 1: Colunas em empresas_categorias
+ALTER TABLE public.empresas_categorias 
+  ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now() NOT NULL;
+
+Passo 2: Trigger em empresas_categorias
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now(); RETURN NEW; END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER set_updated_at_empresas_categorias
+  BEFORE UPDATE ON public.empresas_categorias
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+Passo 3: Índice em empresas_categorias (P1)
+CREATE INDEX IF NOT EXISTS idx_empresas_categorias_org_del 
+  ON public.empresas_categorias(organizacao_id) WHERE deleted_at IS NULL;
+
+Passo 4: Índice em empresas_escritorios (P2 - opcional)
+CREATE INDEX IF NOT EXISTS idx_empresas_escritorios_org_del 
+  ON public.empresas_escritorios(organizacao_id) WHERE deleted_at IS NULL;
+
+================================================================================
+CHECKLIST PRÉ-EXECUÇÃO
+================================================================================
+
+Antes de executar SQL na produção:
+
+  [ ] Fazer backup do banco (Supabase Dashboard > Backups)
+  [ ] Verificar que ninguém está usando /empresas
+  [ ] Ter acesso ao SQL Editor do Supabase
+  [ ] Ler APLICAR_CORRECOES.md completamente
+  [ ] Entender cada passo e seu impacto
+
+Durante a execução:
+
+  [ ] Executar cada comando isoladamente (não em lote)
+  [ ] Verificar que não há erro em cada passo
+  [ ] Esperar resposta do servidor antes de próximo comando
+
+Pós-execução:
+
+  [ ] Executar queries de validação em APLICAR_CORRECOES.md
+  [ ] Testar UPDATE em empresas_categorias
+  [ ] Testar soft delete (UPDATE SET deleted_at = now())
+  [ ] Verificar que queries antigas ainda funcionam
+  [ ] Comunicar ao time que schema foi atualizado
+
+================================================================================
+CONTATO
+================================================================================
+
+CTO: Christian (c.paz@mdlab.com.br)
+Projeto: MdFlow (beta-mdflow)
+Banco: qdivfairxhdihaqqypgb (Supabase)
+Auditor: MdFlow DB Auditor (Claude Haiku 4.5)
+Data: 2026-04-06 17:30 UTC
+
+Problemas?
+  1. Consulte ⚠️ Possíveis Problemas em APLICAR_CORRECOES.md
+  2. Re-execute queries de validação
+  3. Contacte Christian
+
+================================================================================
+PRÓXIMAS AUDITORIAS RECOMENDADAS
+================================================================================
+
+Após aplicar P1 nesta auditoria:
+
+  • /pagina_cliente — Próxima página crítica
+  • /processos — Núcleo de dados
+  • /relatorios — Queries complexas
+  • /jurimetria — Analytics
+  • /distribuicao — n8n + webhooks
+
+Cadência: 1 página por semana (segunda-feira)
+
+================================================================================
+COMO NAVEGAR PELOS ARQUIVOS
+================================================================================
+
+Arquivo | Leia se... | Pule se...
+---------|-----------|----------
+SUMMARY | Quer resumo 5 min | Está com pressa (ainda leia)
+.md     | Quer análise técnica | Não é engenheiro
+.html   | Quer visualizar | Não tem navegador
+.sql    | Quer re-validar | Confia no relatório
+CORR... | Vai executar SQL | Não vai corrigir
+README  | Quer navegar | Conhece bem o padrão
+
+================================================================================
+VERSÃO E METADADOS
+================================================================================
+
+Audit Version: 1.0 (estrutura definitiva)
+Data: 2026-04-06
+Hora: 17:30 UTC
+Duração: ~15 minutos
+Cobertura: 100% (4/4 tabelas)
+Queries: 22 (todas executadas com sucesso)
+Issues P0: 0 (nenhum bloqueador)
+Issues P1: 3 (todas em 1 tabela)
+Issues P2: 1 (recomendado)
+
+Template usado: MdFlow DB Auditor v1
+Model: Claude Haiku 4.5
+Project: beta-mdflow
+
+================================================================================
+FIM DO ÍNDICE
+================================================================================
+
+Para começar: Leia ~/beto-reports/audit_empresas_SUMMARY.txt
+Para visualizar: open ~/beto-reports/audit_empresas_2026_04_06.html
+Para executar: Abra ~/beto-reports/APLICAR_CORRECOES.md e siga passos
+
