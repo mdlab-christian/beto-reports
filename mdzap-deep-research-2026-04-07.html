@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Deep Research & Plano de Ataque</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #12100e;
+    --surface: #1a1816;
+    --surface2: #201e1b;
+    --surface3: #272420;
+    --border: #2a2724;
+    --border2: #332f2b;
+    --primary: #20c997;
+    --primary-dim: rgba(32,201,151,0.12);
+    --primary-glow: rgba(32,201,151,0.25);
+    --text: #e8e4df;
+    --text-muted: #7a746d;
+    --text-sub: #a09890;
+    --p0: #ef4444;
+    --p0-dim: rgba(239,68,68,0.12);
+    --p1: #f97316;
+    --p1-dim: rgba(249,115,22,0.12);
+    --p2: #eab308;
+    --p2-dim: rgba(234,179,8,0.12);
+    --p3: #60a5fa;
+    --p3-dim: rgba(96,165,250,0.12);
+    --green: #20c997;
+    --red: #ef4444;
+    --orange: #f97316;
+    --yellow: #eab308;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    padding: 24px 16px;
+  }
+
+  .container { max-width: 1120px; margin: 0 auto; }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 56px 24px 44px;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(32,201,151,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 20px rgba(32,201,151,0.4));
+  }
+  .hero h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #20c997 0%, #7dd3bc 50%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .hero-sub {
+    color: var(--text-sub);
+    font-size: 1rem;
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .badges {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .badge {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+  }
+  .bp  { background: var(--primary-dim); color: var(--primary); border: 1px solid rgba(32,201,151,0.3); }
+  .br  { background: var(--p0-dim); color: var(--p0); border: 1px solid rgba(239,68,68,0.3); }
+  .by  { background: var(--p2-dim); color: var(--p2); border: 1px solid rgba(234,179,8,0.3); }
+  .bb  { background: var(--p3-dim); color: var(--p3); border: 1px solid rgba(96,165,250,0.3); }
+  .bg  { background: rgba(32,201,151,0.08); color: #4fffb0; border: 1px solid rgba(79,255,176,0.2); }
+  .bo  { background: var(--p1-dim); color: var(--p1); border: 1px solid rgba(249,115,22,0.3); }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin: 32px 0;
+  }
+  @media(max-width:768px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+  @media(max-width:480px) { .stats-grid { grid-template-columns: 1fr; } }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0.5;
+  }
+  .stat-value {
+    font-family: 'Manrope', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  /* SECTIONS */
+  .section { margin: 40px 0; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon { font-size: 1.3rem; }
+  .section-header h2 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .section-badge {
+    margin-left: auto;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: var(--primary-dim);
+    color: var(--primary);
+    border: 1px solid rgba(32,201,151,0.25);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .card-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  /* GRID */
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: 1fr 1fr; }
+  .g3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media(max-width:768px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+  /* ISSUES */
+  .issue-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .issue-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .issue-card:hover { border-color: var(--border2); }
+
+  .issue-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .issue-header:hover { background: rgba(255,255,255,0.02); }
+
+  .issue-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    min-width: 36px;
+  }
+  .issue-title {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .severity {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+  }
+  .s-p0 { background: var(--p0-dim); color: var(--p0); border: 1px solid rgba(239,68,68,0.3); }
+  .s-p1 { background: var(--p1-dim); color: var(--p1); border: 1px solid rgba(249,115,22,0.3); }
+  .s-p2 { background: var(--p2-dim); color: var(--p2); border: 1px solid rgba(234,179,8,0.3); }
+  .s-p3 { background: var(--p3-dim); color: var(--p3); border: 1px solid rgba(96,165,250,0.3); }
+
+  .issue-toggle {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    transition: transform 0.2s;
+    min-width: 16px;
+    text-align: center;
+  }
+  .issue-card.open .issue-toggle { transform: rotate(180deg); }
+
+  .issue-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .issue-card.open .issue-body { display: block; }
+
+  .issue-section-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin: 14px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .causa-raiz {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--orange);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.83rem;
+    color: var(--text-sub);
+    line-height: 1.7;
+    margin: 8px 0;
+  }
+  .causa-raiz.verde { border-left-color: var(--green); }
+  .causa-raiz.azul  { border-left-color: var(--blue); }
+
+  .plan-list {
+    list-style: none;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .plan-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 0.83rem;
+    color: var(--text-sub);
+  }
+  .plan-list li::before {
+    content: '\2192';
+    color: var(--primary);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .file-chip {
+    display: inline-block;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin: 2px 3px;
+  }
+
+  /* CODE */
+  .code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: #4fffb0;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.6;
+    margin: 8px 0;
+  }
+  .code .kw   { color: #60a5fa; }
+  .code .fn   { color: #f97316; }
+  .code .st   { color: #fbbf24; }
+  .code .cm   { color: #4b5563; }
+  .code .type { color: #a78bfa; }
+
+  /* TABLES */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.83rem;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.018); }
+
+  /* STATUS PILLS */
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+  .pill-green { background: rgba(32,201,151,0.1); color: var(--green); }
+  .pill-red   { background: var(--p0-dim); color: var(--p0); }
+  .pill-gray  { background: rgba(122,116,109,0.1); color: var(--text-muted); }
+
+  /* BLOCKQUOTE */
+  .blockquote {
+    background: var(--primary-dim);
+    border: 1px solid rgba(32,201,151,0.2);
+    border-left: 3px solid var(--primary);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.9rem;
+    color: var(--text-sub);
+    font-style: italic;
+    margin: 12px 0;
+  }
+
+  /* DECISION CARD */
+  .decision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  @media(max-width:640px) { .decision-grid { grid-template-columns: 1fr; } }
+
+  .decision-card {
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .decision-card.yes {
+    background: rgba(32,201,151,0.06);
+    border-color: rgba(32,201,151,0.25);
+  }
+  .decision-card.no {
+    background: rgba(239,68,68,0.05);
+    border-color: rgba(239,68,68,0.2);
+  }
+  .decision-icon { font-size: 1.4rem; margin-bottom: 8px; }
+  .decision-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+  .decision-card.yes .decision-title { color: var(--green); }
+  .decision-card.no  .decision-title { color: var(--p0); }
+  .decision-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .decision-list li { font-size: 0.8rem; color: var(--text-sub); }
+
+  /* ASCII DIAGRAM */
+  .diagram {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    color: var(--text-sub);
+    overflow-x: auto;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .diagram .hl  { color: var(--primary); }
+  .diagram .dim { color: var(--text-muted); }
+
+  /* ETAPAS */
+  .etapas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .etapa-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 100px 60px 80px;
+    gap: 12px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left-width: 3px;
+    border-radius: 12px;
+    padding: 14px 18px;
+    transition: border-color 0.15s;
+  }
+  @media(max-width:768px) {
+    .etapa-row { grid-template-columns: 1fr; gap: 6px; }
+  }
+  .etapa-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .etapa-title { font-size: 0.88rem; font-weight: 500; }
+  .etapa-layer {
+    font-size: 0.72rem;
+    padding: 3px 9px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 500;
+  }
+  .layer-banco  { background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+  .layer-front  { background: var(--p3-dim); color: var(--blue); border: 1px solid rgba(96,165,250,0.25); }
+  .layer-n8n    { background: var(--p1-dim); color: var(--orange); border: 1px solid rgba(249,115,22,0.25); }
+  .layer-multi  { background: rgba(234,179,8,0.08); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+  .etapa-tempo  { font-size: 0.78rem; color: var(--text-muted); text-align: right; }
+  .etapa-status { display: flex; justify-content: flex-end; }
+  .status-pend  {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    background: rgba(234,179,8,0.08);
+    color: var(--yellow);
+    border: 1px solid rgba(234,179,8,0.2);
+  }
+
+  /* TERMINAL BLOCK */
+  .cmd-block {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+  .cmd-bar {
+    background: var(--surface2);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cmd-bar .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-r { background: #ef4444; }
+  .dot-y { background: #eab308; }
+  .dot-g { background: #20c997; }
+  .cmd-content {
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: #4fffb0;
+    line-height: 1.8;
+    white-space: pre;
+  }
+  .cmd-content .prompt   { color: var(--primary); opacity: 0.7; }
+  .cmd-content .cmd-gray { color: var(--text-muted); }
+
+  /* PROJETO COMMANDS TABLE */
+  .cmd-table-wrap { border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+  .cmd-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+  .cmd-row:last-child { border-bottom: none; }
+  .cmd-key {
+    background: rgba(0,0,0,0.3);
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--primary);
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+  }
+  .cmd-val {
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+  }
+  @media(max-width:640px) {
+    .cmd-row { grid-template-columns: 1fr; }
+    .cmd-key { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  /* PROGRESS */
+  .progress-overview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .progress-bar-wrap {
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--primary), #60a5fa);
+  }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* NOTE BOX */
+  .note {
+    background: rgba(96,165,250,0.06);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.83rem;
+    color: var(--text-sub);
+    margin: 10px 0;
+  }
+  .note .note-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 36px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 56px;
+    letter-spacing: 0.3px;
+  }
+  .footer strong { color: var(--primary); }
+
+  /* UTILS */
+  .text-green { color: var(--green); }
+  .text-red   { color: var(--p0); }
+  .text-muted { color: var(--text-muted); }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+  .mt8  { margin-top: 8px; }
+  .mt12 { margin-top: 12px; }
+  .mt16 { margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-icon">&#128172;</span>
+    <h1>MdZap &mdash; Deep Research &amp; Plano de Ataque</h1>
+    <p class="hero-sub">Integra&ccedil;&atilde;o CRM &times; WhatsApp &middot; 11 Issues Mapeados &middot; Arquitetura de Reutiliza&ccedil;&atilde;o &middot; 9 Etapas de Execu&ccedil;&atilde;o</p>
+    <div class="badges">
+      <span class="badge bp">MdFlow &middot; MdZap</span>
+      <span class="badge br">1 issue P0</span>
+      <span class="badge bo">3 issues P1</span>
+      <span class="badge by">4 issues P2</span>
+      <span class="badge bb">3 issues P3</span>
+      <span class="badge bg">9 etapas planejadas</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">11</div>
+      <div class="stat-label">Issues Mapeados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">9</div>
+      <div class="stat-label">Etapas Propostas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">7</div>
+      <div class="stat-label">Componentes Reutiliz&aacute;veis</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">~9h</div>
+      <div class="stat-label">Estimativa Total</div>
+    </div>
+  </div>
+
+  <!-- SECAO 1: VISAO GERAL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128301;</span>
+      <h2>Vis&atilde;o Geral do Projeto</h2>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">O que &eacute; o MdZap</div>
+        <p style="font-size:0.88rem;color:var(--text-sub);line-height:1.7">
+          Central de atendimento WhatsApp integrada ao CRM do MdFlow. <strong style="color:var(--text)">Julia (IA)</strong> atende automaticamente, humanos assumem quando necess&aacute;rio. Leads do WhatsApp s&atilde;o os mesmos do CRM &mdash; mesma tabela <span class="mono" style="color:var(--primary)">leads</span>.
+        </p>
+        <div class="mt12" style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="badge bp">Julia IA</span>
+          <span class="badge bp">Atendimento Humano</span>
+          <span class="badge bp">CRM Integrado</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Quest&atilde;o Arquitetural Central</div>
+        <div class="blockquote">
+          "Vamos usar componentes reutiliz&aacute;veis do CRM ou criar do zero?"
+        </div>
+        <div class="decision-grid mt8">
+          <div class="decision-card yes">
+            <div class="decision-icon">&#9989;</div>
+            <div class="decision-title">Reutilizar</div>
+            <ul class="decision-list">
+              <li>Mesmas tabelas <span class="mono">leads</span></li>
+              <li>FormNovoLead, CrmLeadNotas</li>
+              <li>useDispararAuditoria</li>
+              <li>ModalEditarLead</li>
+            </ul>
+          </div>
+          <div class="decision-card no">
+            <div class="decision-icon">&#10060;</div>
+            <div class="decision-title">Nunca duplicar</div>
+            <ul class="decision-list">
+              <li>L&oacute;gica de lead fora do CRM</li>
+              <li>Tabelas paralelas para leads</li>
+              <li>Formul&aacute;rios pr&oacute;prios do MdZap</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 2: ISSUES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128027;</span>
+      <h2>11 Bugs / Issues Mapeados</h2>
+      <span class="section-badge">P0 &rarr; P3</span>
+    </div>
+
+    <div class="issue-list">
+
+      <!-- ISSUE 1 -->
+      <div class="issue-card" id="i1">
+        <div class="issue-header" onclick="toggleIssue('i1')">
+          <span class="issue-num">E-02</span>
+          <span class="issue-title">Imagens e documentos n&atilde;o renderizam &mdash; aparecem como "expirado"</span>
+          <span class="severity s-p1">P1</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Causa Raiz</div>
+          <div class="causa-raiz">
+            Edge Function <span class="mono">mdzap-webhook</span> faz download da m&iacute;dia via Meta API.<br>
+            Se <span class="mono">access_token</span> n&atilde;o estiver em <span class="mono">numero.config</span>, o download falha <strong>silenciosamente</strong>.<br>
+            Frontend em <span class="mono">MdzapMsgBubble.tsx:358-394</span> exibe "Imagem expirada" sem fallback &uacute;til.<br>
+            Bucket Supabase Storage <span class="mono">mdzap-media</span> precisa de policy READ p&uacute;blica.
+          </div>
+
+          <div class="issue-section-title">Arquivos Afetados</div>
+          <div>
+            <span class="file-chip">supabase/functions/mdzap-webhook/index.ts:271-279</span>
+            <span class="file-chip">MdzapMsgBubble.tsx:358-394</span>
+            <span class="file-chip">mdzap-media bucket policies</span>
+          </div>
+
+          <div class="issue-section-title">Plano de Resolu&ccedil;&atilde;o</div>
+          <ul class="plan-list">
+            <li>Verificar bucket <span class="mono">mdzap-media</span> &rarr; aplicar policy p&uacute;blica para READ</li>
+            <li>Edge Function: logar erro quando <span class="mono">access_token</span> ausente, guardar <span class="mono">media_id</span> para retry</li>
+            <li>Frontend: substituir texto "expirado" por bot&atilde;o "Recarregar" com l&oacute;gica de retry</li>
+            <li>Verificar tipos <span class="mono">image | document | video</span> &mdash; confirmar se <span class="mono">m.media_url || meta.media_url</span> funciona</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ISSUE 2 -->
+      <div class="issue-card" id="i2">
+        <div class="issue-header" onclick="toggleIssue('i2')">
+          <span class="issue-num">E-03</span>
+          <span class="issue-title">Assumir conversa n&atilde;o funciona &mdash; Julia n&atilde;o para, estado n&atilde;o persiste</span>
+          <span class="severity s-p1">P1</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Funcionamento Esperado</div>
+          <div class="causa-raiz azul">
+            Bot&atilde;o "Assumir" &rarr; Julia para de responder &rarr; humano atende &rarr; bot&atilde;o muda para "Devolver Julia".<br>
+            Devolver &rarr; Julia retoma <strong>COM contexto</strong> da conversa anterior.
+          </div>
+
+          <div class="issue-section-title">Causa Raiz</div>
+          <div class="causa-raiz">
+            Webhook <span class="mono">mdzap/assumir-conversa</span> existe no n8n mas n&atilde;o implementa corretamente:<br>
+            1. N&atilde;o atualiza <span class="mono">metadata.assigned_user_id</span> + <span class="mono">metadata.assigned_user_name</span><br>
+            2. N&atilde;o pausa Julia (campo: <span class="mono">leads.awaiting_human = true</span>)<br>
+            3. <span class="mono">mdzap/devolver-julia</span> deve zerar esses campos E passar contexto hist&oacute;rico
+          </div>
+
+          <div class="issue-section-title">Campos de Controle de Estado</div>
+          <div class="code"><span class="kw">whatsapp_conversas</span>.metadata.<span class="fn">assigned_user_id</span>  &rarr; quem assumiu
+<span class="kw">leads</span>.<span class="fn">awaiting_human</span>                        &rarr; <span class="st">true</span>=humano | <span class="st">false</span>=Julia</div>
+
+          <div class="issue-section-title">Plano de Resolu&ccedil;&atilde;o</div>
+          <ul class="plan-list">
+            <li>Completar webhook n8n <span class="mono">mdzap/assumir-conversa</span>: UPDATE metadata + <span class="mono">leads.awaiting_human=true</span></li>
+            <li>Completar webhook n8n <span class="mono">mdzap/devolver-julia</span>: zerar assigned_user_id, <span class="mono">awaiting_human=false</span>, incluir contexto</li>
+            <li>Verificar <span class="mono">MdzapThreadHeader</span> &mdash; bot&atilde;o j&aacute; muda corretamente quando <span class="mono">assignedUserName</span> muda</li>
+          </ul>
+          <div class="mt8">
+            <span class="file-chip">n8n workflow DB-001</span>
+            <span class="file-chip">n8n workflow DB-002</span>
+            <span class="file-chip">useMdzapThreadActions.ts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ISSUE 3 -->
+      <div class="issue-card" id="i3">
+        <div class="issue-header" onclick="toggleIssue('i3')">
+          <span class="issue-num">&mdash;</span>
+          <span class="issue-title">Drawer de informa&ccedil;&otilde;es cortado &mdash; overflow / clipping</span>
+          <span class="severity s-p2">P2</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Diagn&oacute;stico</div>
+          <div class="causa-raiz verde">
+            N&atilde;o &eacute; overflow-hidden bloqueante. Layout usa <span class="mono">flex-1 min-h-0</span> corretamente.<br>
+            Causa real: 7 tabs em 1 linha horizontal ficam comprimidas em resolu&ccedil;&atilde;o 1280px.
+          </div>
+          <div class="issue-section-title">Plano de Resolu&ccedil;&atilde;o</div>
+          <ul class="plan-list">
+            <li>Reorganizar tabs em 2 linhas (E-05 resolve isso diretamente)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ISSUE 4 -->
+      <div class="issue-card" id="i4">
+        <div class="issue-header" onclick="toggleIssue('i4')">
+          <span class="issue-num">E-05</span>
+          <span class="issue-title">Tabs do drawer comprimidas em 1 linha &mdash; reorganizar em 2 grupos</span>
+          <span class="severity s-p2">P2</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Estado Atual vs. Proposta</div>
+          <div class="code"><span class="cm">// ATUAL &mdash; 7 tabs em 1 linha (comprime em 1280px)</span>
+[Dados][Restr.][Docs][Notas][Hist.][Mem.][Tom]
+
+<span class="cm">// PROPOSTA &mdash; 2 linhas l&oacute;gicas</span>
+Linha 1: [Dados][Restr.][Docs][Notas]
+Linha 2: [Hist.][Mem.]</div>
+          <div class="issue-section-title">Plano de Resolu&ccedil;&atilde;o</div>
+          <ul class="plan-list">
+            <li>Substituir <span class="mono">TabsList</span> &uacute;nico por 2 divs separados com <span class="mono">TabsTrigger</span> dentro</li>
+          </ul>
+          <div class="mt8">
+            <span class="file-chip">MdzapLeadPanel.tsx:86-110</span>
+          </div>
+          <div class="note mt8">
+            <div class="note-label">Esfor&ccedil;o estimado</div>
+            30 minutos
+          </div>
+        </div>
+      </div>
+
+      <!-- ISSUE 4B -->
+      <div class="issue-card" id="i4b">
+        <div class="issue-header" onclick="toggleIssue('i4b')">
+          <span class="issue-num">E-04</span>
+          <span class="issue-title">Aba "Dados" do drawer &mdash; campos incompletos, sem integra&ccedil;&atilde;o com formul&aacute;rios do CRM</span>
+          <span class="severity s-p1">P1</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Campos Exigidos</div>
+          <div class="code"><span class="cm">// Se&ccedil;&atilde;o Pessoal</span>
+Nome (obrigat&oacute;rio)
+CPF (com m&aacute;scara) | WhatsApp
+Data de nascimento | Sexo            <span class="cm">&larr; mesma linha</span>
+Profiss&atilde;o
+Origem do lead (opcional)
+
+<span class="cm">// Se&ccedil;&atilde;o Endere&ccedil;o</span>
+Logradouro
+N&uacute;mero | Complemento               <span class="cm">&larr; mesma linha</span>
+Bairro (opcional)
+Cidade | UF | CEP                     <span class="cm">&larr; mesma linha</span></div>
+
+          <div class="issue-section-title">Layout e Conex&atilde;o com CRM</div>
+          <div class="causa-raiz verde">
+            Layout: Cards colaps&aacute;veis (Pessoal + Endere&ccedil;o) ou se&ccedil;&otilde;es separadas por divider.<br>
+            Usar <span class="mono">FormPessoais</span>, <span class="mono">FormContato</span>, <span class="mono">FormEndereco</span> do CRM reutilizados.<br>
+            Bot&atilde;o "Auditar": usar <span class="mono">useDispararAuditoria()</span> + <span class="mono">CrmAuditoriaPanel</span>.
+          </div>
+
+          <div class="issue-section-title">Plano de Resolu&ccedil;&atilde;o</div>
+          <ul class="plan-list">
+            <li>Substituir campos atuais do <span class="mono">LeadDadosTab</span> pelos componentes do CRM</li>
+            <li>Aumentar largura do painel de lead: 280px &rarr; 320px</li>
+            <li>Reduzir cards de conversa da lista: 320px &rarr; 280px</li>
+          </ul>
+          <div class="mt8">
+            <span class="file-chip">lead-panel/LeadDadosTab.tsx</span>
+            <span class="file-chip">lead-panel/useLeadPanelActions.ts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ISSUE 6/7/8 -->
+      <div class="issue-card" id="i6">
+        <div class="issue-header" onclick="toggleIssue('i6')">
+          <span class="issue-num">&mdash;</span>
+          <span class="issue-title">Empty states e tratamento de erro em webhooks</span>
+          <span class="severity s-p2">P2</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Plano de Resolu&ccedil;&atilde;o</div>
+          <ul class="plan-list">
+            <li>Verificar todos os estados vazios &mdash; ilustra&ccedil;&atilde;o + CTA em cada lista</li>
+            <li>Toast de erro exibido via <span class="mono">action: 'toast_error'</span> em falha de webhook</li>
+            <li>Loading skeleton em todas as listas e pain&eacute;is</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ISSUE 9 -->
+      <div class="issue-card" id="i9">
+        <div class="issue-header" onclick="toggleIssue('i9')">
+          <span class="issue-num">E-07</span>
+          <span class="issue-title">Remover tab "Tom / Sentimento" &mdash; redundante com aba Mem&oacute;ria</span>
+          <span class="severity s-p3">P3</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Justificativa</div>
+          <div class="causa-raiz verde">
+            Tab "Mem." j&aacute; cobre: hist&oacute;rico de intera&ccedil;&otilde;es, contexto da conversa e notas IA.<br>
+            Sentimento &eacute; derivado e n&atilde;o requer tab dedicada.
+          </div>
+          <div class="issue-section-title">Plano de Resolu&ccedil;&atilde;o</div>
+          <ul class="plan-list">
+            <li>Remover import em <span class="mono">MdzapLeadPanel.tsx</span></li>
+            <li>Remover <span class="mono">TabsTrigger</span> e <span class="mono">TabsContent</span> de sentimento</li>
+            <li>Deletar arquivo <span class="mono">lead-panel/LeadSentimentoTab.tsx</span></li>
+          </ul>
+          <div class="note mt8">
+            <div class="note-label">Esfor&ccedil;o estimado</div>
+            15 minutos
+          </div>
+        </div>
+      </div>
+
+      <!-- ISSUE 10 -->
+      <div class="issue-card" id="i10">
+        <div class="issue-header" onclick="toggleIssue('i10')">
+          <span class="issue-num">&mdash;</span>
+          <span class="issue-title">Filtros e a&ccedil;&otilde;es da lista de conversas &mdash; investiga&ccedil;&atilde;o de funcionamento</span>
+          <span class="severity s-p3">P3</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Resultado da Investiga&ccedil;&atilde;o</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin:8px 0">
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span class="text-green">&#10003;</span><span style="color:var(--text-sub)">Filtros CLIENT-SIDE &mdash; todos os dados carregados via RPC</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span class="text-green">&#10003;</span><span style="color:var(--text-sub)">Contadores REAIS (useMemo sobre conversas.length)</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span class="text-green">&#10003;</span><span style="color:var(--text-sub)">Tabs Fila/Minhas/Todas funcionam corretamente</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span class="text-green">&#10003;</span><span style="color:var(--text-sub)">Busca com m&iacute;nimo 2 caracteres</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span class="text-green">&#10003;</span><span style="color:var(--text-sub)">Bulk arquivar via webhook</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span style="color:var(--yellow)">!</span><span style="color:var(--text-sub)">Bulk limitado &mdash; falta: transferir respons&aacute;vel, marcar n&atilde;o lidas</span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span style="color:var(--yellow)">!</span><span style="color:var(--text-sub)">Sem server-side filtering (OK para &lt;1000 conversas)</span></div>
+          </div>
+          <div class="issue-section-title">E-08: Bulk Actions Adicionais</div>
+          <ul class="plan-list">
+            <li>Adicionar ao bulk: "Transferir respons&aacute;vel" + "Marcar n&atilde;o lidas"</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ISSUE 11 -->
+      <div class="issue-card" id="i11">
+        <div class="issue-header" onclick="toggleIssue('i11')">
+          <span class="issue-num">E-06</span>
+          <span class="issue-title">Badge coluna CRM no header &mdash; mover lead entre est&aacute;gios pelo MdZap</span>
+          <span class="severity s-p2">P2</span>
+          <span class="issue-toggle">&#9660;</span>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-title">Proposta de UX</div>
+          <div class="causa-raiz verde">
+            Entre o bot&atilde;o de busca e o bot&atilde;o Assumir, mostrar badge com a coluna CRM do lead.<br>
+            Clicar abre dropdown com colunas dispon&iacute;veis. Selecionar move o lead no CRM.
+          </div>
+
+          <div class="issue-section-title">Campos J&aacute; Existem no Banco</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin:8px 0">
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span class="text-green">&#10003;</span><span style="color:var(--text-sub)">Campo <span class="mono">lead_coluna</span> j&aacute; existe em <span class="mono">MdzapConversaComContexto</span></span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span class="text-green">&#10003;</span><span style="color:var(--text-sub)">RPC <span class="mono">fn_mdzap_conversas</span> j&aacute; retorna <span class="mono">coluna_crm AS lead_coluna</span></span></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.83rem"><span class="text-green">&#10003;</span><span style="color:var(--text-sub)"><span class="mono">leads.coluna_crm</span> &eacute; onde fica no banco</span></div>
+          </div>
+
+          <div class="issue-section-title">Colunas Dispon&iacute;veis</div>
+          <div class="code"><span class="fn">novos</span> &rarr; <span class="fn">em_atendimento</span> &rarr; <span class="fn">aguardando_documentos</span>
+&rarr; <span class="fn">aguardando_assinatura</span> &rarr; <span class="fn">triagem</span> &rarr; <span class="fn">convertido</span></div>
+
+          <div class="issue-section-title">Plano de Resolu&ccedil;&atilde;o</div>
+          <ul class="plan-list">
+            <li>Badge visual: <span class="mono">&lt;Badge&gt;</span> com cor do stage no <span class="mono">MdzapThreadHeader</span></li>
+            <li>Dropdown: ao clicar, exibir lista de colunas dispon&iacute;veis</li>
+            <li>Ao selecionar: <span class="mono">supabase.from('leads').update({ coluna_crm })</span> + registro em <span class="mono">leads_atividades</span> (tipo='stage_change')</li>
+            <li>Invalidar query CRM para sincronizar kanban em tempo real</li>
+          </ul>
+          <div class="mt8">
+            <span class="file-chip">MdzapThreadHeader.tsx</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /issue-list -->
+  </div>
+
+  <!-- SECAO 3: ARQUITETURA -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#127959;</span>
+      <h2>Arquitetura de Integra&ccedil;&atilde;o CRM &harr; MdZap</h2>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Diagrama &mdash; Tabelas Compartilhadas</div>
+      <div class="diagram">
+<span class="hl">CRM                              MdZap</span>
+<span class="dim">────                              ──────</span>
+<span class="hl">leads</span> ◄─────────────────────── whatsapp_conversas.lead_id
+  │                                 │
+  ├─ coluna_crm                     ├─ nao_lidas
+  ├─ awaiting_human                 ├─ status
+  ├─ mdzap_conversation_id          └─ metadata
+  └─ wa_conversation_id                 ├─ assigned_user_id
+                                        └─ agente_slug
+
+<span class="hl">crm_notas</span>        ◄── lead_id + conversa_id  <span class="dim">(tabela unificada)</span>
+<span class="hl">restricoes</span>       ◄── lead_id
+<span class="hl">leads_atividades</span> ◄── lead_id  <span class="dim">(stage_change, nota, auditoria)</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Componentes CRM Reutiliz&aacute;veis no MdZap</div>
+      <div class="table-wrap mt8">
+        <table>
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>Status</th>
+              <th>Onde usar no MdZap</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="mono">FormNovoLead.tsx</span></td>
+              <td><span class="pill pill-green">Reutiliz&aacute;vel</span></td>
+              <td>Cadastro r&aacute;pido no drawer</td>
+            </tr>
+            <tr>
+              <td><span class="mono">FormPessoais + FormContato + FormEndereco</span></td>
+              <td><span class="pill pill-green">Reutiliz&aacute;vel</span></td>
+              <td>LeadDadosTab completo</td>
+            </tr>
+            <tr>
+              <td><span class="mono">CrmLeadNotas.tsx</span></td>
+              <td><span class="pill pill-green">J&aacute; integrado</span></td>
+              <td>LeadNotasTab</td>
+            </tr>
+            <tr>
+              <td><span class="mono">useDispararAuditoria.ts</span></td>
+              <td><span class="pill pill-green">Reutiliz&aacute;vel</span></td>
+              <td>LeadDadosTab (bot&atilde;o Auditar)</td>
+            </tr>
+            <tr>
+              <td><span class="mono">CrmAuditoriaPanel.tsx</span></td>
+              <td><span class="pill pill-green">Reutiliz&aacute;vel</span></td>
+              <td>LeadDadosTab</td>
+            </tr>
+            <tr>
+              <td><span class="mono">ModalEditarLead.tsx</span></td>
+              <td><span class="pill pill-green">Reutiliz&aacute;vel</span></td>
+              <td>Modal completo de edi&ccedil;&atilde;o</td>
+            </tr>
+            <tr>
+              <td><span class="mono">useLeads.ts</span></td>
+              <td><span class="pill pill-green">Reutiliz&aacute;vel</span></td>
+              <td>Hook de dados do lead</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="blockquote mt12">
+        Mesmas tabelas, componentes reutilizados, zero duplica&ccedil;&atilde;o de l&oacute;gica de neg&oacute;cio. A tab "Dados" do drawer MdZap usa exatamente os mesmos componentes de formul&aacute;rio do CRM. Notas s&atilde;o sincronizadas bidirecionalmente via <span class="mono">crm_notas</span> com campo <span class="mono">origem</span>.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 4: P0 BANCO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128308;</span>
+      <h2>P0 de Banco Identificados</h2>
+      <span class="section-badge" style="background:var(--p0-dim);color:var(--p0);border-color:rgba(239,68,68,0.3)">E-01 &middot; Cr&iacute;tico</span>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title" style="color:var(--p0)">Issue: whatsapp_templates sem deleted_at</div>
+        <p style="font-size:0.83rem;color:var(--text-sub);margin-bottom:12px">
+          Soft delete obrigat&oacute;rio em toda tabela. Tabela <span class="mono">whatsapp_templates</span> n&atilde;o possui a coluna <span class="mono">deleted_at</span>, violando regra P0 do MdFlow.
+        </p>
+        <div class="code"><span class="kw">ALTER TABLE</span> public.whatsapp_templates
+  <span class="fn">ADD COLUMN IF NOT EXISTS</span>
+  deleted_at TIMESTAMPTZ <span class="kw">DEFAULT NULL</span>;
+
+<span class="kw">CREATE INDEX IF NOT EXISTS</span>
+  idx_whatsapp_templates_org_active
+  <span class="kw">ON</span> public.whatsapp_templates(organizacao_id)
+  <span class="kw">WHERE</span> deleted_at <span class="kw">IS NULL</span>;</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--p0)">Issue: campo duplicado awaiting_human em leads</div>
+        <p style="font-size:0.83rem;color:var(--text-sub);margin-bottom:12px">
+          Tabela <span class="mono">leads</span> tem dois campos com a mesma sem&acirc;ntica: <span class="mono">awaiting_human</span> e <span class="mono">aguardando_humano</span>. Necess&aacute;rio sincronizar via trigger at&eacute; consolida&ccedil;&atilde;o.
+        </p>
+        <div class="code"><span class="kw">CREATE OR REPLACE FUNCTION</span>
+  sync_awaiting_human_to_aguardando()
+<span class="kw">RETURNS TRIGGER AS</span> $$
+<span class="kw">BEGIN</span>
+  NEW.aguardando_humano := NEW.awaiting_human;
+  <span class="kw">RETURN</span> NEW;
+<span class="kw">END</span>;
+$$ <span class="kw">LANGUAGE</span> plpgsql;
+
+<span class="kw">CREATE TRIGGER</span> trg_sync_awaiting_human
+<span class="kw">BEFORE UPDATE ON</span> public.leads
+<span class="kw">FOR EACH ROW EXECUTE FUNCTION</span>
+  sync_awaiting_human_to_aguardando();</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 5: GUIA /PROJETO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128203;</span>
+      <h2>Como usar o /projeto</h2>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">O que &eacute; o /projeto</div>
+        <p style="font-size:0.83rem;color:var(--text-sub);line-height:1.7">
+          Sistema de gerenciamento de projetos complexos com banco de dados. Cada projeto tem etapas at&ocirc;micas. CC executa 1 etapa por vez, registra resultado e avan&ccedil;a para a pr&oacute;xima.
+        </p>
+        <div class="mt12 grid g2" style="gap:10px">
+          <div style="background:rgba(32,201,151,0.06);border:1px solid rgba(32,201,151,0.2);border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:1.3rem;margin-bottom:4px">&#127918;</div>
+            <div style="font-size:0.78rem;color:var(--green);font-weight:600">Manual</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">CC gera prompt, voc&ecirc; cola. Mais controle.</div>
+          </div>
+          <div style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.2);border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:1.3rem;margin-bottom:4px">&#9889;</div>
+            <div style="font-size:0.78rem;color:var(--blue);font-weight:600">Autom&aacute;tico</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">CC executa sozinho em loop. Mais r&aacute;pido.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fluxo de Trabalho</div>
+        <div class="cmd-block">
+          <div class="cmd-bar">
+            <div class="dot dot-r"></div>
+            <div class="dot dot-y"></div>
+            <div class="dot dot-g"></div>
+            <span>Terminal</span>
+          </div>
+          <div class="cmd-content"><span class="prompt">1.</span> /projeto &rarr; iniciar projeto
+<span class="prompt">2.</span> /projeto &rarr; adicionar etapa [E-01: Fix deleted_at]
+<span class="prompt">3.</span> /projeto &rarr; adicionar etapa [E-02: Fix imagens]
+<span class="prompt">4.</span> <span class="cmd-gray">... (adicionar todas as etapas)</span>
+<span class="prompt">5.</span> /projeto &rarr; executar projeto
+   <span class="cmd-gray">└&mdash; CC executa E-01, voc&ecirc; testa, aprova</span>
+<span class="prompt">6.</span> /projeto &rarr; pr&oacute;xima etapa
+   <span class="cmd-gray">└&mdash; CC executa E-02, voc&ecirc; testa...</span>
+<span class="prompt">7.</span> /projeto &rarr; html projeto
+<span class="prompt">8.</span> /projeto &rarr; finalizar projeto</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Comandos Principais</div>
+      <div class="cmd-table-wrap mt8">
+        <div class="cmd-row">
+          <div class="cmd-key">iniciar projeto</div>
+          <div class="cmd-val">Cria o projeto no banco, coleta nome / desc / p&aacute;ginas / modo de execu&ccedil;&atilde;o</div>
+        </div>
+        <div class="cmd-row">
+          <div class="cmd-key">adicionar etapa</div>
+          <div class="cmd-val">Adiciona uma etapa (t&iacute;tulo, camada, PRD, crit&eacute;rio de aceite)</div>
+        </div>
+        <div class="cmd-row">
+          <div class="cmd-key">executar projeto</div>
+          <div class="cmd-val">Pega pr&oacute;xima etapa pendente, gera C-prompt, executa, valida resultado</div>
+        </div>
+        <div class="cmd-row">
+          <div class="cmd-key">html projeto</div>
+          <div class="cmd-val">Gera HTML visual com progresso, PRDs e relat&oacute;rios de cada etapa</div>
+        </div>
+        <div class="cmd-row">
+          <div class="cmd-key">listar projetos</div>
+          <div class="cmd-val">Mostra todos os projetos ativos com progresso percentual</div>
+        </div>
+        <div class="cmd-row">
+          <div class="cmd-key">finalizar projeto</div>
+          <div class="cmd-val">Marca como conclu&iacute;do ap&oacute;s todas as etapas testadas = true</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 6: ETAPAS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128193;</span>
+      <h2>Etapas Propostas &mdash; Projeto MdZap</h2>
+      <span class="section-badge">9 etapas &middot; ~9h total</span>
+    </div>
+
+    <div class="progress-overview">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:0.85rem;font-weight:600">Progresso Geral</span>
+        <span style="font-size:0.85rem;color:var(--text-muted)">0 / 9 conclu&iacute;das</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-labels">
+        <span>In&iacute;cio</span>
+        <span>0%</span>
+      </div>
+    </div>
+
+    <div class="etapas-list">
+      <div class="etapa-row" style="border-left-color:var(--p0)">
+        <span class="etapa-id">E-01</span>
+        <div>
+          <div class="etapa-title">Fix <span class="mono" style="font-size:0.8rem">whatsapp_templates.deleted_at</span></div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Migration SQL + &iacute;ndice parcial</div>
+        </div>
+        <span class="etapa-layer layer-banco">banco</span>
+        <span class="etapa-tempo">15 min</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+
+      <div class="etapa-row" style="border-left-color:var(--p1)">
+        <span class="etapa-id">E-02</span>
+        <div>
+          <div class="etapa-title">Fix imagens e documentos expirados</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Edge Function + Storage policy + bot&atilde;o retry</div>
+        </div>
+        <span class="etapa-layer layer-multi">front + edge</span>
+        <span class="etapa-tempo">2 h</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+
+      <div class="etapa-row" style="border-left-color:var(--p1)">
+        <span class="etapa-id">E-03</span>
+        <div>
+          <div class="etapa-title">Completar webhooks Assumir / Devolver Julia</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">n8n DB-001 + DB-002 com estado e contexto</div>
+        </div>
+        <span class="etapa-layer layer-n8n">n8n</span>
+        <span class="etapa-tempo">1 h</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+
+      <div class="etapa-row" style="border-left-color:var(--p1)">
+        <span class="etapa-id">E-04</span>
+        <div>
+          <div class="etapa-title">LeadDadosTab &mdash; campos completos + integra&ccedil;&atilde;o CRM</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">FormPessoais + FormEndereco + bot&atilde;o Auditar</div>
+        </div>
+        <span class="etapa-layer layer-front">frontend</span>
+        <span class="etapa-tempo">3 h</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+
+      <div class="etapa-row" style="border-left-color:var(--p2)">
+        <span class="etapa-id">E-05</span>
+        <div>
+          <div class="etapa-title">Reorganizar tabs do drawer em 2 linhas</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">2 TabsList &mdash; Dados/Restr/Docs/Notas + Hist/Mem</div>
+        </div>
+        <span class="etapa-layer layer-front">frontend</span>
+        <span class="etapa-tempo">30 min</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+
+      <div class="etapa-row" style="border-left-color:var(--p2)">
+        <span class="etapa-id">E-06</span>
+        <div>
+          <div class="etapa-title">Badge coluna CRM no header + dropdown mover stage</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">MdzapThreadHeader + mutation leads.coluna_crm</div>
+        </div>
+        <span class="etapa-layer layer-front">frontend</span>
+        <span class="etapa-tempo">2 h</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+
+      <div class="etapa-row" style="border-left-color:var(--p3)">
+        <span class="etapa-id">E-07</span>
+        <div>
+          <div class="etapa-title">Remover tab Tom / Sentimento</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Deletar LeadSentimentoTab.tsx + limpar imports</div>
+        </div>
+        <span class="etapa-layer layer-front">frontend</span>
+        <span class="etapa-tempo">15 min</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+
+      <div class="etapa-row" style="border-left-color:var(--p3)">
+        <span class="etapa-id">E-08</span>
+        <div>
+          <div class="etapa-title">Bulk actions adicionais &mdash; transferir + marcar n&atilde;o lidas</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Frontend sele&ccedil;&atilde;o + webhook n8n bulk</div>
+        </div>
+        <span class="etapa-layer layer-multi">front + n8n</span>
+        <span class="etapa-tempo">1 h</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+
+      <div class="etapa-row" style="border-left-color:var(--p3)">
+        <span class="etapa-id">E-09</span>
+        <div>
+          <div class="etapa-title">Ajuste de largura ideal do painel de lead</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Lead panel 280px &rarr; 320px | Lista 320px &rarr; 280px</div>
+        </div>
+        <span class="etapa-layer layer-front">frontend</span>
+        <span class="etapa-tempo">30 min</span>
+        <div class="etapa-status"><span class="status-pend">pendente</span></div>
+      </div>
+    </div>
+
+    <!-- Legenda -->
+    <div class="card mt16">
+      <div class="card-title">Legenda</div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:8px;align-items:center">
+        <div style="display:flex;gap:8px;align-items:center"><span class="severity s-p0">P0</span><span style="font-size:0.78rem;color:var(--text-muted)">Banco &mdash; bloqueante</span></div>
+        <div style="display:flex;gap:8px;align-items:center"><span class="severity s-p1">P1</span><span style="font-size:0.78rem;color:var(--text-muted)">Funcionalidade core quebrada</span></div>
+        <div style="display:flex;gap:8px;align-items:center"><span class="severity s-p2">P2</span><span style="font-size:0.78rem;color:var(--text-muted)">UX degradada</span></div>
+        <div style="display:flex;gap:8px;align-items:center"><span class="severity s-p3">P3</span><span style="font-size:0.78rem;color:var(--text-muted)">Melhoria / limpeza</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="etapa-layer layer-banco" style="font-size:0.7rem;padding:2px 8px">banco</span>
+          <span class="etapa-layer layer-front" style="font-size:0.7rem;padding:2px 8px">frontend</span>
+          <span class="etapa-layer layer-n8n" style="font-size:0.7rem;padding:2px 8px">n8n</span>
+          <span class="etapa-layer layer-multi" style="font-size:0.7rem;padding:2px 8px">multi-camada</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    &#128172; <strong>MdZap Deep Research &amp; Plano de Ataque</strong> &middot; MdFlow LegalTech &middot; 2026-04-07<br>
+    <span style="margin-top:4px;display:block">Beto CC &middot; 11 issues &middot; 9 etapas &middot; ~9h estimadas</span>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  function toggleIssue(id) {
+    var card = document.getElementById(id);
+    if (card) card.classList.toggle('open');
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    ['i1','i2'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
