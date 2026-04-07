@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Plano Mestre v3 | 2026-04-06</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --accent6: #ff9f43;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-logo {
+  padding: 20px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-logo .logo-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+.sidebar-logo .logo-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.sidebar-logo .logo-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
+.sidebar-progress {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-progress .prog-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.sidebar-progress .prog-label span:last-child { color: var(--accent3); font-weight: 700; }
+
+.progress-bar {
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  border-radius: 99px;
+  transition: width 0.8s ease;
+}
+
+.sidebar-nav { padding: 8px 0; flex: 1; }
+
+.nav-group-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 10px 16px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+}
+
+.nav-item:hover { color: var(--text); background: rgba(124,109,255,0.06); }
+.nav-item.active { color: var(--accent); background: rgba(124,109,255,0.1); border-left-color: var(--accent); }
+
+.nav-item .nav-num {
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  min-width: 16px;
+}
+
+.nav-item .nav-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-done { background: var(--accent3); }
+.dot-warn { background: var(--accent4); }
+.dot-run  { background: var(--accent5); }
+.dot-block{ background: var(--accent2); }
+.dot-pend { background: var(--text-muted); }
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ─── MAIN ─── */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px;
+  max-width: 1100px;
+}
+
+/* ─── HERO ─── */
+.hero {
+  background: linear-gradient(135deg, rgba(124,109,255,0.1) 0%, rgba(91,196,245,0.06) 100%);
+  border: 1px solid rgba(124,109,255,0.2);
+  border-radius: 20px;
+  padding: 40px 36px;
+  margin-bottom: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(124,109,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.hero-icon { font-size: 3rem; line-height: 1; flex-shrink: 0; }
+
+.hero-content { flex: 1; }
+
+.hero h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.hero-sub { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 14px; }
+
+.badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.bo { background: rgba(255,159,67,0.1); color: var(--accent6); border: 1px solid rgba(255,159,67,0.25); }
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.hero-stat {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.hero-stat-val { font-size: 1.8rem; font-weight: 800; line-height: 1.1; }
+.hero-stat-val.green { color: var(--accent3); }
+.hero-stat-val.purple { color: var(--accent); }
+.hero-stat-val.red { color: var(--accent2); }
+.hero-stat-val.blue { color: var(--accent5); }
+.hero-stat-label { font-size: 0.68rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.hero-progress {
+  margin-top: 20px;
+}
+
+.hero-prog-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.hero-prog-label strong { color: var(--accent3); font-size: 1rem; }
+
+.hero-progress-bar {
+  height: 10px;
+  background: var(--surface2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.hero-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent5), var(--accent3));
+  border-radius: 99px;
+  width: 72%;
+  position: relative;
+}
+
+.hero-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 40px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2));
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ─── SECTION ─── */
+.section { margin: 40px 0; scroll-margin-top: 20px; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--accent);
+  background: rgba(124,109,255,0.12);
+  border: 1px solid rgba(124,109,255,0.25);
+  border-radius: 6px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.05rem; font-weight: 700; flex: 1; }
+
+/* ─── STATUS PILLS ─── */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.73rem; font-weight: 600; white-space: nowrap; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.2); }
+.sp-partial { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.2); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.2); }
+.sp-pend { background: rgba(122,130,168,0.1); color: var(--text-muted); border: 1px solid rgba(122,130,168,0.2); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.2); }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.card-title-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.card-title-flex .card-title { margin-bottom: 0; }
+
+/* ─── GRID ─── */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ─── TABLE ─── */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+th {
+  background: var(--surface2);
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(42,47,74,0.5);
+  font-size: 0.82rem;
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* ─── CODE ─── */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+  margin: 12px 0;
+}
+
+.code .comment { color: var(--text-muted); }
+.code .keyword { color: var(--accent); }
+.code .string { color: var(--accent4); }
+.code .value { color: var(--accent5); }
+
+/* ─── INLINE CODE ─── */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  background: rgba(124,109,255,0.1);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+/* ─── LAYOUT DIAGRAM ─── */
+.layout-diagram {
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 3px;
+  background: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+.layout-col {
+  background: var(--surface);
+  padding: 16px;
+}
+
+.layout-col:nth-child(2) { background: var(--surface2); }
+
+.layout-col-header {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.layout-component {
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+}
+
+.layout-component.dim { color: var(--text-muted); border-style: dashed; }
+
+/* ─── FLOW DIAGRAM ─── */
+.flow-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 16px 0;
+}
+
+.flow-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.flow-node {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.flow-node.trigger { border-color: var(--accent); background: rgba(124,109,255,0.08); }
+.flow-node.process { border-color: var(--accent5); background: rgba(91,196,245,0.05); }
+.flow-node.decision { border-color: var(--accent4); background: rgba(255,209,102,0.05); border-style: dashed; }
+.flow-node.output { border-color: var(--accent3); background: rgba(79,255,176,0.05); }
+.flow-node.skip { border-color: var(--text-muted); background: rgba(122,130,168,0.05); }
+
+.flow-node-label {
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+
+.flow-arrow {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1rem;
+  padding: 2px 0;
+  line-height: 1;
+}
+
+.flow-arrow.left { text-align: left; padding-left: 40px; }
+
+.flow-branches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.flow-branch-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.flow-checks {
+  padding-left: 16px;
+  border-left: 2px solid var(--border);
+  margin: 8px 0;
+}
+
+.flow-check-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 0.8rem;
+}
+
+.flow-check-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  min-width: 14px;
+}
+
+.flow-check-item code { font-size: 0.75rem; }
+
+/* ─── BUG CARD ─── */
+.bug-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--border);
+}
+
+.bug-card.p0 { border-left-color: var(--accent2); }
+.bug-card.p1 { border-left-color: var(--accent4); }
+.bug-card.p2 { border-left-color: var(--text-muted); }
+.bug-card.fixed { border-left-color: var(--accent3); }
+
+.bug-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.bug-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  color: var(--text-muted);
+}
+
+.bug-title { font-weight: 700; font-size: 0.9rem; flex: 1; }
+
+.bug-root {
+  background: rgba(0,0,0,0.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.bug-root strong { color: var(--text); }
+
+.bug-fix-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin: 12px 0 6px;
+  font-weight: 600;
+}
+
+.bug-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 0.8rem;
+}
+
+.bug-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  background: rgba(124,109,255,0.1);
+  border-radius: 4px;
+  padding: 1px 6px;
+  min-width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ─── ROADMAP ─── */
+.roadmap-section {
+  margin-bottom: 24px;
+}
+
+.roadmap-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.roadmap-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rm-p0 { background: rgba(255,107,107,0.15); color: var(--accent2); }
+.rm-p1 { background: rgba(255,209,102,0.12); color: var(--accent4); }
+.rm-p2 { background: rgba(122,130,168,0.12); color: var(--text-muted); }
+.rm-wait { background: rgba(91,196,245,0.1); color: var(--accent5); }
+
+.roadmap-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 8px;
+}
+
+.roadmap-item .ri-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+.roadmap-item .ri-content { flex: 1; }
+.roadmap-item .ri-title { font-weight: 600; font-size: 0.85rem; }
+.roadmap-item .ri-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
+
+/* ─── TAB TABLE ─── */
+.tab-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.tab-card-header {
+  background: var(--surface2);
+  padding: 12px 20px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── FUNNEL ─── */
+.funnel {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3px;
+  margin: 16px 0;
+}
+
+.funnel-step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 10px;
+  text-align: center;
+  position: relative;
+}
+
+.funnel-step.done { border-color: rgba(79,255,176,0.3); }
+.funnel-step.partial { border-color: rgba(255,209,102,0.3); }
+.funnel-step.pending { border-color: rgba(122,130,168,0.2); }
+.funnel-step.running { border-color: rgba(91,196,245,0.3); }
+
+.funnel-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.funnel-icon { font-size: 1.4rem; margin-bottom: 6px; display: block; }
+
+.funnel-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.funnel-desc { font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; }
+
+/* ─── SDR MODES ─── */
+.sdr-modes {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.sdr-mode-card {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.sdr-mode-card.active { border-color: rgba(124,109,255,0.4); background: rgba(124,109,255,0.06); }
+
+.sdr-mode-slug {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.sdr-mode-name { font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; }
+.sdr-mode-desc { font-size: 0.75rem; color: var(--text-muted); }
+
+/* ─── QUESTIONS ─── */
+.question-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(42,47,74,0.5);
+  align-items: flex-start;
+}
+
+.question-item:last-child { border-bottom: none; }
+
+.question-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent4);
+  background: rgba(255,209,102,0.08);
+  border: 1px solid rgba(255,209,102,0.2);
+  border-radius: 6px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.question-text { font-size: 0.83rem; line-height: 1.5; }
+
+/* ─── FILE PATH ─── */
+.file-path {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent5);
+}
+
+/* ─── INFO BOX ─── */
+.info-box {
+  background: rgba(91,196,245,0.06);
+  border: 1px solid rgba(91,196,245,0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.8rem;
+  margin: 12px 0;
+}
+
+.warn-box {
+  background: rgba(255,209,102,0.06);
+  border: 1px solid rgba(255,209,102,0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.8rem;
+  margin: 12px 0;
+}
+
+.danger-box {
+  background: rgba(255,107,107,0.06);
+  border: 1px solid rgba(255,107,107,0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.8rem;
+  margin: 12px 0;
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  body { flex-direction: column; }
+  .sidebar { width: 100%; min-width: 100%; height: auto; position: relative; }
+  .main { padding: 20px 16px; }
+  .hero-stats { grid-template-columns: 1fr 1fr; }
+  .layout-diagram { grid-template-columns: 1fr; }
+  .funnel { grid-template-columns: 1fr 1fr; }
+  .g2, .g3 { grid-template-columns: 1fr; }
+  .sdr-modes { flex-direction: column; }
+  .flow-branches { grid-template-columns: 1fr; }
+}
+
+/* ─── SCROLLBAR ─── */
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ─── DIVIDER ─── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ─── TAG ─── */
+.tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--text-muted);
+  margin: 1px 2px;
+}
+
+/* ─── SHARED COMPONENT MATRIX ─── */
+.matrix-check { color: var(--accent3); font-weight: 700; }
+.matrix-partial { color: var(--accent4); font-weight: 700; }
+.matrix-no { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">💬</span>
+    <div class="logo-title">MdZap — Plano v3</div>
+    <div class="logo-sub">Julia SDR System · 2026-04-06</div>
+  </div>
+
+  <div class="sidebar-progress">
+    <div class="prog-label">
+      <span>Progresso geral</span>
+      <span>72%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width:72%"></div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Visão geral</div>
+    <a class="nav-item active" href="#hero">
+      <span class="nav-num">00</span>
+      <span class="nav-dot dot-done"></span>
+      Hero / Overview
+    </a>
+
+    <div class="nav-group-label">Seções</div>
+    <a class="nav-item" href="#s1">
+      <span class="nav-num">01</span>
+      <span class="nav-dot dot-done"></span>
+      Layout &amp; Estrutura
+    </a>
+    <a class="nav-item" href="#s2">
+      <span class="nav-num">02</span>
+      <span class="nav-dot dot-warn"></span>
+      Lead Panel — 7 Abas
+    </a>
+    <a class="nav-item" href="#s3">
+      <span class="nav-num">03</span>
+      <span class="nav-dot dot-warn"></span>
+      Fluxo do Lead — 6 Etapas
+    </a>
+    <a class="nav-item" href="#s4">
+      <span class="nav-num">04</span>
+      <span class="nav-dot dot-done"></span>
+      n8n Orchestrator
+    </a>
+    <a class="nav-item" href="#s5">
+      <span class="nav-num">05</span>
+      <span class="nav-dot dot-block"></span>
+      Bugs (P0/P1/P2)
+    </a>
+    <a class="nav-item" href="#s6">
+      <span class="nav-num">06</span>
+      <span class="nav-dot dot-done"></span>
+      Webhooks n8n
+    </a>
+    <a class="nav-item" href="#s7">
+      <span class="nav-num">07</span>
+      <span class="nav-dot dot-done"></span>
+      Componentes Frontend
+    </a>
+    <a class="nav-item" href="#s8">
+      <span class="nav-num">08</span>
+      <span class="nav-dot dot-done"></span>
+      Banco de Dados
+    </a>
+    <a class="nav-item" href="#s9">
+      <span class="nav-num">09</span>
+      <span class="nav-dot dot-run"></span>
+      Roadmap
+    </a>
+    <a class="nav-item" href="#s10">
+      <span class="nav-num">10</span>
+      <span class="nav-dot dot-warn"></span>
+      Shared Components
+    </a>
+    <a class="nav-item" href="#s11">
+      <span class="nav-num">11</span>
+      <span class="nav-dot dot-done"></span>
+      Arquivos Críticos
+    </a>
+    <a class="nav-item" href="#s12">
+      <span class="nav-num">12</span>
+      <span class="nav-dot dot-pend"></span>
+      Perguntas Abertas
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    🐙 Jarbas 2.0 · MdLab LegalTech<br>
+    Gerado em 06/04/2026
+  </div>
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main class="main">
+
+  <!-- ─── HERO ─── -->
+  <div class="hero" id="hero">
+    <div class="hero-top">
+      <div class="hero-icon">💬</div>
+      <div class="hero-content">
+        <h1>MdZap — Plano Mestre v3</h1>
+        <p class="hero-sub">Julia SDR System · Atendimento via WhatsApp · Qualificação automatizada de leads</p>
+        <div class="badges">
+          <span class="badge bo">Em desenvolvimento ativo</span>
+          <span class="badge bp">v3.0</span>
+          <span class="badge bb">06/04/2026</span>
+          <span class="badge br">1 bug P0 em correção</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val purple">72%</div>
+        <div class="hero-stat-label">Implementado</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val red">1</div>
+        <div class="hero-stat-label">Bugs P0 críticos</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val green">18</div>
+        <div class="hero-stat-label">Webhooks n8n</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val blue">13</div>
+        <div class="hero-stat-label">Componentes React</div>
+      </div>
+    </div>
+
+    <div class="hero-progress">
+      <div class="hero-prog-label">
+        <span>Progresso de implementação</span>
+        <strong>72%</strong>
+      </div>
+      <div class="hero-progress-bar">
+        <div class="hero-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 1 — LAYOUT ─── -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-icon">📐</span>
+      <h2>Layout &amp; Estrutura</h2>
+      <span class="status-pill sp-done">✅ Implementado</span>
+    </div>
+
+    <p style="color:var(--text-muted);margin-bottom:16px;font-size:0.82rem;">Layout 3 colunas no desktop, colapsando para navegação single-panel no mobile com Drawer para o painel lateral.</p>
+
+    <div class="layout-diagram">
+      <div class="layout-col">
+        <div class="layout-col-header">Col 1 — 320px</div>
+        <div class="layout-component">MdzapConversaList</div>
+        <div class="layout-component">MdzapSwipeableCard</div>
+        <div class="layout-component dim">filtros por SDR</div>
+        <div class="layout-component dim">busca + bulk actions</div>
+      </div>
+      <div class="layout-col">
+        <div class="layout-col-header">Col 2 — flex-1 (thread principal)</div>
+        <div class="layout-component">MdzapThreadHeader</div>
+        <div class="layout-component">MdzapMsgThread</div>
+        <div class="layout-component">MdzapMsgBubble</div>
+        <div class="layout-component">MdzapMsgInput</div>
+      </div>
+      <div class="layout-col">
+        <div class="layout-col-header">Col 3 — 320px (toggle Info)</div>
+        <div class="layout-component">MdzapLeadPanel</div>
+        <div class="layout-component dim">7 abas (ver Seção 2)</div>
+        <div class="layout-component dim">toggle via botão Info</div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-title">Tabs globais</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge bp">Conversas</span>
+          <span class="badge bp">Dashboard</span>
+          <span class="badge bp">Julia Lab</span>
+          <span class="badge bp">Templates</span>
+          <span class="badge bp">Gestão</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Mobile</div>
+        <p style="font-size:0.8rem;color:var(--text-muted);">Col 1 → Col 2 via <code>navigate()</code><br>Col 3 como <code>Drawer</code> sobreposto</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:0;">
+      <div class="card-title">SDR Modes — toggle no global header</div>
+      <div class="sdr-modes">
+        <div class="sdr-mode-card active">
+          <div class="sdr-mode-slug">sdr_leads</div>
+          <div class="sdr-mode-name">Julia Leads</div>
+          <div class="sdr-mode-desc">Captação e qualificação de novos leads via WhatsApp. Fluxo principal CPF → restrições → docs → distribuição.</div>
+        </div>
+        <div class="sdr-mode-card">
+          <div class="sdr-mode-slug">sdr_docs</div>
+          <div class="sdr-mode-name">Julia Docs</div>
+          <div class="sdr-mode-desc">Coleta e organização de documentos de leads já qualificados. Pipeline focado em upload e auditoria documental.</div>
+        </div>
+        <div class="sdr-mode-card">
+          <div class="sdr-mode-slug">sdr_acordos</div>
+          <div class="sdr-mode-name">Julia Acordos</div>
+          <div class="sdr-mode-desc">Acompanhamento pós-distribuição. Suporte ao cliente nas etapas de assinatura, execução e liquidação.</div>
+        </div>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">SDR por conversa: dropdown no <code>ThreadHeader</code> → muda <code>whatsapp_conversas.metadata.agente_slug</code></p>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 2 — LEAD PANEL ─── -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-icon">🗂️</span>
+      <h2>Lead Panel V2 — 7 Abas</h2>
+      <span class="status-pill sp-partial">⚠️ 5/7 completas</span>
+    </div>
+
+    <div class="tab-card">
+      <div class="tab-card-header">MdzapLeadPanel.tsx — 574 linhas</div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Aba</th>
+            <th>Status</th>
+            <th>Componente</th>
+            <th>Observação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>1</code></td>
+            <td><strong>Dados</strong></td>
+            <td><span class="status-pill sp-partial">⚠️ Parcial</span></td>
+            <td class="file-path">leads</td>
+            <td style="color:var(--text-muted);">6 campos — falta email, endereço, advogado, score</td>
+          </tr>
+          <tr>
+            <td><code>2</code></td>
+            <td><strong>Restrições</strong></td>
+            <td><span class="status-pill sp-done">✅ OK</span></td>
+            <td class="file-path">ClienteDrawerTabRestricoes</td>
+            <td style="color:var(--text-muted);">Badge count vermelho</td>
+          </tr>
+          <tr>
+            <td><code>3</code></td>
+            <td><strong>Docs</strong></td>
+            <td><span class="status-pill sp-partial">⚠️ Parcial</span></td>
+            <td class="file-path">whatsapp_mensagens</td>
+            <td style="color:var(--text-muted);">Só Doc Reader results — falta Tier 1 upload real</td>
+          </tr>
+          <tr>
+            <td><code>4</code></td>
+            <td><strong>Notas</strong></td>
+            <td><span class="status-pill sp-done">✅ OK</span></td>
+            <td class="file-path">CrmLeadNotas</td>
+            <td style="color:var(--text-muted);">Shared CRM ↔ MdZap via <code>crm_notas</code></td>
+          </tr>
+          <tr>
+            <td><code>5</code></td>
+            <td><strong>Histórico</strong></td>
+            <td><span class="status-pill sp-done">✅ OK</span></td>
+            <td class="file-path">MdzapConversaTimeline</td>
+            <td style="color:var(--text-muted);">Lê de <code>metadata.eventos</code></td>
+          </tr>
+          <tr>
+            <td><code>6</code></td>
+            <td><strong>Memória</strong></td>
+            <td><span class="status-pill sp-done">✅ OK</span></td>
+            <td class="file-path">MdzapLeadMemoryPanel</td>
+            <td style="color:var(--text-muted);"><code>mdzap_lead_memory</code></td>
+          </tr>
+          <tr>
+            <td><code>7</code></td>
+            <td><strong>Tom</strong></td>
+            <td><span class="status-pill sp-done">✅ OK</span></td>
+            <td class="file-path">SentimentPanel</td>
+            <td style="color:var(--text-muted);">11 sentimentos + confiança</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title-flex">
+          <div class="card-title">Aba 1 — Dados: O que falta</div>
+          <span class="status-pill sp-partial">⚠️ P1</span>
+        </div>
+        <ul style="list-style:none;padding:0;">
+          <li style="padding:5px 0;border-bottom:1px solid rgba(42,47,74,0.4);font-size:0.8rem;display:flex;align-items:center;gap:8px;">
+            <span style="color:var(--accent4);">○</span> Campo <code>email</code>
+          </li>
+          <li style="padding:5px 0;border-bottom:1px solid rgba(42,47,74,0.4);font-size:0.8rem;display:flex;align-items:center;gap:8px;">
+            <span style="color:var(--accent4);">○</span> Campo endereço (rua, cidade, CEP)
+          </li>
+          <li style="padding:5px 0;border-bottom:1px solid rgba(42,47,74,0.4);font-size:0.8rem;display:flex;align-items:center;gap:8px;">
+            <span style="color:var(--accent4);">○</span> Seletor advogado responsável
+          </li>
+          <li style="padding:5px 0;font-size:0.8rem;display:flex;align-items:center;gap:8px;">
+            <span style="color:var(--accent4);">○</span> Score de qualificação editável (INT ou categórico)
+          </li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title-flex">
+          <div class="card-title">Aba 3 — Docs: O que falta</div>
+          <span class="status-pill sp-partial">⚠️ P1</span>
+        </div>
+        <ul style="list-style:none;padding:0;">
+          <li style="padding:5px 0;border-bottom:1px solid rgba(42,47,74,0.4);font-size:0.8rem;display:flex;align-items:center;gap:8px;">
+            <span style="color:var(--accent4);">○</span> Upload Tier 1 via <code>DocumentosUploadCentral</code>
+          </li>
+          <li style="padding:5px 0;font-size:0.8rem;display:flex;align-items:center;gap:8px;">
+            <span style="color:var(--accent4);">○</span> Hook <code>useLeadDocs</code> com filtro <code>restricao_id IS NULL</code>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 3 — FLUXO DO LEAD ─── -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-icon">🔄</span>
+      <h2>Fluxo do Lead — 6 Etapas</h2>
+      <span class="status-pill sp-partial">⚠️ Parcial</span>
+    </div>
+
+    <div class="funnel">
+      <div class="funnel-step done">
+        <div class="funnel-num">01</div>
+        <span class="funnel-icon">📥</span>
+        <div class="funnel-title">Primeiro Contato</div>
+        <div class="funnel-desc">CPF via WhatsApp → Julia cria lead → <code>coluna_crm='novos'</code> → Drive pasta</div>
+        <div style="margin-top:8px;"><span class="status-pill sp-done">✅</span></div>
+      </div>
+      <div class="funnel-step partial">
+        <div class="funnel-num">02</div>
+        <span class="funnel-icon">🔍</span>
+        <div class="funnel-title">Auditoria</div>
+        <div class="funnel-desc">Botão "Cadastrar Lead" → <code>rpc_disparar_auditoria</code> → Boa Vista</div>
+        <div style="margin-top:8px;"><span class="status-pill sp-partial">⚠️ Manual</span></div>
+      </div>
+      <div class="funnel-step running">
+        <div class="funnel-num">03</div>
+        <span class="funnel-icon">🎯</span>
+        <div class="funnel-title">Qualificação</div>
+        <div class="funnel-desc">Julia apresenta restrições → coleta docs → Kanban move</div>
+        <div style="margin-top:8px;"><span class="status-pill sp-run">🔄 Em andamento</span></div>
+      </div>
+      <div class="funnel-step pending">
+        <div class="funnel-num">04</div>
+        <span class="funnel-icon">✍️</span>
+        <div class="funnel-title">Assinatura</div>
+        <div class="funnel-desc">Contrato digital — aguarda ZapSign / D4Sign decisão</div>
+        <div style="margin-top:8px;"><span class="status-pill sp-pend">⏳ Pendente</span></div>
+      </div>
+      <div class="funnel-step done">
+        <div class="funnel-num">05</div>
+        <span class="funnel-icon">📤</span>
+        <div class="funnel-title">Distribuição</div>
+        <div class="funnel-desc"><code>/distribuicao</code> → <code>ModalDistribuirLead</code> → OlivIA gera petição</div>
+        <div style="margin-top:8px;"><span class="status-pill sp-done">✅</span></div>
+      </div>
+      <div class="funnel-step done">
+        <div class="funnel-num">06</div>
+        <span class="funnel-icon">⚖️</span>
+        <div class="funnel-title">Processos</div>
+        <div class="funnel-desc"><code>/processos</code> → <code>/controller</code> → <code>/decisoes</code> → <code>/acordos</code></div>
+        <div style="margin-top:8px;"><span class="status-pill sp-done">✅</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 4 — ORCHESTRATOR ─── -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-icon">🎛️</span>
+      <h2>n8n Orchestrator</h2>
+      <span class="status-pill sp-done">✅ Ativo</span>
+    </div>
+
+    <div class="info-box">
+      Workflow ID: <code>HLdJDx6D45EcER9Z</code> — Recebe toda mensagem WhatsApp e decide: Julia responde, humano atende, ou skip silencioso.
+    </div>
+
+    <div class="flow-container">
+      <div class="flow-title">Fluxo de decisão do Orchestrator</div>
+
+      <div class="flow-node trigger">
+        <div class="flow-node-label">Webhook Trigger</div>
+        Recebe mensagem WhatsApp (Meta Platform)
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-node process">
+        <div class="flow-node-label">Node: Buscar Contexto</div>
+        Busca conversa, lead, módulo IA no Supabase
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-node decision">
+        <div class="flow-node-label">Checks em ordem (skip se verdadeiro)</div>
+        <div class="flow-checks">
+          <div class="flow-check-item">
+            <span class="flow-check-num">1.</span>
+            <span><code>conversa.status === 'encerrada'</code> → SKIP</span>
+          </div>
+          <div class="flow-check-item">
+            <span class="flow-check-num">2.</span>
+            <span><code>lead.awaiting_human === true</code> → SKIP <span style="color:var(--accent3);">(Julia para!)</span></span>
+          </div>
+          <div class="flow-check-item">
+            <span class="flow-check-num">3.</span>
+            <span><code>lead.wa_blocked === true</code> → SKIP</span>
+          </div>
+          <div class="flow-check-item">
+            <span class="flow-check-num">4.</span>
+            <span><code>metadata.agente_slug === 'pausado'</code> → SKIP <span style="color:var(--accent3);">(Julia para!)</span></span>
+          </div>
+          <div class="flow-check-item">
+            <span class="flow-check-num">5.</span>
+            <span><code>turn_count &gt;= 15</code> → handoff automático para humano</span>
+          </div>
+          <div class="flow-check-item">
+            <span class="flow-check-num">6.</span>
+            <span>Doc media sem <code>doc_reader_result</code> → fire-and-forget Doc Reader → SKIP</span>
+          </div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-branches">
+        <div>
+          <div class="flow-branch-label">se skip = true</div>
+          <div class="flow-node skip">
+            <div class="flow-node-label">Output</div>
+            Respond Skip (HTTP 200 vazio — sem resposta ao usuário)
+          </div>
+        </div>
+        <div>
+          <div class="flow-branch-label">se skip = false</div>
+          <div class="flow-node process">
+            <div class="flow-node-label">Node: Chamar Claude</div>
+            Monta prompt + contexto doc reader + chama Anthropic API
+          </div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-node output">
+        <div class="flow-node-label">Output Final</div>
+        INSERT mensagem DB + UPDATE <code>metadata.turn_count++</code> + enviar via Meta Platform API
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Mecanismo 1 — Parar Julia (lead-level)</div>
+        <div class="code" style="font-size:0.75rem;">leads.awaiting_human = true</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);">Julia para para ESTE lead em QUALQUER conversa. Setado pelo webhook <code>assumir-conversa</code>.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Mecanismo 2 — Parar Julia (conversa-level)</div>
+        <div class="code" style="font-size:0.75rem;">whatsapp_conversas.metadata
+  .agente_slug = 'pausado'</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);">Julia para apenas para ESTA conversa específica. Granularidade fina por thread.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 5 — BUGS ─── -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-icon">🐛</span>
+      <h2>Bugs — Status Atualizado 2026-04-06</h2>
+    </div>
+
+    <!-- P0 -->
+    <div class="bug-card p0">
+      <div class="bug-header">
+        <span class="bug-id">BUG-ASSUMIR</span>
+        <span class="badge br">P0 — Crítico</span>
+        <span class="status-pill sp-run">🔄 EM CORREÇÃO AGORA</span>
+        <div style="flex:1;"></div>
+        <span class="bug-title" style="text-align:right;max-width:340px;">Webhooks assumir/devolver não existiam</span>
+      </div>
+
+      <div class="bug-root">
+        <strong>Root cause:</strong> Frontend chama <code>mdzap/assumir-conversa</code> e <code>mdzap/devolver-julia</code> mas esses webhooks NÃO EXISTIAM no n8n.
+        Portanto: clicar "Assumir" falhava silenciosamente → <code>leads.awaiting_human</code> nunca era setado → Orchestrator nunca recebia sinal para parar →
+        Julia continuava respondendo mesmo após humano assumir.
+      </div>
+
+      <div class="bug-fix-title">Fix: MDZAP-ASSUMIR-CONVERSA-v1</div>
+      <div class="bug-step"><span class="bug-step-num">1</span> Fetch conversa → pega <code>lead_id</code> + <code>metadata</code> atual</div>
+      <div class="bug-step"><span class="bug-step-num">2</span> Fetch user nome do perfil</div>
+      <div class="bug-step"><span class="bug-step-num">3</span> PATCH <code>leads</code> SET <code>awaiting_human = true</code></div>
+      <div class="bug-step"><span class="bug-step-num">4</span> PATCH conversa metadata: <code>mode='human'</code>, <code>assigned_user_id</code>, <code>assigned_user_name</code>, adiciona evento</div>
+      <div class="bug-step"><span class="bug-step-num">5</span> Return <code>action: toast_refresh</code></div>
+
+      <div class="bug-fix-title" style="margin-top:14px;">Fix: MDZAP-DEVOLVER-JULIA-v1</div>
+      <div class="bug-step"><span class="bug-step-num">1</span> Fetch conversa → <code>lead_id</code></div>
+      <div class="bug-step"><span class="bug-step-num">2</span> PATCH <code>leads</code> SET <code>awaiting_human = false</code></div>
+      <div class="bug-step"><span class="bug-step-num">3</span> PATCH conversa metadata: limpa <code>assigned_*</code>, <code>mode='julia'</code>, adiciona evento</div>
+      <div class="bug-step"><span class="bug-step-num">4</span> Return <code>action: toast_refresh</code></div>
+    </div>
+
+    <!-- P1 -->
+    <div class="bug-card p1">
+      <div class="bug-header">
+        <span class="bug-id">BUG-MEDIA</span>
+        <span class="badge by">P1 — Alta</span>
+        <span class="status-pill sp-done">✅ Corrigido</span>
+        <div style="flex:1;"></div>
+        <span class="bug-title" style="text-align:right;max-width:280px;">Imagens do WhatsApp não carregavam</span>
+      </div>
+      <div class="bug-root">
+        <strong>Root cause:</strong> <code>Parse Message</code> no Facebook Inbound descartava <code>image.url</code>.
+      </div>
+      <div class="bug-fix-title">Fix aplicado</div>
+      <div class="bug-step"><span class="bug-step-num">1</span> Extrai URL da imagem do payload Meta</div>
+      <div class="bug-step"><span class="bug-step-num">2</span> Graph API → download com Bearer token</div>
+      <div class="bug-step"><span class="bug-step-num">3</span> Upload para bucket <code>mdzap-media</code> no Storage</div>
+      <div class="bug-step"><span class="bug-step-num">4</span> Salva URL permanente no banco</div>
+      <div class="bug-step"><span class="bug-step-num">5</span> Frontend: placeholder "Processando..." sem media_url + onError "Imagem expirada"</div>
+    </div>
+
+    <!-- P2 -->
+    <div class="bug-card p2">
+      <div class="bug-header">
+        <span class="bug-id">BUG-DOCS-TIER1</span>
+        <span class="badge" style="background:rgba(122,130,168,0.1);color:var(--text-muted);border:1px solid rgba(122,130,168,0.2);">P2 — Média</span>
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+        <div style="flex:1;"></div>
+        <span class="bug-title" style="text-align:right;max-width:280px;">Aba Docs mostra só Doc Reader results</span>
+      </div>
+      <div class="bug-root">
+        Aba Docs exibe apenas documentos analisados pelo Doc Reader (campo <code>metadata.doc_reader_result</code>). Falta upload Tier 1 real via <code>DocumentosUploadCentral</code> + hook <code>useLeadDocs</code>.
+      </div>
+    </div>
+
+    <!-- Corrigidos -->
+    <div class="card">
+      <div class="card-title-flex">
+        <div class="card-title">Corrigidos em sessões anteriores</div>
+        <span class="status-pill sp-done">✅ 5 bugs fechados</span>
+      </div>
+      <div class="table-wrap" style="margin:0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Bug ID</th>
+              <th>Descrição</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>BUG-AI-COMPOSER</code></td>
+              <td>HTTP 500 no AI Composer</td>
+              <td><span class="status-pill sp-done">✅ Corrigido</span></td>
+            </tr>
+            <tr>
+              <td><code>BUG-JULIA-PROMPT-SAVE</code></td>
+              <td>HTTP 500 ao salvar prompt</td>
+              <td><span class="status-pill sp-done">✅ Corrigido</span></td>
+            </tr>
+            <tr>
+              <td><code>BUG-INLINE-STYLES</code></td>
+              <td>className inline → tokens CSS DS v5</td>
+              <td><span class="status-pill sp-done">✅ Corrigido</span></td>
+            </tr>
+            <tr>
+              <td><code>BUG-N8N-REL-CONSULTA</code></td>
+              <td>Workflow inativo causando falha</td>
+              <td><span class="status-pill sp-done">✅ Reativado</span></td>
+            </tr>
+            <tr>
+              <td><code>BUG-PROTESTOS</code></td>
+              <td>Cadastrava protestos como restrições — filtro adicionado</td>
+              <td><span class="status-pill sp-done">✅ Corrigido</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 6 — WEBHOOKS ─── -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-icon">🔗</span>
+      <h2>Webhooks n8n — Mapa Completo</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Webhook / Workflow</th>
+            <th>Path</th>
+            <th>Status</th>
+            <th>Função</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>MDZAP — Facebook Inbound</code></td>
+            <td class="file-path">whatsapp-meta</td>
+            <td><span class="status-pill sp-done">✅ Atualizado</span></td>
+            <td style="color:var(--text-muted);">Recebe mensagens Meta + upload mídia permanente</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Orchestrator</code></td>
+            <td class="file-path">HLdJDx6D45EcER9Z</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Roteamento Julia/Human — decisor central</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Enviar Mensagem FE</code></td>
+            <td class="file-path">mdzap/enviar-mensagem</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Frontend → WhatsApp (mensagem manual)</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — AI Composer</code></td>
+            <td class="file-path">mdzap/ai-composer</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Sugestão de resposta IA para operador</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Inbound Upsert Lead</code></td>
+            <td class="file-path">mdzap/inbound-upsert-lead</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Cria ou atualiza lead ao primeiro contato</td>
+          </tr>
+          <tr style="background:rgba(91,196,245,0.04);">
+            <td><code>MDZAP-ASSUMIR-CONVERSA-v1</code></td>
+            <td class="file-path">mdzap/assumir-conversa</td>
+            <td><span class="status-pill sp-run">🔄 CRIANDO</span></td>
+            <td style="color:var(--text-muted);">Humano assume → seta awaiting_human=true → para Julia</td>
+          </tr>
+          <tr style="background:rgba(91,196,245,0.04);">
+            <td><code>MDZAP-DEVOLVER-JULIA-v1</code></td>
+            <td class="file-path">mdzap/devolver-julia</td>
+            <td><span class="status-pill sp-run">🔄 CRIANDO</span></td>
+            <td style="color:var(--text-muted);">Devolve conversa para Julia → awaiting_human=false</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP-ARQUIVAR-CONVERSA-v1</code></td>
+            <td class="file-path">mdflow/mdzap/arquivar-conversa</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Arquivar + sync CRM Kanban</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Transferir Conversa</code></td>
+            <td class="file-path">mdzap/transferir-conversa</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Transferir conversa entre usuários da equipe</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Encerrar Conversa</code></td>
+            <td class="file-path">mdzap/encerrar-conversa</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Encerrar conversa definitivamente</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Document Received</code></td>
+            <td class="file-path">mdzap/document-received</td>
+            <td><span class="status-pill sp-partial">⚠️ Parcial</span></td>
+            <td style="color:var(--text-muted);">3 nodes ativos — expandir para Tier 1 completo (~15 nodes)</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Lead Sync</code></td>
+            <td class="file-path">mdzap/lead-sync</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Sync lead → Kanban CRM em tempo real</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Stage Changed</code></td>
+            <td class="file-path">mdflow/mdzap/event-stage-changed</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Evento mudança de estágio no Kanban</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Triagem</code></td>
+            <td class="file-path">mdflow/mdzap/triagem</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Triagem inicial de leads recebidos</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Julia Lab</code></td>
+            <td class="file-path">mdzap/julia-lab</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Lab de prompts Julia — testes e evolução</td>
+          </tr>
+          <tr>
+            <td><code>MDZAP — Julia Prompt Save</code></td>
+            <td class="file-path">mdzap/julia-prompt-save</td>
+            <td><span class="status-pill sp-done">✅ Corrigido</span></td>
+            <td style="color:var(--text-muted);">Salvar prompt evolutivo — antes retornava 500</td>
+          </tr>
+          <tr>
+            <td><code>MDFLOW-DRIVE-PASTA-LEAD-v1</code></td>
+            <td class="file-path">mdflow/drive-pasta-lead</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Criar pasta Google Drive ao criar lead</td>
+          </tr>
+          <tr>
+            <td><code>WH-AUD-01 Auditorias</code></td>
+            <td class="file-path">mdflow/auditorias/disparar</td>
+            <td><span class="status-pill sp-done">✅ Atualizado</span></td>
+            <td style="color:var(--text-muted);">Boa Vista + filtro protestos adicionado</td>
+          </tr>
+          <tr>
+            <td><code>ICP Telemetria</code></td>
+            <td class="file-path">(cron)</td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color:var(--text-muted);">Snapshots ICP por org com Claude insights</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 7 — COMPONENTES FRONTEND ─── -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-icon">⚛️</span>
+      <h2>Componentes Frontend</h2>
+      <span class="status-pill sp-done">✅ 13 componentes</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Linhas</th>
+            <th>Status</th>
+            <th>Função</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="file-path">MdzapChatPanel.tsx</td>
+            <td><span class="tag">~200</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Orquestrador das tabs globais + SDR mode global</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapMsgThread.tsx</td>
+            <td><span class="tag">~450</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Thread principal + assumir/devolver + realtime</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapThreadHeader.tsx</td>
+            <td><span class="tag">177</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Header + SDR toggle dropdown + badges de status</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapLeadPanel.tsx</td>
+            <td><span class="tag">574</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">7 abas do Lead Panel — componente principal direita</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapMsgBubble.tsx</td>
+            <td><span class="tag">~300</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Bolhas de mensagem + mídia + swipe-to-reply</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapMsgInput.tsx</td>
+            <td><span class="tag">—</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Input de mensagem + templates + AI Composer</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapConversaList.tsx</td>
+            <td><span class="tag">—</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Lista de conversas com swipe + bulk actions</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapSwipeableCard.tsx</td>
+            <td><span class="tag">—</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Card com swipe para arquivar (mobile-first)</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapConversaTimeline.tsx</td>
+            <td><span class="tag">90</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Histórico de eventos via <code>metadata.eventos</code></td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapLeadMemoryPanel.tsx</td>
+            <td><span class="tag">—</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Memória contextual do lead via <code>mdzap_lead_memory</code></td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapDashboard.tsx</td>
+            <td><span class="tag">—</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Dashboard operacional + seção ICP telemetria</td>
+          </tr>
+          <tr>
+            <td class="file-path">MdzapJuliaLab.tsx</td>
+            <td><span class="tag">—</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Lab de prompts Julia — editar, testar, versionar</td>
+          </tr>
+          <tr>
+            <td class="file-path">CrmLeadNotas.tsx</td>
+            <td><span class="tag">—</span></td>
+            <td><span class="status-pill sp-done">✅</span></td>
+            <td style="color:var(--text-muted);">Notas compartilhadas CRM ↔ MdZap via <code>crm_notas</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 8 — BANCO DE DADOS ─── -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-icon">🗄️</span>
+      <h2>Banco de Dados — Tabelas Críticas MdZap</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tabela</th>
+            <th>Campos chave</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="file-path">whatsapp_conversas</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>organizacao_id</code> <code>contato_numero</code> <code>lead_id</code>
+              <code>status</code> <code>metadata(JSONB)</code> <code>agente_slug</code> <code>nao_lidas</code>
+            </td>
+            <td><span class="status-pill sp-done">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">whatsapp_mensagens</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>conversa_id</code> <code>direcao</code> <code>tipo</code>
+              <code>metadata(JSONB — doc_reader_result)</code> <code>media_url</code> <code>remetente_tipo</code>
+            </td>
+            <td><span class="status-pill sp-done">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">whatsapp_numeros</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>agente_slug</code> (default SDR) <code>ativo</code>
+            </td>
+            <td><span class="status-pill sp-done">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">leads</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>nome</code> <code>cpf</code> <code>telefone</code> <code>coluna_crm</code>
+              <code style="color:var(--accent3);">awaiting_human(bool)</code>
+              <code>wa_blocked</code> <code>mdzap_conversation_id</code> <code>google_drive_folder_id</code>
+            </td>
+            <td><span class="status-pill sp-done">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">mdzap_lead_memory</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>conversa_id</code> <code>organizacao_id</code> <code>tipo</code> <code>conteudo</code>
+            </td>
+            <td><span class="status-pill sp-done">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">mdzap_ai_modules</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>slug</code> <code>system_prompt</code> <code>modelo</code>
+              <code>temperatura</code> <code>max_tokens</code> <code>ativo</code>
+            </td>
+            <td><span class="status-pill sp-done">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">mdzap_julia_prompts</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>slug</code> <code>versao</code> <code>prompt_texto</code>
+            </td>
+            <td><span class="status-pill sp-done">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">crm_notas</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>organizacao_id</code> <code>lead_id</code> <code>conversa_id</code>
+              <code>origem CHECK</code> <code>autor_id</code> <code>autor_nome</code> <code>conteudo</code>
+            </td>
+            <td><span class="status-pill sp-done">✅ Novo</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">icp_telemetria_snapshots</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>organizacao_id</code> <code>snapshot_date</code>
+              <code>dados_extras.claude_insights</code>
+            </td>
+            <td><span class="status-pill sp-done">✅ Novo</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">whatsapp_msg_feedback</td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">
+              <code>id</code> <code>mensagem_id</code> <code>conversa_id</code> <code>usuario_id</code> <code>tipo</code>
+            </td>
+            <td><span class="status-pill sp-done">✅</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Mecanismo de controle Julia — campos críticos</div>
+      <div class="code"><span class="comment">-- Julia para para TODO o lead (qualquer conversa)</span>
+leads.awaiting_human = true
+
+<span class="comment">-- Julia para apenas nesta conversa específica</span>
+whatsapp_conversas.metadata.agente_slug = <span class="string">'pausado'</span>
+
+<span class="comment">-- Bloquear lead completamente (spam, etc)</span>
+leads.wa_blocked = true</div>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 9 — ROADMAP ─── -->
+  <div class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-icon">🗺️</span>
+      <h2>Roadmap — Prioridades</h2>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="roadmap-label">
+        <span class="roadmap-badge rm-p0">P0 — Crítico (agora)</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">🔄</div>
+        <div class="ri-content">
+          <div class="ri-title">ASSUMIR/DEVOLVER — Webhooks n8n</div>
+          <div class="ri-desc">Criando <code>MDZAP-ASSUMIR-CONVERSA-v1</code> e <code>MDZAP-DEVOLVER-JULIA-v1</code> nesta sessão. Fix do P0 crítico BUG-ASSUMIR.</div>
+        </div>
+        <span class="status-pill sp-run">🔄 Em correção</span>
+      </div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="roadmap-label">
+        <span class="roadmap-badge rm-p1">P1 — Alta prioridade</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">📋</div>
+        <div class="ri-content">
+          <div class="ri-title">F-DADOS-COMPLETO — Aba Dados completa</div>
+          <div class="ri-desc">Adicionar email, endereço (rua/cidade/CEP), seletor de advogado responsável e score de qualificação editável na Aba 1 do Lead Panel.</div>
+        </div>
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">📄</div>
+        <div class="ri-content">
+          <div class="ri-title">F-DOCS-TIER1 — Upload real na Aba Docs</div>
+          <div class="ri-desc">Substituir exibição de Doc Reader results por upload Tier 1 completo via <code>DocumentosUploadCentral</code> + hook <code>useLeadDocs</code> com filtro correto.</div>
+        </div>
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+      </div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="roadmap-label">
+        <span class="roadmap-badge rm-p2">P2 — Média prioridade</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">🗃️</div>
+        <div class="ri-content">
+          <div class="ri-title">F-HISTORICO-DB — Histórico em tabela real</div>
+          <div class="ri-desc">Mover histórico de eventos de <code>metadata.eventos</code> (JSONB) para tabela <code>whatsapp_conversa_eventos</code> com audit trail consultável e auditável.</div>
+        </div>
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">🖼️</div>
+        <div class="ri-content">
+          <div class="ri-title">F-MEDIA-BACKFILL — Backfill de mídia antiga</div>
+          <div class="ri-desc">Mensagens antigas sem <code>media_url</code> — script de backfill via Graph API para recuperar URLs permanentes no bucket <code>mdzap-media</code>.</div>
+        </div>
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">📡</div>
+        <div class="ri-content">
+          <div class="ri-title">F-DOCS-TIER1-N8N — Expandir Document Received</div>
+          <div class="ri-desc">Expandir <code>/MDZAP — Document Received</code> de 3 nodes para ~15 nodes: upload, INSERT Tier 1, sync Drive, notificação operador.</div>
+        </div>
+        <span class="status-pill sp-pend">⏳ Pendente</span>
+      </div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="roadmap-label">
+        <span class="roadmap-badge rm-wait">Aguardando Christian</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">🤖</div>
+        <div class="ri-content">
+          <div class="ri-title">F-SDR2-SDR3 — Definir perfis dos agentes adicionais</div>
+          <div class="ri-desc">SDR 2 e SDR 3 precisam de definição: nome, persona, escopo de atuação, prompt base.</div>
+        </div>
+        <span class="status-pill sp-pend">⏳ Aguardando</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">✍️</div>
+        <div class="ri-content">
+          <div class="ri-title">F-ASSINATURA — Decisão fornecedor de contrato digital</div>
+          <div class="ri-desc">Escolher entre ZapSign, D4Sign, ou PDF presencial. Após decisão: criar workflow n8n + integração Lead Panel.</div>
+        </div>
+        <span class="status-pill sp-pend">⏳ Aguardando</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="ri-icon">🎭</div>
+        <div class="ri-content">
+          <div class="ri-title">F-JULIA-ELABORACAO — Prompts ponta-a-ponta</div>
+          <div class="ri-desc">Elaboração completa dos prompts de cada fase do fluxo Julia após toda infraestrutura estar pronta.</div>
+        </div>
+        <span class="status-pill sp-pend">⏳ Aguardando</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 10 — SHARED COMPONENTS ─── -->
+  <div class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-icon">🔀</span>
+      <h2>Shared Components — Matriz de uso</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th style="text-align:center;">MdZap</th>
+            <th style="text-align:center;">CRM</th>
+            <th style="text-align:center;">Clientes</th>
+            <th style="text-align:center;">Distribuição</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="file-path">ClienteDrawerTabRestricoes</td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span> <small style="color:var(--text-muted);">Aba 2</small></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">ClienteDrawerTabDocumentosLead</td>
+            <td style="text-align:center;"><span class="matrix-partial">⚠️</span> <small style="color:var(--text-muted);">Pendente</small></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-no">—</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">DocumentosUploadCentral</td>
+            <td style="text-align:center;"><span class="matrix-partial">⚠️</span> <small style="color:var(--text-muted);">Pendente</small></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-no">—</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">DocumentoItem</td>
+            <td style="text-align:center;"><span class="matrix-no">—</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">RestricaoPastaCard</td>
+            <td style="text-align:center;"><small style="color:var(--text-muted);">via Restr.</small></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">CrmLeadNotas</td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span> <small style="color:var(--text-muted);">Aba 4</small></td>
+            <td style="text-align:center;"><span class="matrix-check">✅</span></td>
+            <td style="text-align:center;"><span class="matrix-no">—</span></td>
+            <td style="text-align:center;"><span class="matrix-no">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warn-box">
+      Os 2 componentes pendentes no MdZap (<code>ClienteDrawerTabDocumentosLead</code> e <code>DocumentosUploadCentral</code>) bloqueiam o F-DOCS-TIER1. Precisam ser integrados para completar a Aba 3 — Docs.
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 11 — ARQUIVOS CRÍTICOS ─── -->
+  <div class="section" id="s11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-icon">📁</span>
+      <h2>Arquivos Críticos — Mapa completo</h2>
+    </div>
+
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <div class="card-title">Frontend — Components</div>
+          <div class="code" style="font-size:0.72rem;">src/components/mdzap/
+├── MdzapChatPanel.tsx       <span class="comment">~200L</span>
+├── MdzapConversaList.tsx
+├── MdzapSwipeableCard.tsx
+├── MdzapMsgThread.tsx       <span class="comment">~450L</span>
+├── MdzapMsgBubble.tsx       <span class="comment">~300L</span>
+├── MdzapMsgInput.tsx
+├── MdzapThreadHeader.tsx    <span class="comment">177L</span>
+├── MdzapLeadPanel.tsx       <span class="comment">574L</span>
+├── MdzapConversaTimeline.tsx <span class="comment">90L</span>
+├── MdzapLeadMemoryPanel.tsx
+├── MdzapDashboard.tsx
+├── MdzapJuliaLab.tsx
+└── SentimentPanel.tsx</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Frontend — Shared / CRM</div>
+          <div class="code" style="font-size:0.72rem;">src/components/crm/
+└── CrmLeadNotas.tsx
+
+src/components/clientes/
+├── ClienteDrawerTabRestricoes.tsx
+├── ClienteDrawerTabDocumentosLead.tsx
+├── DocumentosUploadCentral.tsx
+├── DocumentoItem.tsx
+└── RestricaoPastaCard.tsx</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-title">Frontend — Hooks &amp; Types</div>
+          <div class="code" style="font-size:0.72rem;">src/hooks/mdzap/
+├── useConversas.ts
+├── useMensagens.ts
+├── useLeadMemory.ts
+├── useJuliaLab.ts
+└── useSentiment.ts
+
+src/types/
+└── mdzap.types.ts</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">n8n Workflows (principais)</div>
+          <div class="code" style="font-size:0.72rem;"><span class="comment">Orchestrator:</span>
+  ID: HLdJDx6D45EcER9Z
+
+<span class="comment">Em criação nesta sessão:</span>
+  MDZAP-ASSUMIR-CONVERSA-v1
+  MDZAP-DEVOLVER-JULIA-v1
+
+<span class="comment">Já existentes:</span>
+  Facebook Inbound (atualizado)
+  MDZAP-ARQUIVAR-CONVERSA-v1
+  WH-AUD-01 Auditorias
+  MDFLOW-DRIVE-PASTA-LEAD-v1</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Banco — Tabelas MdZap</div>
+          <div class="code" style="font-size:0.72rem;">whatsapp_conversas      <span class="comment">principal</span>
+whatsapp_mensagens      <span class="comment">thread</span>
+whatsapp_numeros        <span class="comment">config SDR</span>
+leads                   <span class="comment">awaiting_human!</span>
+mdzap_lead_memory       <span class="comment">contexto IA</span>
+mdzap_ai_modules        <span class="comment">config Claude</span>
+mdzap_julia_prompts     <span class="comment">versioning</span>
+crm_notas               <span class="comment">novo</span>
+icp_telemetria_snapshots <span class="comment">novo</span>
+whatsapp_msg_feedback   <span class="comment">feedback</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SEÇÃO 12 — PERGUNTAS ABERTAS ─── -->
+  <div class="section" id="s12">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <span class="section-icon">❓</span>
+      <h2>Perguntas Abertas — Aguardando Christian</h2>
+      <span class="status-pill sp-pend">⏳ 8 perguntas</span>
+    </div>
+
+    <div class="table-wrap">
+      <div class="question-item">
+        <span class="question-num">Q1</span>
+        <span class="question-text">SDR 2 e SDR 3 — que perfis terão? Nome da persona, escopo de atuação, tom de voz, objetivo principal de cada agente adicional?</span>
+      </div>
+      <div class="question-item">
+        <span class="question-num">Q2</span>
+        <span class="question-text">Contrato digital: <strong>ZapSign</strong>, <strong>D4Sign</strong>, ou <strong>PDF presencial</strong>? A decisão bloqueia toda a etapa 4 do fluxo (Assinatura).</span>
+      </div>
+      <div class="question-item">
+        <span class="question-num">Q3</span>
+        <span class="question-text">Lead sem restrições processáveis: arquivar automaticamente ou oferecer outro serviço da MP Advocacia? Qual critério de descarte?</span>
+      </div>
+      <div class="question-item">
+        <span class="question-num">Q4</span>
+        <span class="question-text">3 SDRs compartilham o mesmo número WhatsApp ou cada SDR terá número separado? Impacta <code>whatsapp_numeros.agente_slug</code>.</span>
+      </div>
+      <div class="question-item">
+        <span class="question-num">Q5</span>
+        <span class="question-text">Qual o SLA esperado entre primeiro contato e distribuição? 24h? 48h? 7 dias? Afeta a lógica de handoff automático no Orchestrator.</span>
+      </div>
+      <div class="question-item">
+        <span class="question-num">Q6</span>
+        <span class="question-text"><code>leads_documentos</code> existe como tabela própria ou é alias de <code>processos_documentos</code>? Impacta o hook <code>useLeadDocs</code>.</span>
+      </div>
+      <div class="question-item">
+        <span class="question-num">Q7</span>
+        <span class="question-text">Documentos recebidos via WhatsApp devem ir para o bucket <code>mdzap-media</code> (atual) ou para <code>leads-docs</code> (organizado por lead)?</span>
+      </div>
+      <div class="question-item">
+        <span class="question-num">Q8</span>
+        <span class="question-text"><code>/MDZAP — Document Received</code> — expandir de 3 para ~15 nodes em qual sprint? Isso define o cronograma do F-DOCS-TIER1-N8N.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── FOOTER ─── -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · MdZap Plano Mestre v3 · 06/04/2026
+  </div>
+
+</main>
+
+<script>
+// Sidebar active state on scroll
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item[href^="#"]');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === '#' + id) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-80px 0px -60% 0px' });
+
+sections.forEach(section => observer.observe(section));
+
+// Hero also observable
+const hero = document.getElementById('hero');
+if (hero) {
+  const heroObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navItems.forEach(item => item.classList.remove('active'));
+        const heroNav = document.querySelector('.nav-item[href="#hero"]');
+        if (heroNav) heroNav.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+  heroObserver.observe(hero);
+}
+
+// Smooth scroll for sidebar links
+navItems.forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    const targetId = item.getAttribute('href').substring(1);
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
