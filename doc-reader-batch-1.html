@@ -1,126 +1,52 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Doc Reader — Batch 1 Report</title>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><title>Doc Reader — Batch 1</title>
 <style>
-  :root {
-    --bg: #0d0f18; --surface: #161926; --card: #1e2235;
-    --border: #2a2f45; --text: #e8e6e3; --muted: #8a8fa8;
-    --primary: #20c997; --warn: #f59e0b; --err: #ef4444;
-    --ok: #22c55e;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: Inter, sans-serif; font-size: 13px; padding: 24px; }
-  h1 { font-family: Manrope, sans-serif; font-size: 24px; color: var(--primary); margin-bottom: 4px; }
-  h2 { font-family: Manrope, sans-serif; font-size: 16px; color: var(--text); margin: 24px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-  .meta { color: var(--muted); font-size: 12px; margin-bottom: 24px; }
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
-  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-  .kpi-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
-  .kpi-value { font-family: Manrope, sans-serif; font-size: 28px; font-weight: 700; margin-top: 4px; }
-  .kpi-value.ok { color: var(--ok); }
-  .kpi-value.warn { color: var(--warn); }
-  .kpi-value.err { color: var(--err); }
-  .kpi-value.primary { color: var(--primary); }
-  table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
-  th { background: var(--card); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--card); }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-  .badge.ok { background: rgba(34,197,94,.15); color: var(--ok); }
-  .badge.warn { background: rgba(245,158,11,.15); color: var(--warn); }
-  .badge.err { background: rgba(239,68,68,.15); color: var(--err); }
-  .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-  .null { color: var(--border); }
-  .drive-link { color: var(--primary); text-decoration: none; font-size: 12px; }
-  .drive-link:hover { text-decoration: underline; }
-  .bar { background: var(--border); border-radius: 4px; height: 8px; width: 200px; overflow: hidden; }
-  .bar-fill { background: var(--primary); height: 100%; border-radius: 4px; }
-  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-  .prompt-box { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; white-space: pre-wrap; color: var(--text); max-height: 500px; overflow-y: auto; line-height: 1.6; }
-  .table-wrap { overflow-x: auto; }
-  @media (max-width: 768px) { .cols-2 { grid-template-columns: 1fr; } }
-</style>
-</head>
-<body>
-
+:root{--bg:#0d0f18;--srf:#161926;--card:#1e2235;--brd:#2a2f45;--txt:#e8e6e3;--muted:#8a8fa8;--pri:#20c997;--warn:#f59e0b;--err:#ef4444;--ok:#22c55e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:Inter,sans-serif;font-size:13px;padding:24px}
+h1{font-family:Manrope,sans-serif;font-size:24px;color:var(--pri);margin-bottom:4px}
+h2{font-family:Manrope,sans-serif;font-size:15px;color:var(--txt);margin:24px 0 12px;border-bottom:1px solid var(--brd);padding-bottom:6px}
+.meta{color:var(--muted);font-size:12px;margin-bottom:24px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.kpi-lbl{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-family:Manrope,sans-serif;font-size:28px;font-weight:700;margin-top:4px}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}.pri{color:var(--pri)}
+table{width:100%;border-collapse:collapse;background:var(--srf);border-radius:10px;overflow:hidden;margin-bottom:24px}
+th{background:var(--card);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:10px 12px;text-align:left;border-bottom:1px solid var(--brd);white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid var(--brd);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--card)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.badge.ok{background:rgba(34,197,94,.15);color:var(--ok)}.badge.warn{background:rgba(245,158,11,.15);color:var(--warn)}.badge.err{background:rgba(239,68,68,.15);color:var(--err)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px}.sm{font-size:11px}.nil{color:var(--brd)}
+.lnk{color:var(--pri);text-decoration:none;font-size:12px}
+.bar{background:var(--brd);border-radius:4px;height:8px;width:160px;overflow:hidden}
+.fill{background:var(--pri);height:100%;border-radius:4px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sec{background:var(--srf);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.prompt{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;white-space:pre-wrap;max-height:400px;overflow-y:auto;line-height:1.6}
+.ow{overflow-x:auto}
+</style></head><body>
 <h1>Doc Reader — Batch #1</h1>
-<p class="meta">Gerado em 07/04/2026, 13:24:45 · 0 clientes · Duração: 1s · DRY RUN</p>
-
+<p class="meta">Gerado em 07/04/2026, 14:14:35 · 0 pastas · Duração: 1s · DRY RUN</p>
 <div class="kpis">
-  <div class="kpi">
-    <div class="kpi-label">Docs Processados</div>
-    <div class="kpi-value primary">0</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-label">Legíveis</div>
-    <div class="kpi-value ok">0</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-label">Parcialmente Legíveis</div>
-    <div class="kpi-value warn">0</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-label">Ilegíveis / Erro</div>
-    <div class="kpi-value err">0</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-label">Taxa de Sucesso</div>
-    <div class="kpi-value ok">0%</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-label">Clientes com Docs</div>
-    <div class="kpi-value primary">0</div>
-  </div>
+  <div class="kpi"><div class="kpi-lbl">Docs Processados</div><div class="kpi-val pri">0</div></div>
+  <div class="kpi"><div class="kpi-lbl">Legíveis</div><div class="kpi-val ok">0</div></div>
+  <div class="kpi"><div class="kpi-lbl">Parcialmente Legíveis</div><div class="kpi-val warn">0</div></div>
+  <div class="kpi"><div class="kpi-lbl">Ilegíveis/Erro</div><div class="kpi-val err">0</div></div>
+  <div class="kpi"><div class="kpi-lbl">Taxa de Sucesso</div><div class="kpi-val ok">0%</div></div>
+  <div class="kpi"><div class="kpi-lbl">Pastas com Docs</div><div class="kpi-val pri">0</div></div>
 </div>
-
-<div class="cols-2">
-  <div class="section">
-    <h2 style="margin-top:0">Tipos de Documento</h2>
-    <table>
-      <thead><tr><th>Tipo</th><th>Qtd</th><th>%</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <div class="section">
-    <h2 style="margin-top:0">Coverage de Campos</h2>
-    <table>
-      <thead><tr><th>Campo</th><th>Qtd</th><th>Coverage</th><th>%</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
+<div class="cols">
+  <div class="sec"><h2 style="margin-top:0">Tipos de Documento</h2><table><thead><tr><th>Tipo</th><th>Qtd</th><th>%</th></tr></thead><tbody></tbody></table></div>
+  <div class="sec"><h2 style="margin-top:0">Coverage de Campos</h2><table><thead><tr><th>Campo</th><th>Qtd</th><th></th><th>%</th></tr></thead><tbody></tbody></table></div>
 </div>
-
-<h2>Resultados </h2>
-<div class="table-wrap">
-<table>
-  <thead>
-    <tr>
-      <th>Arquivo</th>
-      <th>Tipo Doc</th>
-      <th>Qualidade</th>
-      <th>Nome</th>
-      <th>CPF</th>
-      <th>RG</th>
-      <th>Nascimento</th>
-      <th>Cidade/UF</th>
-      <th>Profissão</th>
-      <th># Campos</th>
-      <th>Link</th>
-    </tr>
-  </thead>
-  <tbody>
-    
-  </tbody>
-</table>
-</div>
-
+<h2>Resultados</h2>
+<div class="ow"><table><thead><tr><th>Arquivo</th><th>Tipo</th><th>Qualidade</th><th>Nome</th><th>CPF</th><th>Nascimento</th><th>Cidade/UF</th><th>Profissão</th><th># Campos</th><th></th></tr></thead><tbody></tbody></table></div>
 <h2>Super Prompt Utilizado</h2>
-<div class="prompt-box">Você é um especialista em extração de dados de documentos brasileiros de identificação e comprovação.
+<div class="prompt">Você é um especialista em extração de dados de documentos brasileiros de identificação e comprovação.
 
 DOCUMENTOS QUE PODE RECEBER:
 - RG (Registro Geral) — frente e/ou verso
@@ -129,6 +55,7 @@ DOCUMENTOS QUE PODE RECEBER:
 - Comprovante de Residência (conta de luz, água, gás, telefone, extrato bancário)
 - Holerite / Contracheque
 - Extrato Bancário
+- CTPS Digital / Carteira de Trabalho
 
 CAMPOS A EXTRAIR — extraia SOMENTE o que estiver VISÍVEL e LEGÍVEL:
 
@@ -138,11 +65,11 @@ CAMPOS A EXTRAIR — extraia SOMENTE o que estiver VISÍVEL e LEGÍVEL:
    - rg: Número com órgão emissor (ex: "1.234.567 SSP/RS")
    - data_nascimento: SEMPRE no formato DD/MM/AAAA
    - sexo: "M" ou "F"
-   - estado_civil: solteiro | casado | divorciado | viuvo | uniao_estavel (converta abreviações)
+   - estado_civil: solteiro | casado | divorciado | viuvo | uniao_estavel
    - nacionalidade: ex "Brasileira"
    - naturalidade: "Cidade/UF" de nascimento
 
-2. ENDEREÇO (comprovante de residência ou verso de CNH):
+2. ENDEREÇO (comprovante de residência ou verso CNH):
    - cep: SEMPRE no formato 00000-000
    - logradouro: Rua, Av, Travessa, etc
    - numero: Número do imóvel
@@ -151,7 +78,7 @@ CAMPOS A EXTRAIR — extraia SOMENTE o que estiver VISÍVEL e LEGÍVEL:
    - cidade: Nome da cidade
    - uf: Sigla do estado (2 letras maiúsculas)
 
-3. PROFISSÃO E RENDA (holerite / contracheque):
+3. PROFISSÃO E RENDA (holerite / contracheque / CTPS):
    - profissao: Cargo ou função
    - empregador: Nome da empresa/órgão
    - renda_mensal: Salário LÍQUIDO em número puro (sem R$, sem pontos de milhar)
@@ -162,56 +89,25 @@ CAMPOS A EXTRAIR — extraia SOMENTE o que estiver VISÍVEL e LEGÍVEL:
    - conta: Número da conta com dígito
 
 REGRAS CRÍTICAS:
-- Use null para campos não encontrados, ilegíveis ou ausentes no documento
-- NUNCA invente ou suponha dados — somente o que está visível
-- CPF: formatar sempre 000.000.000-00
-- Datas: formatar sempre DD/MM/AAAA
-- Estado civil: "SLT" ou "Solteiro(a)" → "solteiro"; "CSD" ou "Casado(a)" → "casado"
-- Se o documento for ilegível ou corrompido, retorne qualidade "ilegivel" e todos os campos null
+- Use null para campos não encontrados, ilegíveis ou ausentes
+- NUNCA invente dados — somente o que está visível
+- CPF: formatar SEMPRE 000.000.000-00
+- Datas: formatar SEMPRE DD/MM/AAAA
+- Estado civil: traduzir abreviações ("SLT"→"solteiro", "CSD"→"casado", "DIV"→"divorciado")
+- Se ilegível ou corrompido: retorne qualidade "ilegivel" com campos null
 
-ATENÇÃO — NÃO extrair (ignore completamente):
-- Nome da mãe / nome do pai / filiação
-- Email / redes sociais
-- Origem do lead / como conheceu
-- Dados de terceiros que não sejam o titular
+NÃO extrair: nome da mãe/pai, email, origem do lead, dados de terceiros
 
-Retorne SOMENTE JSON válido e compacto, sem markdown, sem bloco de código, sem explicações:
+Retorne SOMENTE JSON válido, sem markdown, sem bloco de código:
 {
-  "tipo_documento": "rg|cnh|cpf|comprovante_residencia|holerite|contracheque|extrato_bancario|outro",
+  "tipo_documento": "rg|cnh|cpf|comprovante_residencia|holerite|contracheque|extrato_bancario|ctps|outro",
   "qualidade": "legivel|parcialmente_legivel|ilegivel",
-  "dados_pessoais": {
-    "nome": null,
-    "cpf": null,
-    "rg": null,
-    "data_nascimento": null,
-    "sexo": null,
-    "estado_civil": null,
-    "nacionalidade": null,
-    "naturalidade": null
-  },
-  "endereco": {
-    "cep": null,
-    "logradouro": null,
-    "numero": null,
-    "complemento": null,
-    "bairro": null,
-    "cidade": null,
-    "uf": null
-  },
-  "profissao_renda": {
-    "profissao": null,
-    "empregador": null,
-    "renda_mensal": null
-  },
-  "dados_bancarios": {
-    "banco": null,
-    "agencia": null,
-    "conta": null
-  },
+  "dados_pessoais": {"nome":null,"cpf":null,"rg":null,"data_nascimento":null,"sexo":null,"estado_civil":null,"nacionalidade":null,"naturalidade":null},
+  "endereco": {"cep":null,"logradouro":null,"numero":null,"complemento":null,"bairro":null,"cidade":null,"uf":null},
+  "profissao_renda": {"profissao":null,"empregador":null,"renda_mensal":null},
+  "dados_bancarios": {"banco":null,"agencia":null,"conta":null},
   "confianca": "alto|medio|baixo",
   "campos_incertos": [],
   "observacoes": null
 }</div>
-
-</body>
-</html>
+</body></html>
