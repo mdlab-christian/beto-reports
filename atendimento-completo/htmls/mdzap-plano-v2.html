@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Plano Mestre v2</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: #0a0c14;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 30;
+}
+
+.sidebar-header {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-logo {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+.sidebar-title {
+  font-size: 1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sidebar-version {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.sidebar-nav {
+  padding: 12px 0;
+  flex: 1;
+}
+
+.nav-group-label {
+  padding: 8px 16px 4px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+}
+
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(124,109,255,0.07);
+  border-left-color: var(--accent);
+}
+
+.nav-item.active {
+  color: var(--accent);
+  background: rgba(124,109,255,0.1);
+  border-left-color: var(--accent);
+}
+
+.nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nd-green { background: var(--accent3); }
+.nd-yellow { background: var(--accent4); }
+.nd-red { background: var(--accent2); }
+.nd-blue { background: var(--accent5); }
+.nd-purple { background: var(--accent); }
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* MAIN CONTENT */
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px 40px;
+  max-width: 1200px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 48px 24px 36px;
+}
+
+.hero-emoji {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.gradient-text {
+  font-size: 2.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.hero-sub {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* GRID */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* STAT CARDS */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value.sv-green { color: var(--accent3); }
+.stat-value.sv-yellow { color: var(--accent4); }
+.stat-value.sv-blue { color: var(--accent5); }
+.stat-value.sv-red { color: var(--accent2); }
+
+/* SECTIONS */
+.section {
+  margin: 40px 0;
+  scroll-margin-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.section-icon { font-size: 1.2rem; }
+
+.section-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.section-num {
+  background: rgba(124,109,255,0.15);
+  color: var(--accent);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+thead th:first-child { border-radius: 8px 0 0 0; }
+thead th:last-child { border-radius: 0 8px 0 0; }
+
+/* STATUS PILLS */
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.2); }
+.sp-run  { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.2); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.2); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.2); }
+.sp-partial { background: rgba(255,209,102,0.08); color: var(--accent4); border: 1px solid rgba(255,209,102,0.2); }
+
+/* CODE */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  word-break: normal;
+  line-height: 1.7;
+}
+
+/* LAYOUT VISUAL (SEÇÃO 1) */
+.layout-viz {
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.layout-col {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.layout-col:nth-child(1) {
+  background: rgba(124,109,255,0.06);
+  border-right: 1px solid var(--border);
+}
+
+.layout-col:nth-child(2) {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.layout-col:nth-child(3) {
+  background: rgba(79,255,176,0.04);
+}
+
+.layout-col-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.layout-col-sub {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.layout-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.layout-item.li-active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(124,109,255,0.08);
+}
+
+.layout-item.li-green {
+  border-color: rgba(79,255,176,0.3);
+  color: var(--accent3);
+  background: rgba(79,255,176,0.05);
+}
+
+.layout-tabs-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.layout-tab {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.layout-tab.lt-active {
+  background: rgba(124,109,255,0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.layout-bubble {
+  background: rgba(124,109,255,0.1);
+  border-radius: 12px 12px 12px 0;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  max-width: 80%;
+  border: 1px solid rgba(124,109,255,0.15);
+}
+
+.layout-bubble.out {
+  background: rgba(79,255,176,0.07);
+  border-radius: 12px 12px 0 12px;
+  border-color: rgba(79,255,176,0.15);
+  align-self: flex-end;
+  color: var(--accent3);
+}
+
+.layout-msg-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+/* 7 ABAS VISUAL */
+.tabs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tab-visual {
+  border-radius: 10px;
+  padding: 12px 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  transition: transform 0.2s;
+}
+
+.tab-visual:hover { transform: translateY(-2px); }
+.tab-visual.tv-active { border-color: var(--accent); background: rgba(124,109,255,0.08); }
+.tab-visual.tv-done { border-color: rgba(79,255,176,0.3); background: rgba(79,255,176,0.05); }
+.tab-visual.tv-partial { border-color: rgba(255,209,102,0.3); background: rgba(255,209,102,0.05); }
+
+.tab-num {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.tab-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.tab-status {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* FLUXO HORIZONTAL */
+.flow-container {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.flow-step {
+  flex: 1;
+  min-width: 160px;
+  position: relative;
+}
+
+.flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--border), var(--accent));
+  z-index: 1;
+}
+
+.flow-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  right: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--accent);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  z-index: 2;
+}
+
+.flow-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 12px;
+  height: 100%;
+  margin: 0 20px 0 0;
+  transition: border-color 0.2s;
+}
+
+.flow-step:last-child .flow-card { margin-right: 0; }
+
+.flow-card:hover { border-color: var(--accent); }
+
+.flow-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.fn-green { background: rgba(79,255,176,0.15); color: var(--accent3); }
+.fn-yellow { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.fn-blue { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.fn-purple { background: rgba(124,109,255,0.15); color: var(--accent); }
+
+.flow-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.flow-items {
+  list-style: none;
+  margin-top: 6px;
+}
+
+.flow-items li {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding: 2px 0;
+  padding-left: 14px;
+  position: relative;
+}
+
+.flow-items li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* SDR CARDS */
+.sdr-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sdr-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.sdr-green::before { background: var(--accent3); }
+.sdr-yellow::before { background: var(--accent4); }
+
+.sdr-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+}
+
+.av-green { background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.2); }
+.av-yellow { background: rgba(255,209,102,0.1); border: 1px solid rgba(255,209,102,0.2); }
+
+.sdr-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.sdr-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.sdr-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sdr-items li {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding-left: 14px;
+  position: relative;
+}
+
+.sdr-items li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 0.7rem;
+}
+
+/* DRIVE FLOW */
+.drive-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.drive-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.drive-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), transparent);
+}
+
+.drive-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(124,109,255,0.15);
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 700;
+  z-index: 1;
+}
+
+.drive-content {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.drive-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.drive-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* TIER CARDS */
+.tier-card {
+  border-radius: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+}
+
+.tier-card.tc-blue {
+  background: rgba(91,196,245,0.05);
+  border-color: rgba(91,196,245,0.25);
+}
+
+.tier-card.tc-orange {
+  background: rgba(255,209,102,0.05);
+  border-color: rgba(255,209,102,0.25);
+}
+
+.tier-card.tc-green {
+  background: rgba(79,255,176,0.05);
+  border-color: rgba(79,255,176,0.25);
+}
+
+.tier-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.tier-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.tb-blue { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.tb-orange { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.tb-green { background: rgba(79,255,176,0.15); color: var(--accent3); }
+
+.tier-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tier-items li {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.tier-items li span.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* BUG CARDS */
+.bug-card {
+  border-radius: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-left: 3px solid var(--border);
+}
+
+.bug-card.bc-red { border-left-color: var(--accent2); }
+.bug-card.bc-yellow { border-left-color: var(--accent4); }
+.bug-card.bc-green { border-left-color: var(--accent3); }
+
+.bug-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.bug-file {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent5);
+  margin: 6px 0;
+}
+
+.bug-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ROADMAP TIMELINE */
+.roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.roadmap-phase {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 24px;
+  position: relative;
+}
+
+.roadmap-phase:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.roadmap-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 2px solid;
+  z-index: 1;
+}
+
+.rd-next { background: rgba(79,255,176,0.1); border-color: var(--accent3); color: var(--accent3); }
+.rd-urgent { background: rgba(255,107,107,0.1); border-color: var(--accent2); color: var(--accent2); }
+.rd-wait { background: rgba(255,209,102,0.1); border-color: var(--accent4); color: var(--accent4); }
+
+.roadmap-content {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.roadmap-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.roadmap-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.roadmap-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.roadmap-items li {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding-left: 14px;
+  position: relative;
+}
+
+.roadmap-items li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* QUESTIONS */
+.q-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+
+.q-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.q-text {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* FILE LIST */
+.file-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.file-group-header {
+  background: var(--surface2);
+  padding: 10px 16px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.file-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.file-item:last-child { border-bottom: none; }
+
+.file-path {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent5);
+  flex: 1;
+}
+
+.file-note {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: right;
+  min-width: 180px;
+}
+
+/* FOLDER TREE */
+.folder-tree {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 2;
+}
+
+.folder-tree .folder { color: var(--accent4); }
+.folder-tree .subfolder { color: var(--accent5); }
+
+/* DADOS FALTA LIST */
+.falta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.falta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,107,107,0.06);
+  border: 1px solid rgba(255,107,107,0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.falta-icon {
+  color: var(--accent2);
+  font-size: 0.9rem;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* INLINE CODE */
+.ic {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  background: rgba(124,109,255,0.1);
+  border: 1px solid rgba(124,109,255,0.2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--accent5);
+}
+
+/* RESPONSIVE */
+@media(max-width: 1100px) {
+  .sidebar { display: none; }
+  .main { padding: 24px; }
+}
+
+@media(max-width: 768px) {
+  .g2,.g3,.g4 { grid-template-columns: 1fr; }
+  .layout-viz { grid-template-columns: 1fr; }
+  .flow-container { flex-direction: column; }
+  .flow-step::after, .flow-step::before { display: none; }
+  .flow-card { margin: 0; }
+  .tabs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero { animation: fadeInUp 0.5s ease; }
+.stat-card { animation: fadeInUp 0.4s ease both; }
+.stat-card:nth-child(2) { animation-delay: 0.08s; }
+.stat-card:nth-child(3) { animation-delay: 0.16s; }
+.stat-card:nth-child(4) { animation-delay: 0.24s; }
+
+/* SHARED TABLE CHECKMARK CELLS */
+td.yes { color: var(--accent3); font-weight: 500; }
+td.no  { color: var(--text-muted); }
+td.partial { color: var(--accent4); font-weight: 500; }
+
+/* DIVIDER */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">MdFlow · MdZap</div>
+    <div class="sidebar-title">Plano Mestre v2</div>
+    <div class="sidebar-version">06/04/2026</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Visão Geral</div>
+    <a class="nav-item" href="#hero"><span class="nav-dot nd-purple"></span>Header &amp; Stats</a>
+
+    <div class="nav-group-label">Arquitetura</div>
+    <a class="nav-item" href="#s1"><span class="nav-dot nd-blue"></span>1. Layout 3 Colunas</a>
+    <a class="nav-item" href="#s2"><span class="nav-dot nd-green"></span>2. Lead Panel v2</a>
+    <a class="nav-item" href="#s3"><span class="nav-dot nd-purple"></span>3. Fluxo do Lead</a>
+    <a class="nav-item" href="#s4"><span class="nav-dot nd-yellow"></span>4. 3 SDRs Multi-Agente</a>
+
+    <div class="nav-group-label">Integrações</div>
+    <a class="nav-item" href="#s5"><span class="nav-dot nd-green"></span>5. Google Drive E7</a>
+    <a class="nav-item" href="#s6"><span class="nav-dot nd-blue"></span>6. Documentos 3 Tiers</a>
+    <a class="nav-item" href="#s7"><span class="nav-dot nd-purple"></span>7. Webhooks n8n</a>
+
+    <div class="nav-group-label">Qualidade</div>
+    <a class="nav-item" href="#s8"><span class="nav-dot nd-red"></span>8. Bugs Conhecidos</a>
+    <a class="nav-item" href="#s9"><span class="nav-dot nd-yellow"></span>9. Roadmap</a>
+
+    <div class="nav-group-label">Referência</div>
+    <a class="nav-item" href="#s10"><span class="nav-dot nd-blue"></span>10. Componentes Shared</a>
+    <a class="nav-item" href="#s11"><span class="nav-dot nd-yellow"></span>11. Perguntas Abertas</a>
+    <a class="nav-item" href="#s12"><span class="nav-dot nd-purple"></span>12. Arquivos Críticos</a>
+  </nav>
+  <div class="sidebar-footer">
+    Jarbas 2.0 · MdLab LegalTech
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- HERO -->
+  <div id="hero" class="hero">
+    <span class="hero-emoji">💬</span>
+    <h1 class="gradient-text">MdZap — Plano Mestre v2</h1>
+    <p class="hero-sub">Estado atual · Executado · Pendências · Próximos passos</p>
+    <div class="badges">
+      <span class="badge bp">MdFlow Suite</span>
+      <span class="badge bg">E7 Google Drive ✅</span>
+      <span class="badge by">5 Pendências Ativas</span>
+      <span class="badge bb">9 Webhooks n8n</span>
+      <span class="badge br">BUG-04 P0</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value">34</div>
+      <div class="stat-label">Componentes React</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-green">7</div>
+      <div class="stat-label">Abas Lead Panel</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-blue">9</div>
+      <div class="stat-label">Webhooks n8n</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-red">5</div>
+      <div class="stat-label">Itens Pendentes</div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 1 — ARQUITETURA ATUAL -->
+  <div id="s1" class="section">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <span class="section-icon">🏗️</span>
+      <h2>Arquitetura Atual — Layout 3 Colunas</h2>
+    </div>
+
+    <div class="layout-viz">
+      <!-- Col 1 -->
+      <div class="layout-col">
+        <div class="layout-col-title">Lista (320px)</div>
+        <div class="layout-item li-active">🔍 Filtros &amp; busca</div>
+        <div class="layout-item">📋 Conversas recentes</div>
+        <div class="layout-item">📋 Conversa ativa</div>
+        <div class="layout-item">📋 Conversa arquivada</div>
+        <div class="layout-item">☑️ Bulk actions</div>
+        <hr class="divider" style="margin:8px 0">
+        <div class="layout-col-sub" style="font-size:0.68rem; color: var(--text-muted);">
+          5 tabs no ChatPanel:
+        </div>
+        <div class="layout-tabs-row">
+          <span class="layout-tab lt-active">Conversas</span>
+          <span class="layout-tab">Dashboard</span>
+          <span class="layout-tab">Julia Lab</span>
+          <span class="layout-tab">Templates</span>
+          <span class="layout-tab">Gestão</span>
+        </div>
+      </div>
+
+      <!-- Col 2 -->
+      <div class="layout-col">
+        <div class="layout-col-title">Thread (flex-1)</div>
+        <div class="layout-msg-area">
+          <div class="layout-bubble">Olá! Tenho uma restrição no Serasa...</div>
+          <div class="layout-bubble out">Perfeito! Poderia me informar seu CPF?</div>
+          <div class="layout-bubble">Sim, é 123.456.789-00</div>
+          <div class="layout-bubble out">Aguarde, vou consultar suas restrições agora!</div>
+        </div>
+        <div class="layout-item" style="margin-top: auto; background: rgba(124,109,255,0.05); border-color: rgba(124,109,255,0.2);">
+          ✨ AI Composer — resposta sugerida...
+        </div>
+      </div>
+
+      <!-- Col 3 -->
+      <div class="layout-col">
+        <div class="layout-col-title">Lead Panel (320px)</div>
+        <div class="layout-col-sub" style="margin-bottom:8px;">7 abas · toggle/fechado</div>
+        <div class="layout-tabs-row" style="margin-bottom: 10px;">
+          <span class="layout-tab lt-active">Dados</span>
+          <span class="layout-tab">Restr.</span>
+          <span class="layout-tab">Docs</span>
+          <span class="layout-tab">Notas</span>
+        </div>
+        <div class="layout-tabs-row" style="margin-bottom: 10px;">
+          <span class="layout-tab">Histórico</span>
+          <span class="layout-tab">Mem.</span>
+          <span class="layout-tab">Tom</span>
+        </div>
+        <div class="layout-item li-green">📛 João da Silva</div>
+        <div class="layout-item">📱 (51) 99999-8888</div>
+        <div class="layout-item">🔴 3 restrições</div>
+        <div class="layout-item">🗂️ Pipeline: ag_documentos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 2 — LEAD PANEL V2 -->
+  <div id="s2" class="section">
+    <div class="section-header">
+      <span class="section-num">2</span>
+      <span class="section-icon">📑</span>
+      <h2>Lead Panel v2 — 7 Abas</h2>
+      <span class="status-pill sp-run" style="margin-left: auto;">Implementado (parcial)</span>
+    </div>
+
+    <!-- Grid visual das 7 abas -->
+    <div class="tabs-grid" style="margin-bottom: 20px;">
+      <div class="tab-visual tv-partial">
+        <div class="tab-num" style="color: var(--accent4);">1</div>
+        <div class="tab-name">Dados</div>
+        <div class="tab-status" style="color: var(--accent4);">⚠️ Parcial</div>
+      </div>
+      <div class="tab-visual tv-done">
+        <div class="tab-num" style="color: var(--accent3);">2</div>
+        <div class="tab-name">Restrições</div>
+        <div class="tab-status" style="color: var(--accent3);">✅ Implementado</div>
+      </div>
+      <div class="tab-visual tv-partial">
+        <div class="tab-num" style="color: var(--accent4);">3</div>
+        <div class="tab-name">Docs</div>
+        <div class="tab-status" style="color: var(--accent4);">⚠️ Parcial</div>
+      </div>
+      <div class="tab-visual tv-done">
+        <div class="tab-num" style="color: var(--accent3);">4</div>
+        <div class="tab-name">Notas</div>
+        <div class="tab-status" style="color: var(--accent3);">✅ Implementado</div>
+      </div>
+      <div class="tab-visual tv-partial">
+        <div class="tab-num" style="color: var(--accent2);">5</div>
+        <div class="tab-name">Histórico</div>
+        <div class="tab-status" style="color: var(--accent2);">🔴 BUG-04</div>
+      </div>
+      <div class="tab-visual tv-done">
+        <div class="tab-num" style="color: var(--accent3);">6</div>
+        <div class="tab-name">Memória</div>
+        <div class="tab-status" style="color: var(--accent3);">✅ Implementado</div>
+      </div>
+      <div class="tab-visual tv-done">
+        <div class="tab-num" style="color: var(--accent3);">7</div>
+        <div class="tab-name">Tom</div>
+        <div class="tab-status" style="color: var(--accent3);">✅ Implementado</div>
+      </div>
+      <div class="tab-visual" style="opacity:0.3; pointer-events:none;"></div>
+    </div>
+
+    <!-- Tabela detalhada -->
+    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40px;">#</th>
+            <th>Tab</th>
+            <th>Status</th>
+            <th>Componente / Tabela</th>
+            <th>Observação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color: var(--accent4); font-weight: 700;">1</span></td>
+            <td><strong>Dados</strong></td>
+            <td><span class="status-pill sp-partial">⚠️ Parcial</span></td>
+            <td><span class="ic">leads</span></td>
+            <td style="color: var(--text-muted);">nome, CPF, RG, nascimento, telefone, profissão</td>
+          </tr>
+          <tr>
+            <td><span style="color: var(--accent3); font-weight: 700;">2</span></td>
+            <td><strong>Restrições</strong></td>
+            <td><span class="status-pill sp-done">✅ Implementado</span></td>
+            <td><span class="ic">ClienteDrawerTabRestricoes</span></td>
+            <td style="color: var(--text-muted);">Badge numérico vermelho com count</td>
+          </tr>
+          <tr>
+            <td><span style="color: var(--accent4); font-weight: 700;">3</span></td>
+            <td><strong>Docs</strong></td>
+            <td><span class="status-pill sp-partial">⚠️ Parcial</span></td>
+            <td><span class="ic">processos_documentos</span></td>
+            <td style="color: var(--text-muted);">Doc Reader results do WhatsApp. Falta Tier 1+2 real</td>
+          </tr>
+          <tr>
+            <td><span style="color: var(--accent3); font-weight: 700;">4</span></td>
+            <td><strong>Notas</strong></td>
+            <td><span class="status-pill sp-done">✅ Implementado</span></td>
+            <td><span class="ic">CrmLeadNotas</span></td>
+            <td style="color: var(--text-muted);">Shared com CRM (tabela crm_notas)</td>
+          </tr>
+          <tr>
+            <td><span style="color: var(--accent2); font-weight: 700;">5</span></td>
+            <td><strong>Histórico</strong></td>
+            <td><span class="status-pill sp-block">🔴 BUG-04</span></td>
+            <td><span class="ic">MdzapConversaTimeline</span></td>
+            <td style="color: var(--text-muted);">Dados incorretos — investigar query + RLS + timezone</td>
+          </tr>
+          <tr>
+            <td><span style="color: var(--accent3); font-weight: 700;">6</span></td>
+            <td><strong>Memória</strong></td>
+            <td><span class="status-pill sp-done">✅ Implementado</span></td>
+            <td><span class="ic">MdzapLeadMemoryPanel</span></td>
+            <td style="color: var(--text-muted);">Tabela mdzap_lead_memory</td>
+          </tr>
+          <tr>
+            <td><span style="color: var(--accent3); font-weight: 700;">7</span></td>
+            <td><strong>Tom</strong></td>
+            <td><span class="status-pill sp-done">✅ Implementado</span></td>
+            <td><span class="ic">SentimentPanel</span></td>
+            <td style="color: var(--text-muted);">11 sentimentos + score de confiança</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- O que falta na aba Dados -->
+    <div class="card">
+      <div class="card-title">O que falta na aba Dados</div>
+      <div class="falta-list">
+        <div class="falta-item">
+          <span class="falta-icon">❌</span>
+          <span>Campo <strong>email</strong> — não presente no formulário atual</span>
+        </div>
+        <div class="falta-item">
+          <span class="falta-icon">❌</span>
+          <span>Campo <strong>endereço</strong> — rua, cidade, CEP</span>
+        </div>
+        <div class="falta-item">
+          <span class="falta-icon">❌</span>
+          <span>Seletor de <strong>advogado responsável</strong> — nenhum campo de vínculo</span>
+        </div>
+        <div class="falta-item">
+          <span class="falta-icon">❌</span>
+          <span><strong>Score de qualificação</strong> editável — campo numérico ou categórico</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 3 — FLUXO DO LEAD -->
+  <div id="s3" class="section">
+    <div class="section-header">
+      <span class="section-num">3</span>
+      <span class="section-icon">🔄</span>
+      <h2>Fluxo do Lead — 6 Etapas</h2>
+    </div>
+
+    <div class="flow-container">
+
+      <div class="flow-step">
+        <div class="flow-card">
+          <div class="flow-num fn-green">1</div>
+          <div class="flow-title">Primeiro Contato</div>
+          <span class="status-pill sp-done" style="font-size:0.65rem;">✅ Infraestrutura pronta</span>
+          <ul class="flow-items" style="margin-top:8px;">
+            <li>CPF no WhatsApp</li>
+            <li>Julia cria lead</li>
+            <li><span class="ic" style="font-size:0.65rem;">coluna_crm='novos'</span></li>
+            <li>Drive pasta (E7 ✅)</li>
+            <li>fire-and-forget</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-card">
+          <div class="flow-num fn-yellow">2</div>
+          <div class="flow-title">Auditoria</div>
+          <span class="status-pill sp-partial" style="font-size:0.65rem;">⚠️ Manual</span>
+          <ul class="flow-items" style="margin-top:8px;">
+            <li>Botão Lead Panel</li>
+            <li>rpc_disparar_auditoria</li>
+            <li>WH-AUD-01</li>
+            <li>Protestos filtrados</li>
+            <li>Match fuzzy ≥0.75</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-card">
+          <div class="flow-num fn-blue">3</div>
+          <div class="flow-title">Qualificação</div>
+          <span class="status-pill sp-run" style="font-size:0.65rem;">Em andamento</span>
+          <ul class="flow-items" style="margin-top:8px;">
+            <li>Julia apresenta restr.</li>
+            <li>Atendente coleta docs</li>
+            <li>Kanban CRM move</li>
+            <li>ag_documentos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-card">
+          <div class="flow-num fn-yellow">4</div>
+          <div class="flow-title">Assinatura</div>
+          <span class="status-pill sp-pend" style="font-size:0.65rem;">⏳ Pendente</span>
+          <ul class="flow-items" style="margin-top:8px;">
+            <li>Contrato gerado</li>
+            <li>ag_assinatura</li>
+            <li>ZapSign aguardando</li>
+            <li>Decisão fornecedor</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-card">
+          <div class="flow-num fn-purple">5</div>
+          <div class="flow-title">Distribuição</div>
+          <span class="status-pill sp-done" style="font-size:0.65rem;">✅ /distribuicao</span>
+          <ul class="flow-items" style="margin-top:8px;">
+            <li>ModalDistribuirLead</li>
+            <li>Triagem manual</li>
+            <li>OlivIA gera petição</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-card">
+          <div class="flow-num fn-green">6</div>
+          <div class="flow-title">Processos</div>
+          <span class="status-pill sp-done" style="font-size:0.65rem;">✅ /processos</span>
+          <ul class="flow-items" style="margin-top:8px;">
+            <li>/processos tramitação</li>
+            <li>/controller</li>
+            <li>/decisoes</li>
+            <li>/acordos</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SEÇÃO 4 — SDRs -->
+  <div id="s4" class="section">
+    <div class="section-header">
+      <span class="section-num">4</span>
+      <span class="section-icon">🤖</span>
+      <h2>3 SDRs Multi-Agente</h2>
+    </div>
+
+    <div class="grid g3">
+
+      <div class="sdr-card sdr-green">
+        <div class="sdr-avatar av-green">🌿</div>
+        <div class="sdr-name">Julia</div>
+        <div class="sdr-role">SDR Principal — Negativação de Crédito</div>
+        <span class="status-pill sp-done" style="display:inline-block; margin-bottom:12px;">✅ Infraestrutura Pronta</span>
+        <ul class="sdr-items">
+          <li>Atendimento negativação indevida</li>
+          <li>Auditoria apenas manual (não automática)</li>
+          <li>Coleta docs e qualifica lead</li>
+          <li>Move pipeline no CRM</li>
+          <li>Elaboração completa pós-MdZap</li>
+        </ul>
+      </div>
+
+      <div class="sdr-card sdr-yellow">
+        <div class="sdr-avatar av-yellow">⚡</div>
+        <div class="sdr-name">SDR 2</div>
+        <div class="sdr-role">Perfil: A definir (Christian)</div>
+        <span class="status-pill sp-pend" style="display:inline-block; margin-bottom:12px;">⏳ Aguardando decisão</span>
+        <ul class="sdr-items">
+          <li>Possibilidade: outro tipo de serviço</li>
+          <li>Possibilidade: canal diferente</li>
+          <li>Compartilha sistema de leads</li>
+          <li>Aguardando Christian</li>
+        </ul>
+      </div>
+
+      <div class="sdr-card sdr-yellow">
+        <div class="sdr-avatar av-yellow">🔮</div>
+        <div class="sdr-name">SDR 3</div>
+        <div class="sdr-role">Perfil: A definir (Christian)</div>
+        <span class="status-pill sp-pend" style="display:inline-block; margin-bottom:12px;">⏳ Aguardando decisão</span>
+        <ul class="sdr-items">
+          <li>Possibilidade: pós-venda</li>
+          <li>Possibilidade: nicho específico</li>
+          <li>Compartilha sistema de leads</li>
+          <li>Aguardando Christian</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SEÇÃO 5 — GOOGLE DRIVE -->
+  <div id="s5" class="section">
+    <div class="section-header">
+      <span class="section-num">5</span>
+      <span class="section-icon">📁</span>
+      <h2>Google Drive — E7 Implementado</h2>
+      <span class="status-pill sp-done" style="margin-left: auto;">✅ E7 Executado</span>
+    </div>
+
+    <div class="grid g2" style="margin-bottom: 20px;">
+      <div class="card">
+        <div class="card-title">Workflow Drive</div>
+        <div style="margin-bottom: 8px;">
+          <span style="color: var(--text-muted); font-size: 0.78rem;">ID:</span>
+          <span class="ic">a3se07X6ObxgQWbB</span>
+        </div>
+        <div style="margin-bottom: 8px;">
+          <span style="color: var(--text-muted); font-size: 0.78rem;">Trigger:</span>
+          <span class="ic">POST /webhook/mdflow/drive-pasta-lead</span>
+        </div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px; margin-top: 12px;">
+          <li style="font-size: 0.78rem; color: var(--accent3);">✅ Idempotente — lead com pasta retorna noop</li>
+          <li style="font-size: 0.78rem; color: var(--accent3);">✅ Não cria para leads sem nome</li>
+          <li style="font-size: 0.78rem; color: var(--accent3);">✅ Integrado ao Inbound Upsert Lead</li>
+          <li style="font-size: 0.78rem; color: var(--accent3);">✅ fire-and-forget (não bloqueia)</li>
+          <li style="font-size: 0.78rem; color: var(--accent3);">✅ leads.google_drive_folder_id migrado</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Estrutura de Pastas</div>
+        <div class="folder-tree">
+<span class="folder">MP Advocacia/</span>
+└── <span class="folder">{Nome do Lead}/</span>
+    ├── <span class="subfolder">Documentos Pessoais/</span>
+    ├── <span class="subfolder">Restrições/</span>
+    ├── <span class="subfolder">Processos/</span>
+    └── <span class="subfolder">Lixeira/</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fluxo Drive -->
+    <div class="card">
+      <div class="card-title">Fluxo de Integração</div>
+      <div class="drive-flow">
+        <div class="drive-step">
+          <div class="drive-dot">1</div>
+          <div class="drive-content">
+            <div class="drive-label">Julia cria lead via WhatsApp</div>
+            <div class="drive-sub">Cliente manda CPF → Julia identifica intent</div>
+          </div>
+        </div>
+        <div class="drive-step">
+          <div class="drive-dot">2</div>
+          <div class="drive-content">
+            <div class="drive-label">/MDZAP - Inbound Upsert Lead executa</div>
+            <div class="drive-sub">INSERT leads com coluna_crm='novos'</div>
+          </div>
+        </div>
+        <div class="drive-step">
+          <div class="drive-dot">3</div>
+          <div class="drive-content">
+            <div class="drive-label">fire-and-forget para Drive</div>
+            <div class="drive-sub">Apenas para leads novos — não bloqueia resposta ao cliente</div>
+          </div>
+        </div>
+        <div class="drive-step">
+          <div class="drive-dot">4</div>
+          <div class="drive-content">
+            <div class="drive-label">MDFLOW-DRIVE-PASTA-LEAD-v1 executa</div>
+            <div class="drive-sub">Google Drive API → cria pasta + 4 subpastas</div>
+          </div>
+        </div>
+        <div class="drive-step">
+          <div class="drive-dot" style="background: rgba(79,255,176,0.15); border-color: var(--accent3); color: var(--accent3);">✓</div>
+          <div class="drive-content">
+            <div class="drive-label" style="color: var(--accent3);">UPDATE leads SET google_drive_folder_id</div>
+            <div class="drive-sub">Idempotente — nova chamada retorna noop se pasta já existe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 6 — DOCUMENTOS 3 TIERS -->
+  <div id="s6" class="section">
+    <div class="section-header">
+      <span class="section-num">6</span>
+      <span class="section-icon">📎</span>
+      <h2>Sistema de Documentos — 3 Tiers</h2>
+    </div>
+
+    <div class="grid g3" style="margin-bottom: 20px;">
+
+      <div class="tier-card tc-blue">
+        <div class="tier-title" style="color: var(--accent5);">Tier 1 — Docs do Lead</div>
+        <span class="tier-badge tb-blue">restricao_id = NULL</span>
+        <ul class="tier-items">
+          <li><span class="dot"></span>RG, CNH, comprovante endereço</li>
+          <li><span class="dot"></span>Docs gerais do lead</li>
+          <li><span class="dot"></span>Upload via Lead Panel (aba Docs)</li>
+          <li><span class="dot"></span>Bucket: <span class="ic">leads-docs</span></li>
+        </ul>
+        <div style="margin-top:12px; padding-top:10px; border-top: 1px solid var(--border);">
+          <span class="status-pill sp-partial" style="font-size:0.68rem;">⚠️ Pendente no Lead Panel</span>
+        </div>
+      </div>
+
+      <div class="tier-card tc-orange">
+        <div class="tier-title" style="color: var(--accent4);">Tier 2 — Docs da Restrição</div>
+        <span class="tier-badge tb-orange">restricao_id = UUID</span>
+        <ul class="tier-items">
+          <li><span class="dot"></span>Comprovante de restrição</li>
+          <li><span class="dot"></span>Prints de bureau de crédito</li>
+          <li><span class="dot"></span>Via RestricaoPastaCard</li>
+          <li><span class="dot"></span>Bucket: <span class="ic">leads-docs</span></li>
+        </ul>
+        <div style="margin-top:12px; padding-top:10px; border-top: 1px solid var(--border);">
+          <span class="status-pill sp-done" style="font-size:0.68rem;">✅ Aba Restrições OK</span>
+        </div>
+      </div>
+
+      <div class="tier-card tc-green">
+        <div class="tier-title" style="color: var(--accent3);">Tier 3 — Docs Gerados</div>
+        <span class="tier-badge tb-green">processo_id = UUID</span>
+        <ul class="tier-items">
+          <li><span class="dot"></span>Após distribuição do lead</li>
+          <li><span class="dot"></span>Não existe no MdZap</li>
+          <li><span class="dot"></span>Apenas em /distribuicao</li>
+          <li><span class="dot"></span>E em /processos</li>
+        </ul>
+        <div style="margin-top:12px; padding-top:10px; border-top: 1px solid var(--border);">
+          <span class="status-pill sp-done" style="font-size:0.68rem;">✅ Fora do escopo MdZap</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card" style="border-color: rgba(255,209,102,0.25); background: rgba(255,209,102,0.04);">
+      <div class="card-title" style="color: var(--accent4);">Status da Aba Docs no Lead Panel</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; gap: 8px; align-items: flex-start; font-size: 0.82rem;">
+          <span style="color: var(--accent4);">⚠️</span>
+          <span style="color: var(--text-muted);">Atualmente exibe: Doc Reader results do WhatsApp (imagens/PDFs analisados pela Julia)</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: flex-start; font-size: 0.82rem;">
+          <span style="color: var(--accent2);">❌</span>
+          <span style="color: var(--text-muted);">Falta: Upload Tier 1 real via <span class="ic">DocumentosUploadCentral</span></span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: flex-start; font-size: 0.82rem;">
+          <span style="color: var(--accent2);">❌</span>
+          <span style="color: var(--text-muted);">Falta: Lista via <span class="ic">useLeadDocs</span> hook com filtro Tier 1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 7 — WEBHOOKS -->
+  <div id="s7" class="section">
+    <div class="section-header">
+      <span class="section-num">7</span>
+      <span class="section-icon">🔗</span>
+      <h2>Webhooks n8n — MdZap</h2>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 16px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Webhook</th>
+            <th>Prefixo</th>
+            <th>Status</th>
+            <th>Função</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="ic">/MDZAP - Enviar Mensagem FE</span></td>
+            <td><span class="status-pill" style="background: rgba(124,109,255,0.1); color: var(--accent); font-size:0.7rem;">mdzap/</span></td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color: var(--text-muted);">Envio de mensagens pelo frontend</td>
+          </tr>
+          <tr>
+            <td><span class="ic">/MDZAP - Inbound Upsert Lead</span></td>
+            <td><span class="status-pill" style="background: rgba(124,109,255,0.1); color: var(--accent); font-size:0.7rem;">mdzap/</span></td>
+            <td><span class="status-pill sp-done">✅ Atualizado</span></td>
+            <td style="color: var(--text-muted);">Cria/atualiza lead + Drive fire-and-forget</td>
+          </tr>
+          <tr>
+            <td><span class="ic">/MDZAP - Document Received</span></td>
+            <td><span class="status-pill" style="background: rgba(124,109,255,0.1); color: var(--accent); font-size:0.7rem;">mdzap/</span></td>
+            <td><span class="status-pill sp-partial">⚠️ 3 nodes</span></td>
+            <td style="color: var(--text-muted);">Docs WhatsApp → storage (expandir para ~15)</td>
+          </tr>
+          <tr>
+            <td><span class="ic">/MDZAP - AI Composer</span></td>
+            <td><span class="status-pill" style="background: rgba(124,109,255,0.1); color: var(--accent); font-size:0.7rem;">mdzap/</span></td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color: var(--text-muted);">Compositor de mensagens com IA</td>
+          </tr>
+          <tr>
+            <td><span class="ic">/MDZAP - Triagem</span></td>
+            <td><span class="status-pill" style="background: rgba(124,109,255,0.1); color: var(--accent); font-size:0.7rem;">mdzap/</span></td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color: var(--text-muted);">Fluxo de triagem de leads</td>
+          </tr>
+          <tr>
+            <td><span class="ic">/MDZAP - Lead Sync</span></td>
+            <td><span class="status-pill" style="background: rgba(124,109,255,0.1); color: var(--accent); font-size:0.7rem;">mdzap/</span></td>
+            <td><span class="status-pill sp-done">✅ Ativo</span></td>
+            <td style="color: var(--text-muted);">Sync lead → kanban CRM</td>
+          </tr>
+          <tr>
+            <td><span class="ic">WH-AUD-01 Auditorias Disparar</span></td>
+            <td><span class="status-pill" style="background: rgba(79,255,176,0.1); color: var(--accent3); font-size:0.7rem;">mdflow/</span></td>
+            <td><span class="status-pill sp-done">✅ Atualizado</span></td>
+            <td style="color: var(--text-muted);">Auditoria Boa Vista + filtro protestos</td>
+          </tr>
+          <tr>
+            <td><span class="ic">N8N-REL-CONSULTA</span></td>
+            <td><span class="status-pill" style="background: rgba(79,255,176,0.1); color: var(--accent3); font-size:0.7rem;">mdflow/</span></td>
+            <td><span class="status-pill sp-done">✅ Corrigido</span></td>
+            <td style="color: var(--text-muted);">Consulta restrições — 3 nós reescritos</td>
+          </tr>
+          <tr>
+            <td><span class="ic">MDFLOW-DRIVE-PASTA-LEAD-v1</span></td>
+            <td><span class="status-pill" style="background: rgba(79,255,176,0.1); color: var(--accent3); font-size:0.7rem;">mdflow/</span></td>
+            <td><span class="status-pill sp-done">✅ Novo (E7)</span></td>
+            <td style="color: var(--text-muted);">Cria pasta Google Drive ao criar lead</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.04);">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
+        <span style="color: var(--accent2); font-size: 1rem;">⚠️</span>
+        <span><strong style="color: var(--accent2);">Regra Crítica:</strong> <span style="color: var(--text-muted);">Webhooks MdZap usam prefixo <span class="ic">mdzap/</span> — NUNCA usar <span class="ic">mdflow/</span> para fluxos originados do WhatsApp</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 8 — BUGS -->
+  <div id="s8" class="section">
+    <div class="section-header">
+      <span class="section-num">8</span>
+      <span class="section-icon">🐛</span>
+      <h2>Bugs Conhecidos</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+
+      <div class="bug-card bc-red">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <span class="status-pill sp-block">P0 — Pendente</span>
+          <span style="color: var(--accent2); font-weight: 700; font-size: 0.9rem;">BUG-04 — Histórico Inconsistente</span>
+        </div>
+        <div class="bug-file">src/components/mdzap/MdzapConversaTimeline.tsx</div>
+        <div class="bug-desc">
+          MdzapConversaTimeline mostra dados incorretos ou faltantes no histórico de conversas.
+          Possíveis causas: query sem filtro <span class="ic">deleted_at</span>, RLS incorreta para o tenant atual, ou divergência de timezone entre banco e frontend.
+          Status: não investigado — prioridade P0 para próxima sessão.
+        </div>
+      </div>
+
+      <div class="bug-card bc-yellow">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <span class="status-pill sp-pend">P1 — Excluído do escopo</span>
+          <span style="color: var(--accent4); font-weight: 700; font-size: 0.9rem;">BUG-02 — Document Received (3 nodes)</span>
+        </div>
+        <div class="bug-file">/MDZAP - Document Received</div>
+        <div class="bug-desc">
+          Workflow simplista — comprovantes recebidos pelo WhatsApp não salvam corretamente em <span class="ic">processos_documentos</span>.
+          Necessário expandir de 3 para ~15 nodes: upload para Storage, INSERT Tier 1, sync com Drive.
+          Decisão: tratar separadamente, fora do escopo atual do MdZap.
+        </div>
+      </div>
+
+      <div class="bug-card bc-green">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <span class="status-pill sp-done">✅ Corrigido</span>
+          <span style="color: var(--accent3); font-weight: 700; font-size: 0.9rem;">BUG-01 — N8N-REL-CONSULTA Inativo</span>
+        </div>
+        <div class="bug-file">N8N-REL-CONSULTA (ID: 86F1yHKNlR80MBlR)</div>
+        <div class="bug-desc">
+          Workflow reativado. 3 nós reescritos utilizando <span class="ic">this.helpers.httpRequest()</span> para garantir compatibilidade com a versão atual do n8n.
+        </div>
+      </div>
+
+      <div class="bug-card bc-green">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <span class="status-pill sp-done">✅ Corrigido</span>
+          <span style="color: var(--accent3); font-weight: 700; font-size: 0.9rem;">BUG-03 — Protestos de Cartório</span>
+        </div>
+        <div class="bug-file">WH-AUD-01 Auditorias Disparar (ID: BKLW2Egnxd1xCnjL)</div>
+        <div class="bug-desc">
+          Filtro adicionado em WH-AUD-01. Protestos de cartório aparecem no comprovante da auditoria mas não são mais cadastrados como restrições processáveis — comportamento correto conforme regra de negócio.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SEÇÃO 9 — ROADMAP -->
+  <div id="s9" class="section">
+    <div class="section-header">
+      <span class="section-num">9</span>
+      <span class="section-icon">🗺️</span>
+      <h2>Roadmap Pendente</h2>
+    </div>
+
+    <div class="roadmap">
+
+      <div class="roadmap-phase">
+        <div class="roadmap-dot rd-urgent">P0</div>
+        <div class="roadmap-content">
+          <div class="roadmap-label">Urgente</div>
+          <div class="roadmap-title">F-BUGS — BUG-04 Histórico</div>
+          <ul class="roadmap-items">
+            <li>Investigar MdzapConversaTimeline — query + RLS + timezone</li>
+            <li>Verificar filtro deleted_at na query principal</li>
+            <li>Confirmar org_id correto para isolamento tenant</li>
+            <li>Corrigir histórico inconsistente de conversas</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="roadmap-phase">
+        <div class="roadmap-dot rd-next">↑</div>
+        <div class="roadmap-content">
+          <div class="roadmap-label">Próximo</div>
+          <div class="roadmap-title">F-DOCS — Upgrade Aba Docs</div>
+          <ul class="roadmap-items">
+            <li>Substituir/complementar Doc Reader view por Tier 1+2 real</li>
+            <li>Adicionar DocumentosUploadCentral na aba Docs do Lead Panel</li>
+            <li>Usar useLeadDocs hook para listar Tier 1 (restricao_id IS NULL)</li>
+            <li>RestricaoPastaCard já implementado em Restrições — reusar para Tier 2</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="roadmap-phase">
+        <div class="roadmap-dot rd-next">↑</div>
+        <div class="roadmap-content">
+          <div class="roadmap-label">Próximo</div>
+          <div class="roadmap-title">F-DADOS — Completar Aba Dados</div>
+          <ul class="roadmap-items">
+            <li>Adicionar campos: email, endereço (rua/cidade/CEP)</li>
+            <li>Seletor de advogado responsável — verificar tabela usuarios</li>
+            <li>Atualizar saveLead para incluir novos campos</li>
+            <li>Verificar schema: leads possui esses campos?</li>
+            <li>Score de qualificação editável (INT ou categórico)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="roadmap-phase">
+        <div class="roadmap-dot rd-wait">?</div>
+        <div class="roadmap-content">
+          <div class="roadmap-label">Aguardando Christian</div>
+          <div class="roadmap-title">F-SDR2-SDR3 — Novos Agentes</div>
+          <ul class="roadmap-items">
+            <li>Definir perfil dos 2 agentes adicionais (Christian)</li>
+            <li>Criar prompts e comportamentos específicos</li>
+            <li>Conectar ao mesmo sistema de leads MdZap</li>
+            <li>Decidir: número WhatsApp compartilhado ou separado?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="roadmap-phase">
+        <div class="roadmap-dot rd-wait">?</div>
+        <div class="roadmap-content">
+          <div class="roadmap-label">Aguardando decisão</div>
+          <div class="roadmap-title">F-ASSINATURA — Contrato Digital</div>
+          <ul class="roadmap-items">
+            <li>Decidir: ZapSign | D4Sign | outro fornecedor</li>
+            <li>Criar workflow n8n para envio e webhook de confirmação</li>
+            <li>Botão "Assinar" no Lead Panel</li>
+            <li>Status ag_assinatura → ag_documentos após assinar</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="roadmap-phase">
+        <div class="roadmap-dot rd-next" style="background: rgba(91,196,245,0.1); border-color: var(--accent5); color: var(--accent5);">⟳</div>
+        <div class="roadmap-content">
+          <div class="roadmap-label">Depois do MdZap pronto</div>
+          <div class="roadmap-title">F-JULIA — Elaboração Completa</div>
+          <ul class="roadmap-items">
+            <li>Elaboração completa dos prompts da Julia</li>
+            <li>Fluxo conversacional detalhado ponta a ponta</li>
+            <li>Detecção e resposta automática a tipos de restrição</li>
+            <li>Handoff inteligente para atendente humano</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SEÇÃO 10 — COMPONENTES SHARED -->
+  <div id="s10" class="section">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-icon">♻️</span>
+      <h2>Componentes Shared — Reutilizáveis</h2>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th style="text-align:center;">MdZap</th>
+            <th style="text-align:center;">CRM</th>
+            <th style="text-align:center;">Clientes</th>
+            <th style="text-align:center;">Distribuição</th>
+            <th style="text-align:center;">Processos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="ic">ClienteDrawerTabRestricoes</span></td>
+            <td class="yes" style="text-align:center;">✅ Aba 2</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="no" style="text-align:center;">—</td>
+          </tr>
+          <tr>
+            <td><span class="ic">ClienteDrawerTabDocumentosLead</span></td>
+            <td class="partial" style="text-align:center;">⚠️ Pendente</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="no" style="text-align:center;">—</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="no" style="text-align:center;">—</td>
+          </tr>
+          <tr>
+            <td><span class="ic">ClienteDrawerTabDocumentos</span></td>
+            <td class="no" style="text-align:center;">—</td>
+            <td class="no" style="text-align:center;">—</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="no" style="text-align:center;">—</td>
+            <td class="no" style="text-align:center;">—</td>
+          </tr>
+          <tr>
+            <td><span class="ic">DocumentoItem</span></td>
+            <td class="no" style="text-align:center;">—</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+          </tr>
+          <tr>
+            <td><span class="ic">RestricaoPastaCard</span></td>
+            <td class="yes" style="text-align:center;">via Restr.</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+          </tr>
+          <tr>
+            <td><span class="ic">DocumentosUploadCentral</span></td>
+            <td class="partial" style="text-align:center;">⚠️ Pendente</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="no" style="text-align:center;">—</td>
+            <td class="no" style="text-align:center;">—</td>
+          </tr>
+          <tr>
+            <td><span class="ic">CrmLeadNotas</span></td>
+            <td class="yes" style="text-align:center;">✅ Aba 4</td>
+            <td class="yes" style="text-align:center;">✅</td>
+            <td class="no" style="text-align:center;">—</td>
+            <td class="no" style="text-align:center;">—</td>
+            <td class="no" style="text-align:center;">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 11 — PERGUNTAS ABERTAS -->
+  <div id="s11" class="section">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-icon">❓</span>
+      <h2>Perguntas Abertas</h2>
+    </div>
+
+    <div class="grid g2">
+      <div>
+        <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Framework (Q1–Q8)</div>
+
+        <div class="q-card">
+          <div class="q-id">Q1</div>
+          <div class="q-text">SDR 2 e SDR 3 — que perfis terão? Outro serviço, outro canal, ou especialização?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">Q2</div>
+          <div class="q-text">Auditoria somente Boa Vista (confirmado) — quais outros bureaus serão integrados no futuro?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">Q3</div>
+          <div class="q-text">Contrato assinado digitalmente via ZapSign, ou PDF + foto presencial?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">Q4</div>
+          <div class="q-text">Lead sem restrições processáveis — arquivar automaticamente ou oferecer outro serviço?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">Q5</div>
+          <div class="q-text">Lead panel deve permitir criar restrições manualmente? (sim, componente já permite via aba Restrições)</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">Q6</div>
+          <div class="q-text">Lead → cliente na distribuição usa mesmo registro com cliente_id. Confirmado. Como funciona para lead duplicado?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">Q7</div>
+          <div class="q-text">3 SDRs compartilham mesmo número WhatsApp ou números separados por agente?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">Q8</div>
+          <div class="q-text">Existe meta de SLA entre primeiro contato e distribuição? (ex: 24h, 48h, 7 dias)</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Documentos (D1–D8)</div>
+
+        <div class="q-card">
+          <div class="q-id">D1</div>
+          <div class="q-text"><span class="ic">processos_documentos</span> é SSOT único — confirmado. Mas e <span class="ic">leads_documentos</span>? Existe ou é alias?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">D2</div>
+          <div class="q-text">Lead → cliente: docs ganham <span class="ic">cliente_id</span>. Como funciona operacionalmente? Migração automática?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">D3</div>
+          <div class="q-text">Bucket <span class="ic">mdzap-media</span> vs <span class="ic">leads-docs</span> — qual bucket para docs recebidos pelo WhatsApp?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">D4</div>
+          <div class="q-text">Conversão imagem → PDF: realizada no n8n (Cloud Functions) ou no frontend antes do upload?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">D5</div>
+          <div class="q-text">Rename inline de documento: atualiza banco E renomeia no Storage simultaneamente?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">D6</div>
+          <div class="q-text">Docs Tier 3 (tramitação) — deletáveis por quem? Apenas admin ou qualquer jurídico?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">D7</div>
+          <div class="q-text"><span class="ic">RestricaoPastaCard</span> está com 494 linhas — refactor necessário ou OK por ora?</div>
+        </div>
+        <div class="q-card">
+          <div class="q-id">D8</div>
+          <div class="q-text">Página Documentos Pendentes — lista qual tier? Tier 1, Tier 2 ou ambos?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 12 — ARQUIVOS CRÍTICOS -->
+  <div id="s12" class="section">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <span class="section-icon">📂</span>
+      <h2>Arquivos Críticos</h2>
+    </div>
+
+    <div class="file-group">
+      <div class="file-group-header">Lead Panel — MdZap</div>
+      <div class="file-item">
+        <div class="file-path">src/components/mdzap/MdzapLeadPanel.tsx</div>
+        <div class="file-note">7 abas · 550+ linhas · orquestrador</div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">src/components/mdzap/MdzapLeadMemoryPanel.tsx</div>
+        <div class="file-note">aba Memória · mdzap_lead_memory</div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">src/components/mdzap/MdzapConversaTimeline.tsx</div>
+        <div class="file-note" style="color: var(--accent2);">⚠️ BUG-04 — investigar</div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">src/components/mdzap/MdzapChatPanel.tsx</div>
+        <div class="file-note">orquestrador · leadPanelOpen state</div>
+      </div>
+    </div>
+
+    <div class="file-group">
+      <div class="file-group-header">Componentes Shared — Reutilizáveis</div>
+      <div class="file-item">
+        <div class="file-path">src/components/shared/cliente_drawer/tabs/ClienteDrawerTabRestricoes.tsx</div>
+        <div class="file-note" style="color: var(--accent3);">✅ já integrada ao Lead Panel</div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">src/components/shared/cliente_drawer/tabs/ClienteDrawerTabDocumentosLead.tsx</div>
+        <div class="file-note" style="color: var(--accent4);">⚠️ pendente integração</div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">src/components/shared/cliente_drawer/tabs/DocumentoItem.tsx</div>
+        <div class="file-note">badge Drive · webhook lixeira</div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">src/hooks/useRestricoes.ts</div>
+        <div class="file-note">count para badge Lead Panel</div>
+      </div>
+    </div>
+
+    <div class="file-group">
+      <div class="file-group-header">Workflows n8n</div>
+      <div class="file-item">
+        <div class="file-path">MDFLOW-DRIVE-PASTA-LEAD-v1</div>
+        <div class="file-note"><span class="ic" style="font-size:0.68rem;">ID: a3se07X6ObxgQWbB</span></div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">/MDZAP - Inbound Upsert Lead</div>
+        <div class="file-note"><span class="ic" style="font-size:0.68rem;">ID: A0DEvhxjfzhJmGbU</span></div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">WH-AUD-01 Auditorias Disparar</div>
+        <div class="file-note"><span class="ic" style="font-size:0.68rem;">ID: BKLW2Egnxd1xCnjL</span></div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">N8N-REL-CONSULTA</div>
+        <div class="file-note"><span class="ic" style="font-size:0.68rem;">ID: 86F1yHKNlR80MBlR</span></div>
+      </div>
+    </div>
+
+    <div class="file-group">
+      <div class="file-group-header">Schema — Tabelas Críticas</div>
+      <div class="file-item">
+        <div class="file-path">leads</div>
+        <div class="file-note">+ <span class="ic" style="font-size:0.68rem;">google_drive_folder_id TEXT</span></div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">restricoes</div>
+        <div class="file-note">+ <span class="ic" style="font-size:0.68rem;">drive_pasta_id TEXT</span></div>
+      </div>
+      <div class="file-item">
+        <div class="file-path">processos_documentos</div>
+        <div class="file-note"><span class="ic" style="font-size:0.68rem;">origem · google_drive_id · drive_deleted_at</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · MdZap Plano Mestre v2 · 06/04/2026
+  </div>
+
+</main>
+
+<script>
+  // Sidebar active link on scroll
+  const sections = document.querySelectorAll('.section, #hero');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navItems.forEach(item => {
+          item.classList.remove('active');
+          if (item.getAttribute('href') === '#' + id) {
+            item.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '-60px 0px -60px 0px' });
+
+  sections.forEach(section => {
+    if (section.id) observer.observe(section);
+  });
+
+  // Smooth scroll
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(item.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
