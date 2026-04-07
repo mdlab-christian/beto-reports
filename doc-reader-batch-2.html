@@ -1,0 +1,3139 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><title>Doc Reader — Batch 2</title>
+<style>
+:root{--bg:#0d0f18;--srf:#161926;--card:#1e2235;--brd:#2a2f45;--txt:#e8e6e3;--muted:#8a8fa8;--pri:#20c997;--warn:#f59e0b;--err:#ef4444;--ok:#22c55e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:Inter,sans-serif;font-size:13px;padding:24px}
+h1{font-family:Manrope,sans-serif;font-size:24px;color:var(--pri);margin-bottom:4px}
+h2{font-family:Manrope,sans-serif;font-size:15px;color:var(--txt);margin:24px 0 12px;border-bottom:1px solid var(--brd);padding-bottom:6px}
+.meta{color:var(--muted);font-size:12px;margin-bottom:24px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.kpi-lbl{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-family:Manrope,sans-serif;font-size:28px;font-weight:700;margin-top:4px}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}.pri{color:var(--pri)}
+table{width:100%;border-collapse:collapse;background:var(--srf);border-radius:10px;overflow:hidden;margin-bottom:24px}
+th{background:var(--card);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:10px 12px;text-align:left;border-bottom:1px solid var(--brd);white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid var(--brd);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--card)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.badge.ok{background:rgba(34,197,94,.15);color:var(--ok)}.badge.warn{background:rgba(245,158,11,.15);color:var(--warn)}.badge.err{background:rgba(239,68,68,.15);color:var(--err)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px}.sm{font-size:11px}.nil{color:var(--brd)}
+.lnk{color:var(--pri);text-decoration:none;font-size:12px}
+.bar{background:var(--brd);border-radius:4px;height:8px;width:160px;overflow:hidden}
+.fill{background:var(--pri);height:100%;border-radius:4px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sec{background:var(--srf);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.prompt{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;white-space:pre-wrap;max-height:400px;overflow-y:auto;line-height:1.6}
+.ow{overflow-x:auto}
+</style></head><body>
+<h1>Doc Reader — Batch #2</h1>
+<p class="meta">Gerado em 07/04/2026, 14:44:21 · 72 pastas · Duração: 876s</p>
+<div class="kpis">
+  <div class="kpi"><div class="kpi-lbl">Docs Processados</div><div class="kpi-val pri">622</div></div>
+  <div class="kpi"><div class="kpi-lbl">Legíveis</div><div class="kpi-val ok">242</div></div>
+  <div class="kpi"><div class="kpi-lbl">Parcialmente Legíveis</div><div class="kpi-val warn">72</div></div>
+  <div class="kpi"><div class="kpi-lbl">Ilegíveis/Erro</div><div class="kpi-val err">308</div></div>
+  <div class="kpi"><div class="kpi-lbl">Taxa de Sucesso</div><div class="kpi-val ok">50%</div></div>
+  <div class="kpi"><div class="kpi-lbl">Pastas com Docs</div><div class="kpi-val pri">72</div></div>
+</div>
+<div class="cols">
+  <div class="sec"><h2 style="margin-top:0">Tipos de Documento</h2><table><thead><tr><th>Tipo</th><th>Qtd</th><th>%</th></tr></thead><tbody><tr><td>outro</td><td>445</td><td>72%</td></tr>
+<tr><td>comprovante_residencia</td><td>53</td><td>9%</td></tr>
+<tr><td>extrato_bancario</td><td>39</td><td>6%</td></tr>
+<tr><td>cpf</td><td>26</td><td>4%</td></tr>
+<tr><td>rg</td><td>25</td><td>4%</td></tr>
+<tr><td>ctps</td><td>23</td><td>4%</td></tr>
+<tr><td>cnh</td><td>6</td><td>1%</td></tr>
+<tr><td>holerite</td><td>3</td><td>0%</td></tr>
+<tr><td>contracheque</td><td>2</td><td>0%</td></tr></tbody></table></div>
+  <div class="sec"><h2 style="margin-top:0">Coverage de Campos</h2><table><thead><tr><th>Campo</th><th>Qtd</th><th></th><th>%</th></tr></thead><tbody><tr><td class="mono sm">dados_pessoais.nome</td><td>302</td><td><div class="bar"><div class="fill" style="width:49%"></div></div></td><td>49%</td></tr>
+<tr><td class="mono sm">dados_pessoais.cpf</td><td>267</td><td><div class="bar"><div class="fill" style="width:43%"></div></div></td><td>43%</td></tr>
+<tr><td class="mono sm">dados_pessoais.data_nascimento</td><td>249</td><td><div class="bar"><div class="fill" style="width:40%"></div></div></td><td>40%</td></tr>
+<tr><td class="mono sm">endereco.uf</td><td>156</td><td><div class="bar"><div class="fill" style="width:25%"></div></div></td><td>25%</td></tr>
+<tr><td class="mono sm">endereco.cidade</td><td>153</td><td><div class="bar"><div class="fill" style="width:25%"></div></div></td><td>25%</td></tr>
+<tr><td class="mono sm">endereco.logradouro</td><td>102</td><td><div class="bar"><div class="fill" style="width:16%"></div></div></td><td>16%</td></tr>
+<tr><td class="mono sm">dados_pessoais.sexo</td><td>97</td><td><div class="bar"><div class="fill" style="width:16%"></div></div></td><td>16%</td></tr>
+<tr><td class="mono sm">endereco.cep</td><td>94</td><td><div class="bar"><div class="fill" style="width:15%"></div></div></td><td>15%</td></tr>
+<tr><td class="mono sm">dados_bancarios.banco</td><td>93</td><td><div class="bar"><div class="fill" style="width:15%"></div></div></td><td>15%</td></tr>
+<tr><td class="mono sm">endereco.numero</td><td>92</td><td><div class="bar"><div class="fill" style="width:15%"></div></div></td><td>15%</td></tr>
+<tr><td class="mono sm">dados_pessoais.nacionalidade</td><td>84</td><td><div class="bar"><div class="fill" style="width:14%"></div></div></td><td>14%</td></tr>
+<tr><td class="mono sm">endereco.bairro</td><td>78</td><td><div class="bar"><div class="fill" style="width:13%"></div></div></td><td>13%</td></tr>
+<tr><td class="mono sm">dados_bancarios.conta</td><td>53</td><td><div class="bar"><div class="fill" style="width:9%"></div></div></td><td>9%</td></tr>
+<tr><td class="mono sm">profissao_renda.empregador</td><td>45</td><td><div class="bar"><div class="fill" style="width:7%"></div></div></td><td>7%</td></tr>
+<tr><td class="mono sm">dados_pessoais.rg</td><td>41</td><td><div class="bar"><div class="fill" style="width:7%"></div></div></td><td>7%</td></tr>
+<tr><td class="mono sm">profissao_renda.renda_mensal</td><td>40</td><td><div class="bar"><div class="fill" style="width:6%"></div></div></td><td>6%</td></tr>
+<tr><td class="mono sm">endereco.complemento</td><td>36</td><td><div class="bar"><div class="fill" style="width:6%"></div></div></td><td>6%</td></tr>
+<tr><td class="mono sm">profissao_renda.profissao</td><td>34</td><td><div class="bar"><div class="fill" style="width:5%"></div></div></td><td>5%</td></tr>
+<tr><td class="mono sm">dados_pessoais.naturalidade</td><td>33</td><td><div class="bar"><div class="fill" style="width:5%"></div></div></td><td>5%</td></tr>
+<tr><td class="mono sm">dados_pessoais.estado_civil</td><td>26</td><td><div class="bar"><div class="fill" style="width:4%"></div></div></td><td>4%</td></tr></tbody></table></div>
+</div>
+<h2>Resultados (primeiros 250 de 622)</h2>
+<div class="ow"><table><thead><tr><th>Arquivo</th><th>Tipo</th><th>Qualidade</th><th>Nome</th><th>CPF</th><th>Nascimento</th><th>Cidade/UF</th><th>Profissão</th><th># Campos</th><th></th></tr></thead><tbody><tr>
+      <td class="mono sm">4 - id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BEATRIZ PEREIRA SOARES PEREIRA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">04/04/1981</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1zI_0HrlXny_4MzN1LIyqIa0P0hRZA7tp/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - receita (1).pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BEATRIZ PEREIRA SOARES PEREIRA</td>
+      <td class="mono">001.177.430-46</td>
+      <td class="mono">04/04/1981</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1zIIP9gGcoUwGasZ4Ykd9HA6PvjmlFyvG/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Banco do Brasil 1747 25.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BEATRIZ PEREIRA SOARES PEREIRA</td>
+      <td class="mono">001.177.430-46</td>
+      <td class="mono">04/04/1981</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1z6CX1H7A-8Bx5cG0TIpwJDQo7b4miPJR/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Boa Vista.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BEATRIZ DOS SANTOS THIESEN</td>
+      <td class="mono">037.965.200-57</td>
+      <td class="mono">15/09/1997</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1xzdM-nNxnXyrjADip11Nz_G8USPyv7M7/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Hipercard 423 37.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>BEATRIZ DOS SANTOS THIESEN</td>
+      <td class="mono">037.965.200-57</td>
+      <td class="mono">15/09/1997</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1ySV4PfTllJ3SAmPrXlULsFwXBzEYppyC/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BEATRIZ DOS SANTOS THIESEN</td>
+      <td class="mono">037.965.200-57</td>
+      <td class="mono">15/09/1997</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1yPVcQS4Dcz9UhG5oXknEsQ_M1N2n0Mkd/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CLARICE MARIA DOS SANTOS</td>
+      <td class="mono">***.**-490.**</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>10</td>
+      <td><a href="https://drive.google.com/file/d/1xloahppbA4aStS9_FvDqf24oW36LSDW0/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Havan 194 98.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AFONSO DE BEM ESMERIO DA COSTA</td>
+      <td class="mono">848.662.920-91</td>
+      <td class="mono">09/02/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1hjsJEDAh98fE5tSIat-3eDOOtPM_mUua/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Boa Vista 194 98.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AFONSO DE BEM ESMERIO DA COSTA</td>
+      <td class="mono">848.662.920-91</td>
+      <td class="mono">09/02/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/13maSX1cCxcDiPUheecOJGFgTl6eEP0J1/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AFONSO DE BEM ESMERIO DA COSTA</td>
+      <td class="mono">848.662.920-91</td>
+      <td class="mono">09/02/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1yVDX4hcm38qz7QnVenqTQ7vxOvYCQW-6/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4 - ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AFONSO DE BEM ESMERIO DA COSTA</td>
+      <td class="mono">848.662.920-91</td>
+      <td class="mono">09/02/1995</td>
+      <td><span class="nil">-</span></td>
+      <td>VENDEDOR DE COMERCIO VAREJISTA</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1OIj_u2RXB-3jpwvzedZL11EHmsGWz-om/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - receita.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono">044.635.290-00</td>
+      <td class="mono">25/03/2000</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>2</td>
+      <td><a href="https://drive.google.com/file/d/1--yPNrDUhDQDwQLDS3nF1vh_XLapsJHn/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - residencia.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Ana Paula da Silva Rodrigues</td>
+      <td class="mono">044.635.290-00</td>
+      <td class="mono">25/03/2000</td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1-txoJpY66-x8-O2juU1C3DipgvWTTqj8/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4 - ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANA PAULA DA SILVA RODRIGUES</td>
+      <td class="mono">044.635.290-00</td>
+      <td class="mono">25/03/2000</td>
+      <td><span class="nil">-</span></td>
+      <td>AUXILIAR DE JUDICIARIO</td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1-r3XfFToIyp7pPTT_knoWQUh-flETI2x/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Santander 345 60.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANA PAULA DA SILVA RODRIGUES</td>
+      <td class="mono">044.635.290-00</td>
+      <td class="mono">25/03/2000</td>
+      <td>SÃO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/107HIDC8nmc4hfJ7XNwV_sgwPGpWcLwzI/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - receita.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALEX BITENCOURT MELLO</td>
+      <td class="mono">020.677.950-07</td>
+      <td class="mono">03/11/1989</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/14hmbzp6nTYOl-a-cK_YWMWqUwN3mhrs9/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALEX BITENCOURT MELLO</td>
+      <td class="mono">020.677.950-07</td>
+      <td class="mono">03/11/1989</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/15SfbsXlNSfXHiGxqTmrDZ7fpZJZPOTJ2/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Banco Original 522 07.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>JOÍTA JOSEFTA LOPES BITENCOURT</td>
+      <td class="mono">020.677.960-07</td>
+      <td class="mono">03/11/1969</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/14nFZA-m8KS4pLast83tK12SEWxq6NbHo/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4 - ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALEX BITENCOURT MELLO</td>
+      <td class="mono">020.677.950-07</td>
+      <td class="mono">03/11/1989</td>
+      <td>CANOA/RS/RS</td>
+      <td>Eletricista de Manutenção</td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/15J-0KHFyOVTMk25JApQakfVIkkdG_jft/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - residencia.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALEX BITENCOURT MELLO</td>
+      <td class="mono">020.677.950-07</td>
+      <td class="mono">03/11/1989</td>
+      <td>CANOA/RS/RS</td>
+      <td>Eletricista de Manutenção</td>
+      <td>16</td>
+      <td><a href="https://drive.google.com/file/d/16JWKOJVb5SbIBAX6cS9WhcbI9ZXmXpef/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Endereço - R. Guaiba, 14, Fundos, Eldorado do</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>2</td>
+      <td><a href="https://drive.google.com/file/d/1TtsMjdHTVXBFWq7JBMu9x2W_ehI8UO8l/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - .De Millus 419 03.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALICE RACHEL SILVEIRA VIEIRA</td>
+      <td class="mono">514.840.730-53</td>
+      <td class="mono">03/02/1977</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/16CgBT60YRIr7fNO-goZ5RB9Fudjhjwh2/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Banco do Brasil 2303 66.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALICE RACHEL SILVEIRA VIEIRA</td>
+      <td class="mono">514.840.730-53</td>
+      <td class="mono">06/02/1977</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/167wmbL12vxortsQtOJQMxwb0UXQcr2xR/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALICE RACHEL SILVEIRA VIEIRA</td>
+      <td class="mono">914.840.730-53</td>
+      <td class="mono">03/02/1977</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/15eIBC7OiZlpn_dYKpjeYGrXxdRbTtX3u/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4 - ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALICE RACHEL SILVEIRA VIEIRA</td>
+      <td class="mono">914.840.730-53</td>
+      <td class="mono">03/02/1977</td>
+      <td>Santana do Livramento/RS</td>
+      <td>AUX DE LIMPEZA</td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/16CcEXqIpaOjg_PxSHU8mrg1t-rfs67e_/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ARIANE DA SILVA LUCAS</td>
+      <td class="mono">855.482.350-87</td>
+      <td class="mono">03/04/1997</td>
+      <td>CAMAQUA/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1w5TXzSvg6stwdEPJKGfjHk_-hA_TbBov/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - RESIDENCIA.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ARIANE DA SILVA LUCAS</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1uzpvqjxvhQgQysYG32NIpwVias_y9x5j/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3 - CNH.pdf</td>
+      <td>cnh</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ARIANE DA SILVA LUCAS</td>
+      <td class="mono">855.482.350-87</td>
+      <td class="mono">03/04/1997</td>
+      <td>Porto Alegre/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1vo-5pf2XgHhaSzVxM87XqL65ieEgYcyD/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Ativos 1964 22.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANDREIA DE FATIMA DA SILVA SCHMIDT</td>
+      <td class="mono">904.404.800-78</td>
+      <td class="mono">07/10/1977</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1mA2lrot7j1A0vsrsfqQFuYPJjORQQTdJ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANDREIA DE FATIMA DA SILVA SCHMIDT</td>
+      <td class="mono">904.404.800-78</td>
+      <td class="mono">07/10/1977</td>
+      <td>FLORIANÓPOLIS/SC</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1mJRB4itdXs0NXX6WC79Z4VsmlTrcOKnV/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4- residência.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PAOLA SCHMIDT DA COSTA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1n9aFqCewZlZaPMNm5Siw9ZguKjLsGpE-/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>Andria F dos Anm da</td>
+      <td class="mono">124.93906.53-7</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Florianópolis/SC</td>
+      <td>AUXILIAR DE COZINHA</td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1mOvB3TuvHHhDM_plWtdUaEcLR8FbW-L9/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 -Riachuelo 1583 43.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>ANDRE D AVILA DALVIT</td>
+      <td class="mono">560.522.520-49</td>
+      <td class="mono">28/11/1971</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1mpl8922VhEXPDPFNBmgfi8Lz-l8PVia8/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - IResolve 9120 74.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANDRE D AVILA DALVIT</td>
+      <td class="mono">560.522.520-49</td>
+      <td class="mono">28/11/1991</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1muHPOKoW2lpto6zVQYipMe4PCKLoh9Yk/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Iresolve 177 35.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANDRE D AVILA DALVIT</td>
+      <td class="mono">500.502.520-49</td>
+      <td class="mono">28/11/1991</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1lWu_h6BKIh5Z_GQkB84DNY9odAyPy8bJ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Ativos 1106 11.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANDRE D AVILA DALVIT</td>
+      <td class="mono">560.522.620-49</td>
+      <td class="mono">28/11/1971</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1lSlMebdDIOAY-4yutQ9F01Ncd58k-XKX/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - São Leopoldo - Negresco Credipar 2400 39.</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANSELMO DA SILVA GARCIA</td>
+      <td class="mono">936.666.240-49</td>
+      <td class="mono">26/06/1979</td>
+      <td>SÃO LEOPOLDO/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/1ldefBtMbWAAAV-jqiVvouoYl9p4YtaHL/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Omni 1394 95.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANSELMO DA SILVA GARCIA</td>
+      <td class="mono">936.666.240-49</td>
+      <td class="mono">26/06/1979</td>
+      <td>SAO LEOPOLDO/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/1lsBWv4mQ0a-T6DFkj45RESvjY2nZ-TeX/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - renda.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>SAO LEOPOLDO/RS</td>
+      <td>OPERADOR DE MAQUINAS-FERRAMENTA CONVENCIONAIS</td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1lrY2ahP7cGBvv9YeDOTDo9EIXrKp9QWk/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4 - residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANSELMO DA SILVA GARCIA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>SAO LEOPOLDO/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1lddE7fKkEUXC2g_mrkrc0U3TcQzvwsC-/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3 - cnh.pdf</td>
+      <td>cnh</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANSELMO DA SILVA GARCIA</td>
+      <td class="mono">936.666.240-49</td>
+      <td class="mono">26/06/1979</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1l_vBAy3RTPX-KGgQq0h5uVKc_M2oVCNZ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - ALVORADA - Nu pagamentos 323 21.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JOSIMAR LORI NUNES DA SILVA</td>
+      <td class="mono">450.298.140-00</td>
+      <td class="mono">24/07/1965</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1n_OaoJ9to0igD4BVwwda1ObgyG4rGpsf/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Quero Quero 5025 89.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>JOSIMAR LORI NUNES DA SILVA</td>
+      <td class="mono">450.298.140-00</td>
+      <td class="mono">24/07/1965</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1nJmQi0quVMc-RnFwiyazYRz9oKoJ9oL1/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Riachuelo 3410 31.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JOSIMAR LORI NUNES DA SILVA</td>
+      <td class="mono">450.298.140-00</td>
+      <td class="mono">24/07/1965</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1ngXXPIiuJE1Z5LOpivQXJl3sYgADQwUe/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JOSNAR LORI NUNES DA SILVA</td>
+      <td class="mono">450.298.140-00</td>
+      <td class="mono">24/07/1965</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1nMb06qNMhDRuQSR2_7IzlNMJtk3xGF7o/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JOSNAR LORI NUNES DA SILVA</td>
+      <td class="mono">450.298.140-00</td>
+      <td class="mono">24/07/1965</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1nidgrhCsu-ViBf10CVcqZNOlcZ07hzOe/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>Rodrigo Oliveira</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1nvVf-nI3NmmYy-sxOamcJERw3Ohp5K1i/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS -Bourbon cartoes 440 70.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANGÉLICA OTTO DA SILVA</td>
+      <td class="mono">023.140.760-28</td>
+      <td class="mono">29/05/1990</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1v_B0msoNlSUcMUAjJFi1W-rOh6jkVcz6/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Mercado Pago 50 34.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>ANGÉLICA OTTO DA SILVA</td>
+      <td class="mono">025.140.760-28</td>
+      <td class="mono">29/05/1990</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/1v681YDPdi1GlH8Ev3HnuERVVsMLxq66M/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Mercado Pago 100 75.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>ANDELICIA OTTO DA SILVA</td>
+      <td class="mono">025.140.760-29</td>
+      <td class="mono">29/05/1990</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1v8KvGlvRLp7pcKT3Bo329HB8iCi4ZQUi/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Mercado Pago 231 01.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANGELICA OTTO DA SILVA</td>
+      <td class="mono">025.140.760-28</td>
+      <td class="mono">29/09/1990</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1v9AljnzB6u8Z14LKcDz8Aqno1yiHDZJK/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Mercado Pago 302 31.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>ANGELA OTTO DA SILVA</td>
+      <td class="mono">025.140.760-28</td>
+      <td class="mono">29/05/1990</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1vFRTNlX_H4_FG7jIZtWP-W4FJE-odOMz/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Mercado Pago 860 99.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANGÉLICA OTTO DA SILVA</td>
+      <td class="mono">025.140.760-28</td>
+      <td class="mono">29/09/1990</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1v9S3iDa7UhDq-ZlU0vrS9khPfZ3UYf6S/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ANGELICA OTTO DA SILVA</td>
+      <td class="mono">023.140.760-28</td>
+      <td class="mono">29/08/1990</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1vgbnvaGaSaiIu-TeeuJh50Ev8hv2H6ke/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Bradesco 1107 20.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AMANDA DA ROSA LINDEMAYER</td>
+      <td class="mono">032.451.000-43</td>
+      <td class="mono">12/06/1992</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1dakXagZJGPdOwZdGEL5_fajHCjxnX0In/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Boa Vista.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AMANDA DA ROSA LINDEMAYER</td>
+      <td class="mono">032.451.000-43</td>
+      <td class="mono">12/06/1992</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1dX4uIXEsSrx_lRKWaxGFMa3T8HLoRZig/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AMANDA DA ROSA LINDEMAYER</td>
+      <td class="mono">032.451.000-43</td>
+      <td class="mono">12/06/1992</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1dcg_tfufd2WTFE8C3dms5ZnmCTKupZ8q/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4 - ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AMANDA DA ROSA LINDEMAYER</td>
+      <td class="mono">032.451.000-43</td>
+      <td class="mono">12/06/1992</td>
+      <td><span class="nil">-</span></td>
+      <td>GERENTE DE LOJA E SUPERMERCADO</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1dO5mupw3a20pbeBgxLZmYM8_Zh9aQQuV/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3 - cnh.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>AMANDA DA ROSA LINDEMEYER</td>
+      <td class="mono">311.822.057-57</td>
+      <td class="mono">12/06/1992</td>
+      <td>RIO GRANDE DO SUL/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1dWNjEqYyMz19aCC2-uJ7TFqpphbsxkCt/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Nu Financeira 56 11.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ADRIANA APARECIDA DA SILVA SCHMIDT</td>
+      <td class="mono">761.914.000-04</td>
+      <td class="mono">07/10/1977</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/1lyS1_sZCSJ_9uMBy5bkI6Nhr43Iq-thZ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4 - residência.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>DOUGLAS TEIXEIRA CAMEJO PEREIRA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1kYSkE35AI7ueIcIkI-lUqreIqAG3sA-3/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WILLIAN DA LUZ FREITAS</td>
+      <td class="mono">063.501.965-54</td>
+      <td class="mono">19/08/1993</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1gLZFb_SorD1Fsv3iyigIJFCTGtADw4NE/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>Hallyon de Juba</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">19/08/1993</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/1gY8Vp6ApN1vaHeMd3zriDT_zt1te2G8S/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Banrisul 471 35.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WILLIAM ALVES CARDOSO</td>
+      <td class="mono">034.063.740-42</td>
+      <td class="mono">08/05/1994</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1cm8qOXspFrgdwYrHtCr3AF7rClyz5-QO/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WILLIAM ALVES CARDOSO</td>
+      <td class="mono">034.063.740-42</td>
+      <td class="mono">08/05/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1dIwQTS-aKAjPjdvtOmEBO95YplaXIuMk/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WILLIAM ALVES CARDOSO</td>
+      <td class="mono">034.063.740-42</td>
+      <td class="mono">08/05/1994</td>
+      <td><span class="nil">-</span></td>
+      <td>MECANICO DE MANUTENCAO DE MAQUINAS EM GERAL</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1d0oj3bSIV-fiWLrYUgmHoBLZ0RMbuH0n/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Mercado Pago 635 94.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALESSANDRA DOS SANTOS WINKELMAN</td>
+      <td class="mono">033.236.830-51</td>
+      <td class="mono">10/03/1962</td>
+      <td>SÃO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1fFFUD86jz2YfTnavAOoWilfpvpedrAMS/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Mercado Pago 401 29.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALESSANDRA DOS SANTOS WINKELMAN</td>
+      <td class="mono">033.236.890-51</td>
+      <td class="mono">10/03/1962</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1eb6cWIKmKphNUQ-OGQB8lRSoTuzdG9lX/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS-  Mercado Pago 274 24.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALESSANDRA DOS SANTOS WINKELMAN</td>
+      <td class="mono">033.236.830-51</td>
+      <td class="mono">10/03/1982</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1ev6E5-U7XwzJKUgTCFnS1ZKPDwD8eFjQ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Mercado Pago 61 75.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ALESSANDRA DOS SANTOS WINKEMANN</td>
+      <td class="mono">033.236.830-51</td>
+      <td class="mono">10/03/1962</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1egMZa9WMh5vWgWUFNdnz-uRB2GnFW51l/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">SAPUCAIA -Mercado Pago 95 82.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WILLIAM LUIS SANTOS DA SILVA</td>
+      <td class="mono">036.147.220-07</td>
+      <td class="mono">20/12/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1SUHYzkNhex5F_ZtMIq3UrGE4cerqCRs1/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">SAPUCAIA -Mercado Pago 111 20.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WILLIAM LUIS SANTOS DA SILVA</td>
+      <td class="mono">047.147.220-07</td>
+      <td class="mono">20/12/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1SjMvyDHj8vC8rZcCVlrIX4ZhBGkUK-Af/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">SAPUCAIA -Mercado Pago 138 44.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WILLIAM LUIS SANTOS DA SILVA</td>
+      <td class="mono">018.147.220-07</td>
+      <td class="mono">20/12/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1RQVmAKn37iI7s-S-01z8I36ZH3aoShPR/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">SAPUCAIA -Mercado Pago 140 16.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WILLIAM LUIZ SANTOS DA SILVA</td>
+      <td class="mono">036.147.220-07</td>
+      <td class="mono">20/12/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1Rd2pCWvLvsTgHsxjZ0vUgFGNTfwwjQ87/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ADRIANE MARIA VALENCA DE ASSIS</td>
+      <td class="mono">004.318.620-36</td>
+      <td class="mono">08/12/1968</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1X4qkHYLqQJc5tSgFsbRJ_SxWM86O0Gvx/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - Telefonica 843 64.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ADRIANE MARIA VALENÇA DE ASSIS</td>
+      <td class="mono">004.316.620-36</td>
+      <td class="mono">05/12/1961</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1YSmNuMWjUo9WyQbnmLFZiRyDj1utz-uX/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - Senffnet 464 65.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ADRIANE MARIA VALENÇA DE ASSIS</td>
+      <td class="mono">004.316.520-36</td>
+      <td class="mono">08/12/1969</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1XTFWCRM-ELxf8Q8VkVbUMQmceWzPvZq6/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3 - id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ADRIANE MARIA VALENCA DE ASSIS</td>
+      <td class="mono">004.318.620-36</td>
+      <td class="mono">08/12/1968</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1YUY7aizDoYx3DTwFZCan4cN0mU1OvDWx/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Banrisul 298 85.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WESLEY MATHEUS CARVALHO MARQUES</td>
+      <td class="mono">043.084.650-95</td>
+      <td class="mono">13/02/1998</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1cF8FBsqWoPGh4m9ADGzPx9N7w8GCBFpb/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WESLEY MATHEUS CARVALHO MARQUES</td>
+      <td class="mono">043.084.650-95</td>
+      <td class="mono">13/02/1998</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1cM0RhcT4RG5w7P-JBm0-zgtb7CzMnL9Q/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>LISIANA BEATRIZ DE CARVALHO</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>SÃO LEOPOLDO/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1cNcWDuGuSTnYzfvV2zzz5aQz3H5nn5UP/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">renda.pdf</td>
+      <td>contracheque</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WESLEY MATHEUS CARVALHO MARQUES</td>
+      <td class="mono">10.914.227/0001-04</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>SAPUCAIA DO SUL/RS</td>
+      <td>AJUDANTE DE ELETRICISTA</td>
+      <td>10</td>
+      <td><a href="https://drive.google.com/file/d/1cJyT7gANcGeo4-kCWnSf0LWDurMY_3pw/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>WESLEY MATHEUS CARVALHO MARQUES</td>
+      <td class="mono">043.084.650-95</td>
+      <td class="mono">13/02/1998</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1cN-EHJOSb1BjHCfdaBF8zwdMY0VQ1nBX/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF06042023_0001.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Wesley Matheus Carvalho Marques</td>
+      <td class="mono">043.084.650-95</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1cRNU4sfsAMw-xH3of8JUPqQX6u2AtSuE/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF06042023.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Wesley Matheus Carvalho Marques</td>
+      <td class="mono">043.084.650-95</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1byKGoc-n0CkNKLqA4ho85TrDtgq1ae5K/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Itau 3988 09.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>VILNANDES DE PAULA</td>
+      <td class="mono">617.519.100-59</td>
+      <td class="mono">18/05/1972</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1bLunOMv1c-z6hoaJtwjN11PvwBeNVtNB/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Telefonica 183 92.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>VILMA FERNANDES DE PAULA</td>
+      <td class="mono">617.519.100-59</td>
+      <td class="mono">18/05/1972</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1aHI6YZxyj8YTdWn4yGfKj8SL5_pTxevV/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Banrisul 243 34.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>VAILMAR FERNANDES DE PAULA</td>
+      <td class="mono">617.519.100-59</td>
+      <td class="mono">18/05/1972</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1bNHKk3RP4JUJRZPxpMd5mgDy5dImLSan/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Banrisul 327 04.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>VILDIMAR FERNANDES DE PAULA</td>
+      <td class="mono">617.519.100-59</td>
+      <td class="mono">18/05/1972</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1bBp8QlW_BIIKZP3OTW5Ns_RIMVbqkVyz/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Santrander 2229 09.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>VILMA FERNANDES DE PAULA</td>
+      <td class="mono">617.519.100-59</td>
+      <td class="mono">18/05/1972</td>
+      <td>SÃO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1bal5En9ginyG3hlbTqZ_Hb0WfQ49bSw7/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Santander 293 12.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JULIANA FERNANDES DE PAULA</td>
+      <td class="mono">617.519.100-59</td>
+      <td class="mono">18/05/1972</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1bhO_onG_UBF2VuhAut7H9sUSfVKjwIKd/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">receita.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>VILMAR FERNANDES DE PAULA</td>
+      <td class="mono">617.519.100-59</td>
+      <td class="mono">18/05/1972</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1bI_JWdIQKJpNAhYI9S0KqVLKm-6SlV_T/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>UILMAR FERNANDES DE PAULA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">18/05/1972</td>
+      <td>Porto Alegre/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1bF6u9k8dpZL8OJLn81bgOKU2Jp3smFLR/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Declaração de endereça para Vilmar..pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>Luciane Salete da Silva</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Sao Leopoldo/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1beShRzp3lG3ZmG0bHzez9vMbySzeEPTv/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Canoas -  Mercado Pago 282 71.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>SARA GREICE FOSCARINI GRACIOLA</td>
+      <td class="mono">021.359.790-07</td>
+      <td class="mono">23/09/1989</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/10De3OjbCVSNsaBGs-pYvTZri01Gkng96/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Boticario 110 64.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>SARA GREICE FOSCARINI GRACIOLA</td>
+      <td class="mono">021.359.790-07</td>
+      <td class="mono">23/09/1989</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1096K6bbNSZEqMdLdiW0yDMbruQREaELq/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Boticario 52 25.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>SARA GREICE FOSCARINI GRACIOLA</td>
+      <td class="mono">021.359.790-07</td>
+      <td class="mono">23/09/1989</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/11EPx0HOkBlNYhS-orZzhq1-D-OlwoHDl/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Canoas -  Mercado Pago 431 28.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>SARA GREICE FOSCARINI GRACIOLA</td>
+      <td class="mono">021.359.790-07</td>
+      <td class="mono">23/09/1989</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/11DZXt4YGZ9fIMTtfZJLhK7PHuveBnYUp/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Boticario 52 54.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>SARA GREICE FOSCARINI GRACIOLA</td>
+      <td class="mono">021.359.790-07</td>
+      <td class="mono">23/09/1989</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/10Wdkbw5rx-URoOrvJb_mHYgdU_opAA75/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>SARA GREICE FOSCARINI GRACIOLA</td>
+      <td class="mono">021.359.790-07</td>
+      <td class="mono">23/09/1989</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/10Vx2q5j15cJ_VzrMJJt2GXVwPo5tRCgN/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>SARA GREICE FOSCARINI GRACIOLA</td>
+      <td class="mono">021.359.790-07</td>
+      <td class="mono">23/09/1989</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>10</td>
+      <td><a href="https://drive.google.com/file/d/10TANGj7cCGi8lm97eHkJ3Vy2CJY_3N5Y/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF04042023_0001.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Roger Silveira Torres</td>
+      <td class="mono">030.169.610-16</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td>Advogado</td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1F334y6jTGkKsW6Zq75NQWIMCf6o2aDy0/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF04042023.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Roger Silveira Torres</td>
+      <td class="mono">030.169.610-16</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td>Advogado</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1F3MIACWfZvOcWV0z51AGo-qkme0AyYho/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">conta-completa-pdf (1).pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ROGER SILVEIRA TORRES</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>ESTEIO/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1EvEzuksovGmKAAawaRqCLmGRVNLLibQ9/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Santander 2923 70.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>QUELI REGINA RODRIGUES</td>
+      <td class="mono">008.041.630-65</td>
+      <td class="mono">03/02/1984</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1F68eJDYFLZxjfUz2piSX-BE9kbxjIb8m/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>QUÉLI REGINA RODRIGUES</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">03/02/1984</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1HBpCp5QRtjfSKQe3JVRlsegaAzCOapEi/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MARIA IZABEL BRAGA DA SILVA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1HFxuVjlOghh69aeTKkT_Wetxr1_b6LEh/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF22032023_0001.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Queli Regina Rodrigues</td>
+      <td class="mono">008.041.630-65</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1H0EblaAYrsj7pPkDUbd8Ku51he1-j9Qw/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">SAPUCAIA - Will Financiamento 97 45.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RAFAELA DE OLIVEIRA RODRIGUES</td>
+      <td class="mono">037.953.690-02</td>
+      <td class="mono">21/04/2003</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/12tPVsE56EwlbwJN3Ih6ul-7Z1r9rrf3M/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Banco Original 264 68.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RAFAELA DE OLIVEIRA RODRIGUES</td>
+      <td class="mono">037.953.690-02</td>
+      <td class="mono">21/04/2003</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/12urRlasWBxNNcmOlFvotOjeCeg_ADR4p/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Banco do Brasil 889 50.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RAFAELA DE OLIVEIRA RODRIGUES</td>
+      <td class="mono">037.953.690-02</td>
+      <td class="mono">21/04/2003</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/13CXZdBMnZzx9DEFTfc_3vHAUTsD7qK9P/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RAFAELA DE OLIVEIRA RODRIGUES</td>
+      <td class="mono">037.953.690-02</td>
+      <td class="mono">21/04/2003</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/134GyKxY5vTFmVJql_NqF9LizKWipIAUf/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>Patricia Fernanda Fidelis</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Santa Rosa de Lima/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/17mbSpX5ldFemlVUpcAWTEjNnnpPvNMfm/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Itau 41 87.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PATRICIA FERNANDA FIDELIS</td>
+      <td class="mono">012.886.690-03</td>
+      <td class="mono">07/05/1982</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/17gdISjrUAA9rM9IQEU2fdwNHshLWlZU0/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PATRICIA FERNANDA FIDELES</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">07/05/1982</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/17bxWog9lfnwI_Rz1h3rsnm8pZVuUf-jr/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF06042023_0001.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Patrícia Fernanda Fidelis</td>
+      <td class="mono">012.886.690-03</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/19yxaec0SLRUiq_PNDJGvxz_bFPRkuhVX/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF06042023.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Patricia Fernanda Fidelis</td>
+      <td class="mono">012.886.690-03</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td>Advogado</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/19tMFUtWKBMK75QBI6nZKIs8k0-v9AI0n/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Banrisul 321 65.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PRISCILA GISIELE MENDES</td>
+      <td class="mono">031.137.270-81</td>
+      <td class="mono">29/05/1999</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1K5lm_PZpwonv8kn60c1nbk_BXgrbRBG8/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Itau 116 56.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PRISCILA GISELE MENDES</td>
+      <td class="mono">031.137.270-81</td>
+      <td class="mono">29/05/1999</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/1IW-ALpp5SY-aQdoPMUX_bnuNtr-dsM99/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Boa Vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PRISCILA GISIELE MENDES</td>
+      <td class="mono">031.137.270-81</td>
+      <td class="mono">29/05/1999</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1IHyPerEarTK-kj-3JZQt_Qi74MWhlCNa/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6-RECEITA.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PRISCILA GISIELE MENDES</td>
+      <td class="mono">031.137.270-81</td>
+      <td class="mono">29/05/1999</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1IRdA9Ut4TR877g5aeO3OCHcbrDblIM7M/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - CTPS.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PRISCILA GISIELE MENDES</td>
+      <td class="mono">031.137.270-81</td>
+      <td class="mono">29/05/1999</td>
+      <td><span class="nil">-</span></td>
+      <td>TRABALHADOR POLIVALENTE DA CONFECCAO DE CALCADOS</td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1K8eF8llgfV0CF96R4Z-SJsgTo4S9eLW9/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CTPSDigital_02642884082_2022-12-06T18.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>PATRICIA ALVES DOS SANTOS</td>
+      <td class="mono">026.428.840-82</td>
+      <td class="mono">27/08/1992</td>
+      <td><span class="nil">-</span></td>
+      <td>SUPERVISOR DE CREDITO E COBRANCA</td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1HTVrSqFuZBQ5TO-BX02Pbzy5eIax6OFH/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF04042023.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Patrícia Alves dos Santos</td>
+      <td class="mono">026.428.840-82</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1J4YlMQ_w3xRpza00rFSxv21rVJM02QoV/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MARTA REGINA DE SOUZA CARVALHO</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">08/09/1976</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1qRR8OwZmaFDy4x3cSI3XPW7Pmoausayt/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4- residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARTA REGINA DE SOUZA CARVALHO</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1qSLhx2kzocgT418JaWt4rs9HX1rfZPdC/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6-ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARTA REGINA DE SOUZA CARVALHO</td>
+      <td class="mono">759.262.610-15</td>
+      <td class="mono">08/09/1976</td>
+      <td>GUARULHOS/SP</td>
+      <td>AUXILIAR DE LIMPEZA</td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/1qZ-BX-pOWm3TMViSymsIeTMNVwRkeKH-/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Senffnet 429 25.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARJORE LOPES KROLOW</td>
+      <td class="mono">010.476.500-37</td>
+      <td class="mono">08/10/1986</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1ncgOR-nDOm7dtn8mRMI-kGiwL1SwjJro/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARJORE LOPES KROLOW</td>
+      <td class="mono">010.476.500-37</td>
+      <td class="mono">08/10/1986</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1nekbyLUIKOiyEH_NwdEv59tE7O5pmFkV/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4- residência.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>NOVA SANTA RITA/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1m22KPZSXQmeXdTQyup80DMCEpllE9Rdo/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>cnh</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARJORE LOPES KROLOW</td>
+      <td class="mono">010.476.500-37</td>
+      <td class="mono">08/10/1986</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1nQ9mh4XoKiIbi1eneqIiTQvXTPEu7H_j/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARJORE LOPES KROLOW</td>
+      <td class="mono">010.476.500-37</td>
+      <td class="mono">08/10/1986</td>
+      <td><span class="nil">-</span></td>
+      <td>SUPERVISOR ADMINISTRATIVO</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1m3lSUXWkAsGxCO_EP0bfQRS693T0WXQi/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Itau 250 05.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MILENA DA SILVA DIAS</td>
+      <td class="mono">019.554.640-47</td>
+      <td class="mono">15/05/1987</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/1m_GpqlSidy5PnPjOFCwBDiNTZKJD9qGS/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Canoas - Redemetro 303 75.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MILENA DA SILVA DIAS</td>
+      <td class="mono">018.554.640-47</td>
+      <td class="mono">15/05/1967</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1lHQGqx8ndE07mNNHllWdiLqdgQuUSNfE/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - residencia.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MILENA DA SILVA DIAS</td>
+      <td class="mono">018.554.640-47</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>São Leopoldo/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1kyzRh5AA2Ujd2xXqHdf1XPvPr4AEmahU/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3 - id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MILENA DA SILVA DIAS</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">15/05/1987</td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1mZjsuaAvELx6kEsfX5YtzbsrDxnwc7Jw/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MILENA DA SILVA DIAS</td>
+      <td class="mono">018.554.640-47</td>
+      <td class="mono">15/05/1987</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1lQfQpbxw3GuID-DoZJCtnj8RuYOMIoNO/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Banco do Brasil 606 82.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARLISE DOS SANTOS DE MIRANDA</td>
+      <td class="mono">963.528.220-04</td>
+      <td class="mono">01/03/1978</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1jwEroOH2d8fcpfq-l9fq31k2ICdLOh_j/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Financeira Drebes - Lebes 196 69.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARLISE DOS SANTOS DE MIRANDA</td>
+      <td class="mono">963.528.220-04</td>
+      <td class="mono">01/03/1979</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1hoD16EPL82QLR_8Gc03Y2MnWTYlXSlHd/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Marlise dos Santos de Miranda</td>
+      <td class="mono">163.77025.49-2</td>
+      <td class="mono">01/08/1978</td>
+      <td>Canoas/RS</td>
+      <td>Cozinheiro RM I</td>
+      <td>16</td>
+      <td><a href="https://drive.google.com/file/d/1j_wr4KoYtKrLQ6D-Ht2nnBxl7fHnWxVk/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MARLISE DOS SANTOS DE MIRANDA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">01/07/1994</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1hvvslUt3Xey0AD4T318T4YpYWe-n8BsO/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARLIZE DO SANTOS DE MIRANDA</td>
+      <td class="mono">***.***.220-**</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>NOVA SANTA RITA/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1hxQluaAkY6iPcFxvZfLYm0anEUuX3CYu/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Drebes 1215 00.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MICHELE DA ROCHA LEHNEN</td>
+      <td class="mono">004.464.410-82</td>
+      <td class="mono">08/07/1981</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/1p8hrRaJ77XC5t4KNa0cY6hLtfFcXskWE/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Caixa 1950 40.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MICHELE DA ROCHA LEHNEN</td>
+      <td class="mono">004.464.410-82</td>
+      <td class="mono">08/07/1981</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/1qsn9qXgsGb9SpC68mUUNPfY7trJKtKhl/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MICHELE DA ROCHA LEHNEN</td>
+      <td class="mono">004.464.410-82</td>
+      <td class="mono">08/07/1981</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1p72d1GsFDs3z8d8pXcU90zevimPPKWmQ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MICHELE DA ROCHA LEHNEN</td>
+      <td class="mono">004.464.410-82</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1p1E_gAFhviojb_buKa5OwSKAIiJHBV2j/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MICHELE DA ROCHA LEHNEN</td>
+      <td class="mono">004.464.410-82</td>
+      <td class="mono">08/07/1981</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1p15X2T2c3pX_Dn05xaZzAnikqINPImEh/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MICHELE DA ROCHA LEHNEN</td>
+      <td class="mono">004.464.410-82</td>
+      <td class="mono">08/07/1981</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1p1Qj8CCzIqikvKSREaKifdwTeiULJ_DL/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Boticario 101 22 PRIMEIRA.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MATHEUS CORREA FERREIRA</td>
+      <td class="mono">964.652.750-00</td>
+      <td class="mono">25/09/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1kHxssv5NELGkda5_xH1OIMesSJpYcRfc/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Senffnet 356 52.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MATHEUS CORREA FERREIRA</td>
+      <td class="mono">964.662.750-00</td>
+      <td class="mono">25/09/1995</td>
+      <td>CURITIBA/PR</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1ixCsvEYBy0txdTdbSDrPnYwguIES27Bf/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Boticario 101 22 SEGUNDA .pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MATHEUS CORREA FERREIRA</td>
+      <td class="mono">964.652.750-00</td>
+      <td class="mono">25/09/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1jTndz7i-qRDvxo51N7gWgifsKMZfEoh_/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Boticario 87 26 SEGUNDA .pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MATHEUS CORREA FERREIRA</td>
+      <td class="mono">964.652.750-00</td>
+      <td class="mono">25/09/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1ij5IBgaQJTz8YSPxIeMHe4unvIMC2xxn/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Boticario 107 18.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MATHEUS CORREA FERREIRA</td>
+      <td class="mono">964.652.750-00</td>
+      <td class="mono">25/09/1995</td>
+      <td>SÃO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1jHvORmwHJgBIyWMxXIOtpRZTFnwebXLv/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CCF10042023_0001.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Matheus Correa Ferreira</td>
+      <td class="mono">864.662.750-00</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td>Advogado</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1ikPNi5vTtrrrXR0GA-6toj2wZjhAMn1a/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">8 - Banco CSF 29481 89.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>LÚCIA ANTONIA KWIATKOWSKI</td>
+      <td class="mono">508.710.800-87</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>SÃO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1h1iw8ENUE2hyEw664oTOm6O3yI5EcEtd/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">8 - boa vista.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUCIA ANTONIA KWIATKOWSKI</td>
+      <td class="mono">508.710.800-87</td>
+      <td class="mono">13/06/1960</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1icvGNXAToZy4BicjFGeqarxUKSmUdyFn/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- contracheque.pdf</td>
+      <td>holerite</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>ANTONIA KWIATKOWSKI</td>
+      <td class="mono">508.710.800-87</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>AUXILIAR DE LIMPEZA</td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1i5ObmJQXhfdv6rsn4MbFlkQFflx8S5gx/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>LUCIA ANTONIA KWIATKOWSKI</td>
+      <td class="mono">508.710.800-87</td>
+      <td class="mono">13/06/1960</td>
+      <td>Santo Angelo/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1iMBdgZ2RazUWchxV-MlSIpkbbJQDYc5F/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Caixa 63 49.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUIS CARLOS DA SILVA SEVERO</td>
+      <td class="mono">003.811.430-58</td>
+      <td class="mono">21/07/1962</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>14</td>
+      <td><a href="https://drive.google.com/file/d/1zeQ5y50677fkvFImizzfrdlI0zev6p6O/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5 - residencia.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>Luis carlos</td>
+      <td class="mono">003.811.430-58</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1-h7QWjQe1XmAF44pDuzmjT8pO1UtpFjO/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4  - ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUIS CARLOS DA SILVA SEVERO</td>
+      <td class="mono">003.811.430-58</td>
+      <td class="mono">21/07/1982</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td>VIDRACEIRO</td>
+      <td>14</td>
+      <td><a href="https://drive.google.com/file/d/1zqlahNfXT9xv5ZNJdv7zeftTGu6g5uKz/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUIS CARLOS DA SILVA SEVERO</td>
+      <td class="mono">003.811.430-58</td>
+      <td class="mono">21/07/1982</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/105MSU4V6CckcOIsy3rtPLmr7ZY_4HCVj/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - Banrisul 368 17.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUCAS PINTO OLIVEIRA</td>
+      <td class="mono">024.004.530-04</td>
+      <td class="mono">18/03/1992</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/1k2WKDvIMAhWthOV_akAZZyGYAryzA6-b/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUCAS PINTO OLIVEIRA</td>
+      <td class="mono">024.004.530-04</td>
+      <td class="mono">18/03/1992</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>14</td>
+      <td><a href="https://drive.google.com/file/d/1lz-0-J7Xv37UiFmmI2CNx4ltv87QMKtX/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">RECEITA.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LISIANE DOS SANTOS GARCIA</td>
+      <td class="mono">013.151.400-80</td>
+      <td class="mono">27/03/1987</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1aHwVOrAOpcXpiSWJ9efmQTj_C9MBcK79/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">cnh.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LISIANE DOS SANTOS GARCIA</td>
+      <td class="mono">013.151.400-80</td>
+      <td class="mono">27/03/1987</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1aI1FjOIrDtNuutH-Yr9CejLNhRsWsZ-0/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Itau 304 09.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>LUAN FREDDREMO MACHADO</td>
+      <td class="mono">053.037.600-81</td>
+      <td class="mono">29/10/2003</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1fWkahhW7dh8vsKZtmf-QzdanwEyxcSvP/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">Santander 2252 82.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUAN FREDOFMINO MACHADO</td>
+      <td class="mono">053.037.600-81</td>
+      <td class="mono">29/10/2003</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1hQfRlOeB_7OsPOWGdFXkg89yBqVMfgVc/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Bradesco 32361 46.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUANA JARDIM</td>
+      <td class="mono">014.203.170-40</td>
+      <td class="mono">09/11/1998</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1m9swy2hQcriVc08JH88HlbITxs8duOf9/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUANA JARDIM</td>
+      <td class="mono">014.203.170-40</td>
+      <td class="mono">09/11/1998</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1mHRmCNn8t1Hn1xqOrzOsE1lM84MsNh4f/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- contracheque.pdf</td>
+      <td>holerite</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUANA JARDIM</td>
+      <td class="mono">014.203.170-40</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/1mW7nkLRMHFQuHSiNIreiYNPTn8JDrb07/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CANOAS - Mercado Pago 50 42.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUCAS EDUARDO SALDANHA ALVES</td>
+      <td class="mono">866.263.300-72</td>
+      <td class="mono">26/05/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1zBIQ7B_mtTz_vFObFJaIzCtVIWzd5VXq/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">CANOAS -Mercado Pago 65 26.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUCAS EDUARDO SALDANHA ALVES</td>
+      <td class="mono">866.053.300-72</td>
+      <td class="mono">26/05/1998</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1y8S6PyorkcYVJYvMpR3N3YQDhHwBHbiu/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">receitqa.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LUCAS EDUARDO SALDANHA ALVES</td>
+      <td class="mono">865.263.320-72</td>
+      <td class="mono">26/05/1998</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1xqBEy0e1bDVuaYoblyrePnY63E5SvIKA/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Quero Quero 1307 93.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MIRTA TERESINHA VARGAS ZACHER</td>
+      <td class="mono">007.295.180-00</td>
+      <td class="mono">13/07/1964</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1KTcPBf2r4t7Kp3u4MOnitzjYFgNtgZfF/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Santander 254 25.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>MIRTA TERESINHA VARGAS ZACHER</td>
+      <td class="mono">007.295.180-00</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/1K50X-iiy1vNB4G8HYeDd05MmJdYr5njB/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LEANDRO AUGUSTO VARGAS ZACHER</td>
+      <td class="mono">007.295.180-00</td>
+      <td class="mono">18/07/1984</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1JgILsQKfbItXkgSZaILGz2qMxJETvgXy/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>LEANDRO AUGUSTO VARGAS ZACHER</td>
+      <td class="mono">007.295.180-00</td>
+      <td class="mono">18/07/1984</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1HhwdO4K5OEyVIRrlTeppwy9e1oa7QkiY/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-Boa Vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>KAUAN DOS SANTOS DA SILVA</td>
+      <td class="mono">854.550.240-00</td>
+      <td class="mono">17/09/1999</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1SJTXYflsgBGmpxW9I4BW8-_0Eo9LnHQP/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-Banrisul 283 87.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>KAUAN DOS SANTOS DA SILVA</td>
+      <td class="mono">354.550.240-00</td>
+      <td class="mono">17/09/1999</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/1Sg5QtJOHELnDcjcv4paIY5EymUUnaZdN/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-Financeira Drebes - Lebes 228 68.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>KAUAN DOS SANTOS DA SILVA</td>
+      <td class="mono">554.550.240-00</td>
+      <td class="mono">17/09/1999</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1SSmya0B1hAmrGD2Qm17fOOUarXmqQM7z/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-Banrisul 460 54.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>KALINA DOS SANTOS DA SILVA</td>
+      <td class="mono">854.550.240-00</td>
+      <td class="mono">17/09/1999</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>13</td>
+      <td><a href="https://drive.google.com/file/d/1SxuHxRMTKQ6WXCDl3p6dE7JdJdeAC1zo/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-CDL POA 111 88 TERCEIRA.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>KAUAN DOS SANTOS DA SILVA</td>
+      <td class="mono">854.550.240-00</td>
+      <td class="mono">17/09/1999</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1SGEPxDdxeTVBQ-5vZRIiCQz9M3_CrDdY/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-CDL POA 111 88 SEGUNDA.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>KAUAN DOS SANTOS DA SILVA</td>
+      <td class="mono">854.550.240-00</td>
+      <td class="mono">17/09/1999</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1S_0T6TpbJggD-sEmCGUwZeC4cGYqAN-7/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-CDL POA 111 88 PRIMEIRA.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>KAUAN DOS SANTOS DA SILVA</td>
+      <td class="mono">354.550.240-00</td>
+      <td class="mono">17/09/1999</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1RmedWKZdJTOFFGwkkGoBfS3s01-UsgNb/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Senffnet 283 89.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JIMMY ALVES CORREA</td>
+      <td class="mono">858.705.410-04</td>
+      <td class="mono">10/07/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1I4A9X12pyruEnRaSJr1Q2rzcHdUy9FMg/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- CANOAS - Lojas Aldo 157 23.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JANAINA SOARES DA SILVA</td>
+      <td class="mono">845.001.150-72</td>
+      <td class="mono">28/07/1989</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1H2nOPfu3tAvJyCVU8anc7Dbe3o7mBuAI/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Caixa 117 29.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JANAINA SOARES DA SILVA</td>
+      <td class="mono">845.001.150-72</td>
+      <td class="mono">28/07/1989</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1H086j-YUu72pJFVMyJXPz-kTGJo-L7a1/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JANAINA SOARES DA SILVA</td>
+      <td class="mono">845.001.150-72</td>
+      <td class="mono">28/07/1989</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1GnP_rBfpbBHehn170mbFcfgxdI_IbLun/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>JANAÍNA SOARES DA SILVA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">28/07/1989</td>
+      <td>Porto Alegre/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1HBCicC-hrk6fNy0Si0B8o-_qzWu2YGFD/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4-  residencia.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>Jonaruma Soares da Silva</td>
+      <td class="mono">545.402.150-72</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/null</td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/1GytB5u-oFwpc4lBzT16rMrKecFpftq_S/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4- residência.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>RECIFE/PE</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1Gfdb71Cjz2sgLSvQkeaxytY7lTenlx7K/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6-RECEITA.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JACIRA PINTO CORREA</td>
+      <td class="mono">696.779.560-00</td>
+      <td class="mono">16/11/1958</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1GBsgFQCjyzh5_ZVDbe0nBEt6f2p8NPSw/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3-id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JACIRA PINTO CORRÊA</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">16/11/1958</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1GAEmty4PMyNGXFq4nqL0wp2X5l5WUbDH/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Boa Vista.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JACIRA PINTO CORREA</td>
+      <td class="mono">696.779.560-00</td>
+      <td class="mono">16/11/1958</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/1GN2SvkQAd8T8GR0C9B7Ib0InNW_9AYNN/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Itau 189 72.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JACIRA PINTO CORREA</td>
+      <td class="mono">696.779.560-00</td>
+      <td class="mono">16/11/1958</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>16</td>
+      <td><a href="https://drive.google.com/file/d/1G25UIDbicQtYsueZH1_GBxqtSkE2q32M/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CEEE-D 235 66.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ISABEL FONTOURA PIRES</td>
+      <td class="mono">037.296.110-03</td>
+      <td class="mono">05/10/1997</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1wnodC4e8qbKkUgDv40Manqjk5f6fk_Kf/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Banrisul 882 97.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ISABEL FONTOURA PIRES</td>
+      <td class="mono">037.296.110-03</td>
+      <td class="mono">05/10/1997</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1wgQ8P9bwBaH60Pmr9Y6Cvr8G_iMwW59x/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 -boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>ISABEL FONTOURA PIRES</td>
+      <td class="mono">037.296.110-03</td>
+      <td class="mono">05/10/1997</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>14</td>
+      <td><a href="https://drive.google.com/file/d/1xdqkycVgdQ_vfSSQpInwzR3Ba5-PY515/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">23/12/2015</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/1wgbccCeERpGaeYQKikmbEM2hctx7v6e5/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">WhatsApp Image 2023-02-14 at 15.54.01 (1).pdf</td>
+      <td>rg</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JESSICA SILVANA SANTOS DA SILVA</td>
+      <td class="mono">805.832.020-04</td>
+      <td class="mono">09/06/1990</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1sQzjTp4_YeRjozpamkR8Mr_UeuIhD1LL/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Boa Vista.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>IOLANDA RODRIGUES DE JESUS</td>
+      <td class="mono">830.773.240-91</td>
+      <td class="mono">21/08/1984</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1tOyvFWxCWxVcX9ucITvtdNvdYjmgEX9t/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-Itau 122 65.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>JOLANDA RODRIGUES DE JESUS</td>
+      <td class="mono">330.771.249-91</td>
+      <td class="mono">21/08/1964</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1sPAnzh7ljKGXBREtd087VQEmZoN2DXV_/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-TCB POA Cursos 253 27.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>JOLANDA RODRIGUES DE JESUS</td>
+      <td class="mono">330.771.249-91</td>
+      <td class="mono">21/08/1964</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1tKltw0LlfNcHligcnB7BWxN03307re1z/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Itau 183 90.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JOLANDA RODRIGUES DE JESUS</td>
+      <td class="mono">330.771.249-91</td>
+      <td class="mono">21/08/1964</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1s3cLiARxC3vaYq-oFoQNHmW0rdf4gU99/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6-receita.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>IOLANDA RODRIGUES DE JESUS</td>
+      <td class="mono">830.773.240-91</td>
+      <td class="mono">21/08/1984</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1sXFIiKKwNpILBF0P8r7pMqePS0Us6qDN/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5-ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>Telemoda e de Jesus</td>
+      <td class="mono">430.773.262-91</td>
+      <td class="mono">21/08/1984</td>
+      <td>Campo Largo/PR</td>
+      <td>Gerente</td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/1sBRtthqNmh7PXcDF-GAx32Pyj6PEJ0nO/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- CANOAS - Banco Digimais 586 48.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>GUILHERME SANTOS ALVES</td>
+      <td class="mono">034.057.320-49</td>
+      <td class="mono">19/07/1996</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1yQ7vGjArW4AuT6DQ5-XUW9W2m_b_eg5-/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- CANOAS - Nu Financeira 265 85.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>GILHERME SANTOS ALVES</td>
+      <td class="mono">374.057.920-49</td>
+      <td class="mono">19/07/1996</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1xz8cn270KOcKkelhe9Klc6-YCE4t-T5u/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- CANOAS - Mercado Pago 20 13.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>GUILHERME SANTOS ALVES</td>
+      <td class="mono">074.057.320-49</td>
+      <td class="mono">19/07/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1y1sc7Js7xurCJrPdNHDsX8NCGaK4Cqxs/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- CANOAS - Mercado Pago 20 10.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>GUILHERME SANTOS ALVES</td>
+      <td class="mono">374.057.920-49</td>
+      <td class="mono">19/07/1996</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1yZLM-4CVHCBkLb93xr92RbBPJboKJRbE/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 -  Banco Original  579 94.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>GUILHERME SANTOS ALVES</td>
+      <td class="mono">034.057.320-49</td>
+      <td class="mono">19/07/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1yEKw5iBU1NgI8s29hFCB-Eh33r2IRkpm/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Itau 108 80.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>GUILHERME SANTOS ALVES</td>
+      <td class="mono">034.057.920-49</td>
+      <td class="mono">19/07/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1xgzfxGICZ-F0y7pqh9KS9naPsDS5sZlJ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Santander 754 79.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>GUILHERME SANTOS ALVES</td>
+      <td class="mono">034.057.320-49</td>
+      <td class="mono">19/01/1995</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1xry-ycmB-FsSxvXCvM1FI46J61BRV6vz/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Santander 368 84.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>GUILHERME SANTOS ALVES</td>
+      <td class="mono">074.057.320-49</td>
+      <td class="mono">19/07/1996</td>
+      <td>SÃO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>6</td>
+      <td><a href="https://drive.google.com/file/d/1yKXRpDXiOCD2J8U6E7AXUgecbWIOesCq/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>IGOR LUAN GOLKE</td>
+      <td class="mono">033.416.790-65</td>
+      <td class="mono">09/03/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/18giSwtLshqtJUqz-d2jG2r7R5hV0jihY/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Itau 458 62.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>JOMAR LILIAN GOLKE</td>
+      <td class="mono">033.416.790-55</td>
+      <td class="mono">09/03/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/17u3frCff6sjsT5gkUu5pPHYV7Fur1fgH/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Itau 580 11.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>JOAR LUAN GOLKE</td>
+      <td class="mono">033.416.790-65</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/189dYv2bcNQYrmJcHM1JvQ23mb6aHpX4Q/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Omni 4192 23.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JOAB LUAN GOLKE</td>
+      <td class="mono">033.416.790-65</td>
+      <td class="mono">08/03/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/17l7MWm4ViHFParLWzbcWmOGTEvYQtp70/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Santander 1718 82.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>IGOR LUAN GOLKE</td>
+      <td class="mono">031.416.790-65</td>
+      <td class="mono">08/03/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/17kHqLGbF-CzPTm6EI80Oq0KnLcIzK_e6/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Santander 1327 67.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>IGOR LUAN GOLKE</td>
+      <td class="mono">031.416.790-55</td>
+      <td class="mono">09/03/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/17kth0CD8hLky_-iW4BRaHi7bIadGZc3W/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Santander 1092 45.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>JOÃO LUAN GOLKE</td>
+      <td class="mono">033.416.790-55</td>
+      <td class="mono">09/03/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>4</td>
+      <td><a href="https://drive.google.com/file/d/17RMooRPW94Ne88WImb6DH2UqzX-4uWEj/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4- residencia.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>IGOR LUAN GOLKE</td>
+      <td class="mono">033.416.790-65</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>GRAVATAÍ/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>11</td>
+      <td><a href="https://drive.google.com/file/d/1853EGvoH8erE5FzJ2WoMj62SxOYlhY2Y/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Facta 420 00.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>MARISA HALLMANN</td>
+      <td class="mono">245.536.860-78</td>
+      <td class="mono">29/05/1962</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1nVBDa5kuJDVX8VR7DdGqv4LmGR0Guu-U/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- contracheque.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>0</td>
+      <td><a href="https://drive.google.com/file/d/1oYkbxeHykpr1aP_hrQkWYKDhT8KeAYxD/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>CECI MARIA HALLMANN</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono">29/06/1952</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1nFKedm8GNDvF00dK85ggtbq5Nsvwn0Cx/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4- residência.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CECI MARIA HALLMANN</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Estéio/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1nXSWyEKEE92e74kOWKMzKS4Jl2Boah_y/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Eldorado do SUl -  Banco Votorantim 7918 </td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARMEM ANGELA DOS SANTOS OVERBECK</td>
+      <td class="mono">675.618.020-72</td>
+      <td class="mono">04/07/1975</td>
+      <td>ELDORADO DO SUL/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/18Jggp0kjKiGcjckGPOwPdCK3rUHQPFJQ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- receita.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARMEM ANGELA DOS SANTOS OVERBECK</td>
+      <td class="mono">675.618.020-72</td>
+      <td class="mono">04/07/1975</td>
+      <td>ELDORADO DO SUL/RS</td>
+      <td>OUTROS TÉCNICOS DE NÍVEL MÉDIO</td>
+      <td>18</td>
+      <td><a href="https://drive.google.com/file/d/18W24GMWc0lIHr23Xf0AtXBnofnF4FAXv/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 -Senffnet 95 58.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BRUNA LUMERTZ RODRIGUEZ</td>
+      <td class="mono">031.409.240-46</td>
+      <td class="mono">11/06/1995</td>
+      <td>CURITIBA/PR</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/13B_eIkNUDL4WajBHZo60UqfJZVGoPCeC/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - boa vista.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BRUNA LUMERTZ RODRIGUEZ</td>
+      <td class="mono">031.409.240-46</td>
+      <td class="mono">11/06/1995</td>
+      <td>CURITIBA/PR</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/13W-wtA1ZXbAzyiHY81RWVdF3gSGm0lXM/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BRUNA LUMERTZ RODRIGUEZ</td>
+      <td class="mono">031.409.240-46</td>
+      <td class="mono">11/06/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/132Sahx87_6YEKLuxybUUiNTaz16Z0g7u/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>BRUNO HENRIQUE DOS SANTOS THIESEN</td>
+      <td class="mono">047.157.260-84</td>
+      <td class="mono">03/03/2000</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1ulDx7Vofp7lMNmbFwWAl8yDSk2CZaZ_o/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Banco do Brasil 1006 29.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>BRUNO HENRIQUE DOS SANTOS THIESEN</td>
+      <td class="mono">047.157.260-84</td>
+      <td class="mono">03/02/2000</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1uBVowKKeecA7ibijZmf29_Jgqj9H4zfZ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Banco do Brasil 328 58.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>BRUNO HENRIQUE DOS SANTOS THIESEN</td>
+      <td class="mono">047.157.260-84</td>
+      <td class="mono">03/03/2000</td>
+      <td>SAO PAULO/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1unuAY8aJxIHX1CmwvuTiaOk_EH0IoRZr/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - CANOAS - Cred System 473 25.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>CARINA SILVA DUTRA</td>
+      <td class="mono">031.777.630-41</td>
+      <td class="mono">23/11/1995</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1xHHkDCM6TshiBI7km_CPJJmvOOlFuD9B/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- receita.pdf</td>
+      <td>cpf</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARINA SILVA DUTRA</td>
+      <td class="mono">011.777.630-01</td>
+      <td class="mono">23/11/1986</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1y9s-66UROLYyMkq3Q-LEb6WuLUBDSBix/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>cnh</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARINA SILVA DUTRA</td>
+      <td class="mono">011.777.630-01</td>
+      <td class="mono">23/11/1986</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1x3_dQHr_P4UK8EjMwjOnzPihqe7bUWbI/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- ctps.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARINA SILVA DUTRA</td>
+      <td class="mono">011.777.630-01</td>
+      <td class="mono">23/11/1986</td>
+      <td><span class="nil">-</span></td>
+      <td>ASSISTENTE ADMINISTRATIVO</td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1y7qoJffLWi96KccgPS3L_00TASWtKYnZ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">4- residência.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>Carina Illo Dilko</td>
+      <td class="mono">011.476.3001</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Canoas/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>7</td>
+      <td><a href="https://drive.google.com/file/d/1xFak0wSFrCLQ4jLG9p8o5TbNyLMoaZUR/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Canoas -  Mercado Pago 102 48.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARLA ROBERTA FLORES CARNEIRO</td>
+      <td class="mono">003.839.650-55</td>
+      <td class="mono">16/07/1983</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>14</td>
+      <td><a href="https://drive.google.com/file/d/1p6qzIZxK6IISKi1Lun1_X5Dc2UI-rEPV/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Canoas -  Mercado Pago 616 50.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARLA ROBERTA FLORES CARNEIRO</td>
+      <td class="mono">003.839.650-55</td>
+      <td class="mono">16/07/1983</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/1pBPZvijf8POx6I0covyQsTpfsSMflSbR/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Canoas - Mertcado Pago 621 60.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARLA ROBERTA FLORES CARNEIRO</td>
+      <td class="mono">003.839.650-55</td>
+      <td class="mono">16/07/1983</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>12</td>
+      <td><a href="https://drive.google.com/file/d/1pJNTRrk18UFVxVk3eWs-wE8ZNiziIXQY/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7 - Canoas -  Mercado Pago 220 35.pdf</td>
+      <td>comprovante_residencia</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>CARLA ROBERTA FLORES CARNEIRO</td>
+      <td class="mono">003.839.650-55</td>
+      <td class="mono">16/07/1983</td>
+      <td>CANOAS/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>15</td>
+      <td><a href="https://drive.google.com/file/d/1p9NqsBTU0SL5Am_MQp5AjvG5vBf7aewS/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">3- id.pdf</td>
+      <td>rg</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>2</td>
+      <td><a href="https://drive.google.com/file/d/1pcJO5alQaiR1QZMoEAi9duUXCJGfIHbr/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Agafarma 96 81.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>CAMILA HOFFMANN BITZEL</td>
+      <td class="mono">025.643.790-41</td>
+      <td class="mono">28/07/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1rsCevDibgWIYzr2qBNUyO4quEFGhmZKK/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- CANOAS - Nu Pagamentos 435 30.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>CAMILA HOFFMANN RITZEL</td>
+      <td class="mono">026.643.700-41</td>
+      <td class="mono">28/07/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1r_-RPz8BQI9VyLJY7WRJgFUR0mrbzGzn/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7-GRAVATAI -Gold Plus 83 00.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>CAMILA HOFFMANN BITZEL</td>
+      <td class="mono">026.643.790-41</td>
+      <td class="mono">28/07/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1qv3vdjX-UqBz-3ECxcQGcEpI5Qw69pE1/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Senac 250 56 sexta.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>CARLA HOFFMANN RITZEL</td>
+      <td class="mono">026.643.700-41</td>
+      <td class="mono">28/07/1994</td>
+      <td>PORTO ALEGRE/RS</td>
+      <td><span class="nil">-</span></td>
+      <td>5</td>
+      <td><a href="https://drive.google.com/file/d/1rxR-YX5d84XedgiUB2hVWj1R06yMhUNZ/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">7- Senac 250 56 segunda.pdf</td>
+      <td>outro</td>
+      <td><span class="badge warn">parcial</span></td>
+      <td>CAMILA HOFFMANN RITZEL</td>
+      <td class="mono">025.643.700-41</td>
+      <td class="mono">28/07/1994</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>3</td>
+      <td><a href="https://drive.google.com/file/d/1s0cq7V6Ibdl7CH8j08VygtXKk-kndbSx/view" target="_blank" class="lnk">↗</a></td>
+    </tr></tbody></table></div>
+<h2>Super Prompt Utilizado</h2>
+<div class="prompt">Você é um especialista em extração de dados de documentos brasileiros de identificação e comprovação.
+
+DOCUMENTOS QUE PODE RECEBER:
+- RG (Registro Geral) — frente e/ou verso
+- CNH (Carteira Nacional de Habilitação) — frente e/ou verso
+- Cartão CPF
+- Comprovante de Residência (conta de luz, água, gás, telefone, extrato bancário)
+- Holerite / Contracheque
+- Extrato Bancário
+- CTPS Digital / Carteira de Trabalho
+
+CAMPOS A EXTRAIR — extraia SOMENTE o que estiver VISÍVEL e LEGÍVEL:
+
+1. DADOS PESSOAIS:
+   - nome: Nome completo exatamente como no documento
+   - cpf: SEMPRE no formato 000.000.000-00
+   - rg: Número com órgão emissor (ex: "1.234.567 SSP/RS")
+   - data_nascimento: SEMPRE no formato DD/MM/AAAA
+   - sexo: "M" ou "F"
+   - estado_civil: solteiro | casado | divorciado | viuvo | uniao_estavel
+   - nacionalidade: ex "Brasileira"
+   - naturalidade: "Cidade/UF" de nascimento
+
+2. ENDEREÇO (comprovante de residência ou verso CNH):
+   - cep: SEMPRE no formato 00000-000
+   - logradouro: Rua, Av, Travessa, etc
+   - numero: Número do imóvel
+   - complemento: Apto, Bloco, Casa (se houver)
+   - bairro: Nome do bairro
+   - cidade: Nome da cidade
+   - uf: Sigla do estado (2 letras maiúsculas)
+
+3. PROFISSÃO E RENDA (holerite / contracheque / CTPS):
+   - profissao: Cargo ou função
+   - empregador: Nome da empresa/órgão
+   - renda_mensal: Salário LÍQUIDO em número puro (sem R$, sem pontos de milhar)
+
+4. DADOS BANCÁRIOS (extrato ou holerite):
+   - banco: Nome completo do banco
+   - agencia: Número da agência
+   - conta: Número da conta com dígito
+
+REGRAS CRÍTICAS:
+- Use null para campos não encontrados, ilegíveis ou ausentes
+- NUNCA invente dados — somente o que está visível
+- CPF: formatar SEMPRE 000.000.000-00
+- Datas: formatar SEMPRE DD/MM/AAAA
+- Estado civil: traduzir abreviações ("SLT"→"solteiro", "CSD"→"casado", "DIV"→"divorciado")
+- Se ilegível ou corrompido: retorne qualidade "ilegivel" com campos null
+
+NÃO extrair: nome da mãe/pai, email, origem do lead, dados de terceiros
+
+Retorne SOMENTE JSON válido, sem markdown, sem bloco de código:
+{
+  "tipo_documento": "rg|cnh|cpf|comprovante_residencia|holerite|contracheque|extrato_bancario|ctps|outro",
+  "qualidade": "legivel|parcialmente_legivel|ilegivel",
+  "dados_pessoais": {"nome":null,"cpf":null,"rg":null,"data_nascimento":null,"sexo":null,"estado_civil":null,"nacionalidade":null,"naturalidade":null},
+  "endereco": {"cep":null,"logradouro":null,"numero":null,"complemento":null,"bairro":null,"cidade":null,"uf":null},
+  "profissao_renda": {"profissao":null,"empregador":null,"renda_mensal":null},
+  "dados_bancarios": {"banco":null,"agencia":null,"conta":null},
+  "confianca": "alto|medio|baixo",
+  "campos_incertos": [],
+  "observacoes": null
+}</div>
+</body></html>
