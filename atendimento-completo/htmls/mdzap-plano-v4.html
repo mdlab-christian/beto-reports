@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Plano Mestre v4 | 2026-04-07</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --accent6: #ff9f43;
+  --primary: #20c997;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─── SIDEBAR NAV ─── */
+.sidebar {
+  width: 270px;
+  min-width: 270px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+}
+
+.sidebar-logo {
+  padding: 20px 16px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .logo-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+.sidebar-logo .logo-title {
+  font-size: 1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.sidebar-logo .logo-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
+.sidebar-progress {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-progress .prog-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.sidebar-progress .prog-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--surface3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.sidebar-progress .prog-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent3));
+  transition: width 0.4s ease;
+}
+
+.sidebar-nav { padding: 8px 0; flex: 1; }
+.nav-section-label {
+  padding: 12px 16px 4px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover, .nav-item.active {
+  color: var(--text);
+  background: rgba(124,109,255,0.06);
+  border-left-color: var(--accent);
+}
+.nav-item .nav-emoji { font-size: 0.85rem; width: 20px; text-align: center; }
+.nav-item .nav-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.nav-badge.nb-red { background: rgba(255,107,107,0.15); color: var(--accent2); }
+.nav-badge.nb-yellow { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.nav-badge.nb-green { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.nav-badge.nb-blue { background: rgba(91,196,245,0.1); color: var(--accent5); }
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ─── MAIN CONTENT ─── */
+.main {
+  flex: 1;
+  padding: 32px 40px;
+  max-width: 1000px;
+  overflow-x: hidden;
+}
+
+/* ─── HERO ─── */
+.hero {
+  text-align: center;
+  padding: 48px 24px 36px;
+}
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-size: 2.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.bo { background: rgba(255,159,67,0.1); color: var(--accent6); border: 1px solid rgba(255,159,67,0.25); }
+
+/* ─── STATS GRID ─── */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.g5 { grid-template-columns: repeat(5, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4,.g5 { grid-template-columns: 1fr; } .sidebar { display: none; } .main { padding: 16px; } }
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.stat-card:hover { border-color: var(--accent); }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-value.sv-green { color: var(--accent3); }
+.stat-value.sv-red { color: var(--accent2); }
+.stat-value.sv-yellow { color: var(--accent4); }
+.stat-value.sv-blue { color: var(--accent5); }
+.stat-value.sv-primary { color: var(--primary); }
+.stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ─── SECTIONS & CARDS ─── */
+.section { margin: 36px 0; scroll-margin-top: 20px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.15rem; font-weight: 700; }
+.section-header .section-badge { margin-left: auto; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+/* ─── COLLAPSIBLE ─── */
+.collapsible { margin-bottom: 12px; }
+.collapsible-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.collapsible-header:hover { border-color: var(--accent); background: var(--surface2); }
+.collapsible-header .ch-icon { font-size: 1rem; }
+.collapsible-header .ch-title { font-weight: 600; font-size: 0.9rem; flex: 1; }
+.collapsible-header .ch-arrow {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+}
+.collapsible.open .collapsible-header .ch-arrow { transform: rotate(180deg); }
+.collapsible.open .collapsible-header { border-radius: 12px 12px 0 0; border-bottom-color: transparent; }
+.collapsible-body {
+  display: none;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+}
+.collapsible.open .collapsible-body { display: block; }
+
+/* ─── TABLES ─── */
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* ─── STATUS PILLS ─── */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.73rem; font-weight: 500; white-space: nowrap; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.sp-primary { background: rgba(32,201,151,0.12); color: var(--primary); }
+
+/* ─── CODE BLOCKS ─── */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+  margin: 10px 0;
+}
+.code .cm { color: var(--text-muted); }
+.code .ck { color: var(--accent); }
+.code .cs { color: var(--accent4); }
+.code .cr { color: var(--accent2); }
+.code .cb { color: var(--accent5); }
+.code .cp { color: var(--primary); }
+
+/* ─── FLOW DIAGRAM ─── */
+.flow-diagram {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--text);
+  margin: 10px 0;
+}
+.flow-diagram .fn { color: var(--primary); font-weight: 600; }
+.flow-diagram .fw { color: var(--accent); }
+.flow-diagram .fe { color: var(--accent2); }
+.flow-diagram .fs { color: var(--accent3); }
+.flow-diagram .fy { color: var(--accent4); }
+.flow-diagram .fb { color: var(--accent5); }
+
+/* ─── BUG CARDS ─── */
+.bug-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--accent2);
+}
+.bug-card.bc-p0 { border-left-color: var(--accent2); }
+.bug-card.bc-p1 { border-left-color: var(--accent4); }
+.bug-card.bc-p2 { border-left-color: var(--accent5); }
+.bug-card .bug-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bug-card .bug-id { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 700; }
+.bug-card .bug-title { font-weight: 600; font-size: 0.88rem; }
+.bug-card .bug-desc { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 8px; }
+.bug-card .bug-fix { font-size: 0.82rem; }
+.bug-card .bug-fix strong { color: var(--accent3); }
+
+/* ─── STAGE CARDS ─── */
+.stage-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.stage-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.stage-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+}
+.sn-1 { background: rgba(255,107,107,0.15); color: var(--accent2); }
+.sn-2 { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.sn-3 { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.sn-4 { background: rgba(124,109,255,0.15); color: var(--accent); }
+.sn-5 { background: rgba(32,201,151,0.15); color: var(--primary); }
+.sn-6 { background: rgba(255,159,67,0.15); color: var(--accent6); }
+.stage-title { font-weight: 700; font-size: 1rem; }
+.stage-subtitle { font-size: 0.78rem; color: var(--text-muted); }
+.task-list { list-style: none; }
+.task-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(42,47,74,0.5);
+  font-size: 0.84rem;
+}
+.task-list li:last-child { border-bottom: none; }
+.task-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.73rem;
+  color: var(--accent);
+  background: rgba(124,109,255,0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* ─── INLINE HIGHLIGHTS ─── */
+.hl { color: var(--accent); font-weight: 600; }
+.hl-green { color: var(--accent3); font-weight: 600; }
+.hl-red { color: var(--accent2); font-weight: 600; }
+.hl-yellow { color: var(--accent4); font-weight: 600; }
+.hl-blue { color: var(--accent5); font-weight: 600; }
+.hl-primary { color: var(--primary); font-weight: 600; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+.inline-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.35);
+  padding: 2px 7px;
+  border-radius: 5px;
+  color: var(--accent3);
+}
+
+/* ─── FIELD TABLE ─── */
+.field-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(42,47,74,0.4); align-items: flex-start; }
+.field-row:last-child { border-bottom: none; }
+.field-name { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--primary); min-width: 160px; }
+.field-type { font-size: 0.75rem; color: var(--text-muted); min-width: 80px; }
+.field-desc { font-size: 0.82rem; flex: 1; }
+
+/* ─── SUMMARY BOX ─── */
+.summary-box {
+  background: linear-gradient(135deg, rgba(124,109,255,0.08), rgba(91,196,245,0.05));
+  border: 1px solid rgba(124,109,255,0.2);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin: 16px 0;
+}
+.summary-box p { margin-bottom: 8px; font-size: 0.88rem; }
+.summary-box p:last-child { margin-bottom: 0; }
+
+/* ─── ALERT BOX ─── */
+.alert-box {
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-size: 0.84rem;
+}
+.alert-box.ab-red { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); }
+.alert-box.ab-yellow { background: rgba(255,209,102,0.08); border: 1px solid rgba(255,209,102,0.2); }
+.alert-box.ab-green { background: rgba(79,255,176,0.06); border: 1px solid rgba(79,255,176,0.15); }
+.alert-box.ab-blue { background: rgba(91,196,245,0.06); border: 1px solid rgba(91,196,245,0.15); }
+
+/* ─── CONNECTIONS ARROW ─── */
+.conn-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(42,47,74,0.4);
+  font-size: 0.84rem;
+}
+.conn-row:last-child { border-bottom: none; }
+.conn-arrow { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
+
+/* ─── FOOTER ─── */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SIDEBAR                                     -->
+<!-- ═══════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">📱</span>
+    <div class="logo-title">MdZap Plano v4</div>
+    <div class="logo-sub">Documento Master do Sistema de Atendimento</div>
+  </div>
+
+  <div class="sidebar-progress">
+    <div class="prog-label">
+      <span>Completude geral</span>
+      <span>78%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:78%"></div></div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Geral</div>
+    <a class="nav-item active" href="#visao-geral">
+      <span class="nav-emoji">🎯</span> Visao Geral
+      <span class="nav-badge nb-green">78%</span>
+    </a>
+    <a class="nav-item" href="#fluxogramas">
+      <span class="nav-emoji">🔀</span> Fluxogramas
+    </a>
+
+    <div class="nav-section-label">Lead Panel (7 abas)</div>
+    <a class="nav-item" href="#aba-dados">
+      <span class="nav-emoji">📋</span> Aba Dados
+      <span class="nav-badge nb-green">OK</span>
+    </a>
+    <a class="nav-item" href="#aba-restricoes">
+      <span class="nav-emoji">🔍</span> Aba Restricoes
+      <span class="nav-badge nb-green">OK</span>
+    </a>
+    <a class="nav-item" href="#aba-docs">
+      <span class="nav-emoji">📄</span> Aba Docs
+      <span class="nav-badge nb-green">OK</span>
+    </a>
+    <a class="nav-item" href="#aba-historico">
+      <span class="nav-emoji">📜</span> Aba Historico
+      <span class="nav-badge nb-green">OK</span>
+    </a>
+    <a class="nav-item" href="#aba-notas">
+      <span class="nav-emoji">📝</span> Aba Notas
+      <span class="nav-badge nb-green">OK</span>
+    </a>
+    <a class="nav-item" href="#abas-restantes">
+      <span class="nav-emoji">🧠</span> Memoria + Tom
+      <span class="nav-badge nb-green">OK</span>
+    </a>
+
+    <div class="nav-section-label">Motor IA</div>
+    <a class="nav-item" href="#julia-orchestrator">
+      <span class="nav-emoji">🤖</span> Julia & Orchestrator
+    </a>
+
+    <div class="nav-section-label">Operacoes</div>
+    <a class="nav-item" href="#assumir-devolver">
+      <span class="nav-emoji">🔄</span> Assumir / Devolver
+      <span class="nav-badge nb-yellow">Bug</span>
+    </a>
+    <a class="nav-item" href="#arquivamento">
+      <span class="nav-emoji">📦</span> Arquivamento
+      <span class="nav-badge nb-yellow">Bug</span>
+    </a>
+    <a class="nav-item" href="#doc-reader">
+      <span class="nav-emoji">🔬</span> Doc Reader
+    </a>
+
+    <div class="nav-section-label">Integracao</div>
+    <a class="nav-item" href="#conexoes-crm">
+      <span class="nav-emoji">🔗</span> Conexoes CdZap-CRM
+    </a>
+    <a class="nav-item" href="#webhooks">
+      <span class="nav-emoji">🌐</span> Mapa de Webhooks
+      <span class="nav-badge nb-blue">16</span>
+    </a>
+
+    <div class="nav-section-label">Planejamento</div>
+    <a class="nav-item" href="#bugs-ativos">
+      <span class="nav-emoji">🐛</span> Bugs Ativos
+      <span class="nav-badge nb-red">9</span>
+    </a>
+    <a class="nav-item" href="#plano-stages">
+      <span class="nav-emoji">🚀</span> Plano 6 Stages
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    MdLab LegalTech &middot; 2026
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MAIN CONTENT                                -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero" id="top">
+    <span class="hero-emoji">📱</span>
+    <h1 class="gradient-text">MdZap &mdash; Plano Mestre v4</h1>
+    <p class="hero-sub">Documento definitivo do sistema de atendimento WhatsApp via Julia IA + painel humano</p>
+    <div class="badges">
+      <span class="badge bp">MdFlow Suite</span>
+      <span class="badge bg">78% completo</span>
+      <span class="badge by">9 bugs pendentes</span>
+      <span class="badge bb">16 webhooks</span>
+      <span class="badge bo">6 stages</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g5" style="margin-bottom:32px">
+    <div class="stat-card">
+      <div class="stat-value sv-green">27</div>
+      <div class="stat-label">Features prontas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-red">3</div>
+      <div class="stat-label">Bugs P0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-yellow">6</div>
+      <div class="stat-label">Bugs P1/P2</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-blue">16</div>
+      <div class="stat-label">Webhooks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-primary">7</div>
+      <div class="stat-label">Abas Lead Panel</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 1. VISAO GERAL                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="visao-geral">
+    <div class="section-header">
+      <span class="section-icon">🎯</span>
+      <h2>1. Visao Geral</h2>
+      <span class="badge bg section-badge">78% completo</span>
+    </div>
+
+    <div class="summary-box">
+      <p><strong>O MdZap</strong> e o modulo de atendimento WhatsApp do MdFlow. Integra a Julia (IA conversacional) com um painel humano completo para SDRs e advogados da MP Advocacia. O fluxo cobre desde a primeira mensagem do lead ate o arquivamento e distribuicao ao juridico.</p>
+      <p>Nota atual: <span class="hl">7.8 / 10</span> &mdash; core funcional e robusto, mas 3 bugs P0 impedem operacao plena.</p>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">Resumo Executivo</div>
+      <div class="grid g2" style="gap:20px">
+        <div>
+          <h4 style="color:var(--accent3);margin-bottom:10px;font-size:0.85rem">O QUE ESTA PRONTO</h4>
+          <ul style="list-style:none;font-size:0.84rem">
+            <li style="padding:4px 0">&#10003; Envio texto + midia (imagem/video/doc)</li>
+            <li style="padding:4px 0">&#10003; Recebimento Realtime + polling 4s</li>
+            <li style="padding:4px 0">&#10003; Display imagens (lightbox + fallback)</li>
+            <li style="padding:4px 0">&#10003; Display audio (player custom + seek)</li>
+            <li style="padding:4px 0">&#10003; Display docs e videos</li>
+            <li style="padding:4px 0">&#10003; Toast + som para novas mensagens</li>
+            <li style="padding:4px 0">&#10003; 7 abas completas no Lead Panel</li>
+            <li style="padding:4px 0">&#10003; Assumir/Devolver Julia (webhooks)</li>
+            <li style="padding:4px 0">&#10003; Filtros inbox (Queue/Mine/Todas/Arquivadas + 5 avancados)</li>
+            <li style="padding:4px 0">&#10003; 3 canais Realtime Supabase</li>
+            <li style="padding:4px 0">&#10003; Tier-1 docs WhatsApp salvos em leads-docs</li>
+            <li style="padding:4px 0">&#10003; Arquivamento via swipe/menu</li>
+            <li style="padding:4px 0">&#10003; Julia Lab + prompt management</li>
+            <li style="padding:4px 0">&#10003; AI Composer (reescrever/completar/formal)</li>
+            <li style="padding:4px 0">&#10003; Templates com autocomplete "/"</li>
+            <li style="padding:4px 0">&#10003; Smart replies</li>
+            <li style="padding:4px 0">&#10003; Transferencia de conversa</li>
+            <li style="padding:4px 0">&#10003; Dashboard KPIs + insights Julia</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="color:var(--accent2);margin-bottom:10px;font-size:0.85rem">O QUE FALTA / BUGS</h4>
+          <ul style="list-style:none;font-size:0.84rem">
+            <li style="padding:4px 0;color:var(--accent2)">&#10007; P0-001: sendLink sem INSERT otimista</li>
+            <li style="padding:4px 0;color:var(--accent2)">&#10007; P0-002: pending sem cleanup/rollback</li>
+            <li style="padding:4px 0;color:var(--accent2)">&#10007; P0-003: botao Devolver ausente</li>
+            <li style="padding:4px 0;color:var(--accent4)">&#9888; P1-001: bulk archive UPDATE direto</li>
+            <li style="padding:4px 0;color:var(--accent4)">&#9888; P1-002: audio base64 no payload</li>
+            <li style="padding:4px 0;color:var(--accent4)">&#9888; P1-003: limite 100 msgs sem paginacao</li>
+            <li style="padding:4px 0;color:var(--accent4)">&#9888; P1-004: CPF sem validacao/mascara</li>
+            <li style="padding:4px 0;color:var(--accent5)">&#9675; P1-005: as any extensivo (types TS)</li>
+            <li style="padding:4px 0;color:var(--accent5)">&#9675; P1-006: rpc_disparar_auditoria sem type safety</li>
+            <li style="padding:4px 0;color:var(--accent5)">&#9675; P2-001: Doc Reader sem prompt Admin IA</li>
+            <li style="padding:4px 0;color:var(--accent5)">&#9675; P2-002: Dashboard periodo desabilitado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 2. FLUXOGRAMAS                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="fluxogramas">
+    <div class="section-header">
+      <span class="section-icon">🔀</span>
+      <h2>2. Fluxogramas</h2>
+    </div>
+
+    <!-- Fluxo 1: Entrada do Lead -->
+    <div class="collapsible open">
+      <div class="collapsible-header" onclick="toggleCollapsible(this)">
+        <span class="ch-icon">📥</span>
+        <span class="ch-title">Fluxo 1: Entrada do Lead ate Julia responder</span>
+        <span class="badge bg">Principal</span>
+        <span class="ch-arrow">&#9660;</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="flow-diagram"><span class="fb">[WhatsApp do Lead]</span>
+      |
+      v
+<span class="fw">[Meta Cloud API -> webhook POST /webhook/fb-inbound]</span>
+      |
+      v
+<span class="fn">/MDZAP -- Facebook Inbound</span> <span class="fy">(k9377WTyVJYOnD4e)</span>
+  |-- Parse Message <span class="cm">(from, message_type, media_id, text, contact_name)</span>
+  |-- Lookup Numero <span class="cm">(encontra organizacao_id pelo phone_number_id)</span>
+  |-- Upsert Conversa <span class="cm">(cria/atualiza whatsapp_conversas)</span>
+  |-- Save Message
+  |     |-- Se midia: resolve URL efemera Meta -> baixa binario -> <span class="fs">upload mdzap-media</span>
+  |     |-- INSERT whatsapp_mensagens <span class="cm">(status: received)</span>
+  |     '-- SE conversa tem lead_id: <span class="fs">upload leads-docs</span> + INSERT processos_documentos
+  '-- Queue + Trigger Grouper
+        |-- INSERT mdzap_message_queue
+        '-- Fire-and-forget -> <span class="fn">mdzap/message-grouper</span>
+
+<span class="fn">[mdzap/message-grouper]</span> <span class="cm">(agrupa mensagens rapidas)</span>
+      |
+      v
+<span class="fn">[mdzap/orchestrator]</span> <span class="fy">(HLdJDx6D45EcER9Z)</span>
+  |-- Busca conversa + lead + historico
+  |-- Checks de skip:
+  |     |-- <span class="fe">awaiting_human = true -> SKIP</span>
+  |     |-- <span class="fe">agente_slug = 'pausado' -> SKIP</span>
+  |     |-- <span class="fe">status = 'encerrada' -> SKIP</span>
+  |     '-- <span class="fe">wa_blocked = true -> SKIP</span>
+  |-- Se doc/image: fire-and-forget <span class="fn">mdzap/doc-reader</span> -> SKIP
+  |-- Doc Reader re-trigger com resultado -> usa doc_reader_context
+  |-- Se turn_count >= 15 -> <span class="fy">handoff automatico</span>
+  '-- Chamar Claude (Julia) -> <span class="fs">Enviar Resposta</span>
+
+<span class="fs">[Julia responde]</span>
+  '-- INSERT whatsapp_mensagens <span class="cm">(remetente_tipo: 'nina'/'julia')</span>
+        '-- Realtime -> frontend atualiza thread</div>
+      </div>
+    </div>
+
+    <!-- Fluxo 2: Vinculacao de Lead -->
+    <div class="collapsible">
+      <div class="collapsible-header" onclick="toggleCollapsible(this)">
+        <span class="ch-icon">🔗</span>
+        <span class="ch-title">Fluxo 2: Vinculacao de Lead</span>
+        <span class="ch-arrow">&#9660;</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="flow-diagram"><span class="fb">[Nova mensagem WhatsApp]</span>
+      |
+      v
+<span class="fn">/MDZAP -- Inbound Upsert Lead</span> <span class="fy">(A0DEvhxjfzhJmGbU)</span>
+  |-- Busca lead pelo telefone <span class="cm">(leads.telefone = from)</span>
+  |-- Se encontrado: vincula conversa
+  |     '-- UPDATE whatsapp_conversas SET lead_id
+  '-- Se nao encontrado: cria lead minimal
+        |-- nome = contact_name, telefone = from
+        '-- UPDATE whatsapp_conversas SET lead_id = novo_lead</div>
+      </div>
+    </div>
+
+    <!-- Fluxo 3: Auditoria -->
+    <div class="collapsible">
+      <div class="collapsible-header" onclick="toggleCollapsible(this)">
+        <span class="ch-icon">🔍</span>
+        <span class="ch-title">Fluxo 3: Auditoria Boa Vista</span>
+        <span class="ch-arrow">&#9660;</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="flow-diagram"><span class="fb">[Usuario clica "Cadastrar Lead (Boa Vista)" no LeadPanel]</span>
+      |
+      v
+<span class="fn">supabase.rpc('rpc_disparar_auditoria'</span>, { p_cpf, p_bureaus: ['boavista'], p_lead_id })
+      |
+      v
+<span class="fn">WH-AUD-01</span> <span class="fy">(BKLW2Egnxd1xCnjL)</span> -- Atualizar Auditoria
+  |-- Busca restricoes da BoaVista
+  |-- Popula <span class="fs">processos_restricoes</span>
+  |-- Se !possui_restricoes_processaveis:
+  |     '-- SET leads.coluna_crm = <span class="fy">'sem_restricoes'</span>
+  '-- Orchestrator detecta coluna_crm
+        '-- Julia envia <span class="fs">mensagem de encerramento amigavel</span></div>
+      </div>
+    </div>
+
+    <!-- Fluxo 4: Assumir / Devolver -->
+    <div class="collapsible">
+      <div class="collapsible-header" onclick="toggleCollapsible(this)">
+        <span class="ch-icon">🔄</span>
+        <span class="ch-title">Fluxo 4: Assumir / Devolver Julia</span>
+        <span class="badge br">Bug P0-003</span>
+        <span class="ch-arrow">&#9660;</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="flow-diagram"><span class="fb">[Atendente clica "Assumir"]</span>
+      |
+      v
+<span class="fn">callWebhook('mdzap/assumir-conversa'</span>, { conversa_id, user_id })
+  |-- UPDATE whatsapp_conversas SET assigned_user_id = user_id, awaiting_human = true
+  |-- Orchestrator agora faz <span class="fe">SKIP</span> (awaiting_human = true)
+  '-- Adiciona evento 'assumiu' em metadata.eventos
+
+<span class="fe">BUG P0-003:</span> Devolver so aparece quando <span class="fe">awaiting_human = true</span>
+  Mas awaiting_human pode ja ser false no proximo carregamento.
+  Atendente fica "travado" -- nao consegue se desassignar.
+
+<span class="fs">FIX proposto:</span> Devolver aparece quando <span class="fs">assigned_user_id</span> esta set
+  (independente do valor de awaiting_human)
+
+<span class="fb">[Atendente clica "Devolver"]</span>
+      |
+      v
+<span class="fn">callWebhook('mdzap/devolver-julia'</span>, { conversa_id })
+  |-- UPDATE whatsapp_conversas SET assigned_user_id = null, awaiting_human = false
+  |-- Julia volta a responder no proximo trigger
+  '-- Adiciona evento 'devolveu' em metadata.eventos</div>
+      </div>
+    </div>
+
+    <!-- Fluxo 5: Arquivamento -->
+    <div class="collapsible">
+      <div class="collapsible-header" onclick="toggleCollapsible(this)">
+        <span class="ch-icon">📦</span>
+        <span class="ch-title">Fluxo 5: Arquivamento -> CRM</span>
+        <span class="ch-arrow">&#9660;</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="flow-diagram"><span class="fb">[Usuario faz swipe-left ou menu "Arquivar"]</span>
+      |
+      v
+<span class="fn">callWebhook('mdzap/arquivar-conversa'</span>, { conversa_id, novo_status: 'arquivada' })
+      |
+      v
+<span class="fn">/MDZAP -- Encerrar Conversa</span> <span class="fy">(6ht8s7FVDKEnLLPz)</span>
+  |-- UPDATE whatsapp_conversas SET status = <span class="fy">'arquivada'</span>
+  |-- UPDATE leads SET coluna_crm = <span class="fy">'ag_documentos'</span>
+  '-- Adiciona evento 'arquivado' em metadata.eventos
+
+<span class="fs">[Lead agora em coluna ag_documentos no CRM]</span>
+      |
+      v
+<span class="fn">[/distribuicao]</span>
+  '-- Lead disponivel para ser distribuido a advogado</div>
+
+        <div class="alert-box ab-yellow" style="margin-top:12px">
+          <strong>Bug P1-001:</strong> Bulk archive faz UPDATE direto sem chamar webhook. Logica adicional do workflow (mover lead CRM, pausar Julia) nao e executada.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 3. ABA DADOS                                 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="aba-dados">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>3. Aba Dados do Lead</h2>
+      <span class="badge bg section-badge">Funcional</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Campos disponiveis</div>
+      <div class="field-row" style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:4px">
+        <div class="field-name" style="color:var(--text-muted);font-family:Inter,sans-serif"><strong>Campo</strong></div>
+        <div class="field-type"><strong>Tipo</strong></div>
+        <div class="field-desc"><strong>Detalhes</strong></div>
+      </div>
+      <div class="field-row"><div class="field-name">nome</div><div class="field-type">TEXT</div><div class="field-desc">Nome completo do lead</div></div>
+      <div class="field-row"><div class="field-name">cpf</div><div class="field-type">TEXT</div><div class="field-desc">Sem validacao/mascara <span class="status-pill sp-pend">P1-004</span></div></div>
+      <div class="field-row"><div class="field-name">rg</div><div class="field-type">TEXT</div><div class="field-desc">Documento de identidade</div></div>
+      <div class="field-row"><div class="field-name">data_nascimento</div><div class="field-type">DATE</div><div class="field-desc">Formato dd/MM/yyyy no frontend</div></div>
+      <div class="field-row"><div class="field-name">profissao</div><div class="field-type">TEXT</div><div class="field-desc">Profissao do lead</div></div>
+      <div class="field-row"><div class="field-name">email</div><div class="field-type">TEXT</div><div class="field-desc">E-mail de contato</div></div>
+      <div class="field-row"><div class="field-name">estado_civil</div><div class="field-type">SELECT</div><div class="field-desc">solteiro / casado / divorciado / viuvo / uniao estavel</div></div>
+      <div class="field-row"><div class="field-name">score</div><div class="field-type">INT 0-100</div><div class="field-desc">Score interno de qualidade do lead</div></div>
+      <div class="field-row"><div class="field-name">advogado_id</div><div class="field-type">UUID FK</div><div class="field-desc">Select de users com perfil juridico/admin</div></div>
+      <div class="field-row"><div class="field-name">logradouro</div><div class="field-type">TEXT</div><div class="field-desc" style="color:var(--text-muted)">Endereco parte 1</div></div>
+      <div class="field-row"><div class="field-name">numero</div><div class="field-type">TEXT</div><div class="field-desc" style="color:var(--text-muted)">Endereco parte 2</div></div>
+      <div class="field-row"><div class="field-name">bairro</div><div class="field-type">TEXT</div><div class="field-desc" style="color:var(--text-muted)">Endereco parte 3</div></div>
+      <div class="field-row"><div class="field-name">cep</div><div class="field-type">TEXT</div><div class="field-desc" style="color:var(--text-muted)">CEP</div></div>
+      <div class="field-row"><div class="field-name">cidade</div><div class="field-type">TEXT</div><div class="field-desc" style="color:var(--text-muted)">Cidade</div></div>
+      <div class="field-row"><div class="field-name">uf</div><div class="field-type">TEXT(2)</div><div class="field-desc" style="color:var(--text-muted)">Estado (UF)</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Logica saveLead</div>
+      <div class="code"><span class="cm">// saveLead: UPDATE leads + todos os campos + toast success + reFetch</span>
+<span class="ck">const</span> { error } = <span class="ck">await</span> supabase
+  .from(<span class="cs">'leads'</span>)
+  .update({
+    nome, cpf, rg, data_nascimento, profissao, email,
+    estado_civil, score, advogado_id,
+    logradouro, numero, bairro, cep, cidade, uf
+  })
+  .eq(<span class="cs">'id'</span>, leadId)
+
+<span class="ck">if</span> (!error) {
+  toast.success(<span class="cs">'Dados salvos com sucesso'</span>)
+  refetch()
+}</div>
+
+      <div style="margin-top:14px;font-size:0.84rem">
+        <strong>Botoes disponiveis:</strong>
+        <ul style="list-style:none;margin-top:6px">
+          <li style="padding:3px 0"><span class="inline-code">Salvar</span> &mdash; executa saveLead</li>
+          <li style="padding:3px 0"><span class="inline-code">CRM</span> &mdash; navega para <span class="hl-blue">/crm?lead=X</span></li>
+          <li style="padding:3px 0"><span class="inline-code">Cliente</span> &mdash; navega para <span class="hl-blue">/pagina-cliente</span></li>
+          <li style="padding:3px 0"><span class="inline-code">Cadastrar Lead (BoaVista)</span> &mdash; dispara rpc_disparar_auditoria</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 4. ABA RESTRICOES                            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="aba-restricoes">
+    <div class="section-header">
+      <span class="section-icon">🔍</span>
+      <h2>4. Aba Restricoes</h2>
+      <span class="badge bg section-badge">Funcional</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Arquitetura</div>
+      <p style="font-size:0.84rem;margin-bottom:10px">Usa o componente compartilhado <span class="inline-code">ClienteDrawerTabRestricoes</span> que tambem e usado em <span class="hl-blue">/pagina_cliente</span> e <span class="hl-blue">/pagina_processo</span>.</p>
+
+      <div style="margin-top:12px">
+        <strong style="font-size:0.82rem">Hook:</strong> <span class="inline-code">useRestricoes({ leadId })</span>
+      </div>
+
+      <div style="margin-top:12px;font-size:0.84rem">
+        <strong>Como popula:</strong>
+        <ol style="margin-left:20px;margin-top:6px">
+          <li style="padding:3px 0">Usuario clica "Cadastrar Lead (BoaVista)" na aba Dados</li>
+          <li style="padding:3px 0"><span class="inline-code">rpc_disparar_auditoria</span> e chamado com CPF + bureaus</li>
+          <li style="padding:3px 0">Workflow n8n WH-AUD-01 consulta Boa Vista</li>
+          <li style="padding:3px 0">Restricoes sao inseridas em <span class="inline-code">processos_restricoes</span></li>
+          <li style="padding:3px 0">Hook <span class="inline-code">useRestricoes</span> refetch detecta novas restricoes</li>
+        </ol>
+      </div>
+
+      <div style="margin-top:12px;font-size:0.84rem">
+        <strong>O que mostra:</strong> credor, valor, tipo de restricao, data inclusao, status, bureau de origem.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 5. ABA DOCS                                  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="aba-docs">
+    <div class="section-header">
+      <span class="section-icon">📄</span>
+      <h2>5. Aba Docs</h2>
+      <span class="badge bg section-badge">Funcional</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Upload manual</div>
+      <div class="flow-diagram" style="font-size:0.74rem"><span class="fb">[Usuario seleciona arquivo]</span>
+      |
+      v
+<span class="fn">Upload -> Storage bucket 'leads-docs'</span>
+      |
+      v
+<span class="fn">INSERT processos_documentos</span> (lead_id, tipo, path, nome_arquivo)
+      |
+      v
+<span class="fs">Lista atualiza via useLeadDocs hook</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Tier-1: Docs recebidos via WhatsApp</div>
+      <p style="font-size:0.84rem;margin-bottom:10px">Quando o lead envia um documento/imagem pelo WhatsApp, o Facebook Inbound automaticamente:</p>
+      <ol style="margin-left:20px;font-size:0.84rem">
+        <li style="padding:3px 0">Baixa o binario da URL efemera da Meta</li>
+        <li style="padding:3px 0">Upload para <span class="inline-code">mdzap-media</span> (URL permanente)</li>
+        <li style="padding:3px 0">Se conversa tem <span class="inline-code">lead_id</span>: upload tambem para <span class="inline-code">leads-docs</span></li>
+        <li style="padding:3px 0">INSERT em <span class="inline-code">processos_documentos</span></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Doc Reader Results na aba</div>
+      <p style="font-size:0.84rem;margin-bottom:10px">A aba Docs filtra <span class="inline-code">whatsapp_mensagens</span> que possuem <span class="inline-code">doc_reader_result</span> com qualidade diferente de "ilegivel".</p>
+      <div class="code" style="font-size:0.76rem"><span class="cm">// Exibicao de resultado Doc Reader</span>
+<span class="cs">&#128196;</span> [nome do arquivo]            qualidade: <span class="fs">legivel</span>
+   Resumo: "RG emitido em 2019, nome Joao Silva..."
+   CPF: 123.456.789-00
+   Nascimento: 15/03/1985
+   Orgao: SSP-RS</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 6. ABA HISTORICO                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="aba-historico">
+    <div class="section-header">
+      <span class="section-icon">📜</span>
+      <h2>6. Aba Historico / Timeline</h2>
+      <span class="badge bg section-badge">Funcional</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Fonte de dados</div>
+      <p style="font-size:0.84rem;margin-bottom:12px">Renderiza <span class="inline-code">conversa.metadata.eventos[]</span> populados pelo n8n em cada acao.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Tipo Evento</th><th>Origem</th><th>Descricao</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="inline-code">julia_assumiu</span></td><td>Orchestrator</td><td>Julia comecou a responder a conversa</td></tr>
+            <tr><td><span class="inline-code">assumiu</span></td><td>mdzap/assumir-conversa</td><td>Humano assumiu atendimento (com user_id)</td></tr>
+            <tr><td><span class="inline-code">devolveu</span></td><td>mdzap/devolver-julia</td><td>Humano devolveu conversa para Julia</td></tr>
+            <tr><td><span class="inline-code">transferiu</span></td><td>mdzap/transferir-conversa</td><td>Conversa transferida para outro atendente</td></tr>
+            <tr><td><span class="inline-code">documento</span></td><td>Facebook Inbound</td><td>Documento recebido e processado pelo Doc Reader</td></tr>
+            <tr><td><span class="inline-code">convertido</span></td><td>CRM workflow</td><td>Lead convertido em cliente</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert-box ab-blue" style="margin-top:12px">
+        <strong>Dependencia:</strong> A aba so mostra dados se o n8n estiver populando os eventos corretamente em cada workflow. Sem n8n, a timeline fica vazia.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 7. ABA NOTAS                                  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="aba-notas">
+    <div class="section-header">
+      <span class="section-icon">📝</span>
+      <h2>7. Aba Notas</h2>
+      <span class="badge bg section-badge">Funcional</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Implementacao</div>
+      <p style="font-size:0.84rem;margin-bottom:10px">Usa o componente compartilhado <span class="inline-code">CrmLeadNotas</span> que persiste em <span class="inline-code">crm_notas</span>.</p>
+      <div style="font-size:0.84rem">
+        <strong>Funcionalidades:</strong>
+        <ul style="list-style:none;margin-top:6px">
+          <li style="padding:3px 0">&#10003; Criar nova nota (texto livre)</li>
+          <li style="padding:3px 0">&#10003; Listar notas por data decrescente</li>
+          <li style="padding:3px 0">&#10003; Identificacao do autor (user_id)</li>
+          <li style="padding:3px 0">&#10003; Mesmo componente usado no CRM e MdZap</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 8. ABAS RESTANTES                             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="abas-restantes">
+    <div class="section-header">
+      <span class="section-icon">🧠</span>
+      <h2>8. Abas Restantes: Memoria + Tom</h2>
+      <span class="badge bg section-badge">Funcional</span>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Aba Memoria</div>
+        <p style="font-size:0.84rem;margin-bottom:10px">Componente: <span class="inline-code">MdzapLeadMemoryPanel</span></p>
+        <p style="font-size:0.84rem">Exibe o que a Julia "lembra" sobre o lead &mdash; informacoes extraidas ao longo das conversas que persistem entre sessoes. Inclui nome preferido, problemas mencionados, documentos enviados, restricoes discutidas.</p>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-top:8px">Dados vem de <span class="inline-code">whatsapp_conversas.metadata.memory</span></p>
+      </div>
+      <div class="card">
+        <div class="card-title">Aba Tom / Sentimento</div>
+        <p style="font-size:0.84rem;margin-bottom:10px">Componente inline: <span class="inline-code">SentimentPanel</span></p>
+        <p style="font-size:0.84rem">Mostra analise de sentimento do lead baseada nas ultimas mensagens. Indicadores: positivo/neutro/negativo, nivel de urgencia, engajamento, disposicao para conversao.</p>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-top:8px">Populado pelo Orchestrator a cada ciclo de resposta da Julia.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 9. JULIA & ORCHESTRATOR                       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="julia-orchestrator">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <h2>9. Julia & Orchestrator</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Orchestrator &mdash; Motor de decisao</div>
+      <p style="font-size:0.84rem;margin-bottom:14px">O Orchestrator e o cerebro do MdZap. Recebe cada mensagem agrupada do <span class="inline-code">message-grouper</span> e decide o que fazer.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Condicao</th><th>Acao</th><th>Resultado</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="inline-code">awaiting_human = true</span></td>
+              <td><span class="status-pill sp-block">SKIP</span></td>
+              <td>Humano assumiu &mdash; Julia nao responde</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">agente_slug = 'pausado'</span></td>
+              <td><span class="status-pill sp-block">SKIP</span></td>
+              <td>Agente pausado manualmente</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">status = 'encerrada'</span></td>
+              <td><span class="status-pill sp-block">SKIP</span></td>
+              <td>Conversa ja encerrada/arquivada</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">wa_blocked = true</span></td>
+              <td><span class="status-pill sp-block">SKIP</span></td>
+              <td>Lead bloqueou ou foi bloqueado</td>
+            </tr>
+            <tr>
+              <td>Mensagem tipo doc/image</td>
+              <td><span class="status-pill sp-run">Doc Reader</span></td>
+              <td>Fire-and-forget para mdzap/doc-reader, aguarda resultado</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">_source = 'doc_reader'</span></td>
+              <td><span class="status-pill sp-done">Responde</span></td>
+              <td>Re-trigger com contexto do doc processado</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">turn_count >= 15</span></td>
+              <td><span class="status-pill sp-pend">Handoff</span></td>
+              <td>Muitas interacoes &mdash; passa para humano automaticamente</td>
+            </tr>
+            <tr>
+              <td>Mensagem de texto normal</td>
+              <td><span class="status-pill sp-done">Julia</span></td>
+              <td>Claude gera resposta como Julia e envia</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Julia &mdash; Prompt e comportamento</div>
+      <div style="font-size:0.84rem">
+        <p style="margin-bottom:10px">Julia e a persona de SDR da MP Advocacia. Age como atendente simpatica, profissional, que:</p>
+        <ul style="list-style:none">
+          <li style="padding:4px 0">&#10003; Coleta dados do lead (nome, CPF, endereco)</li>
+          <li style="padding:4px 0">&#10003; Explica o servico de remocao de restricoes</li>
+          <li style="padding:4px 0">&#10003; Solicita documentos (RG, comprovante residencia)</li>
+          <li style="padding:4px 0">&#10003; Encaminha para auditoria quando tem CPF</li>
+          <li style="padding:4px 0">&#10003; Faz handoff para humano quando necessario</li>
+        </ul>
+        <p style="margin-top:12px"><strong>Prompt management:</strong> Configuravel via <span class="inline-code">Julia Lab</span> e <span class="inline-code">Admin IA</span> no frontend. Prompts salvos em <span class="inline-code">mdzap_ai_modules</span>.</p>
+        <p style="margin-top:8px"><strong>AI Composer:</strong> Ferramentas de reescrita para o atendente humano &mdash; reescrever, completar, tornar formal, simplificar, traduzir.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 10. ASSUMIR / DEVOLVER                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="assumir-devolver">
+    <div class="section-header">
+      <span class="section-icon">🔄</span>
+      <h2>10. Assumir / Devolver</h2>
+      <span class="badge br section-badge">Bug P0-003</span>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Botao Assumir</div>
+        <div style="font-size:0.84rem">
+          <p><strong>Webhook:</strong> <span class="inline-code">mdzap/assumir-conversa</span></p>
+          <p style="margin-top:6px"><strong>Workflow:</strong> MDZAP-ASSUMIR-CONVERSA-v1</p>
+          <p style="margin-top:6px"><strong>O que faz:</strong></p>
+          <ul style="list-style:none;margin-top:4px">
+            <li>1. SET <span class="inline-code">assigned_user_id</span> = user atual</li>
+            <li>2. SET <span class="inline-code">awaiting_human</span> = true</li>
+            <li>3. Adiciona evento na timeline</li>
+            <li>4. Julia para de responder (skip condition)</li>
+          </ul>
+          <p style="margin-top:8px"><span class="status-pill sp-done">Funcional</span></p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Botao Devolver</div>
+        <div style="font-size:0.84rem">
+          <p><strong>Webhook:</strong> <span class="inline-code">mdzap/devolver-julia</span></p>
+          <p style="margin-top:6px"><strong>Workflow:</strong> MDZAP-DEVOLVER-JULIA-v1</p>
+          <p style="margin-top:6px"><strong>O que faz:</strong></p>
+          <ul style="list-style:none;margin-top:4px">
+            <li>1. SET <span class="inline-code">assigned_user_id</span> = null</li>
+            <li>2. SET <span class="inline-code">awaiting_human</span> = false</li>
+            <li>3. Adiciona evento na timeline</li>
+            <li>4. Julia volta a responder</li>
+          </ul>
+          <p style="margin-top:8px"><span class="status-pill sp-block">Bug P0-003</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert-box ab-red">
+      <strong>P0-003 &mdash; Detalhamento tecnico:</strong><br>
+      Condicao atual: Devolver so aparece quando <span class="inline-code">lead_awaiting_human === true</span>.<br>
+      Problema: Apos assumir, <span class="inline-code">awaiting_human</span> pode ja estar false no carregamento seguinte (race condition ou reset por outro workflow).<br>
+      Resultado: Atendente fica "travado" &mdash; nao consegue se desassignar.<br>
+      <strong style="color:var(--accent3)">Fix proposto:</strong> Mostrar Devolver quando <span class="inline-code">assigned_user_id</span> esta set (independente de awaiting_human).
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 11. ARQUIVAMENTO                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="arquivamento">
+    <div class="section-header">
+      <span class="section-icon">📦</span>
+      <h2>11. Arquivamento</h2>
+      <span class="badge by section-badge">Bug P1-001</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Metodos de arquivamento</div>
+      <div class="grid g3" style="margin-top:8px">
+        <div style="padding:14px;background:var(--surface2);border-radius:10px;text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:6px">👈</div>
+          <div style="font-weight:600;font-size:0.85rem">Swipe Left</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px">Na lista de conversas, gesto de swipe revela botao</div>
+          <div style="margin-top:8px"><span class="status-pill sp-done">Via webhook</span></div>
+        </div>
+        <div style="padding:14px;background:var(--surface2);border-radius:10px;text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:6px">📋</div>
+          <div style="font-weight:600;font-size:0.85rem">Menu contextual</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px">Click direito ou menu "..." na conversa</div>
+          <div style="margin-top:8px"><span class="status-pill sp-done">Via webhook</span></div>
+        </div>
+        <div style="padding:14px;background:var(--surface2);border-radius:10px;text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:6px">📦</div>
+          <div style="font-weight:600;font-size:0.85rem">Bulk archive</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px">Selecao multipla + botao "Arquivar selecionadas"</div>
+          <div style="margin-top:8px"><span class="status-pill sp-pend">UPDATE direto (bug)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">O que acontece no CRM apos arquivar</div>
+      <div class="flow-diagram" style="font-size:0.74rem"><span class="fn">Arquivar conversa</span> -> webhook <span class="fn">mdzap/arquivar-conversa</span>
+      |
+      v
+<span class="fn">/MDZAP -- Encerrar Conversa</span>
+  |-- whatsapp_conversas.status = <span class="fy">'arquivada'</span>
+  |-- leads.coluna_crm = <span class="fy">'ag_documentos'</span>
+  '-- metadata.eventos[] += { tipo: 'arquivado', ts: now() }
+
+Resultado: Lead sai do MdZap e <span class="fs">aparece na /distribuicao</span>
+           para ser atribuido a um advogado.</div>
+
+      <div class="alert-box ab-yellow" style="margin-top:12px">
+        <strong>Bug P1-001:</strong> Bulk archive faz UPDATE direto em <span class="inline-code">whatsapp_conversas</span> sem chamar o webhook. Consequencias: lead nao muda de coluna no CRM, Julia nao e pausada, evento nao e adicionado na timeline.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 12. DOC READER                                -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="doc-reader">
+    <div class="section-header">
+      <span class="section-icon">🔬</span>
+      <h2>12. Doc Reader &mdash; Subagente de Documentos</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Pipeline completo</div>
+      <div class="flow-diagram"><span class="fb">[Lead envia documento/imagem pelo WhatsApp]</span>
+      |
+      v
+<span class="fn">Facebook Inbound</span> -> Save Message -> <span class="fs">upload mdzap-media</span> (URL permanente)
+      |
+      v
+<span class="fn">Orchestrator</span> detecta tipo <span class="fy">document</span> ou <span class="fy">image</span>
+      |
+      v
+Fire-and-forget -> <span class="fn">mdzap/doc-reader</span>
+      |
+      v
+Doc Reader:
+  |-- Baixa arquivo do Storage
+  |-- Envia para <span class="fw">Claude</span> (vision ou text extraction)
+  |-- Extrai: <span class="fs">tipo_documento</span>, <span class="fs">qualidade</span>, <span class="fs">resumo</span>, <span class="fs">campos_extraidos</span>
+  '-- UPDATE whatsapp_mensagens.metadata.<span class="fs">doc_reader_result</span>
+      |
+      v
+Re-dispara <span class="fn">Orchestrator</span> com <span class="fy">_source: 'doc_reader'</span> + resultado
+      |
+      v
+<span class="fs">Julia usa resultado no contexto para responder ao lead</span></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Tipos de documento suportados</div>
+        <ul style="list-style:none;font-size:0.84rem">
+          <li style="padding:5px 0"><span style="display:inline-block;width:24px">📋</span> RG (Registro Geral)</li>
+          <li style="padding:5px 0"><span style="display:inline-block;width:24px">📋</span> CPF</li>
+          <li style="padding:5px 0"><span style="display:inline-block;width:24px">🏠</span> Comprovante de residencia</li>
+          <li style="padding:5px 0"><span style="display:inline-block;width:24px">💰</span> Contracheque</li>
+          <li style="padding:5px 0"><span style="display:inline-block;width:24px">🏦</span> Extrato bancario</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Configuracao</div>
+        <div style="font-size:0.84rem">
+          <div class="alert-box ab-yellow" style="margin:0">
+            <strong>P2-001:</strong> Prompt do Doc Reader vive <strong>apenas no n8n</strong> (Code node no workflow). Nao e configuravel via Admin IA no frontend.
+          </div>
+          <p style="margin-top:10px"><strong>Para treinar/ajustar:</strong></p>
+          <p>Editar Code node no workflow <span class="inline-code">/MDZAP -- Doc Reader</span> no n8n.</p>
+          <p style="margin-top:8px"><strong>Stage 4 planeja:</strong> tipo <span class="inline-code">doc_reader</span> no Admin IA para configuracao via frontend.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 13. CONEXOES MDZAP <-> CRM                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="conexoes-crm">
+    <div class="section-header">
+      <span class="section-icon">🔗</span>
+      <h2>13. Conexoes MdZap &harr; CRM</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Mapa completo de eventos</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Evento MdZap</th>
+              <th style="text-align:center;width:40px">&#8594;</th>
+              <th>Acao CRM</th>
+              <th>Tabela afetada</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Nova conversa sem lead</td>
+              <td style="text-align:center;color:var(--accent)">&#8594;</td>
+              <td>Cria lead minimal (telefone + nome contato)</td>
+              <td><span class="inline-code">leads</span></td>
+            </tr>
+            <tr>
+              <td>Mensagem recebida</td>
+              <td style="text-align:center;color:var(--accent)">&#8594;</td>
+              <td>Atualiza <span class="inline-code">leads.ultimo_contato</span></td>
+              <td><span class="inline-code">leads</span></td>
+            </tr>
+            <tr>
+              <td>Auditoria disparada</td>
+              <td style="text-align:center;color:var(--accent)">&#8594;</td>
+              <td>Cria registros de restricoes</td>
+              <td><span class="inline-code">processos_restricoes</span></td>
+            </tr>
+            <tr>
+              <td>Sem restricoes</td>
+              <td style="text-align:center;color:var(--accent)">&#8594;</td>
+              <td><span class="inline-code">coluna_crm = 'sem_restricoes'</span></td>
+              <td><span class="inline-code">leads</span></td>
+            </tr>
+            <tr>
+              <td>Conversa arquivada</td>
+              <td style="text-align:center;color:var(--accent)">&#8594;</td>
+              <td><span class="inline-code">coluna_crm = 'ag_documentos'</span></td>
+              <td><span class="inline-code">leads</span></td>
+            </tr>
+            <tr>
+              <td>Lead convertido</td>
+              <td style="text-align:center;color:var(--accent)">&#8594;</td>
+              <td><span class="inline-code">coluna_crm = 'cliente'</span> + cria registro</td>
+              <td><span class="inline-code">leads</span> + <span class="inline-code">clientes</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="summary-box" style="margin-top:16px">
+      <p><strong>Principio:</strong> O MdZap e o CRM sao acoplados via <span class="inline-code">leads.coluna_crm</span>. Cada acao no MdZap move o lead para a coluna correspondente no Kanban do CRM. O fluxo completo: <span class="hl">novo_lead</span> &rarr; <span class="hl-primary">em_atendimento</span> &rarr; <span class="hl-yellow">ag_documentos</span> &rarr; <span class="hl-blue">distribuicao</span> &rarr; <span class="hl-green">cliente</span></p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 14. MAPA DE WEBHOOKS                          -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="webhooks">
+    <div class="section-header">
+      <span class="section-icon">🌐</span>
+      <h2>14. Mapa de Webhooks</h2>
+      <span class="badge bb section-badge">16 paths</span>
+    </div>
+
+    <div class="card" style="padding:12px">
+      <div class="table-wrap" style="border:none">
+        <table>
+          <thead>
+            <tr>
+              <th>Path</th>
+              <th>Workflow n8n</th>
+              <th>Status</th>
+              <th>Chamado por</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="inline-code">mdzap/enviar-mensagem</span></td>
+              <td>/MDZAP &mdash; Enviar Mensagem FE</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>sendText, sendFile, sendLink, useMdzapSend</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/enviar-template</span></td>
+              <td>/MDZAP &mdash; Enviar Template</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>useMdzapSend.templateMutation</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/enviar-audio</span></td>
+              <td>(verificar)</td>
+              <td><span class="status-pill sp-pend">Verificar</span></td>
+              <td>handleAudioComplete</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/assumir-conversa</span></td>
+              <td>MDZAP-ASSUMIR-CONVERSA-v1</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>handleAssumir</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/devolver-julia</span></td>
+              <td>MDZAP-DEVOLVER-JULIA-v1</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>handleDevolver</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/arquivar-conversa</span></td>
+              <td>/MDZAP &mdash; Encerrar Conversa</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>handleAction (SwipeableCard)</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/transferir-conversa</span></td>
+              <td>/MDZAP &mdash; Transferir Conversa</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>MdzapTransferModal</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/reconectar</span></td>
+              <td>(verificar)</td>
+              <td><span class="status-pill sp-pend">Verificar</span></td>
+              <td>MdzapGestaoPanel</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/julia-lab</span></td>
+              <td>/MDZAP &mdash; Julia Lab</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>MdzapJuliaLab</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/julia-lab-refine</span></td>
+              <td>/MDZAP &mdash; Julia Lab Refine</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>MdzapJuliaLab</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/julia-prompt-save</span></td>
+              <td>/MDZAP &mdash; Julia Prompt Save</td>
+              <td><span class="status-pill sp-pend">Erros intermitentes</span></td>
+              <td>MdzapAdminIA</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/julia-feedback</span></td>
+              <td>(verificar)</td>
+              <td><span class="status-pill sp-pend">Verificar</span></td>
+              <td>MdzapMsgFeedback</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/ai-composer</span></td>
+              <td>/MDZAP &mdash; AI Composer</td>
+              <td><span class="status-pill sp-done">Ativo</span></td>
+              <td>MdzapAIComposer</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/bulk-negociacoes</span></td>
+              <td>(verificar)</td>
+              <td><span class="status-pill sp-pend">Verificar</span></td>
+              <td>useMdzapSend</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/bulk-documentos</span></td>
+              <td>(verificar)</td>
+              <td><span class="status-pill sp-pend">Verificar</span></td>
+              <td>useMdzapSend</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">mdzap/document-received</span></td>
+              <td>/MDZAP &mdash; Document Received</td>
+              <td><span class="status-pill sp-done">Ativo v2</span></td>
+              <td>Registro manual de docs</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid g3" style="margin-top:16px">
+      <div class="stat-card">
+        <div class="stat-value sv-green" style="font-size:1.6rem">10</div>
+        <div class="stat-label">Ativos confirmados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value sv-yellow" style="font-size:1.6rem">5</div>
+        <div class="stat-label">A verificar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value sv-red" style="font-size:1.6rem">1</div>
+        <div class="stat-label">Erros intermitentes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 15. BUGS ATIVOS                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="bugs-ativos">
+    <div class="section-header">
+      <span class="section-icon">🐛</span>
+      <h2>15. Bugs Ativos</h2>
+      <span class="badge br section-badge">9 bugs</span>
+    </div>
+
+    <h3 style="font-size:0.9rem;margin-bottom:12px;color:var(--accent2)">P0 &mdash; Criticos (bloqueiam operacao)</h3>
+
+    <div class="bug-card bc-p0">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent2)">P0-001</span>
+        <span class="bug-title">sendLink sem INSERT otimista</span>
+        <span class="status-pill sp-block" style="margin-left:auto">Blocker</span>
+      </div>
+      <div class="bug-desc">Link enviado nao aparece na thread ate o n8n processar e retornar. Todos os outros tipos (texto, midia) aparecem imediatamente via INSERT otimista.</div>
+      <div class="bug-fix"><strong>Fix:</strong> Adicionar INSERT otimista em <span class="inline-code">sendLink</span> igual ao padrao de <span class="inline-code">sendText</span> &mdash; INSERT local com <span class="inline-code">status: 'pending'</span> antes de chamar webhook.</div>
+    </div>
+
+    <div class="bug-card bc-p0">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent2)">P0-002</span>
+        <span class="bug-title">Mensagens pending sem cleanup/rollback</span>
+        <span class="status-pill sp-block" style="margin-left:auto">Blocker</span>
+      </div>
+      <div class="bug-desc">Mensagens otimistas ficam travadas em <span class="inline-code">status: 'pending'</span> para sempre se o webhook falha. Nao ha cleanup, rollback, nem indicacao visual de falha.</div>
+      <div class="bug-fix"><strong>Fix:</strong> Timeout de 10s apos envio. Se nao recebe confirmacao, marcar como <span class="inline-code">status: 'failed'</span> com indicador visual (icone de erro + botao "tentar novamente").</div>
+    </div>
+
+    <div class="bug-card bc-p0">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent2)">P0-003</span>
+        <span class="bug-title">Botao Devolver ausente apos assumir</span>
+        <span class="status-pill sp-block" style="margin-left:auto">Blocker</span>
+      </div>
+      <div class="bug-desc">Devolver so aparece quando <span class="inline-code">lead_awaiting_human === true</span>. Apos assumir, <span class="inline-code">awaiting_human</span> pode ja estar false no carregamento seguinte. Atendente fica "travado".</div>
+      <div class="bug-fix"><strong>Fix:</strong> Condicao do botao Devolver deve ser <span class="inline-code">assigned_user_id !== null</span> (independente de <span class="inline-code">awaiting_human</span>).</div>
+    </div>
+
+    <h3 style="font-size:0.9rem;margin:20px 0 12px;color:var(--accent4)">P1 &mdash; Importantes (degradam experiencia)</h3>
+
+    <div class="bug-card bc-p1">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent4)">P1-001</span>
+        <span class="bug-title">Bulk archive UPDATE direto sem webhook</span>
+      </div>
+      <div class="bug-desc">Selecao multipla + arquivar faz UPDATE direto no banco. Logica adicional do workflow (mover lead CRM, pausar Julia) nao e executada.</div>
+      <div class="bug-fix"><strong>Fix:</strong> Iterar sobre conversas selecionadas e chamar <span class="inline-code">mdzap/arquivar-conversa</span> para cada uma (ou criar endpoint bulk no n8n).</div>
+    </div>
+
+    <div class="bug-card bc-p1">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent4)">P1-002</span>
+        <span class="bug-title">Audio gravado envia como base64</span>
+      </div>
+      <div class="bug-desc">Audio gravado envia como base64 no payload JSON. Pode gerar payload enorme para audios longos.</div>
+      <div class="bug-fix"><strong>Fix:</strong> Upload do audio para Storage <span class="inline-code">mdzap-media</span> antes de chamar webhook (igual ao fluxo de imagem/video).</div>
+    </div>
+
+    <div class="bug-card bc-p1">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent4)">P1-003</span>
+        <span class="bug-title">Limite 100 mensagens sem paginacao</span>
+      </div>
+      <div class="bug-desc">Query busca apenas as ultimas 100 mensagens. Conversas longas perdem historico antigo sem forma de recuperar.</div>
+      <div class="bug-fix"><strong>Fix:</strong> Implementar paginacao cursor-based com botao "Carregar mais" no topo da thread.</div>
+    </div>
+
+    <div class="bug-card bc-p1">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent4)">P1-004</span>
+        <span class="bug-title">Campo CPF sem validacao/mascara</span>
+      </div>
+      <div class="bug-desc">Campo CPF na aba Dados aceita qualquer string. Sem mascara de formatacao e sem validacao de digitos verificadores.</div>
+      <div class="bug-fix"><strong>Fix:</strong> Mascara <span class="inline-code">###.###.###-##</span> + validacao algoritmo digitos verificadores antes de salvar.</div>
+    </div>
+
+    <div class="bug-card bc-p1">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent4)">P1-005</span>
+        <span class="bug-title">as any extensivo em queries Supabase</span>
+      </div>
+      <div class="bug-desc">Schema TypeScript desatualizado forca uso de <span class="inline-code">(supabase as any)</span> em varias queries.</div>
+      <div class="bug-fix"><strong>Fix:</strong> <span class="inline-code">npx supabase gen types typescript</span> e substituir todos os <span class="inline-code">as any</span>.</div>
+    </div>
+
+    <div class="bug-card bc-p1">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent4)">P1-006</span>
+        <span class="bug-title">rpc_disparar_auditoria sem type safety</span>
+      </div>
+      <div class="bug-desc">RPC chamado com <span class="inline-code">(supabase as any).rpc()</span>. Nenhuma validacao de parametros em compile-time.</div>
+      <div class="bug-fix"><strong>Fix:</strong> Regenerar types (P1-005) resolve automaticamente.</div>
+    </div>
+
+    <h3 style="font-size:0.9rem;margin:20px 0 12px;color:var(--accent5)">P2 &mdash; Melhorias (nice-to-have)</h3>
+
+    <div class="bug-card bc-p2">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent5)">P2-001</span>
+        <span class="bug-title">Doc Reader sem prompt configuravel no Admin IA</span>
+      </div>
+      <div class="bug-desc">Os tipos de prompt no Admin IA nao incluem <span class="inline-code">doc_reader</span>. Prompt configurado apenas no n8n (Code node).</div>
+      <div class="bug-fix"><strong>Fix:</strong> Adicionar tipo <span class="inline-code">doc_reader</span> em <span class="inline-code">mdzap_ai_modules</span> + UI no Admin IA.</div>
+    </div>
+
+    <div class="bug-card bc-p2">
+      <div class="bug-header">
+        <span class="bug-id" style="color:var(--accent5)">P2-002</span>
+        <span class="bug-title">Dashboard periodo selector desabilitado</span>
+      </div>
+      <div class="bug-desc">Seletor de periodo mostra "em breve" permanentemente. KPIs usam apenas periodo padrao.</div>
+      <div class="bug-fix"><strong>Fix:</strong> Implementar filtro de datas com query parametrizada no dashboard.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 16. PLANO STAGE BY STAGE                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section" id="plano-stages">
+    <div class="section-header">
+      <span class="section-icon">🚀</span>
+      <h2>16. Plano de Implementacao &mdash; 6 Stages</h2>
+    </div>
+
+    <!-- STAGE 1 -->
+    <div class="stage-card">
+      <div class="stage-header">
+        <div class="stage-number sn-1">1</div>
+        <div>
+          <div class="stage-title">Bugs Criticos</div>
+          <div class="stage-subtitle">Esta semana &mdash; 5 tarefas &mdash; Prioridade maxima</div>
+        </div>
+        <span class="badge br" style="margin-left:auto">Urgente</span>
+      </div>
+      <ul class="task-list">
+        <li>
+          <span class="task-id">S1-A</span>
+          <div>Fix <span class="inline-code">sendLink</span> &mdash; adicionar INSERT otimista igual ao sendText. Mensagem deve aparecer na thread imediatamente.</div>
+        </li>
+        <li>
+          <span class="task-id">S1-B</span>
+          <div>Fix mensagens pending &mdash; cleanup/rollback se webhook falha. Timeout 10s + <span class="inline-code">status='failed'</span> + indicador visual + botao retry.</div>
+        </li>
+        <li>
+          <span class="task-id">S1-C</span>
+          <div>Fix botao Devolver &mdash; mostrar quando <span class="inline-code">assigned_user_id</span> esta set (nao so quando <span class="inline-code">awaiting_human=true</span>).</div>
+        </li>
+        <li>
+          <span class="task-id">S1-D</span>
+          <div>Fix bulk archive &mdash; chamar webhook <span class="inline-code">mdzap/arquivar-conversa</span> em vez de UPDATE direto no banco.</div>
+        </li>
+        <li>
+          <span class="task-id">S1-E</span>
+          <div>Fix audio gravado &mdash; upload ao Storage <span class="inline-code">mdzap-media</span> antes de chamar webhook (eliminar base64 no payload).</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- STAGE 2 -->
+    <div class="stage-card">
+      <div class="stage-header">
+        <div class="stage-number sn-2">2</div>
+        <div>
+          <div class="stage-title">Completude Funcional</div>
+          <div class="stage-subtitle">Semana 2 &mdash; 5 tarefas &mdash; Polimento</div>
+        </div>
+        <span class="badge by" style="margin-left:auto">Importante</span>
+      </div>
+      <ul class="task-list">
+        <li>
+          <span class="task-id">S2-A</span>
+          <div>Validacao de CPF &mdash; mascara <span class="inline-code">###.###.###-##</span> + algoritmo digitos verificadores no frontend.</div>
+        </li>
+        <li>
+          <span class="task-id">S2-B</span>
+          <div>Paginacao de mensagens &mdash; botao "carregar mais" no topo, cursor-based, sem perda de scroll position.</div>
+        </li>
+        <li>
+          <span class="task-id">S2-C</span>
+          <div>Prompt Doc Reader configuravel no Admin IA &mdash; adicionar tipo <span class="inline-code">doc_reader</span> em <span class="inline-code">mdzap_ai_modules</span>.</div>
+        </li>
+        <li>
+          <span class="task-id">S2-D</span>
+          <div>Dashboard periodo selector funcional &mdash; filtro de datas com query parametrizada.</div>
+        </li>
+        <li>
+          <span class="task-id">S2-E</span>
+          <div>Regenerar types TypeScript &mdash; <span class="inline-code">npx supabase gen types</span> + remover todos <span class="inline-code">as any</span>.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- STAGE 3 -->
+    <div class="stage-card">
+      <div class="stage-header">
+        <div class="stage-number sn-3">3</div>
+        <div>
+          <div class="stage-title">Fluxo CRM Completo</div>
+          <div class="stage-subtitle">Semana 3 &mdash; 4 tarefas &mdash; Integracao ponta-a-ponta</div>
+        </div>
+        <span class="badge bb" style="margin-left:auto">Integracao</span>
+      </div>
+      <ul class="task-list">
+        <li>
+          <span class="task-id">S3-A</span>
+          <div>Verificar/corrigir <span class="inline-code">/MDZAP -- Inbound Upsert Lead</span> &mdash; confirmar vinculacao correta de lead por telefone.</div>
+        </li>
+        <li>
+          <span class="task-id">S3-B</span>
+          <div>Verificar/corrigir <span class="inline-code">/MDZAP -- Encerrar Conversa</span> &mdash; confirmar que move lead no CRM corretamente.</div>
+        </li>
+        <li>
+          <span class="task-id">S3-C</span>
+          <div>Teste E2E completo: nova mensagem &rarr; lead criado &rarr; auditoria &rarr; Julia &rarr; assumir &rarr; devolver &rarr; arquivar &rarr; distribuicao.</div>
+        </li>
+        <li>
+          <span class="task-id">S3-D</span>
+          <div>Confirmar que <span class="inline-code">rpc_disparar_auditoria</span> existe no banco e funciona com parametros corretos.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- STAGE 4 -->
+    <div class="stage-card">
+      <div class="stage-header">
+        <div class="stage-number sn-4">4</div>
+        <div>
+          <div class="stage-title">Doc Reader Aprimorado</div>
+          <div class="stage-subtitle">Semana 4 &mdash; 5 tarefas &mdash; IA documental</div>
+        </div>
+        <span class="badge bp" style="margin-left:auto">IA</span>
+      </div>
+      <ul class="task-list">
+        <li>
+          <span class="task-id">S4-A</span>
+          <div>Expandir tipos de documento reconhecidos (CNH, certidao nascimento/casamento, procuracao, etc.).</div>
+        </li>
+        <li>
+          <span class="task-id">S4-B</span>
+          <div>Adicionar tipo <span class="inline-code">doc_reader</span> no Admin IA &mdash; prompt configuravel via frontend.</div>
+        </li>
+        <li>
+          <span class="task-id">S4-C</span>
+          <div>Trigger automatico para upload ao Google Drive quando lead registrado como cliente.</div>
+        </li>
+        <li>
+          <span class="task-id">S4-D</span>
+          <div>Extracao automatica de CPF do documento &rarr; preenche campo CPF do lead automaticamente.</div>
+        </li>
+        <li>
+          <span class="task-id">S4-E</span>
+          <div>Notificacao ao atendente quando documento e processado pelo Doc Reader (toast + badge na aba Docs).</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- STAGE 5 -->
+    <div class="stage-card">
+      <div class="stage-header">
+        <div class="stage-number sn-5">5</div>
+        <div>
+          <div class="stage-title">Julia Elaboracao Completa</div>
+          <div class="stage-subtitle">Semanas 5-6 &mdash; 5 tarefas &mdash; IA conversacional avancada</div>
+        </div>
+        <span class="badge bg" style="margin-left:auto">Evolucao</span>
+      </div>
+      <ul class="task-list">
+        <li>
+          <span class="task-id">S5-A</span>
+          <div>Fluxo conversacional ponta-a-ponta por tipo de restricao &mdash; roteiros especificos para Serasa, SPC, SCPC, etc.</div>
+        </li>
+        <li>
+          <span class="task-id">S5-B</span>
+          <div>Deteccao automatica de dados (nome, CPF, endereco) no texto da mensagem &mdash; preenchimento automatico no lead.</div>
+        </li>
+        <li>
+          <span class="task-id">S5-C</span>
+          <div>Handoff inteligente com briefing &mdash; quando transfere para humano, gera resumo do lead e contexto da conversa.</div>
+        </li>
+        <li>
+          <span class="task-id">S5-D</span>
+          <div>Mensagem de boas-vindas personalizada por numero WhatsApp &mdash; diferentes saudacoes por campanha/origem.</div>
+        </li>
+        <li>
+          <span class="task-id">S5-E</span>
+          <div>Follow-up automatico &mdash; se lead nao responde em X horas, Julia envia lembrete gentil.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- STAGE 6 -->
+    <div class="stage-card">
+      <div class="stage-header">
+        <div class="stage-number sn-6">6</div>
+        <div>
+          <div class="stage-title">SDR2 / SDR3</div>
+          <div class="stage-subtitle">Futuro &mdash; Aguardando definicao &mdash; Novos agentes</div>
+        </div>
+        <span class="badge bo" style="margin-left:auto">Backlog</span>
+      </div>
+      <ul class="task-list">
+        <li>
+          <span class="task-id">S6-A</span>
+          <div>Aguardando definicao de Christian &mdash; perfis e personalidades dos novos agentes SDR.</div>
+        </li>
+        <li>
+          <span class="task-id">S6-B</span>
+          <div>Criar prompts dedicados no banco <span class="inline-code">mdzap_ai_modules</span> para cada SDR.</div>
+        </li>
+        <li>
+          <span class="task-id">S6-C</span>
+          <div>Cada SDR com numero WhatsApp proprio &mdash; multiplos phone_number_id no Meta Business.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Stage summary -->
+    <div class="summary-box" style="margin-top:20px">
+      <p><strong>Resumo do plano:</strong></p>
+      <p>Stage 1 (esta semana): 5 bugs criticos que impedem operacao plena</p>
+      <p>Stage 2 (semana 2): 5 melhorias de completude &mdash; CPF, paginacao, types, dashboard</p>
+      <p>Stage 3 (semana 3): 4 validacoes de integracao CRM end-to-end</p>
+      <p>Stage 4 (semana 4): 5 evolucoes do Doc Reader &mdash; mais tipos, auto-preenchimento, Drive</p>
+      <p>Stage 5 (semanas 5-6): 5 evolucoes da Julia &mdash; fluxos por restricao, deteccao dados, follow-up</p>
+      <p>Stage 6 (futuro): 3 tarefas para novos agentes SDR &mdash; aguardando definicao</p>
+      <p style="margin-top:8px"><strong>Total: 27 tarefas em 6 stages.</strong> Apos Stage 3, sistema esta 100% operacional para producao.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FOOTER                                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="footer">
+    🐙 Jarbas 2.0 &mdash; MdLab LegalTech &middot; 07/04/2026<br>
+    <span style="font-size:0.72rem">MdZap Plano Mestre v4 &mdash; Documento definitivo do sistema de atendimento</span>
+  </div>
+
+</div>
+
+<script>
+// Collapsible sections
+function toggleCollapsible(header) {
+  const collapsible = header.parentElement;
+  collapsible.classList.toggle('open');
+}
+
+// Active nav item on scroll
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+
+function updateActiveNav() {
+  let current = '';
+  sections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top <= 100) {
+      current = section.id;
+    }
+  });
+  navItems.forEach(item => {
+    item.classList.remove('active');
+    if (item.getAttribute('href') === '#' + current) {
+      item.classList.add('active');
+    }
+  });
+}
+
+// Smooth scroll for nav items
+navItems.forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Throttled scroll listener
+let ticking = false;
+document.querySelector('.main').addEventListener('scroll', function() {
+  if (!ticking) {
+    window.requestAnimationFrame(function() {
+      updateActiveNav();
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+// Also listen on window scroll
+window.addEventListener('scroll', function() {
+  if (!ticking) {
+    window.requestAnimationFrame(function() {
+      updateActiveNav();
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+// Initial state
+updateActiveNav();
+</script>
+
+</body>
+</html>
