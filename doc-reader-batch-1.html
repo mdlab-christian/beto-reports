@@ -30,21 +30,169 @@ tr:hover td{background:var(--card)}
 .ow{overflow-x:auto}
 </style></head><body>
 <h1>Doc Reader — Batch #1</h1>
-<p class="meta">Gerado em 07/04/2026, 14:16:03 · 0 pastas · Duração: 1s · DRY RUN</p>
+<p class="meta">Gerado em 07/04/2026, 14:18:16 · 3 pastas · Duração: 34s</p>
 <div class="kpis">
-  <div class="kpi"><div class="kpi-lbl">Docs Processados</div><div class="kpi-val pri">0</div></div>
-  <div class="kpi"><div class="kpi-lbl">Legíveis</div><div class="kpi-val ok">0</div></div>
+  <div class="kpi"><div class="kpi-lbl">Docs Processados</div><div class="kpi-val pri">21</div></div>
+  <div class="kpi"><div class="kpi-lbl">Legíveis</div><div class="kpi-val ok">8</div></div>
   <div class="kpi"><div class="kpi-lbl">Parcialmente Legíveis</div><div class="kpi-val warn">0</div></div>
-  <div class="kpi"><div class="kpi-lbl">Ilegíveis/Erro</div><div class="kpi-val err">0</div></div>
-  <div class="kpi"><div class="kpi-lbl">Taxa de Sucesso</div><div class="kpi-val ok">0%</div></div>
-  <div class="kpi"><div class="kpi-lbl">Pastas com Docs</div><div class="kpi-val pri">0</div></div>
+  <div class="kpi"><div class="kpi-lbl">Ilegíveis/Erro</div><div class="kpi-val err">13</div></div>
+  <div class="kpi"><div class="kpi-lbl">Taxa de Sucesso</div><div class="kpi-val ok">38%</div></div>
+  <div class="kpi"><div class="kpi-lbl">Pastas com Docs</div><div class="kpi-val pri">3</div></div>
 </div>
 <div class="cols">
-  <div class="sec"><h2 style="margin-top:0">Tipos de Documento</h2><table><thead><tr><th>Tipo</th><th>Qtd</th><th>%</th></tr></thead><tbody></tbody></table></div>
-  <div class="sec"><h2 style="margin-top:0">Coverage de Campos</h2><table><thead><tr><th>Campo</th><th>Qtd</th><th></th><th>%</th></tr></thead><tbody></tbody></table></div>
+  <div class="sec"><h2 style="margin-top:0">Tipos de Documento</h2><table><thead><tr><th>Tipo</th><th>Qtd</th><th>%</th></tr></thead><tbody><tr><td>outro</td><td>18</td><td>86%</td></tr>
+<tr><td>ctps</td><td>2</td><td>10%</td></tr>
+<tr><td>extrato_bancario</td><td>1</td><td>5%</td></tr></tbody></table></div>
+  <div class="sec"><h2 style="margin-top:0">Coverage de Campos</h2><table><thead><tr><th>Campo</th><th>Qtd</th><th></th><th>%</th></tr></thead><tbody><tr><td class="mono sm">dados_pessoais.cpf</td><td>9</td><td><div class="bar"><div class="fill" style="width:43%"></div></div></td><td>43%</td></tr>
+<tr><td class="mono sm">dados_pessoais.nome</td><td>8</td><td><div class="bar"><div class="fill" style="width:38%"></div></div></td><td>38%</td></tr>
+<tr><td class="mono sm">endereco.cep</td><td>5</td><td><div class="bar"><div class="fill" style="width:24%"></div></div></td><td>24%</td></tr>
+<tr><td class="mono sm">endereco.logradouro</td><td>5</td><td><div class="bar"><div class="fill" style="width:24%"></div></div></td><td>24%</td></tr>
+<tr><td class="mono sm">endereco.numero</td><td>5</td><td><div class="bar"><div class="fill" style="width:24%"></div></div></td><td>24%</td></tr>
+<tr><td class="mono sm">endereco.cidade</td><td>5</td><td><div class="bar"><div class="fill" style="width:24%"></div></div></td><td>24%</td></tr>
+<tr><td class="mono sm">endereco.uf</td><td>5</td><td><div class="bar"><div class="fill" style="width:24%"></div></div></td><td>24%</td></tr>
+<tr><td class="mono sm">profissao_renda.profissao</td><td>5</td><td><div class="bar"><div class="fill" style="width:24%"></div></div></td><td>24%</td></tr>
+<tr><td class="mono sm">dados_pessoais.data_nascimento</td><td>4</td><td><div class="bar"><div class="fill" style="width:19%"></div></div></td><td>19%</td></tr>
+<tr><td class="mono sm">dados_pessoais.rg</td><td>3</td><td><div class="bar"><div class="fill" style="width:14%"></div></div></td><td>14%</td></tr>
+<tr><td class="mono sm">dados_pessoais.sexo</td><td>3</td><td><div class="bar"><div class="fill" style="width:14%"></div></div></td><td>14%</td></tr>
+<tr><td class="mono sm">dados_pessoais.nacionalidade</td><td>2</td><td><div class="bar"><div class="fill" style="width:10%"></div></div></td><td>10%</td></tr>
+<tr><td class="mono sm">profissao_renda.empregador</td><td>2</td><td><div class="bar"><div class="fill" style="width:10%"></div></div></td><td>10%</td></tr>
+<tr><td class="mono sm">profissao_renda.renda_mensal</td><td>2</td><td><div class="bar"><div class="fill" style="width:10%"></div></div></td><td>10%</td></tr>
+<tr><td class="mono sm">endereco.bairro</td><td>1</td><td><div class="bar"><div class="fill" style="width:5%"></div></div></td><td>5%</td></tr>
+<tr><td class="mono sm">dados_pessoais.naturalidade</td><td>1</td><td><div class="bar"><div class="fill" style="width:5%"></div></div></td><td>5%</td></tr></tbody></table></div>
 </div>
-<h2>Resultados</h2>
-<div class="ow"><table><thead><tr><th>Arquivo</th><th>Tipo</th><th>Qualidade</th><th>Nome</th><th>CPF</th><th>Nascimento</th><th>Cidade/UF</th><th>Profissão</th><th># Campos</th><th></th></tr></thead><tbody></tbody></table></div>
+<h2>Resultados (primeiros 11 de 21)</h2>
+<div class="ow"><table><thead><tr><th>Arquivo</th><th>Tipo</th><th>Qualidade</th><th>Nome</th><th>CPF</th><th>Nascimento</th><th>Cidade/UF</th><th>Profissão</th><th># Campos</th><th></th></tr></thead><tbody><tr>
+      <td class="mono sm">6 - Boa Vista - NU PAGAMENTOS SA - A30395D275</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RODRIGO AUGUSTO SALLES</td>
+      <td class="mono">239.766.968-46</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>2</td>
+      <td><a href="https://drive.google.com/file/d/1HDkCMzGhSkBC2BxUbZI-cDaKtz1rRTaC/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">1 - Peticao Inicial .pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RODRIGO AUGUSTO SALLES</td>
+      <td class="mono">239.766.968-46</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Presidente Prudente/SP</td>
+      <td>Mecânico</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1zZMMFv9xDJqLuFT3eyr_4RtWs3enmmEd/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5-Renda-Receita-Rodrigo Salles.pdf</td>
+      <td>outro</td>
+      <td><span class="badge err">ilegível</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>0</td>
+      <td><a href="https://drive.google.com/file/d/10gZQWwpV9QJUWNtMQkFLCnByfKy_-yr-/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6 - Boa Vista - VERO S/A - 116054626.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RODRIGO AUGUSTO SALLES</td>
+      <td class="mono">239.766.968-46</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>2</td>
+      <td><a href="https://drive.google.com/file/d/1M-Sbz53wPztvEY0pkMdg93fxrxjw49Nd/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">1 - Peticao Inicial .pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RODRIGO AUGUSTO SALLES</td>
+      <td class="mono">239.766.968-46</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Presidente Prudente/SP</td>
+      <td>Mecânico</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1O__BaqfEIWv9PcbuIVOPDo9eSmm-9gDw/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5-Renda-Receita-Rodrigo Salles.pdf</td>
+      <td>outro</td>
+      <td><span class="badge err">ilegível</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono">239.766.958-46</td>
+      <td class="mono">01/07/1985</td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>2</td>
+      <td><a href="https://drive.google.com/file/d/1cFYWbas_hKPwZPMCRqljf3zfNngqppx1/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- CTPS-Rodrigo Salles.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RODRIGO AUGUSTO SALLES</td>
+      <td class="mono">239.766.968-46</td>
+      <td class="mono">01/07/1985</td>
+      <td>PRESIDENTE PRUDENTE/SP</td>
+      <td>MECANICO</td>
+      <td>14</td>
+      <td><a href="https://drive.google.com/file/d/1KK0aV-_wrq9aiNwsQPvWV06afvgG8eLo/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">1 - Peticao Inicial - BV.pdf</td>
+      <td>outro</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RODRIGO AUGUSTO SALLES</td>
+      <td class="mono">239.766.968-46</td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td>Presidente Prudente/SP</td>
+      <td>Mecânico</td>
+      <td>9</td>
+      <td><a href="https://drive.google.com/file/d/1K3D-Gm71JLiqfNzVjdQ6Jby0Mlo_Dxtz/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">6- SCPC-Rodrigo Salles.pdf</td>
+      <td>extrato_bancario</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RODRIGO AUGUSTO SALLES</td>
+      <td class="mono">239.766.968-46</td>
+      <td class="mono">01/07/1985</td>
+      <td>PRESIDENTE VENCESLAU/SP</td>
+      <td><span class="nil">-</span></td>
+      <td>10</td>
+      <td><a href="https://drive.google.com/file/d/17OhRJx0LWu72Pf__9gxIzbnr1oXa5Nkz/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5-Renda-Receita-Rodrigo Salles.pdf</td>
+      <td>outro</td>
+      <td><span class="badge err">ilegível</span></td>
+      <td><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td class="mono"><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td><span class="nil">-</span></td>
+      <td>0</td>
+      <td><a href="https://drive.google.com/file/d/12cYgtVpQuqQslNm9ZgT6nnE8wc3nxYUd/view" target="_blank" class="lnk">↗</a></td>
+    </tr>
+<tr>
+      <td class="mono sm">5- CTPS-Rodrigo Salles.pdf</td>
+      <td>ctps</td>
+      <td><span class="badge ok">legível</span></td>
+      <td>RODRIGO AUGUSTO SALLES</td>
+      <td class="mono">239.766.968-46</td>
+      <td class="mono">01/07/1985</td>
+      <td><span class="nil">-</span></td>
+      <td>Mecanico</td>
+      <td>8</td>
+      <td><a href="https://drive.google.com/file/d/1Nv7Uaouwd8rlTFqZu6RTx0WlrbnI29vy/view" target="_blank" class="lnk">↗</a></td>
+    </tr></tbody></table></div>
 <h2>Super Prompt Utilizado</h2>
 <div class="prompt">Você é um especialista em extração de dados de documentos brasileiros de identificação e comprovação.
 
