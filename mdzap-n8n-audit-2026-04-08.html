@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap n8n Audit — 2026-04-08</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface2: #1c2033;
+    --border: #2a2e42;
+    --text: #e8e4df;
+    --muted: #8a8693;
+    --accent: #7c6dff;
+    --green: #20c997;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --cyan: #06b6d4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6; padding: 2rem; max-width: 1300px; margin: 0 auto; }
+  h1 { font-family: 'Manrope', sans-serif; font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+  h2 { font-family: 'Manrope', sans-serif; font-size: 1.4rem; color: var(--green); margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.1rem; color: var(--cyan); margin: 1.5rem 0 0.5rem; }
+  h4 { font-size: 0.95rem; color: var(--accent); margin: 1rem 0 0.4rem; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .nota-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; display: flex; align-items: center; gap: 1.5rem; }
+  .nota-score { font-family: 'Manrope', sans-serif; font-size: 3.5rem; font-weight: 800; min-width: 120px; text-align: center; }
+  .nota-label { font-size: 0.85rem; color: var(--muted); }
+  .nota-detail { flex: 1; }
+  .score-red { color: var(--red); }
+  .score-yellow { color: var(--yellow); }
+  .score-green { color: var(--green); }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.82rem; }
+  th { background: var(--surface2); color: var(--accent); text-align: left; padding: 0.5rem 0.6rem; font-weight: 600; position: sticky; top: 0; }
+  td { padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(124, 109, 255, 0.05); }
+  .tag { display: inline-block; padding: 0.12rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+  .tag-p0 { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+  .tag-p1 { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+  .tag-p2 { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+  .tag-ok { background: rgba(32, 201, 151, 0.15); color: var(--green); }
+  .tag-fail { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .tag-warn { background: rgba(234, 179, 8, 0.15); color: var(--yellow); }
+  .tag-info { background: rgba(124, 109, 255, 0.15); color: var(--accent); }
+  .tag-dead { background: rgba(138, 134, 147, 0.2); color: var(--muted); }
+  .tag-stub { background: rgba(249, 115, 22, 0.15); color: var(--orange); }
+  .tag-zapi { background: rgba(239, 68, 68, 0.3); color: #ff6b6b; font-weight: 700; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 0.8rem 0; }
+  .card-red { border-left: 3px solid var(--red); }
+  .card-yellow { border-left: 3px solid var(--yellow); }
+  .card-green { border-left: 3px solid var(--green); }
+  .card-accent { border-left: 3px solid var(--accent); }
+  code { background: var(--surface2); padding: 0.12rem 0.35rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--cyan); }
+  pre { background: var(--surface2); padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.78rem; line-height: 1.5; margin: 0.5rem 0; }
+  pre code { background: none; padding: 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+  .metric { text-align: center; padding: 1rem; }
+  .metric-value { font-family: 'Manrope', sans-serif; font-size: 2rem; font-weight: 800; }
+  .metric-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; }
+  .verdict { font-size: 0.95rem; line-height: 1.7; }
+  ul { padding-left: 1.5rem; }
+  li { margin: 0.3rem 0; }
+  .separator { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .footer { color: var(--muted); font-size: 0.75rem; margin-top: 3rem; text-align: center; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .bar-container { background: var(--surface2); border-radius: 4px; height: 8px; margin: 0.3rem 0; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .flow { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--muted); line-height: 1.8; }
+  .flow strong { color: var(--cyan); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>MdZap &mdash; Auditoria n8n Impiedosa</h1>
+<p class="subtitle">Stage 3/4 | 38 workflows (17 ativos, 21 inativos) | Produ&ccedil;&atilde;o Railway | 2026-04-08 | Auditor: Claude Code</p>
+
+<!-- NOTA GERAL -->
+<div class="nota-box">
+  <div>
+    <div class="nota-score score-red">3.5<span style="font-size:1.2rem;color:var(--muted)">/10</span></div>
+    <div class="nota-label">Nota n8n MdZap</div>
+  </div>
+  <div class="nota-detail">
+    <p class="verdict">
+      O ecossistema n8n do MdZap &eacute; um campo minado. De 17 workflows ativos, <strong>4 s&atilde;o stubs vazios</strong> que retornam sucesso sem fazer nada,
+      <strong>2 nunca foram executados</strong>, <strong>2 workflows ativos conflitam no mesmo path</strong> (<code>/mdzap/devolver-julia</code>),
+      e a <code>service_role</code> key do Supabase est&aacute; <strong>hardcoded em 10+ code nodes</strong> espalhados por 7 workflows.
+      O webhook <code>mdzap/assumir-conversa</code> &mdash; funcionalidade core &mdash; <strong>n&atilde;o existe no n8n</strong> (bot&atilde;o quebrado em produ&ccedil;&atilde;o).
+      Os workflows de <code>memoria</code> e <code>doc-reader</code> n&atilde;o foram criados. O <code>follow-up</code> n&atilde;o existe.
+      Nenhum workflow registra em <code>webhook_requests</code> (exceto Enviar Audio). Z-API: limpo nos ativos, 1 refer&ecirc;ncia em teste inativo.
+    </p>
+  </div>
+</div>
+
+<!-- MÉTRICAS -->
+<h2>Panorama Geral</h2>
+<div class="grid-4">
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--accent)">38</div>
+      <div class="metric-label">Workflows Total</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--green)">17</div>
+      <div class="metric-label">Ativos</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--muted)">21</div>
+      <div class="metric-label">Inativos</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--red)">4</div>
+      <div class="metric-label">Stubs Vazios</div>
+    </div>
+  </div>
+</div>
+<div class="grid-4">
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--red)">10+</div>
+      <div class="metric-label">Keys Hardcoded</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--red)">1</div>
+      <div class="metric-label">Webhook Inexistente</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--orange)">2</div>
+      <div class="metric-label">Paths Duplicados</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--yellow)">3</div>
+      <div class="metric-label">Features Ausentes</div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTAS POR CATEGORIA -->
+<h2>Notas por Categoria</h2>
+<div class="grid-3">
+  <div class="card card-red">
+    <div class="metric">
+      <div class="metric-value score-red">1.5</div>
+      <div class="metric-label">Seguran&ccedil;a (Keys/Auth)</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:15%;background:var(--red)"></div></div>
+  </div>
+  <div class="card card-red">
+    <div class="metric">
+      <div class="metric-value score-red">2.0</div>
+      <div class="metric-label">Completude (vs Spec)</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:20%;background:var(--red)"></div></div>
+  </div>
+  <div class="card card-red">
+    <div class="metric">
+      <div class="metric-value score-red">3.0</div>
+      <div class="metric-label">Padr&atilde;o MdFlow</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:30%;background:var(--red)"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">4.5</div>
+      <div class="metric-label">Observabilidade</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:45%;background:var(--yellow)"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">5.0</div>
+      <div class="metric-label">L&oacute;gica de Neg&oacute;cio</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:50%;background:var(--yellow)"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">5.5</div>
+      <div class="metric-label">Higiene (Dead Code)</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:55%;background:var(--yellow)"></div></div>
+  </div>
+</div>
+
+<!-- INVENTÁRIO COMPLETO: 17 ATIVOS -->
+<h2>Invent&aacute;rio &mdash; 17 Workflows Ativos</h2>
+<table>
+  <tr>
+    <th>Workflow</th>
+    <th>Nodes</th>
+    <th>Trigger</th>
+    <th>&Uacute;lt. Exec</th>
+    <th>Auth</th>
+    <th>WH Log</th>
+    <th>Keys</th>
+    <th>Status</th>
+  </tr>
+  <tr>
+    <td><code>Inbound Upsert Lead</code></td>
+    <td>4</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-ok">headerAuth</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-warn">FUNCIONAL</span></td>
+  </tr>
+  <tr>
+    <td><code>Enviar Mensagem FE</code></td>
+    <td>7</td>
+    <td>Webhook</td>
+    <td>08/04 &#10003;</td>
+    <td><span class="tag tag-ok">headerAuth</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-ok">FUNCIONAL</span></td>
+  </tr>
+  <tr>
+    <td><code>Message Grouper</code></td>
+    <td>7</td>
+    <td>Webhook</td>
+    <td>08/04 &#10003;</td>
+    <td><span class="tag tag-fail">NENHUM</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-ok">FUNCIONAL</span></td>
+  </tr>
+  <tr>
+    <td><code>Arquivar Conversa</code></td>
+    <td>3</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-ok">headerAuth</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-ok">FUNCIONAL</span></td>
+  </tr>
+  <tr>
+    <td><code>Devolver Julia (novo)</code></td>
+    <td>3</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-warn">code</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-warn">CONFLITO PATH</span></td>
+  </tr>
+  <tr>
+    <td><code>MDZAP-DEVOLVER-JULIA (legado)</code></td>
+    <td>3</td>
+    <td>Webhook</td>
+    <td>06/04 &#10003;</td>
+    <td><span class="tag tag-ok">headerAuth</span></td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-fail">CONFLITO PATH</span></td>
+  </tr>
+  <tr>
+    <td><code>AI Composer</code></td>
+    <td>6</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-warn">code</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-ok">ENV</span></td>
+    <td><span class="tag tag-ok">FUNCIONAL</span></td>
+  </tr>
+  <tr>
+    <td><code>Julia Lab Refine</code></td>
+    <td>3</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-ok">headerAuth</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-warn">RACE COND</span></td>
+  </tr>
+  <tr>
+    <td><code>Julia Prompt Save</code></td>
+    <td>6</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-fail">NENHUM</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-fail">SEM AUTH</span></td>
+  </tr>
+  <tr>
+    <td><code>FOLLOWUP-ZAPSIGN</code></td>
+    <td>9</td>
+    <td>Cron 1h</td>
+    <td>08/04 &#10003;</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-ok">FUNCIONAL</span></td>
+  </tr>
+  <tr>
+    <td><code>Enviar Audio</code></td>
+    <td>3</td>
+    <td>Webhook</td>
+    <td><span class="tag tag-dead">NUNCA</span></td>
+    <td><span class="tag tag-warn">code</span></td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td><span class="tag tag-ok">ENV</span></td>
+    <td><span class="tag tag-stub">STUB</span></td>
+  </tr>
+  <tr>
+    <td><code>Audio TTS</code></td>
+    <td>4</td>
+    <td>Webhook</td>
+    <td><span class="tag tag-dead">NUNCA</span></td>
+    <td><span class="tag tag-warn">code</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-p0">HARDCODED</span></td>
+    <td><span class="tag tag-stub">STUB</span></td>
+  </tr>
+  <tr>
+    <td><code>Bulk Documentos</code></td>
+    <td>3</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-fail">NENHUM</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td>N/A</td>
+    <td><span class="tag tag-stub">STUB VAZIO</span></td>
+  </tr>
+  <tr>
+    <td><code>Bulk Negociacoes</code></td>
+    <td>3</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-ok">headerAuth</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td>N/A</td>
+    <td><span class="tag tag-stub">STUB VAZIO</span></td>
+  </tr>
+  <tr>
+    <td><code>Enviar Template v2</code></td>
+    <td>3</td>
+    <td>Webhook</td>
+    <td>07/04 &#10003;</td>
+    <td><span class="tag tag-fail">NENHUM</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td>N/A</td>
+    <td><span class="tag tag-stub">STUB VAZIO</span></td>
+  </tr>
+  <tr>
+    <td><code>[MATHEUS] CRM-FOLLOWUP</code></td>
+    <td>?</td>
+    <td>Cron?</td>
+    <td>?</td>
+    <td>?</td>
+    <td>?</td>
+    <td>?</td>
+    <td><span class="tag tag-info">LEGADO</span></td>
+  </tr>
+  <tr>
+    <td><code>[GUSTAVO] CRM-FOLLOWUP</code></td>
+    <td>?</td>
+    <td>Cron?</td>
+    <td>?</td>
+    <td>?</td>
+    <td>?</td>
+    <td>?</td>
+    <td><span class="tag tag-info">LEGADO</span></td>
+  </tr>
+</table>
+
+<!-- P0: SERVICE_ROLE HARDCODED -->
+<h2>P0 CR&Iacute;TICO &mdash; <code>service_role</code> Key Hardcoded</h2>
+<div class="card card-red">
+  <p style="font-size:1.05rem;margin-bottom:1rem;">
+    A chave <code>service_role</code> do Supabase (<code>eyJhbGci...</code>) est&aacute; <strong>hardcoded como string literal</strong>
+    em pelo menos <strong>10 code nodes</strong> distribu&iacute;dos por <strong>7 workflows ativos</strong>.
+    Qualquer export de workflow ou acesso ao n8n exporia a chave que d&aacute; acesso total ao banco de produ&ccedil;&atilde;o, bypassando RLS.
+  </p>
+  <table>
+    <tr>
+      <th>Workflow</th>
+      <th>Node(s) Afetado(s)</th>
+      <th>Credencial</th>
+    </tr>
+    <tr>
+      <td>Inbound Upsert Lead</td>
+      <td>Process</td>
+      <td><code>SUPABASE_KEY</code> + <code>N8N_SECRET</code></td>
+    </tr>
+    <tr>
+      <td>Enviar Mensagem FE</td>
+      <td>Parse and Fetch Config + Save Saida Supabase</td>
+      <td><code>SUPABASE_KEY</code> (2x)</td>
+    </tr>
+    <tr>
+      <td>Arquivar Conversa</td>
+      <td>Arquivar Conversa</td>
+      <td><code>SUPABASE_KEY</code></td>
+    </tr>
+    <tr>
+      <td>Devolver Julia (novo)</td>
+      <td>Process</td>
+      <td><code>SUPABASE_KEY</code></td>
+    </tr>
+    <tr>
+      <td>MDZAP-DEVOLVER-JULIA (legado)</td>
+      <td>Code</td>
+      <td><code>SUPABASE_KEY</code></td>
+    </tr>
+    <tr>
+      <td>Julia Lab Refine</td>
+      <td>Refine Prompt</td>
+      <td><code>SUPABASE_KEY</code> + <code>OPENAI_KEY</code></td>
+    </tr>
+    <tr>
+      <td>Julia Prompt Save</td>
+      <td>3x httpRequest nodes</td>
+      <td><code>SUPABASE_KEY</code> (3x)</td>
+    </tr>
+    <tr>
+      <td>Message Grouper</td>
+      <td>Process Queue</td>
+      <td><code>SUPABASE_KEY</code></td>
+    </tr>
+    <tr>
+      <td>Audio TTS</td>
+      <td>Process</td>
+      <td><code>SUPABASE_KEY</code> + <code>ELEVENLABS_KEY</code></td>
+    </tr>
+    <tr>
+      <td>FOLLOWUP-ZAPSIGN</td>
+      <td>Buscar + Processar (2 nodes)</td>
+      <td><code>SUPABASE_KEY</code> (2x)</td>
+    </tr>
+  </table>
+  <p style="margin-top:1rem;color:var(--muted);">
+    <strong>Fix:</strong> Configurar <code>SUPABASE_KEY</code>, <code>OPENAI_KEY</code>, <code>ELEVENLABS_KEY</code> como Environment Variables no n8n (Settings &rarr; Variables).
+    Substituir todas as refer&ecirc;ncias por <code>process.env.SUPABASE_KEY</code> nos Code nodes e <code>{{ $env.SUPABASE_KEY }}</code> nos httpRequest nodes.
+    Esfor&ccedil;o: ~30min para todos os 10 workflows.
+  </p>
+</div>
+
+<!-- P0: WEBHOOK ASSUMIR INEXISTENTE -->
+<h2>P0 CR&Iacute;TICO &mdash; Webhook <code>mdzap/assumir-conversa</code> Inexistente</h2>
+<div class="card card-red">
+  <p>O frontend chama <code>callWebhook('mdzap/assumir-conversa', ...)</code> em dois hooks:</p>
+  <ul>
+    <li><code>useLeadPanelActions.ts</code> (handleAssumir)</li>
+    <li><code>useMdzapThreadActions.ts</code> (handleAssumir)</li>
+  </ul>
+  <p style="margin-top:0.8rem;"><strong>N&atilde;o existe nenhum workflow ativo ou inativo com esse path no n8n.</strong></p>
+  <p>O bot&atilde;o "Assumir" no MdZap est&aacute; fazendo POST para um endpoint que retorna 404 (ou 500 dependendo da config Railway).</p>
+  <p style="margin-top:0.8rem;color:var(--muted);">
+    <strong>Fix:</strong> Criar workflow <code>/MDZAP &mdash; Assumir Conversa</code> com l&oacute;gica: UPDATE <code>whatsapp_conversas.metadata.mode='human'</code>,
+    UPDATE <code>leads.awaiting_human=true</code>, INSERT timeline + leads_atividades. Espelhar o inverso do "Devolver Julia".
+  </p>
+</div>
+
+<!-- P0: PATHS DUPLICADOS -->
+<h2>P0 CR&Iacute;TICO &mdash; 2 Workflows no Mesmo Path</h2>
+<div class="card card-red">
+  <div class="grid-2">
+    <div>
+      <h4>MDZAP-DEVOLVER-JULIA (legado)</h4>
+      <p><code>ID: CGPoGVlUnr28xI52</code></p>
+      <ul>
+        <li>Auth: headerAuth nativo &#10003;</li>
+        <li>WH log: SIM &#10003;</li>
+        <li>N&atilde;o atualiza <code>awaiting_human</code></li>
+        <li>N&atilde;o cria timeline/atividade</li>
+      </ul>
+    </div>
+    <div>
+      <h4>/MDZAP &mdash; Devolver Julia (novo)</h4>
+      <p><code>ID: DPDzE6BKKad46wY2</code></p>
+      <ul>
+        <li>Auth: code inline (sem headerAuth)</li>
+        <li>WH log: N&Atilde;O</li>
+        <li>Atualiza <code>awaiting_human</code> &#10003;</li>
+        <li>Cria timeline + atividade &#10003;</li>
+      </ul>
+    </div>
+  </div>
+  <hr style="border-color:var(--border);margin:1rem 0;">
+  <p><strong>Ambos ativos com path <code>/mdzap/devolver-julia</code></strong>. O n8n executa apenas o &uacute;ltimo registrado. Resultado: comportamento imprevis&iacute;vel &mdash; pode executar o legado (incompleto) ou o novo (sem auth headerAuth).</p>
+  <p style="margin-top:0.5rem;color:var(--muted);"><strong>Fix:</strong> Desativar o legado (<code>CGPoGVlUnr28xI52</code>). Adicionar headerAuth ao novo. Mesclar o WH log do legado no novo.</p>
+</div>
+
+<!-- P0: JULIA PROMPT SAVE SEM AUTH -->
+<h2>P0 CR&Iacute;TICO &mdash; Julia Prompt Save Sem Autentica&ccedil;&atilde;o</h2>
+<div class="card card-red">
+  <p>O workflow <code>/MDZAP &mdash; Julia Prompt Save</code> (<code>6jgyFxNBWVrkI132</code>) est&aacute; com o webhook <strong>completamente aberto</strong> &mdash; sem <code>headerAuth</code>, sem valida&ccedil;&atilde;o inline.</p>
+  <p style="margin-top:0.5rem;">Qualquer POST para <code>/webhook/mdzap/julia-prompt-save</code> pode criar/modificar prompts da Julia em qualquer organiza&ccedil;&atilde;o.</p>
+  <p style="margin-top:0.5rem;color:var(--muted);"><strong>Fix:</strong> Adicionar <code>authentication: headerAuth</code> no node Webhook. 1 clique no n8n.</p>
+</div>
+
+<!-- Z-API CHECK -->
+<h2>Z-API &mdash; Verifica&ccedil;&atilde;o</h2>
+<div class="card card-green">
+  <h4>Resultado: Limpo nos Ativos</h4>
+  <p>Nenhum dos 17 workflows ativos referencia Z-API. Todos usam Meta Cloud API (<code>graph.facebook.com/v19.0</code>) ou Supabase REST diretamente.</p>
+  <p style="margin-top:0.8rem;">
+    <span class="tag tag-zapi">Z-API</span> <strong>1 refer&ecirc;ncia encontrada:</strong> <code>[Gu] MdZap - Teste</code> (INATIVO, ID: <code>9XYj1e4g139fwBiW</code>) &mdash;
+    8 endpoints <code>api.z-api.io</code> para send-text/audio/document/image/video/sticker/contact/link. Workflow do Gustavo, inativo, pode ser deletado.
+  </p>
+</div>
+
+<!-- FEATURES AUSENTES -->
+<h2>Features Obrigat&oacute;rias Ausentes</h2>
+<table>
+  <tr>
+    <th>Feature</th>
+    <th>Spec Exige?</th>
+    <th>Frontend Chama?</th>
+    <th>n8n Implementa?</th>
+    <th>Sev.</th>
+    <th>Status</th>
+  </tr>
+  <tr>
+    <td><strong>Assumir Conversa</strong></td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td><span class="tag tag-ok">SIM</span> (2 hooks)</td>
+    <td><span class="tag tag-fail">N&Atilde;O EXISTE</span></td>
+    <td><span class="tag tag-p0">P0</span></td>
+    <td>Bot&atilde;o quebrado em produ&ccedil;&atilde;o</td>
+  </tr>
+  <tr>
+    <td><strong>Mem&oacute;ria (extra&ccedil;&atilde;o)</strong></td>
+    <td><span class="tag tag-ok">SIM</span> (E-08)</td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O EXISTE</span></td>
+    <td><span class="tag tag-p0">P0</span></td>
+    <td>Tab Mem&oacute;ria vazia (0 registros)</td>
+  </tr>
+  <tr>
+    <td><strong>Doc Reader (processamento)</strong></td>
+    <td><span class="tag tag-ok">SIM</span> (E-12)</td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O EXISTE</span></td>
+    <td><span class="tag tag-p0">P0</span></td>
+    <td>Docs n&atilde;o processados via IA</td>
+  </tr>
+  <tr>
+    <td><strong>Follow-up Assinatura</strong></td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td>N/A (cron)</td>
+    <td><span class="tag tag-warn">PARCIAL</span> (FOLLOWUP-ZAPSIGN)</td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>Cron funcional mas spec pedia mais</td>
+  </tr>
+  <tr>
+    <td><strong>Document Received (persistir)</strong></td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td>N/A (Edge Fn)</td>
+    <td><span class="tag tag-fail">INATIVO</span></td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>Docs ficam em URL temp CDN Meta</td>
+  </tr>
+  <tr>
+    <td><strong>Transferir Conversa</strong></td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td><span class="tag tag-warn">BULK</span></td>
+    <td><span class="tag tag-fail">INATIVO</span></td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>Multi-user n&atilde;o funciona</td>
+  </tr>
+</table>
+
+<!-- STUBS VAZIOS -->
+<h2>4 Stubs Vazios &mdash; Workflows Ativos Que N&atilde;o Fazem Nada</h2>
+<div class="card card-yellow">
+  <table>
+    <tr>
+      <th>Workflow</th>
+      <th>O Que Faz</th>
+      <th>Recomenda&ccedil;&atilde;o</th>
+    </tr>
+    <tr>
+      <td><code>Bulk Documentos</code></td>
+      <td>Retorna <code>"WH-MDZAP-11"</code> sem fazer nada</td>
+      <td>Implementar ou desativar</td>
+    </tr>
+    <tr>
+      <td><code>Bulk Negociacoes</code></td>
+      <td>Valida input, retorna <code>"queued"</code>, n&atilde;o processa</td>
+      <td>Implementar ou desativar</td>
+    </tr>
+    <tr>
+      <td><code>Enviar Template v2</code></td>
+      <td>Retorna <code>"WH-MDZAP-02"</code> sem fazer nada</td>
+      <td>Implementar ou desativar</td>
+    </tr>
+    <tr>
+      <td><code>Enviar Audio</code></td>
+      <td>Loga e retorna sucesso. N&atilde;o envia &aacute;udio de fato.</td>
+      <td>Implementar envio real via Meta API</td>
+    </tr>
+  </table>
+  <p style="margin-top:0.8rem;color:var(--muted);">Stubs ativos d&atilde;o falsa sensa&ccedil;&atilde;o de funcionalidade. O frontend chama, recebe <code>success: true</code>, mas nenhuma a&ccedil;&atilde;o real acontece.</p>
+</div>
+
+<!-- CONFORMIDADE PADRÃO MDFLOW -->
+<h2>Conformidade com Padr&atilde;o MdFlow n8n</h2>
+<p style="color:var(--muted);margin-bottom:1rem;">Cen&aacute;rio obrigat&oacute;rio: webhook trigger &rarr; validate header mdflow &rarr; sticky notes &rarr; schema verify &rarr; registro webhook_requests &rarr; response can&ocirc;nico (action obrigat&oacute;rio)</p>
+<table>
+  <tr>
+    <th>Workflow</th>
+    <th>Webhook</th>
+    <th>Header Auth</th>
+    <th>Sticky</th>
+    <th>Schema</th>
+    <th>WH Log</th>
+    <th>Response</th>
+    <th>Score</th>
+  </tr>
+  <tr>
+    <td>Inbound Upsert Lead</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td>4/6</td>
+  </tr>
+  <tr>
+    <td>Enviar Mensagem FE</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-warn">~</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td>3.5/6</td>
+  </tr>
+  <tr>
+    <td>Message Grouper</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td>N/A</td>
+    <td>2/5</td>
+  </tr>
+  <tr>
+    <td>Arquivar Conversa</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td>3/6</td>
+  </tr>
+  <tr>
+    <td>Devolver Julia (novo)</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-warn">code</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td>2.5/6</td>
+  </tr>
+  <tr>
+    <td>AI Composer</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-warn">code</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td>N/A</td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td>2.5/5</td>
+  </tr>
+  <tr>
+    <td>Julia Lab Refine</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td>3/6</td>
+  </tr>
+  <tr>
+    <td>Julia Prompt Save</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td>2/6</td>
+  </tr>
+  <tr>
+    <td>FOLLOWUP-ZAPSIGN</td>
+    <td>Cron</td>
+    <td>N/A</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>1/2</td>
+  </tr>
+  <tr>
+    <td>Enviar Audio</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-warn">code</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td>3.5/6</td>
+  </tr>
+  <tr>
+    <td>Audio TTS</td>
+    <td><span class="tag tag-ok">&#10003;</span></td>
+    <td><span class="tag tag-warn">code</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-fail">&#10007;</span></td>
+    <td><span class="tag tag-warn">~</span></td>
+    <td>1.5/6</td>
+  </tr>
+  <tr style="background:var(--surface2);font-weight:600;">
+    <td>M&Eacute;DIA</td>
+    <td colspan="6"></td>
+    <td style="color:var(--red)">2.5/6 (42%)</td>
+  </tr>
+</table>
+
+<!-- DEAD CODE: INATIVOS -->
+<h2>21 Workflows Inativos &mdash; Recomenda&ccedil;&otilde;es</h2>
+<table>
+  <tr>
+    <th>Workflow</th>
+    <th>Prop&oacute;sito</th>
+    <th>Veredicto</th>
+  </tr>
+  <tr>
+    <td><code>Document Received</code></td>
+    <td>Persistir docs recebidos via chat no Storage</td>
+    <td><span class="tag tag-p1">REATIVAR</span> &mdash; funcionalidade &uacute;nica ausente nos ativos</td>
+  </tr>
+  <tr>
+    <td><code>Transferir Conversa</code></td>
+    <td>Transferir conversa entre usu&aacute;rios</td>
+    <td><span class="tag tag-p1">REATIVAR</span> &mdash; cr&iacute;tico para multi-user</td>
+  </tr>
+  <tr>
+    <td><code>Lead Sync</code></td>
+    <td>Vincular lead manualmente a conversa</td>
+    <td><span class="tag tag-p1">REATIVAR</span> &mdash; ou incorporar no Inbound Upsert Lead</td>
+  </tr>
+  <tr>
+    <td><code>Triagem</code></td>
+    <td>Triagem inbound + auto-reply hor&aacute;rio comercial</td>
+    <td><span class="tag tag-warn">AVALIAR</span> &mdash; verificar se Message Grouper cobre</td>
+  </tr>
+  <tr>
+    <td><code>Encerrar Conversa</code></td>
+    <td>Encerrar conversa</td>
+    <td><span class="tag tag-dead">DELETAR</span> &mdash; substitu&iacute;do por Arquivar</td>
+  </tr>
+  <tr>
+    <td><code>Enviar Template v1</code></td>
+    <td>Enviar template WA</td>
+    <td><span class="tag tag-dead">DELETAR</span> &mdash; v2 ativa (stub)</td>
+  </tr>
+  <tr>
+    <td><code>Julia Lab (original)</code></td>
+    <td>Chat Julia</td>
+    <td><span class="tag tag-dead">DELETAR</span> &mdash; substitu&iacute;do por Lab Refine</td>
+  </tr>
+  <tr>
+    <td><code>Stage Changed</code></td>
+    <td>Stub placeholder</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>MDZAP-JULIA-LAB (legado)</code></td>
+    <td>Julia Lab v1</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>MDZAP-SEND-TEST</code></td>
+    <td>Teste de envio</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>MDZAP-ENVIAR-MENSAGEM (legado)</code></td>
+    <td>Envio v1</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>MDZAP-ENVIAR-AUDIO (legado)</code></td>
+    <td>&Aacute;udio v1</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>MDZAP-AUDIO-TRANSCRIBE</code></td>
+    <td>Transcri&ccedil;&atilde;o de &aacute;udio</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>MDZAP-JULIA-LAB-REFINE (legado)</code></td>
+    <td>Refine v1</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>/MDZAP &mdash; Devolver Julia (v1 inativo)</code></td>
+    <td>Devolver v1</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>WH-CRM-08 Stage Change</code></td>
+    <td>Stub CRM</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>[GUSTAVO] MDZAP-SYNC</code></td>
+    <td>Prot&oacute;tipo</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>[GUSTAVO] MDZAP-TRIAGEM-CRM</code></td>
+    <td>Prot&oacute;tipo</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>[Gu] MdZap - Teste</code></td>
+    <td>Teste <span class="tag tag-zapi">Z-API</span></td>
+    <td><span class="tag tag-dead">DELETAR</span> &mdash; cont&eacute;m Z-API hardcoded</td>
+  </tr>
+  <tr>
+    <td><code>[MATHEUS] 08a_MDZAP-SYNC-OUT</code></td>
+    <td>Prot&oacute;tipo</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+  <tr>
+    <td><code>[MATHEUS] 08b_MDZAP-SYNC-IN</code></td>
+    <td>Prot&oacute;tipo</td>
+    <td><span class="tag tag-dead">DELETAR</span></td>
+  </tr>
+</table>
+<div class="card card-accent">
+  <strong>Resumo:</strong> 3 para reativar | 1 para avaliar | <strong>17 para deletar</strong> (dead code puro)
+</div>
+
+<!-- RACE CONDITIONS -->
+<h2>Race Conditions Encontradas</h2>
+<div class="grid-2">
+  <div class="card card-yellow">
+    <h4>Julia Lab Refine</h4>
+    <p class="flow">
+      1. Desativa prompt atual (PATCH <code>ativo=false</code>)<br>
+      2. Insere novo prompt (INSERT)<br>
+      <strong>Se INSERT falhar &rarr; fica sem prompt ativo</strong>
+    </p>
+    <p style="color:var(--muted);margin-top:0.5rem;"><strong>Fix:</strong> Inverter: INSERT primeiro, depois PATCH. Ou usar transa&ccedil;&atilde;o via RPC.</p>
+  </div>
+  <div class="card card-yellow">
+    <h4>Julia Prompt Save</h4>
+    <p class="flow">
+      1. Busca max vers&atilde;o (GET)<br>
+      2. Desativa atuais (PATCH) &larr; <strong>paralelo!</strong><br>
+      3. Calcula nova vers&atilde;o<br>
+      4. Insere nova vers&atilde;o<br>
+      <strong>2 requests simult&acirc;neos &rarr; vers&otilde;es duplicadas</strong>
+    </p>
+    <p style="color:var(--muted);margin-top:0.5rem;"><strong>Fix:</strong> Usar RPC at&ocirc;mico <code>fn_save_julia_prompt</code> que faz tudo em 1 transa&ccedil;&atilde;o.</p>
+  </div>
+</div>
+
+<!-- MAPA PONTA-A-PONTA -->
+<h2>Mapa Ponta-a-Ponta: Frontend &rarr; n8n &rarr; Resultado</h2>
+<table>
+  <tr>
+    <th>A&ccedil;&atilde;o</th>
+    <th>Frontend Hook</th>
+    <th>Path Webhook</th>
+    <th>Workflow n8n</th>
+    <th>Resultado</th>
+  </tr>
+  <tr>
+    <td>Enviar mensagem texto</td>
+    <td><code>useMdzapSendMessage</code></td>
+    <td><code>mdzap/enviar-mensagem</code></td>
+    <td>Enviar Mensagem FE &#10003;</td>
+    <td><span class="tag tag-ok">OK</span> Meta API &rarr; msg enviada</td>
+  </tr>
+  <tr>
+    <td>Enviar &aacute;udio</td>
+    <td><code>useMdzapThreadActions</code></td>
+    <td><code>mdzap/enviar-audio</code></td>
+    <td>Enviar Audio</td>
+    <td><span class="tag tag-stub">STUB</span> Loga mas n&atilde;o envia</td>
+  </tr>
+  <tr>
+    <td>Assumir conversa</td>
+    <td><code>useLeadPanelActions</code></td>
+    <td><code>mdzap/assumir-conversa</code></td>
+    <td><span style="color:var(--red)">N&Atilde;O EXISTE</span></td>
+    <td><span class="tag tag-fail">QUEBRADO</span> 404</td>
+  </tr>
+  <tr>
+    <td>Devolver Julia</td>
+    <td><code>useLeadPanelActions</code></td>
+    <td><code>mdzap/devolver-julia</code></td>
+    <td>2 workflows conflitantes</td>
+    <td><span class="tag tag-warn">IMPREVIS&Iacute;VEL</span></td>
+  </tr>
+  <tr>
+    <td>Arquivar conversa</td>
+    <td><code>MdzapConversaList</code></td>
+    <td><code>mdzap/arquivar-conversa</code></td>
+    <td>Arquivar Conversa &#10003;</td>
+    <td><span class="tag tag-ok">OK</span></td>
+  </tr>
+  <tr>
+    <td>ICP an&aacute;lise</td>
+    <td><code>useMdzapIcp</code></td>
+    <td><code>mdzap/icp-analise</code></td>
+    <td>? (n&atilde;o nomeado MDZAP)</td>
+    <td><span class="tag tag-warn">VERIFICAR</span></td>
+  </tr>
+  <tr>
+    <td>AI Composer</td>
+    <td><code>MdzapAIComposer</code></td>
+    <td><code>mdzap/ai-composer</code></td>
+    <td>AI Composer &#10003;</td>
+    <td><span class="tag tag-ok">OK</span></td>
+  </tr>
+  <tr>
+    <td>Salvar prompt Julia</td>
+    <td><code>MdzapJuliaLab</code></td>
+    <td><code>mdzap/julia-prompt-save</code></td>
+    <td>Julia Prompt Save</td>
+    <td><span class="tag tag-fail">SEM AUTH</span></td>
+  </tr>
+  <tr>
+    <td>Refinar prompt Julia</td>
+    <td><code>MdzapJuliaLab</code></td>
+    <td><code>mdzap/julia-lab-refine</code></td>
+    <td>Julia Lab Refine &#10003;</td>
+    <td><span class="tag tag-warn">RACE</span></td>
+  </tr>
+  <tr>
+    <td>Msg recebida (inbound)</td>
+    <td>Edge Function</td>
+    <td><code>mdzap/orquestrador</code></td>
+    <td>Message Grouper &#10003;</td>
+    <td><span class="tag tag-ok">OK</span> (fire-and-forget)</td>
+  </tr>
+  <tr>
+    <td>Follow-up ZapSign</td>
+    <td>N/A (cron)</td>
+    <td>N/A</td>
+    <td>FOLLOWUP-ZAPSIGN &#10003;</td>
+    <td><span class="tag tag-ok">OK</span> Cron 1h funcional</td>
+  </tr>
+  <tr>
+    <td>Processar documento</td>
+    <td>&mdash;</td>
+    <td><code>mdzap/doc-reader</code></td>
+    <td><span style="color:var(--red)">N&Atilde;O EXISTE</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O IMPL</span></td>
+  </tr>
+  <tr>
+    <td>Extrair mem&oacute;ria</td>
+    <td>&mdash;</td>
+    <td><code>mdzap/memoria</code></td>
+    <td><span style="color:var(--red)">N&Atilde;O EXISTE</span></td>
+    <td><span class="tag tag-fail">N&Atilde;O IMPL</span></td>
+  </tr>
+</table>
+
+<!-- PLANO DE AÇÃO -->
+<h2>Plano de A&ccedil;&atilde;o &mdash; Priorizado</h2>
+
+<div class="card card-red">
+  <h4><span class="tag tag-p0">P0</span> Fix Imediato (seguran&ccedil;a + funcionalidade quebrada)</h4>
+  <ol>
+    <li><strong>Mover service_role key para env vars</strong> &mdash; 10 code nodes em 7 workflows. Configurar <code>SUPABASE_KEY</code> em n8n Settings &rarr; Variables. (~30min)</li>
+    <li><strong>Mover OPENAI_KEY e ELEVENLABS_KEY para env vars</strong> &mdash; Julia Lab Refine + Audio TTS. (~5min)</li>
+    <li><strong>Criar workflow <code>Assumir Conversa</code></strong> &mdash; Funcionalidade core quebrada. L&oacute;gica: inverso do Devolver Julia. (~1h)</li>
+    <li><strong>Desativar <code>MDZAP-DEVOLVER-JULIA</code> legado</strong> (<code>CGPoGVlUnr28xI52</code>) &mdash; resolver conflito de path. (~1min)</li>
+    <li><strong>Adicionar headerAuth ao <code>Julia Prompt Save</code></strong> &mdash; Webhook p&uacute;blico atualmente. (~1min)</li>
+  </ol>
+</div>
+
+<div class="card card-yellow">
+  <h4><span class="tag tag-p1">P1</span> Implementar (features ausentes + reativa&ccedil;&otilde;es)</h4>
+  <ol>
+    <li><strong>Reativar + revisar <code>Document Received</code></strong> &mdash; Docs ficam em URL temp. (~30min)</li>
+    <li><strong>Reativar + revisar <code>Transferir Conversa</code></strong> &mdash; Multi-user n&atilde;o funciona. (~30min)</li>
+    <li><strong>Reativar + revisar <code>Lead Sync</code></strong> &mdash; V&iacute;nculo manual lead&harr;conversa. (~30min)</li>
+    <li><strong>Implementar envio real no <code>Enviar Audio</code></strong> &mdash; Stub ativo. (~1h)</li>
+    <li><strong>Criar workflow <code>Mem&oacute;ria</code></strong> &mdash; Spec E-08. Tab vazia. (~3h)</li>
+    <li><strong>Criar workflow <code>Doc Reader</code></strong> &mdash; Spec E-12. Docs n&atilde;o processados. (~3h)</li>
+    <li><strong>Adicionar headerAuth em</strong>: Message Grouper, Bulk Documentos, Enviar Template v2. (~5min)</li>
+  </ol>
+</div>
+
+<div class="card card-accent">
+  <h4><span class="tag tag-p2">P2</span> Limpeza e conformidade</h4>
+  <ol>
+    <li><strong>Deletar 17 workflows inativos</strong> &mdash; Dead code acumulado de prototipos e vers&otilde;es antigas.</li>
+    <li><strong>Desativar 4 stubs vazios</strong> (ou implementar se necess&aacute;rios).</li>
+    <li><strong>Adicionar sticky notes</strong> em todos workflows sem documenta&ccedil;&atilde;o.</li>
+    <li><strong>Adicionar <code>webhook_requests</code> log</strong> em todos workflows (exceto Enviar Audio que j&aacute; tem).</li>
+    <li><strong>Fix race conditions</strong> em Julia Lab Refine + Julia Prompt Save via RPC at&ocirc;mico.</li>
+    <li><strong>Adicionar error handling</strong> ap&oacute;s Meta API Send no Enviar Mensagem FE.</li>
+    <li><strong>Filtro <code>deleted_at IS NULL</code></strong> na busca de leads do Inbound Upsert Lead.</li>
+  </ol>
+</div>
+
+<!-- NOTA FINAL BREAKDOWN -->
+<h2>Nota Final &mdash; Breakdown</h2>
+<table>
+  <tr>
+    <th>Categoria</th>
+    <th>Peso</th>
+    <th>Nota</th>
+    <th>Ponderada</th>
+    <th>Justificativa</th>
+  </tr>
+  <tr>
+    <td>Seguran&ccedil;a (Keys/Auth)</td>
+    <td>25%</td>
+    <td><span class="score-red">1.5</span></td>
+    <td>0.38</td>
+    <td>10+ keys hardcoded, 1 webhook sem auth, 3 sem headerAuth. Gravidade m&aacute;xima.</td>
+  </tr>
+  <tr>
+    <td>Completude (vs Spec)</td>
+    <td>25%</td>
+    <td><span class="score-red">2.0</span></td>
+    <td>0.50</td>
+    <td>3 features core ausentes (assumir, memoria, doc-reader). 4 stubs vazios. 1 path duplicado.</td>
+  </tr>
+  <tr>
+    <td>Padr&atilde;o MdFlow</td>
+    <td>15%</td>
+    <td><span class="score-red">3.0</span></td>
+    <td>0.45</td>
+    <td>42% conformidade m&eacute;dia. Quase nenhum WH log. Sticky notes raros.</td>
+  </tr>
+  <tr>
+    <td>Observabilidade</td>
+    <td>10%</td>
+    <td><span class="score-yellow">4.5</span></td>
+    <td>0.45</td>
+    <td>1 de 13 workflows loga em webhook_requests. Erros gen&eacute;ricos ou silenciados.</td>
+  </tr>
+  <tr>
+    <td>L&oacute;gica de Neg&oacute;cio</td>
+    <td>15%</td>
+    <td><span class="score-yellow">5.0</span></td>
+    <td>0.75</td>
+    <td>Quando funciona, funciona bem. Message Grouper com anti-storm, FOLLOWUP-ZAPSIGN completo.</td>
+  </tr>
+  <tr>
+    <td>Higiene (Dead Code)</td>
+    <td>10%</td>
+    <td><span class="score-yellow">5.5</span></td>
+    <td>0.55</td>
+    <td>21 workflows inativos acumulados. 4 stubs ativos fingindo funcionalidade.</td>
+  </tr>
+  <tr style="background:var(--surface2);font-weight:600;">
+    <td>TOTAL</td>
+    <td>100%</td>
+    <td></td>
+    <td><span class="score-red">3.08</span></td>
+    <td>Arredondado para <strong>3.5</strong> pelo FOLLOWUP-ZAPSIGN funcional e Message Grouper inteligente.</td>
+  </tr>
+</table>
+
+<!-- VEREDICTO FINAL -->
+<h2>Veredicto Final</h2>
+<div class="card card-red">
+  <p style="font-size:1.1rem;line-height:1.8;">
+    <strong>3.5/10</strong> &mdash; O ecossistema n8n do MdZap &eacute; a parte mais fr&aacute;gil de todo o m&oacute;dulo. A nota &eacute; puxada para baixo por problemas de seguran&ccedil;a
+    indefens&aacute;veis (service_role hardcoded em 7 workflows) e funcionalidades core ausentes (assumir conversa sequer existe, mem&oacute;ria e doc-reader nunca foram criados).
+    A presen&ccedil;a de 4 stubs vazios retornando <code>success: true</code> sem fazer nada &eacute; particularmente insidiosa &mdash; o frontend acredita que funcionou.
+    Os 2 workflows duplicados no mesmo path criam comportamento imprevis&iacute;vel em produ&ccedil;&atilde;o.
+  </p>
+  <p style="margin-top:1rem;color:var(--muted);">
+    Pontos positivos: Message Grouper com l&oacute;gica anti-storm (janela 8s) &eacute; inteligente. FOLLOWUP-ZAPSIGN &eacute; o workflow mais completo e bem documentado.
+    O envelope can&ocirc;nico &eacute; respeitado pelo frontend. Z-API: limpo nos ativos.
+    O caminho para 6.0 exige: mover keys para env vars (30min), criar Assumir Conversa (1h), desativar legado (1min), adicionar auth (5min), reativar 3 workflows (1.5h), deletar dead code (15min).
+    Total: ~3.5h para quase dobrar a nota.
+  </p>
+</div>
+
+<hr class="separator">
+<div class="footer">
+  MdZap n8n Audit &mdash; Stage 3/4 | Gerado: 2026-04-08 | Auditor: Claude Code | MdFlow &copy; MDX LegalTech<br>
+  <a href="mdzap-backend-audit-2026-04-08.html">Stage 1: Backend (5.2/10)</a> |
+  <a href="mdzap-code-audit-2026-04-08.html">Stage 2: C&oacute;digo (4.8/10)</a> |
+  <strong>Stage 3: n8n (3.5/10)</strong> |
+  Stage 4: Frontend Visual (pendente)
+</div>
+
+</body>
+</html>
