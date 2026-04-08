@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap Backend Audit — 2026-04-08</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface2: #1c2033;
+    --border: #2a2e42;
+    --text: #e8e4df;
+    --muted: #8a8693;
+    --accent: #7c6dff;
+    --green: #20c997;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --cyan: #06b6d4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  h1 { font-family: 'Manrope', sans-serif; font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+  h2 { font-family: 'Manrope', sans-serif; font-size: 1.4rem; color: var(--green); margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.1rem; color: var(--cyan); margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .nota-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; display: flex; align-items: center; gap: 1.5rem; }
+  .nota-score { font-family: 'Manrope', sans-serif; font-size: 3.5rem; font-weight: 800; min-width: 120px; text-align: center; }
+  .nota-label { font-size: 0.85rem; color: var(--muted); }
+  .nota-detail { flex: 1; }
+  .score-red { color: var(--red); }
+  .score-yellow { color: var(--yellow); }
+  .score-green { color: var(--green); }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+  th { background: var(--surface2); color: var(--accent); text-align: left; padding: 0.6rem 0.8rem; font-weight: 600; }
+  td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(124, 109, 255, 0.05); }
+  .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+  .tag-p0 { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+  .tag-p1 { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+  .tag-p2 { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+  .tag-p3 { background: rgba(6, 182, 212, 0.2); color: var(--cyan); }
+  .tag-ok { background: rgba(32, 201, 151, 0.15); color: var(--green); }
+  .tag-fail { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .tag-warn { background: rgba(234, 179, 8, 0.15); color: var(--yellow); }
+  .tag-info { background: rgba(124, 109, 255, 0.15); color: var(--accent); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 0.8rem 0; }
+  .card-red { border-left: 3px solid var(--red); }
+  .card-yellow { border-left: 3px solid var(--yellow); }
+  .card-green { border-left: 3px solid var(--green); }
+  .card-accent { border-left: 3px solid var(--accent); }
+  code { background: var(--surface2); padding: 0.15rem 0.4rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyan); }
+  pre { background: var(--surface2); padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.8rem; line-height: 1.5; margin: 0.5rem 0; }
+  pre code { background: none; padding: 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  .metric { text-align: center; padding: 1rem; }
+  .metric-value { font-family: 'Manrope', sans-serif; font-size: 2rem; font-weight: 800; }
+  .metric-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .verdict { font-size: 0.95rem; line-height: 1.7; }
+  ul { padding-left: 1.5rem; }
+  li { margin: 0.3rem 0; }
+  .separator { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .footer { color: var(--muted); font-size: 0.75rem; margin-top: 3rem; text-align: center; border-top: 1px solid var(--border); padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<h1>MdZap — Auditoria Backend Impiedosa</h1>
+<p class="subtitle">Produção real (qdivfairxhdihaqqypgb) | 2026-04-08 | Auditor: Claude Code | Cruzamento CRM × MdZap</p>
+
+<!-- NOTA GERAL -->
+<div class="nota-box">
+  <div>
+    <div class="nota-score score-yellow">5.2<span style="font-size:1.2rem;color:var(--muted)">/10</span></div>
+    <div class="nota-label">Nota Backend MdZap</div>
+  </div>
+  <div class="nota-detail">
+    <p class="verdict">
+      <strong>Veredicto: Backend incompleto e desconectado.</strong> A estrutura de tabelas existe e tem boas práticas (RLS, soft delete, triggers), mas a integração com CRM é superficial — os componentes compartilhados não usam as mesmas queries, 62% das conversas não têm lead vinculado, e os 3 subsistemas críticos (pending_lead_data, lead_memory, followups) têm <strong>zero registros em produção</strong>. O schema está pronto para um sistema que ainda não existe.
+    </p>
+  </div>
+</div>
+
+<!-- MÉTRICAS RÁPIDAS -->
+<div class="grid-3" style="margin: 1.5rem 0;">
+  <div class="card card-green">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--green)">20</div>
+      <div class="metric-label">Tabelas MdZap/WhatsApp</div>
+    </div>
+  </div>
+  <div class="card card-red">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--red)">0</div>
+      <div class="metric-label">Registros em lead_memory / followups / pending_data</div>
+    </div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--yellow)">62%</div>
+      <div class="metric-label">Conversas sem lead vinculado</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCORES POR CATEGORIA -->
+<h2>Scores por Categoria</h2>
+
+<table>
+  <thead>
+    <tr><th>Categoria</th><th>Score</th><th>Peso</th><th>Justificativa</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Schema & Constraints</td>
+      <td><span class="tag tag-ok">7.5/10</span></td>
+      <td>20%</td>
+      <td>CHECK constraints corretos, TEXT (não ENUM), soft delete na maioria. Falta deleted_at em 8 tabelas auxiliares. <code>mdzap_julia_prompts</code> sem updated_at trigger.</td>
+    </tr>
+    <tr>
+      <td>RLS & Segurança</td>
+      <td><span class="tag tag-ok">7.0/10</span></td>
+      <td>15%</td>
+      <td>Todas as 20 tabelas têm RLS. Mix de <code>org_id()</code> e <code>get_org_id()</code> (inconsistente mas funcional). Todas RPCs são SECURITY DEFINER. Edge Function usa SERVICE_ROLE_KEY corretamente.</td>
+    </tr>
+    <tr>
+      <td>RPCs & Queries</td>
+      <td><span class="tag tag-warn">6.0/10</span></td>
+      <td>20%</td>
+      <td><code>fn_mdzap_conversas</code> teve 6 reescritas em 20 dias — instável. <code>fn_mdzap_smart_replies</code> é keyword-based puro (não IA) — placeholder. <code>fn_mdzap_stats</code> retorna <code>tempo_medio_resposta_min: 0</code> hardcoded.</td>
+    </tr>
+    <tr>
+      <td>Integração CRM</td>
+      <td><span class="tag tag-fail">3.0/10</span></td>
+      <td>25%</td>
+      <td><strong>Pior nota.</strong> 5 de 8 conversas sem lead. <code>fn_link_conversa_to_lead</code> existe mas nunca é chamada. <code>pending_lead_data</code>: 0 registros. Restrições do CRM funcionam via <code>fn_restricoes_listar</code> mas MdZap não chama esta RPC. Docs usam <code>processos_documentos</code> com <code>lead_id</code> + <code>restricao_id</code> mas MdZap não popula.</td>
+    </tr>
+    <tr>
+      <td>Subsistemas IA</td>
+      <td><span class="tag tag-fail">3.5/10</span></td>
+      <td>20%</td>
+      <td><code>mdzap_lead_memory</code>: 0 registros. <code>whatsapp_followups</code>: 0 registros. <code>mdzap_ai_modules</code>: 3 registros (seed). ICP: 3 registros (funciona). A Julia orquestradora não tem backend funcional — o webhook n8n apenas responde, não persiste estado.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style="color:var(--muted);font-size:0.8rem;margin-top:0.5rem;">Nota final = média ponderada: (7.5×0.20) + (7.0×0.15) + (6.0×0.20) + (3.0×0.25) + (3.5×0.20) = <strong>5.2/10</strong></p>
+
+<hr class="separator">
+
+<!-- ACHADOS CRÍTICOS -->
+<h2>Achados Críticos (P0-P1)</h2>
+
+<div class="card card-red">
+  <h3>P0-01: Integração CRM é uma mentira</h3>
+  <p>O spec diz "conectado 100% ao CRM — mesmas tabelas, mesmas funcionalidades". A realidade:</p>
+  <ul>
+    <li><code>fn_restricoes_listar</code> aceita <code>p_lead_id</code> — funciona. Mas o frontend MdZap usa <code>LeadRestricoesMdzapTab</code> que chama <code>CrmAuditoriaPanel</code> <strong>sem</strong> o callback <code>onRestricoesCadastradas</code>. Ao cadastrar restrições, as queries não invalidam.</li>
+    <li><code>processos_documentos</code> tem <code>lead_id</code>, <code>restricao_id</code>, <code>origem</code> (inclui 'whatsapp_chat'). Perfeito. Mas o MdZap nunca insere docs aqui — os docs ficam no Supabase Storage sem vínculo à tabela.</li>
+    <li><code>distribuir_lead_completo</code> exige <code>coluna_crm = 'triagem'</code>. Mas o MdZap cria leads em 'em_atendimento'. O lead precisaria ser movido manualmente para 'triagem' antes de distribuir. Ninguém conectou esses fluxos.</li>
+    <li>A view <code>view_crm_leads_kanban</code> filtra <code>arquivado = false</code> — leads do MdZap que são arquivados no MdZap (card 3 pontinhos → arquivar) não somem do CRM porque o campo <code>arquivado</code> pode não ser atualizado pelo webhook.</li>
+  </ul>
+</div>
+
+<div class="card card-red">
+  <h3>P0-02: pending_lead_data — Nunca Usado</h3>
+  <p>O spec v2 define que o Doc Reader popula <code>whatsapp_conversas.metadata.pending_lead_data</code> antes do cadastro formal. Resultado em produção:</p>
+  <pre><code>SELECT count(*) FROM whatsapp_conversas
+WHERE metadata->'pending_lead_data' IS NOT NULL → 0 registros</code></pre>
+  <p>O campo JSONB existe, o tipo TypeScript <code>PendingLeadData</code> existe, mas nenhum webhook n8n seta esse campo. O formulário pré-preenchido que o frontend mostra está vazio.</p>
+</div>
+
+<div class="card card-red">
+  <h3>P0-03: leads.awaiting_human — Dois campos, zero confiança</h3>
+  <p>A tabela <code>leads</code> tem DOIS campos para a mesma coisa:</p>
+  <table>
+    <tr><th>Campo</th><th>Tipo</th><th>Nullable</th><th>Default</th></tr>
+    <tr><td><code>awaiting_human</code></td><td>boolean</td><td>YES</td><td>null</td></tr>
+    <tr><td><code>aguardando_humano</code></td><td>boolean</td><td>NO</td><td>false</td></tr>
+  </table>
+  <p>O trigger <code>trg_sync_awaiting_human</code> sincroniza os dois. Problema: <code>awaiting_human</code> é nullable — pode ser <code>null</code>, <code>true</code> ou <code>false</code>. O COALESCE em <code>fn_mdzap_conversas</code> trata isso, mas qualquer query direta na tabela <code>leads</code> que use <code>WHERE awaiting_human = true</code> vai ignorar nulls. E a Edge Function seta <code>metadata.awaiting_human</code> na conversa, não no lead — são 3 lugares diferentes para a mesma informação.</p>
+</div>
+
+<div class="card card-red">
+  <h3>P1-01: Documentos do WhatsApp não vão para processos_documentos</h3>
+  <p>A Edge Function <code>mdzap-webhook</code> baixa mídia e salva no bucket <code>mdzap-media</code>. A URL fica em <code>whatsapp_mensagens.media_url</code>. Mas:</p>
+  <ul>
+    <li><code>processos_documentos</code> é a tabela oficial de documentos do CRM</li>
+    <li>Tem <code>lead_id</code>, <code>restricao_id</code>, <code>categoria</code>, <code>tipo_documento</code>, <code>origem</code> (com CHECK 'whatsapp_chat')</li>
+    <li>Nenhum processo copia os docs do bucket para esta tabela</li>
+    <li>O <code>LeadDocumentosTab</code> do MdZap provavelmente consulta uma tabela diferente do que o <code>ClienteDrawerTabDocumentos</code> do CRM</li>
+  </ul>
+  <p>Resultado: docs do WhatsApp vivem num bucket isolado. CRM não vê. MdZap não mostra docs do CRM.</p>
+</div>
+
+<div class="card card-yellow">
+  <h3>P1-02: fn_mdzap_conversas — 6 reescritas em 20 dias</h3>
+  <p>Essa RPC foi reescrita 6 vezes entre 2026-03-19 e 2026-04-07:</p>
+  <ol>
+    <li>v1: SQL simples, TABLE return</li>
+    <li>v2: Adicionou aguardando_humano</li>
+    <li>v3: plpgsql + soft delete</li>
+    <li>v4: Paginação + search + JSONB envelope</li>
+    <li>v5: Drop overload para fix PGRST203</li>
+    <li>v6: Fix awaiting_human COALESCE + add lead_cpf + agente_slug</li>
+  </ol>
+  <p>6 reescritas geram risco de regressão. A assinatura mudou de <code>(uuid, uuid)</code> para <code>(uuid, int, int, uuid, text, text)</code>. Qualquer cache PostgREST pode estar desatualizado.</p>
+</div>
+
+<div class="card card-yellow">
+  <h3>P1-03: mdzap_message_queue — 20 registros órfãos</h3>
+  <p>A tabela <code>mdzap_message_queue</code> tem 20 registros com <code>expires_at DEFAULT now()+5min</code>. Não existe nenhum processo que limpa registros expirados. Não existe nenhum consumer que processa a fila. A tabela existe mas não tem propósito funcional visível.</p>
+</div>
+
+<hr class="separator">
+
+<!-- CRUZAMENTO CRM × MDZAP -->
+<h2>Cruzamento CRM × MdZap — O que deveria estar conectado</h2>
+
+<table>
+  <thead>
+    <tr><th>Funcionalidade</th><th>CRM (como funciona)</th><th>MdZap (como deveria)</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Listar restrições</td>
+      <td><code>fn_restricoes_listar(org, lead_id=X)</code></td>
+      <td>Mesmo RPC, mesma tabela</td>
+      <td><span class="tag tag-warn">Parcial</span> — RPC existe, frontend não invalida cache após cadastro</td>
+    </tr>
+    <tr>
+      <td>Cadastrar lead + restrições</td>
+      <td>Componente <code>CrmAuditoriaPanel</code> → INSERT restricoes + UPDATE leads</td>
+      <td>Reutilizar componente com callbacks</td>
+      <td><span class="tag tag-fail">Quebrado</span> — onRestricoesCadastradas ausente</td>
+    </tr>
+    <tr>
+      <td>Mover lead no kanban</td>
+      <td><code>UPDATE leads SET coluna_crm = 'X'</code> + <code>leads_atividades</code></td>
+      <td>Dropdown no header → mesmo UPDATE</td>
+      <td><span class="tag tag-fail">Quebrado</span> — badge não aparece (lead_coluna null)</td>
+    </tr>
+    <tr>
+      <td>Documentos do lead</td>
+      <td><code>processos_documentos WHERE lead_id = X</code></td>
+      <td>Mesma tabela com <code>origem='whatsapp_chat'</code></td>
+      <td><span class="tag tag-fail">Desconectado</span> — docs ficam no bucket, não na tabela</td>
+    </tr>
+    <tr>
+      <td>Pastas de restrições</td>
+      <td><code>processos_documentos WHERE restricao_id = X</code></td>
+      <td>Mesmo padrão Tier 2</td>
+      <td><span class="tag tag-fail">Não implementado</span> — LeadDocumentosTab não chama useRestricoes</td>
+    </tr>
+    <tr>
+      <td>Distribuir lead</td>
+      <td><code>distribuir_lead_completo</code> (exige coluna='triagem')</td>
+      <td>Funcionar igual</td>
+      <td><span class="tag tag-warn">Incompatível</span> — MdZap cria em 'em_atendimento', precisa mover para 'triagem'</td>
+    </tr>
+    <tr>
+      <td>Vincular conversa ↔ lead</td>
+      <td>N/A (CRM não tem conversas)</td>
+      <td><code>fn_link_conversa_to_lead</code></td>
+      <td><span class="tag tag-warn">Existe</span> — RPC pronta, nunca chamada em produção</td>
+    </tr>
+    <tr>
+      <td>Arquivar lead</td>
+      <td><code>leads.arquivado = true</code></td>
+      <td>Sincronizar MdZap → CRM</td>
+      <td><span class="tag tag-fail">Não verificado</span> — webhook pode não setar arquivado</td>
+    </tr>
+    <tr>
+      <td>Auditoria Boa Vista</td>
+      <td><code>fn_disparar_auditoria(lead_id, cpf)</code> via webhook n8n</td>
+      <td>Mesmo fluxo</td>
+      <td><span class="tag tag-warn">Parcial</span> — botão existe no MdZap, falhou nos testes (Christian relatou)</td>
+    </tr>
+    <tr>
+      <td>Campo RG</td>
+      <td><code>clientes.rg</code> (TEXT nullable)</td>
+      <td><code>leads.rg</code> (TEXT nullable)</td>
+      <td><span class="tag tag-ok">OK</span> — ambos existem</td>
+    </tr>
+    <tr>
+      <td>Endereço</td>
+      <td><code>leads.endereco_*</code> (7 campos)</td>
+      <td>Mesmos campos</td>
+      <td><span class="tag tag-ok">OK</span> — campos existem na tabela leads</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="separator">
+
+<!-- TABELA LEADS - SCHEMA COMPLETO -->
+<h2>Tabela <code>leads</code> — Schema Real (64 colunas)</h2>
+
+<p style="color:var(--muted);font-size:0.85rem;">A tabela leads é a mais importante do sistema. Ela é compartilhada entre CRM e MdZap. Tem 64 colunas — das quais pelo menos 15 são legado/redundantes.</p>
+
+<div class="grid-2">
+  <div class="card card-green">
+    <h3>Campos Usados pelo MdZap</h3>
+    <ul>
+      <li><code>nome</code>, <code>cpf</code>, <code>rg</code>, <code>whatsapp</code></li>
+      <li><code>data_nascimento</code>, <code>sexo</code>, <code>profissao</code></li>
+      <li><code>endereco_*</code> (logradouro, numero, complemento, bairro, cidade, uf, cep, estado)</li>
+      <li><code>coluna_crm</code>, <code>awaiting_human</code></li>
+      <li><code>advogado_id</code>, <code>atendente_id</code></li>
+      <li><code>lead_id</code> → <code>whatsapp_conversas.lead_id</code></li>
+    </ul>
+  </div>
+  <div class="card card-yellow">
+    <h3>Campos Redundantes / Legado MdZap</h3>
+    <ul>
+      <li><code>mdzap_contact_id</code> — TEXT, indexado. Duplica <code>whatsapp_conversas.contato_numero</code></li>
+      <li><code>mdzap_conversation_id</code> — TEXT, indexado. Duplica <code>whatsapp_conversas.id</code></li>
+      <li><code>wa_conversation_id</code> — TEXT, indexado. Terceiro campo para conversation ID</li>
+      <li><code>wa_status</code>, <code>wa_blocked</code>, <code>wa_unread_count</code>, <code>wa_last_message_at</code> — duplicam dados de <code>whatsapp_conversas</code></li>
+      <li><code>last_inbound_at</code>, <code>last_outbound_at</code> — duplicam <code>whatsapp_conversas.ultimo_msg_at</code></li>
+      <li><code>aguardando_humano</code> — duplica <code>awaiting_human</code> (sync via trigger)</li>
+      <li><code>restricoes</code> (JSONB) — duplica tabela <code>restricoes</code></li>
+      <li><code>documentos</code> (JSONB) — duplica tabela <code>processos_documentos</code></li>
+    </ul>
+    <p style="color:var(--red);font-size:0.8rem;margin-top:0.5rem;"><strong>São 10+ colunas redundantes</strong> — schema drift entre "dados no lead" vs "dados nas tabelas relacionais".</p>
+  </div>
+</div>
+
+<hr class="separator">
+
+<!-- O QUE ESTÁ BOM -->
+<h2>O Que Está Bem Feito</h2>
+
+<div class="card card-green">
+  <ul>
+    <li><strong>Edge Function mdzap-webhook</strong> (525 linhas) — bem escrita. Normaliza Meta + Z-API, retry com exponential backoff, download mídia, fallback para media_id_failed. Código sólido.</li>
+    <li><strong>RLS em 100% das tabelas</strong> — todas as 20 tabelas têm tenant isolation. SECURITY DEFINER em todas RPCs.</li>
+    <li><strong>Soft delete</strong> — aplicado nas tabelas que importam (conversas, mensagens, lead_memory, templates, notas).</li>
+    <li><strong>updated_at triggers</strong> — 15 de 20 tabelas têm trigger automático.</li>
+    <li><strong>CHECK constraints</strong> — TEXT CHECK (nunca ENUM) em todas as tabelas que precisam. Padrão MdFlow respeitado.</li>
+    <li><strong>fn_link_conversa_to_lead</strong> — bem implementada com validação de org cruzada. Pronta para uso.</li>
+    <li><strong>Indexes compostos</strong> — <code>idx_wa_msg_org_conversa_created</code> (organizado para a query mais comum). GIN no metadata.</li>
+    <li><strong>whatsapp_followups</strong> — schema completo com tentativas, max_tentativas, scheduled_at, executed_at. Bem desenhado, só falta o consumer.</li>
+    <li><strong>ICP análises</strong> — 3 registros, webhook funciona, cron ativo. Único subsistema IA funcionando de verdade.</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- O QUE FALTA -->
+<h2>O Que Falta Implementar</h2>
+
+<table>
+  <thead>
+    <tr><th>Item</th><th>Sev</th><th>O Que Fazer</th><th>Esforço</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Webhook n8n: popular pending_lead_data</td>
+      <td><span class="tag tag-p0">P0</span></td>
+      <td>Quando Doc Reader extrai dados, setar <code>whatsapp_conversas.metadata.pending_lead_data</code> via jsonb_set</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <td>Vincular conversa ao lead no cadastro</td>
+      <td><span class="tag tag-p0">P0</span></td>
+      <td>Frontend deve chamar <code>fn_link_conversa_to_lead</code> após cadastrar lead</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <td>Docs WhatsApp → processos_documentos</td>
+      <td><span class="tag tag-p0">P0</span></td>
+      <td>Criar processo (n8n ou trigger) que copia docs aprovados do bucket para <code>processos_documentos</code> com <code>lead_id</code>, <code>origem='whatsapp_chat'</code>, <code>tipo_documento</code></td>
+      <td>L</td>
+    </tr>
+    <tr>
+      <td>Consumer whatsapp_followups</td>
+      <td><span class="tag tag-p1">P1</span></td>
+      <td>Criar cron n8n que busca followups pendentes (status='pending', scheduled_at &lt;= now()) e executa</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <td>Webhook memória → mdzap_lead_memory</td>
+      <td><span class="tag tag-p1">P1</span></td>
+      <td>Criar/ativar webhook que analisa conversa e popula lead_memory</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <td>Consolidar awaiting_human</td>
+      <td><span class="tag tag-p1">P1</span></td>
+      <td>Tornar <code>awaiting_human</code> NOT NULL DEFAULT false (como aguardando_humano). Deprecar um dos dois.</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <td>Limpar mdzap_message_queue</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Criar cron que deleta registros expirados, ou remover tabela se não for usada</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <td>fn_mdzap_stats — métricas reais</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Implementar <code>tempo_medio_resposta_min</code> e <code>taxa_handoff_pct</code> (hardcoded como 0)</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <td>Deprecar colunas wa_* da leads</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>mdzap_contact_id, mdzap_conversation_id, wa_conversation_id, wa_status, wa_blocked, wa_unread_count, wa_last_message_at — substituídas por whatsapp_conversas</td>
+      <td>M (requer audit de uso no frontend)</td>
+    </tr>
+    <tr>
+      <td>mdzap_julia_prompts — falta updated_at trigger</td>
+      <td><span class="tag tag-p3">P3</span></td>
+      <td>CREATE TRIGGER set_updated_at BEFORE UPDATE</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <td>whatsapp_numeros_autorizados — falta updated_at trigger</td>
+      <td><span class="tag tag-p3">P3</span></td>
+      <td>CREATE TRIGGER set_updated_at BEFORE UPDATE</td>
+      <td>S</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="separator">
+
+<!-- RECOMENDAÇÕES -->
+<h2>Recomendações (Prioridade)</h2>
+
+<div class="card card-accent">
+  <h3>1. Fechar o gap CRM (P0 — antes de qualquer outra coisa)</h3>
+  <p>O spec promete integração total com CRM. Na prática, os dados vivem em mundos separados. Prioridade absoluta:</p>
+  <ol>
+    <li>Frontend: chamar <code>fn_link_conversa_to_lead</code> no momento do cadastro</li>
+    <li>Frontend: passar <code>onRestricoesCadastradas</code> no <code>CrmAuditoriaPanel</code></li>
+    <li>n8n: criar webhook que copia docs aprovados para <code>processos_documentos</code></li>
+    <li>n8n: popular <code>pending_lead_data</code> quando Doc Reader extrai dados</li>
+  </ol>
+</div>
+
+<div class="card card-accent">
+  <h3>2. Ativar os subsistemas mortos (P1)</h3>
+  <p>Três tabelas bem desenhadas com zero registros:</p>
+  <ul>
+    <li><code>mdzap_lead_memory</code> — precisa do webhook de memória ativo</li>
+    <li><code>whatsapp_followups</code> — precisa do consumer cron</li>
+    <li><code>pending_lead_data</code> — precisa do Doc Reader populando</li>
+  </ul>
+</div>
+
+<div class="card card-accent">
+  <h3>3. Limpar a tabela leads (P2)</h3>
+  <p>64 colunas. 10+ redundantes com tabelas relacionais. Cada nova feature adiciona mais. Recomendo:</p>
+  <ul>
+    <li>Auditar uso de <code>mdzap_contact_id</code>, <code>wa_*</code>, <code>restricoes</code> JSONB, <code>documentos</code> JSONB</li>
+    <li>Migrar qualquer leitura para as tabelas relacionais corretas</li>
+    <li>Marcar deprecated e remover em iteração futura</li>
+  </ul>
+</div>
+
+<hr class="separator">
+
+<!-- DADOS REAIS -->
+<h2>Snapshot Produção</h2>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Conversas Ativas</h3>
+    <table>
+      <tr><th>Contato</th><th>Lead?</th><th>Coluna CRM</th></tr>
+      <tr><td>.</td><td><span class="tag tag-fail">Não</span></td><td>—</td></tr>
+      <tr><td>Ana Beatriz Santos</td><td><span class="tag tag-ok">Sim</span></td><td>em_atendimento</td></tr>
+      <tr><td>Teste Julia</td><td><span class="tag tag-fail">Não</span></td><td>—</td></tr>
+      <tr><td>Mariana Souza</td><td><span class="tag tag-fail">Não</span></td><td>—</td></tr>
+      <tr><td>cayo</td><td><span class="tag tag-fail">Não</span></td><td>—</td></tr>
+      <tr><td>Patrícia Nunes</td><td><span class="tag tag-ok">Sim</span></td><td>arquivados</td></tr>
+      <tr><td>Gustavo Teste</td><td><span class="tag tag-fail">Não</span></td><td>—</td></tr>
+      <tr><td>Carlos Eduardo</td><td><span class="tag tag-ok">Sim</span></td><td>triagem</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Restrições (amostra)</h3>
+    <table>
+      <tr><th>Empresa</th><th>Valor</th><th>Processável</th></tr>
+      <tr><td>BOA VISTA SERVICOS S.A.</td><td>R$ 2.500,00</td><td><span class="tag tag-ok">Sim</span></td></tr>
+      <tr><td>Casas Bahia</td><td>R$ 899,00</td><td><span class="tag tag-fail">Não</span></td></tr>
+      <tr><td>ITAÚ UNIBANCO SA</td><td>R$ 2.500,00</td><td><span class="tag tag-ok">Sim</span></td></tr>
+      <tr><td>NU PAGAMENTOS S.A.</td><td>R$ 2,06</td><td><span class="tag tag-ok">Sim</span></td></tr>
+      <tr><td>CARTÓRIO 1 (×3)</td><td>R$ 4-17</td><td><span class="tag tag-fail">Não</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<hr class="separator">
+
+<!-- CONCLUSÃO -->
+<h2>Conclusão</h2>
+
+<div class="card card-yellow">
+  <p class="verdict" style="font-size:1rem;">
+    <strong>5.2/10 — "Fundação sólida, casa vazia."</strong>
+  </p>
+  <p style="margin-top:0.8rem;">
+    O schema está bem desenhado. RLS, soft delete, triggers, indexes compostos, CHECK constraints — tudo correto. A Edge Function é código de qualidade. O problema não é a qualidade do que existe, é a <strong>quantidade do que não existe</strong>.
+  </p>
+  <p style="margin-top:0.5rem;">
+    Os 3 subsistemas que fariam o MdZap funcionar de verdade (pending_lead_data, lead_memory, followups) têm zero registros. A integração com CRM, que é o ponto central do módulo, é superficial — os componentes foram copiados sem conectar as queries. E a tabela <code>leads</code> com 64 colunas, 10+ redundantes, é uma bomba-relógio de schema drift.
+  </p>
+  <p style="margin-top:0.5rem;">
+    A nota subiria para <strong>7-8/10</strong> com os 4 fixes P0 implementados e os subsistemas ativados. A fundação está lá. Falta construir em cima dela.
+  </p>
+</div>
+
+<div class="footer">
+  MdZap Backend Audit — 2026-04-08 — Claude Code (Opus 4.6) — Dados reais de produção (qdivfairxhdihaqqypgb)
+</div>
+
+</body>
+</html>
