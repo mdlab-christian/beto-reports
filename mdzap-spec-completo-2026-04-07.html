@@ -1,0 +1,3032 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — SPEC Completo v2.0</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* Layout */
+.layout { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: #0a0c14;
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  padding: 0 0 32px 0;
+}
+
+.sidebar-brand {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.sidebar-brand .brand-icon { font-size: 1.4rem; }
+
+.sidebar-brand .brand-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 6px;
+  display: block;
+}
+
+.sidebar-brand .brand-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.sidebar-section {
+  padding: 12px 12px 4px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  margin: 1px 8px;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.sidebar-link:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.sidebar-link.active {
+  background: rgba(124, 109, 255, 0.12);
+  color: var(--accent);
+}
+
+.sidebar-link .link-icon { font-size: 0.9rem; width: 16px; }
+
+.sidebar-link .link-badge {
+  margin-left: auto;
+  font-size: 0.6rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.lb-p0 { background: rgba(255,107,107,0.2); color: var(--accent2); }
+.lb-p1 { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.lb-p2 { background: rgba(91,196,245,0.12); color: var(--accent5); }
+.lb-ok { background: rgba(79,255,176,0.1); color: var(--accent3); }
+
+/* Main content */
+.main {
+  margin-left: 260px;
+  flex: 1;
+  padding: 32px 40px;
+  max-width: calc(100% - 260px);
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 56px 24px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(124,109,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-emoji { font-size: 3.5rem; display: block; margin-bottom: 16px; }
+
+.gradient-text {
+  font-size: 2.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+}
+
+.hero-sub {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 20px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* Stats grid */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.stat-accent::after { background: linear-gradient(90deg, var(--accent), transparent); }
+.stat-red::after { background: linear-gradient(90deg, var(--accent2), transparent); }
+.stat-green::after { background: linear-gradient(90deg, var(--accent3), transparent); }
+.stat-yellow::after { background: linear-gradient(90deg, var(--accent4), transparent); }
+.stat-blue::after { background: linear-gradient(90deg, var(--accent5), transparent); }
+
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-value.red { color: var(--accent2); }
+.stat-value.green { color: var(--accent3); }
+.stat-value.yellow { color: var(--accent4); }
+.stat-value.blue { color: var(--accent5); }
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Section */
+.section { margin: 40px 0; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.section-icon { font-size: 1.3rem; }
+
+.section-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.section-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* Code block */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+}
+
+/* Status pills */
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+tr:last-child td { border-bottom: none; }
+
+/* Severity rows */
+.sev-p0 td:first-child { border-left: 3px solid var(--accent2); }
+.sev-p1 td:first-child { border-left: 3px solid var(--accent4); }
+.sev-p2 td:first-child { border-left: 3px solid var(--accent5); }
+.sev-p3 td:first-child { border-left: 3px solid var(--text-muted); }
+
+.p-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.p0-b { background: rgba(255,107,107,0.15); color: var(--accent2); border: 1px solid rgba(255,107,107,0.3); }
+.p1-b { background: rgba(255,209,102,0.12); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.p2-b { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.2); }
+.p3-b { background: rgba(122,130,168,0.1); color: var(--text-muted); border: 1px solid var(--border); }
+
+/* Flow diagram */
+.flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 8px 0;
+}
+
+.flow-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.flow-step::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 44px;
+  width: 2px;
+  height: calc(100% - 8px);
+  background: linear-gradient(180deg, var(--border), transparent);
+}
+
+.flow-step:last-child::before { display: none; }
+
+.flow-dot {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.flow-content {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.flow-content:hover { border-color: var(--accent); }
+
+.flow-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.flow-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.flow-executor {
+  margin-left: auto;
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.exec-julia { background: rgba(124,109,255,0.15); color: var(--accent); }
+.exec-sistema { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.exec-subagente { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.exec-humano { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.exec-mixed { background: rgba(255,107,107,0.08); color: var(--accent2); }
+
+.flow-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.flow-desc ul { padding-left: 16px; margin-top: 6px; }
+.flow-desc li { margin-bottom: 3px; }
+
+.flow-error {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(255,107,107,0.05);
+  border: 1px solid rgba(255,107,107,0.15);
+  border-radius: 8px;
+  font-size: 0.77rem;
+  color: rgba(255,107,107,0.8);
+}
+
+.flow-error::before { content: '⚠ Erro: '; font-weight: 600; }
+
+/* State cards (section 3) */
+.state-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.state-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+}
+
+.state-card.critical { border-color: rgba(255,107,107,0.3); }
+.state-card.warn { border-color: rgba(255,209,102,0.25); }
+.state-card.ok { border-color: rgba(79,255,176,0.2); }
+.state-card.partial { border-color: rgba(91,196,245,0.2); }
+
+.state-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.state-items { display: flex; flex-direction: column; gap: 6px; }
+
+.state-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.state-item .si-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.si-green { background: var(--accent3); }
+.si-red { background: var(--accent2); }
+.si-yellow { background: var(--accent4); }
+.si-blue { background: var(--accent5); }
+
+/* Probability bars */
+.prob-container { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+
+.prob-item { display: flex; flex-direction: column; gap: 4px; }
+
+.prob-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.prob-bar-bg {
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.prob-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+.pb-main { background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+.pb-alt1 { background: linear-gradient(90deg, var(--accent4), var(--accent5)); }
+.pb-alt2 { background: linear-gradient(90deg, var(--text-muted), var(--surface3)); }
+
+/* Question cards */
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.question-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.qc-accent::before { background: var(--accent); }
+.qc-red::before { background: var(--accent2); }
+.qc-green::before { background: var(--accent3); }
+.qc-yellow::before { background: var(--accent4); }
+.qc-blue::before { background: var(--accent5); }
+
+.q-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.q-num {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.qn-1 { background: rgba(124,109,255,0.2); color: var(--accent); }
+.qn-2 { background: rgba(255,107,107,0.15); color: var(--accent2); }
+.qn-3 { background: rgba(79,255,176,0.12); color: var(--accent3); }
+.qn-4 { background: rgba(255,209,102,0.12); color: var(--accent4); }
+.qn-5 { background: rgba(91,196,245,0.12); color: var(--accent5); }
+.qn-6 { background: rgba(124,109,255,0.15); color: var(--accent); }
+.qn-7 { background: rgba(255,107,107,0.12); color: var(--accent2); }
+.qn-8 { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.qn-9 { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.qn-10 { background: rgba(91,196,245,0.1); color: var(--accent5); }
+
+.q-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.q-audio {
+  background: rgba(124,109,255,0.06);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: rgba(232,234,246,0.75);
+  line-height: 1.65;
+}
+
+.q-audio::before {
+  content: '🎙 Trecho do áudio: ';
+  font-style: normal;
+  font-weight: 600;
+  color: var(--accent);
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.q-context {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+}
+
+.q-context-title {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--accent5);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.q-context ul { padding-left: 14px; }
+.q-context li { margin-bottom: 4px; color: var(--text-muted); }
+.q-context li strong { color: var(--text); }
+
+.options-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+.option-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: var(--surface2);
+}
+
+.option-card.recommended {
+  border-color: rgba(79,255,176,0.3);
+  background: rgba(79,255,176,0.04);
+}
+
+.option-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.option-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--surface3);
+  color: var(--text-muted);
+}
+
+.option-card.recommended .option-label {
+  background: rgba(79,255,176,0.15);
+  color: var(--accent3);
+}
+
+.option-title { font-size: 0.85rem; font-weight: 600; }
+
+.option-pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.77rem;
+}
+
+.option-pros, .option-cons { display: flex; flex-direction: column; gap: 3px; }
+
+.option-pro { color: rgba(79,255,176,0.8); }
+.option-pro::before { content: '+ '; font-weight: 600; }
+.option-con { color: rgba(255,107,107,0.7); }
+.option-con::before { content: '− '; font-weight: 600; }
+
+.brainstorm {
+  background: rgba(124,109,255,0.04);
+  border: 1px solid rgba(124,109,255,0.12);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.brainstorm-title {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.recomendacao {
+  background: rgba(79,255,176,0.06);
+  border: 1px solid rgba(79,255,176,0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent3);
+  margin-bottom: 14px;
+}
+
+.recomendacao::before { content: '✅ Recomendação: '; font-weight: 800; }
+
+.answer-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface3);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  flex-wrap: wrap;
+}
+
+.answer-box-title {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.answer-opt {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+}
+
+.answer-opt.rec {
+  color: var(--accent3);
+  font-weight: 600;
+}
+
+.checkbox {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.checkbox.checked {
+  background: var(--accent3);
+  border-color: var(--accent3);
+  position: relative;
+}
+
+.checkbox.checked::after {
+  content: '✓';
+  font-size: 9px;
+  color: #000;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 900;
+}
+
+/* Media flow diagram */
+.media-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: flex-start;
+  padding: 16px;
+}
+
+.media-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.media-step-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.media-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+
+.media-connector {
+  width: 2px;
+  height: 24px;
+  margin: 2px 0;
+}
+
+.media-content {
+  flex: 1;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+}
+
+.media-label {
+  font-weight: 600;
+  margin-bottom: 2px;
+  font-size: 0.82rem;
+}
+
+.media-detail {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Alert cards */
+.alert-card {
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.alert-card.danger {
+  background: rgba(255,107,107,0.06);
+  border: 1px solid rgba(255,107,107,0.25);
+}
+
+.alert-card.warn {
+  background: rgba(255,209,102,0.05);
+  border: 1px solid rgba(255,209,102,0.2);
+}
+
+.alert-card.info {
+  background: rgba(91,196,245,0.05);
+  border: 1px solid rgba(91,196,245,0.15);
+}
+
+.alert-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.alert-card.danger .alert-title { color: var(--accent2); }
+.alert-card.warn .alert-title { color: var(--accent4); }
+.alert-card.info .alert-title { color: var(--accent5); }
+
+/* Implementation section */
+.impl-category {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.impl-cat-header {
+  padding: 12px 18px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+}
+
+.impl-items { padding: 8px 0; }
+
+.impl-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba(42,47,74,0.5);
+  font-size: 0.82rem;
+}
+
+.impl-item:last-child { border-bottom: none; }
+
+.impl-num {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 24px;
+  padding-top: 1px;
+}
+
+/* Files table */
+.files-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Checklist */
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.check-square {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.check-item:hover { border-color: var(--accent); }
+
+/* n8n score */
+.n8n-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.n8n-item {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.75rem;
+}
+
+.n8n-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.n8n-status {
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+/* Anchor offset */
+section[id] { scroll-margin-top: 24px; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; max-width: 100%; padding: 20px; }
+  .g2,.g3,.g4 { grid-template-columns: 1fr; }
+  .state-grid { grid-template-columns: 1fr; }
+  .n8n-grid { grid-template-columns: 1fr 1fr; }
+  .option-pros-cons { grid-template-columns: 1fr; }
+  .gradient-text { font-size: 1.8rem; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Arrow divider */
+.arrow-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  margin: 4px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <span class="brand-icon">💬</span>
+    <span class="brand-name">MdZap SPEC v2.0</span>
+    <span class="brand-sub">Documento definitivo — 07/04/2026</span>
+  </div>
+
+  <div class="sidebar-section">Visão Geral</div>
+  <a class="sidebar-link" href="#s0"><span class="link-icon">🏠</span> Overview</a>
+  <a class="sidebar-link" href="#s1"><span class="link-icon">📋</span> Contexto Geral</a>
+
+  <div class="sidebar-section">Fluxo</div>
+  <a class="sidebar-link" href="#s2"><span class="link-icon">🔄</span> Fluxo Completo (9 etapas)</a>
+
+  <div class="sidebar-section">Estado</div>
+  <a class="sidebar-link" href="#s3"><span class="link-icon">📊</span> Estado Atual <span class="link-badge lb-p0">CRÍTICO</span></a>
+
+  <div class="sidebar-section">Bugs</div>
+  <a class="sidebar-link" href="#s4"><span class="link-icon">🐛</span> Bugs UI (19 bugs) <span class="link-badge lb-p0">P0×5</span></a>
+  <a class="sidebar-link" href="#s8"><span class="link-icon">🧪</span> Bugs QA R4</a>
+
+  <div class="sidebar-section">Diagnóstico</div>
+  <a class="sidebar-link" href="#s5"><span class="link-icon">🎬</span> Mídia Inbound <span class="link-badge lb-p0">P0</span></a>
+  <a class="sidebar-link" href="#s6"><span class="link-icon">⚙️</span> Spec Preview Mídia</a>
+  <a class="sidebar-link" href="#s7"><span class="link-icon">🔍</span> Causas Raiz</a>
+
+  <div class="sidebar-section">Decisões</div>
+  <a class="sidebar-link" href="#s9"><span class="link-icon">❓</span> 10 Perguntas <span class="link-badge lb-p1">PRIORITÁRIO</span></a>
+
+  <div class="sidebar-section">Roadmap</div>
+  <a class="sidebar-link" href="#s10"><span class="link-icon">🚀</span> O que implementar</a>
+  <a class="sidebar-link" href="#s11"><span class="link-icon">📁</span> Arquivos Críticos</a>
+  <a class="sidebar-link" href="#s12"><span class="link-icon">✅</span> Próximos Passos</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO -->
+<section id="s0">
+<div class="hero">
+  <span class="hero-emoji">💬</span>
+  <h1 class="gradient-text">MdZap — SPEC Completo v2.0</h1>
+  <p class="hero-sub">Júlia · Subagente de Documentos · Bugs UI · Diagnóstico Mídia · Perguntas Decisórias</p>
+  <div class="badges">
+    <span class="badge bp">Midas Restrições</span>
+    <span class="badge bb">Claude Sonnet</span>
+    <span class="badge by">WhatsApp Business</span>
+    <span class="badge br">19 Bugs UI</span>
+    <span class="badge bg">10 Perguntas Decisórias</span>
+  </div>
+</div>
+
+<div class="grid g4">
+  <div class="stat-card stat-red">
+    <div class="stat-value red">6.25%</div>
+    <div class="stat-label">Score n8n (1/16 OK)</div>
+  </div>
+  <div class="stat-card stat-yellow">
+    <div class="stat-value yellow">19</div>
+    <div class="stat-label">Bugs UI Ativos</div>
+  </div>
+  <div class="stat-card stat-accent">
+    <div class="stat-value">10</div>
+    <div class="stat-label">Perguntas Decisórias</div>
+  </div>
+  <div class="stat-card stat-blue">
+    <div class="stat-value blue">9</div>
+    <div class="stat-label">Etapas do Fluxo</div>
+  </div>
+</div>
+</section>
+
+<!-- SEÇÃO 1 — CONTEXTO -->
+<section id="s1" class="section">
+  <div class="section-header">
+    <span class="section-icon">📋</span>
+    <h2>Seção 1 — Contexto Geral</h2>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-title">Sistema e Canal</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:0.82rem;">
+        <div><strong>Sistema:</strong> <span style="color:var(--accent)">MdZap</span> — módulo WhatsApp do MdFlow (SaaS jurídico multi-tenant)</div>
+        <div><strong>Empresa:</strong> <span style="color:var(--accent4)">Midas Restrições</span> — especialistas em restrições indevidas de crédito</div>
+        <div><strong>Agente IA:</strong> <span style="color:var(--accent5)">Júlia</span> (Claude Sonnet)</div>
+        <div><strong>Canal:</strong> WhatsApp Business (Meta API)</div>
+        <div><strong>Objetivo:</strong> Automatizar atendimento de leads (Facebook Ads) até assinatura da procuração via ZapSign</div>
+      </div>
+    </div>
+    <div class="card" style="border-color:rgba(255,107,107,0.3);background:rgba(255,107,107,0.03)">
+      <div class="card-title" style="color:var(--accent2)">Regras P0 — NUNCA violar</div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:0.82rem;">
+        <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--accent2);font-size:1rem;margin-top:-1px">⛔</span> <span>NUNCA citar nome do escritório de advocacia parceiro</span></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--accent2);font-size:1rem;margin-top:-1px">⛔</span> <span>NUNCA citar nome de advogados</span></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--accent2);font-size:1rem;margin-top:-1px">⛔</span> <span>Sempre referir como "escritório de advocacia parceiro"</span></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--accent2);font-size:1rem;margin-top:-1px">⛔</span> <span>Lead diz NÃO → para imediatamente, zero follow-ups</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 2 — FLUXO -->
+<section id="s2" class="section">
+  <div class="section-header">
+    <span class="section-icon">🔄</span>
+    <h2>Seção 2 — Fluxo Completo de Atendimento</h2>
+    <span class="section-desc">9 etapas · Lead entrada → Assinatura procuração</span>
+  </div>
+
+  <div class="flow-container">
+
+    <!-- Etapa 1 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(79,255,176,0.12);color:var(--accent3);border:2px solid rgba(79,255,176,0.3)">1</div>
+        <div style="width:2px;height:100%;background:linear-gradient(180deg,var(--border),transparent);margin-top:4px;min-height:20px;flex:1;"></div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(79,255,176,0.2);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">📱</span>
+          <span class="flow-title">Entrada do Lead</span>
+          <span class="flow-executor exec-sistema">⚙ Sistema (n8n)</span>
+        </div>
+        <div class="flow-desc">
+          Lead clica no anúncio do <strong>Facebook Ads</strong> → WhatsApp abre com mensagem pré-preenchida contendo CPF (e possivelmente nome) → Lead envia a mensagem.
+          <ul>
+            <li>Sistema cria contato automaticamente</li>
+            <li>Vincula à conversa existente ou cria nova</li>
+            <li>Cadastra lead com status inicial</li>
+          </ul>
+        </div>
+        <div class="flow-error">lead_id NULL até implementação da criação automática → painéis do drawer em branco</div>
+      </div>
+    </div>
+
+    <!-- Etapa 2 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(124,109,255,0.12);color:var(--accent);border:2px solid rgba(124,109,255,0.3)">2</div>
+        <div style="width:2px;height:100%;background:linear-gradient(180deg,var(--border),transparent);margin-top:4px;min-height:20px;flex:1;"></div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(124,109,255,0.2);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">👋</span>
+          <span class="flow-title">Boas-Vindas (Júlia)</span>
+          <span class="flow-executor exec-julia">✦ Júlia</span>
+        </div>
+        <div class="flow-desc">
+          <ul>
+            <li>Se nome veio na mensagem: <strong>atualizar nome do contato</strong></li>
+            <li>Apresenta: "Midas Restrições — especialistas em restrições indevidas de crédito"</li>
+            <li>Explica que auditoria de CPF é <strong>gratuita</strong></li>
+            <li>Pergunta: "Tem interesse em descobrir a situação do seu CPF?"</li>
+            <li>Se SIM: solicita documento de identificação (RG ou CNH) + comprovante de residência</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Etapa 3 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(91,196,245,0.12);color:var(--accent5);border:2px solid rgba(91,196,245,0.3)">3</div>
+        <div style="width:2px;height:100%;background:linear-gradient(180deg,var(--border),transparent);margin-top:4px;min-height:20px;flex:1;"></div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(91,196,245,0.2);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">🪪</span>
+          <span class="flow-title">Doc. de Identificação (RG / CNH)</span>
+          <span class="flow-executor exec-subagente">🔬 Subagente Docs</span>
+        </div>
+        <div class="flow-desc">
+          Subagente recebe imagem/PDF via WhatsApp:
+          <ul>
+            <li>Verifica legibilidade → se ilegível: Júlia pede foto melhor ou PDF</li>
+            <li>Extrai: <strong>nome completo, data de nascimento, CPF, RG</strong></li>
+            <li>Popula dados no sistema automaticamente</li>
+          </ul>
+        </div>
+        <div class="flow-error">Subagente ainda não existe — webhook document-received criado mas nunca implementado</div>
+      </div>
+    </div>
+
+    <!-- Etapa 4 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(91,196,245,0.12);color:var(--accent5);border:2px solid rgba(91,196,245,0.3)">4</div>
+        <div style="width:2px;height:100%;background:linear-gradient(180deg,var(--border),transparent);margin-top:4px;min-height:20px;flex:1;"></div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(91,196,245,0.2);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">🏠</span>
+          <span class="flow-title">Comprovante de Residência</span>
+          <span class="flow-executor exec-mixed">⚡ Subagente + Júlia</span>
+        </div>
+        <div class="flow-desc">
+          Subagente verifica:
+          <ul>
+            <li>Legibilidade (mesmas regras do doc. identificação)</li>
+            <li>Se está no nome do lead (por nome OU por CPF)</li>
+          </ul>
+          <strong style="color:var(--accent4)">Se NÃO estiver no nome:</strong>
+          <ul>
+            <li>Júlia sugere banco digital: extrato/boleto que mostra endereço</li>
+            <li>Se não tiver: instrui declaração de terceiro: <em>"Eu, [nome], portador do CPF [X], declaro que [lead], portador do CPF [Y], reside comigo"</em></li>
+            <li>OBRIGATÓRIO: documento de identificação do terceiro</li>
+          </ul>
+          <strong style="color:var(--accent3)">Se estiver no nome:</strong> extrai endereço completo → popula no lead.
+        </div>
+      </div>
+    </div>
+
+    <!-- Etapa 5 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(124,109,255,0.12);color:var(--accent);border:2px solid rgba(124,109,255,0.3)">5</div>
+        <div style="width:2px;height:100%;background:linear-gradient(180deg,var(--border),transparent);margin-top:4px;min-height:20px;flex:1;"></div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(124,109,255,0.2);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">🔍</span>
+          <span class="flow-title">Pré-Auditoria</span>
+          <span class="flow-executor exec-julia">✦ Júlia</span>
+        </div>
+        <div class="flow-desc">
+          <ul>
+            <li>Dados populados no sistema: nome, CPF, RG, data nascimento, endereço</li>
+            <li>Júlia envia: <em>"Perfeito! Vou realizar a auditoria do seu CPF agora. Em breve retorno com as informações 🔍"</em></li>
+            <li style="color:var(--accent4)"><strong>[FEATURE PENDENTE]</strong> Badge "Auditoria Pendente" na lista de conversas MdZap</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Etapa 6 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(255,209,102,0.12);color:var(--accent4);border:2px solid rgba(255,209,102,0.25)">6</div>
+        <div style="width:2px;height:100%;background:linear-gradient(180deg,var(--border),transparent);margin-top:4px;min-height:20px;flex:1;"></div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(255,209,102,0.2);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">👤</span>
+          <span class="flow-title">Auditoria (Boa Vista)</span>
+          <span class="flow-executor exec-humano">👤 Humano</span>
+        </div>
+        <div class="flow-desc">
+          Atendente executa:
+          <ul>
+            <li>Acessa portal Boa Vista e faz auditoria de crédito</li>
+            <li>Dados pessoais do lead já disponíveis no sistema (populados pela Júlia)</li>
+            <li>Cadastra restrições encontradas no lead</li>
+            <li>Única pendência possível: <strong>profissão</strong> (campo ainda não existe em leads — ver P4)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Etapa 7 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(124,109,255,0.12);color:var(--accent);border:2px solid rgba(124,109,255,0.3)">7</div>
+        <div style="width:2px;height:100%;background:linear-gradient(180deg,var(--border),transparent);margin-top:4px;min-height:20px;flex:1;"></div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(124,109,255,0.2);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">📊</span>
+          <span class="flow-title">Resultado da Auditoria</span>
+          <span class="flow-executor exec-julia">✦ Júlia</span>
+        </div>
+        <div class="flow-desc">
+          <strong style="color:var(--accent3)">NOME LIMPO:</strong> PDF da Boa Vista → atendente entrega para Júlia → Júlia envia parabenizando → menciona "Indique Ganho" → fim de contato.
+          <br><br>
+          <strong style="color:var(--accent2)">NOME SUJO:</strong> Júlia menciona empresas credoras <strong>sem valores</strong>, por frequência:
+          <br>
+          <span style="font-style:italic;color:var(--text-muted)">"Identificamos 39 restrições da RGE Sul. Somos especialistas em casos de energia elétrica e temos grande histórico de êxito para nossos clientes ⚡"</span>
+          <br><br>
+          Regra: quando empresa se repete, mencionar quantas vezes. Atendente devolve para Júlia manualmente (ver P7).
+        </div>
+      </div>
+    </div>
+
+    <!-- Etapa 8 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(91,196,245,0.12);color:var(--accent5);border:2px solid rgba(91,196,245,0.3)">8</div>
+        <div style="width:2px;height:100%;background:linear-gradient(180deg,var(--border),transparent);margin-top:4px;min-height:20px;flex:1;"></div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(91,196,245,0.2);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">💼</span>
+          <span class="flow-title">Carteira de Trabalho (CTPS)</span>
+          <span class="flow-executor exec-mixed">⚡ Subagente + Júlia</span>
+        </div>
+        <div class="flow-desc">
+          Júlia pede CTPS. Se perguntado: explica que é para comprovar elegibilidade para JG (Assistência Jurídica Gratuita).
+          <br><br>
+          <strong>Tetos JG por estado:</strong> RS = 5 salários mínimos | SC = 3 SM | SP = 3 SM
+          <br><br>
+          <strong>Contrato ABERTO:</strong> extrai salário + cargo → cargo vai para profissão do lead.
+          <br><br>
+          <strong>Contrato FECHADO:</strong> Júlia pergunta situação:
+          <ul>
+            <li>Empregado em outro lugar → pedir nova CTPS ou contra-cheque</li>
+            <li>Autônomo → não precisa comprovante (Midas faz "renda receita")</li>
+            <li>Desempregado → Júlia cadastra profissão = <em>"desempregado"</em></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Etapa 9 -->
+    <div class="flow-step">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-dot" style="background:rgba(79,255,176,0.12);color:var(--accent3);border:2px solid rgba(79,255,176,0.3)">9</div>
+      </div>
+      <div class="flow-content" style="border-color:rgba(79,255,176,0.3);">
+        <div class="flow-header">
+          <span style="font-size:1.2rem">📝</span>
+          <span class="flow-title">Renda Receita + Procuração (ZapSign)</span>
+          <span class="flow-executor exec-mixed">⚡ Júlia + Humano</span>
+        </div>
+        <div class="flow-desc">
+          <ul>
+            <li>Renda Receita: equipe Midas consulta declarações IR externamente (processo humano)</li>
+            <li>Se lead não declarou IR: Júlia solicita declaração em PDF</li>
+            <li>Humanos geram procuração no MdFlow via ZapSign</li>
+            <li>Júlia move lead para coluna <code style="font-family:JetBrains Mono,monospace;font-size:0.75rem;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px">aguardando_assinatura</code></li>
+            <li>Follow-up após 1h sem resposta → follow-ups programados até assinar</li>
+          </ul>
+          <strong style="color:var(--accent3)">Após assinatura:</strong> <em>"Ótimo! Seu caso já foi encaminhado ao nosso escritório de advocacia parceiro. Muito obrigado pela confiança na Midas! 🎉"</em>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SEÇÃO 3 — ESTADO ATUAL -->
+<section id="s3" class="section">
+  <div class="section-header">
+    <span class="section-icon">📊</span>
+    <h2>Seção 3 — Estado Atual do Sistema</h2>
+  </div>
+
+  <div class="state-grid">
+
+    <div class="state-card partial">
+      <div class="state-title">
+        <span>✦ Júlia</span>
+        <span class="status-pill sp-run" style="font-size:0.7rem">⚠ Parcialmente implementada</span>
+      </div>
+      <div class="state-items">
+        <div class="state-item"><div class="si-dot si-green"></div><span>Infraestrutura: mdzap_julia_prompts, mdzap_julia_lab_sessoes</span></div>
+        <div class="state-item"><div class="si-dot si-green"></div><span>7 tipos de prompt: sdr_principal, sdr_acordos, sdr_docs, sentimento, sugestoes, memoria, fluxo_atendimento, regras</span></div>
+        <div class="state-item"><div class="si-dot si-green"></div><span>Componentes: MdzapJuliaLab.tsx, MdzapAdminIA.tsx</span></div>
+        <div class="state-item"><div class="si-dot si-red"></div><span>Fluxo Midas específico (CPF → auditoria → CTPS → procuração) <strong>NÃO IMPLEMENTADO</strong></span></div>
+      </div>
+    </div>
+
+    <div class="state-card critical">
+      <div class="state-title">
+        <span>🔬 Subagente de Documentos</span>
+        <span class="status-pill sp-block" style="font-size:0.7rem">❌ Não existe</span>
+      </div>
+      <div class="state-items">
+        <div class="state-item"><div class="si-dot si-yellow"></div><span>Doc Reader manual existe: /components/mdzap/lead-panel/doc-reader-helpers.ts</span></div>
+        <div class="state-item"><div class="si-dot si-yellow"></div><span>É processamento manual (clique), não autônomo</span></div>
+        <div class="state-item"><div class="si-dot si-red"></div><span>Webhook document-received: criado no n8n, nunca implementado</span></div>
+      </div>
+    </div>
+
+    <div class="state-card critical">
+      <div class="state-title">
+        <span>🔗 Vinculação Conversa → Lead</span>
+        <span class="status-pill sp-block" style="font-size:0.7rem">🔴 Quebrado</span>
+      </div>
+      <div class="state-items">
+        <div class="state-item"><div class="si-dot si-green"></div><span>whatsapp_conversas.lead_id (nullable) existe</span></div>
+        <div class="state-item"><div class="si-dot si-green"></div><span>RPC fn_mdzap_conversas retorna contexto</span></div>
+        <div class="state-item"><div class="si-dot si-red"></div><span>Problema: lead_id é NULL até criação manual → modais em branco</span></div>
+      </div>
+    </div>
+
+    <div class="state-card critical">
+      <div class="state-title">
+        <span>⚙ n8n Workflows</span>
+        <span class="status-pill sp-block" style="font-size:0.7rem">🔴 Score: 6.25%</span>
+      </div>
+      <div class="n8n-grid" style="margin-top:8px;">
+        <div class="n8n-item">
+          <div class="n8n-name">enviar-mensagem</div>
+          <div class="n8n-status" style="color:var(--accent3)">✅ 100%</div>
+          <div style="font-size:0.68rem;color:var(--text-muted)">10 execuções</div>
+        </div>
+        <div class="n8n-item">
+          <div class="n8n-name">inbound-upsert-lead</div>
+          <div class="n8n-status" style="color:var(--accent3)">✅ 100%</div>
+          <div style="font-size:0.68rem;color:var(--text-muted)">4 execuções</div>
+        </div>
+        <div class="n8n-item">
+          <div class="n8n-name">ai-composer</div>
+          <div class="n8n-status" style="color:var(--accent4)">⚠ 70%</div>
+          <div style="font-size:0.68rem;color:var(--text-muted)">3 erros</div>
+        </div>
+        <div class="n8n-item">
+          <div class="n8n-name">julia-prompt-save</div>
+          <div class="n8n-status" style="color:var(--accent4)">⚠ 33%</div>
+          <div style="font-size:0.68rem;color:var(--text-muted)">instável</div>
+        </div>
+        <div class="n8n-item">
+          <div class="n8n-name">julia-lab-refine</div>
+          <div class="n8n-status" style="color:var(--accent2)">❌ 0%</div>
+          <div style="font-size:0.68rem;color:var(--text-muted)">pós-update</div>
+        </div>
+        <div class="n8n-item">
+          <div class="n8n-name">ASSUMIR/DEVOLVER</div>
+          <div class="n8n-status" style="color:var(--accent2)">❌ 500</div>
+          <div style="font-size:0.68rem;color:var(--text-muted)">token expirado</div>
+        </div>
+        <div class="n8n-item" style="grid-column:span 2;">
+          <div class="n8n-name">11 workflows mortos</div>
+          <div class="n8n-status" style="color:var(--accent2)">❌ Todos</div>
+          <div style="font-size:0.68rem;color:var(--text-muted)">lead-sync, encerrar, transferir, template, stage-changed, document-received, julia-lab, triagem + 3 outros</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-card critical">
+      <div class="state-title">
+        <span>🏷 Campo profissao em leads</span>
+        <span class="status-pill sp-block" style="font-size:0.7rem">❌ Não existe</span>
+      </div>
+      <div class="state-items">
+        <div class="state-item"><div class="si-dot si-red"></div><span>Campo profissao existe SOMENTE em clientes, não em leads</span></div>
+        <div class="state-item"><div class="si-dot si-yellow"></div><span>Júlia precisa cadastrar profissão antes da triagem (ex: desempregado)</span></div>
+      </div>
+    </div>
+
+    <div class="state-card warn">
+      <div class="state-title">
+        <span>🎬 Bucket mdzap-media</span>
+        <span class="status-pill sp-pend" style="font-size:0.7rem">⚠ Status indefinido</span>
+      </div>
+      <div class="state-items">
+        <div class="state-item"><div class="si-dot si-yellow"></div><span>Diagnóstico cita <code style="font-family:JetBrains Mono,monospace;font-size:0.75rem;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px">mdzap-media</code></span></div>
+        <div class="state-item"><div class="si-dot si-yellow"></div><span>relatorio-preview-media.html cita <code style="font-family:JetBrains Mono,monospace;font-size:0.75rem;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px">chat-media</code></span></div>
+        <div class="state-item"><div class="si-dot si-red"></div><span>Confirmar nome correto antes de implementar subagente</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SEÇÃO 4 — BUGS UI -->
+<section id="s4" class="section">
+  <div class="section-header">
+    <span class="section-icon">🐛</span>
+    <h2>Seção 4 — Bugs UI (Pós-Projeto)</h2>
+    <span class="section-desc">19 bugs · P0×5 · P1×9 · P2×4 · P3×1</span>
+  </div>
+
+  <div class="files-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>P</th>
+          <th>Localização</th>
+          <th>Descrição</th>
+          <th>Impacto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-01</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Drawer Lead</td>
+          <td>Drawer muito estreito — expandir width (mais à esquerda)</td>
+          <td>UX degradada</td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-02</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Aba Dados</td>
+          <td>Remover botão CRM da aba Dados</td>
+          <td>Interface confusa</td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-03</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Aba Dados</td>
+          <td>Remover botão Assumir da aba Dados (manter só Transferir)</td>
+          <td>Fluxo incorreto</td>
+        </tr>
+        <tr class="sev-p2">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-04</td>
+          <td><span class="p-badge p2-b">P2</span></td>
+          <td>Aba Dados</td>
+          <td>Inputs desalinhados: data nascimento, telefone, profissão, estado civil</td>
+          <td>Visual quebrado</td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-05</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Aba Dados</td>
+          <td>Remover campos: estado civil, email, score</td>
+          <td>Poluição visual</td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-06</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Aba Dados</td>
+          <td>Remover dropdown etapa CRM da aba Dados</td>
+          <td>Duplicação</td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-07</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Aba Dados</td>
+          <td>Remover botão Boa Vista (manter só Salvar Dados)</td>
+          <td>Fluxo incorreto</td>
+        </tr>
+        <tr class="sev-p0">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-08</td>
+          <td><span class="p-badge p0-b">P0</span></td>
+          <td>Aba Dados</td>
+          <td>CRM não funcionando — investigar reuse de componentes do CRM</td>
+          <td>Feature quebrada</td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-09</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Aba Dados</td>
+          <td>Advogado deve selecionar automaticamente (como no CRM), não manual</td>
+          <td>Dado errado</td>
+        </tr>
+        <tr class="sev-p0">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-10</td>
+          <td><span class="p-badge p0-b">P0</span></td>
+          <td>Restrições</td>
+          <td>Botão auditoria falhando — todos os bureaux falharam</td>
+          <td>Feature crítica quebrada</td>
+        </tr>
+        <tr class="sev-p2">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-11</td>
+          <td><span class="p-badge p2-b">P2</span></td>
+          <td>Restrições</td>
+          <td>Botão auditoria gigantesco — deve ser pequeno no topo das restrições</td>
+          <td>Visual ruim</td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-12</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Restrições</td>
+          <td>Remover botão "Gerar Contrato" das Restrições</td>
+          <td>Fluxo incorreto</td>
+        </tr>
+        <tr class="sev-p2">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-13</td>
+          <td><span class="p-badge p2-b">P2</span></td>
+          <td>Restrições</td>
+          <td>Valor total vazando do card — reduzir fonte ou truncar</td>
+          <td>Layout quebrado</td>
+        </tr>
+        <tr class="sev-p0">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-14</td>
+          <td><span class="p-badge p0-b">P0</span></td>
+          <td>Docs</td>
+          <td>Não gerou pastas das restrições — investigar geração de documentos</td>
+          <td>Feature crítica quebrada</td>
+        </tr>
+        <tr class="sev-p2">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-15</td>
+          <td><span class="p-badge p2-b">P2</span></td>
+          <td>Notas</td>
+          <td>Remover "MDSAP + CRM" do nome da aba (ficar só "Notas")</td>
+          <td>UI confusa</td>
+        </tr>
+        <tr class="sev-p3">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-16</td>
+          <td><span class="p-badge p3-b">P3</span></td>
+          <td>Histórico</td>
+          <td>Investigar se aba Histórico é necessária</td>
+          <td>Escopo</td>
+        </tr>
+        <tr class="sev-p0">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-17</td>
+          <td><span class="p-badge p0-b">P0</span></td>
+          <td>ICP</td>
+          <td>ICP está no Drawer do Lead — MOVER para 7ª aba da página MdZap (junto com Conversas, Dashboard, Julia Lab, Templates, Gestão)</td>
+          <td>Arquitetura errada</td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-18</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>Chat</td>
+          <td>Badge CRM sem dropdown — precisa mover coluna CRM via dropdown no chat</td>
+          <td>Feature incompleta</td>
+        </tr>
+        <tr class="sev-p0">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">UI-19</td>
+          <td><span class="p-badge p0-b">P0</span></td>
+          <td>Chat</td>
+          <td>CPF exibido com pontinhos (como senha) — NUNCA ocultar CPF. Corrigir imediatamente.</td>
+          <td>Dado crítico ilegível</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert-card info" style="margin-top:16px">
+    <div class="alert-title">Nota sobre UI-17 (ICP / Telemetria)</div>
+    <div style="font-size:0.8rem;color:var(--text-muted)">
+      A aba ICP deve ser a <strong style="color:var(--accent5)">7ª aba da página MdZap</strong>, com gráficos de telemetria, dados de qualificação, ICP scoring — conforme planejamento anterior. Não pertence ao drawer do lead. As abas da página MdZap são: Conversas | Dashboard | Julia Lab | Templates | Gestão | Admin IA | <strong style="color:var(--accent5)">ICP (nova)</strong>.
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 5 — DIAGNÓSTICO MÍDIA -->
+<section id="s5" class="section">
+  <div class="section-header">
+    <span class="section-icon">🎬</span>
+    <h2>Seção 5 — Diagnóstico: Falha no Recebimento de Mídia</h2>
+    <span class="section-desc">P0 — Impacto total no subagente de documentos</span>
+  </div>
+
+  <div class="alert-card danger">
+    <div class="alert-title">P0: Mídia inbound quebrada — documentos não chegam ao sistema</div>
+    <div style="font-size:0.8rem;color:rgba(232,234,246,0.7)">
+      Todas as imagens e documentos recebidos via WhatsApp não estão sendo processados corretamente. O subagente de documentos depende inteiramente deste fluxo. As 4 causas abaixo estão ordenadas por probabilidade.
+    </div>
+  </div>
+
+  <!-- Causa 1 -->
+  <div class="card" style="margin-bottom:14px;border-color:rgba(255,107,107,0.25)">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <span style="background:rgba(255,107,107,0.15);color:var(--accent2);padding:3px 10px;border-radius:8px;font-size:0.7rem;font-weight:700;font-family:'JetBrains Mono',monospace">60% MAIS PROVÁVEL</span>
+      <span style="font-size:0.9rem;font-weight:700">Causa 1 — n8n não está baixando arquivo da Meta</span>
+    </div>
+    <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;">
+      Quando WhatsApp envia imagem/documento, o webhook Meta não envia a URL do arquivo — envia apenas um <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--accent3)">media_id</code>. O n8n precisa fazer 2 chamadas extras:
+    </div>
+    <div class="code">GET https://graph.facebook.com/v20.0/{media_id}
+Authorization: Bearer {WHATSAPP_TOKEN}
+→ Retorna: { "url": "https://lookaside.fbsbx.com/..." }  (expira ~5min!)
+
+GET {url_temporaria}
+Authorization: Bearer {WHATSAPP_TOKEN}
+→ Retorna: binário do arquivo</div>
+    <div style="margin-top:12px;font-size:0.78rem;color:var(--text-muted)">
+      <strong style="color:var(--text)">Verificação:</strong>
+      <span class="code" style="display:inline;padding:2px 8px;font-size:0.76rem">SELECT media_url FROM whatsapp_mensagens WHERE tipo IN ('image','document') AND direcao='entrada' LIMIT 10</span>
+      — resultado está preenchido com URL do Storage ou null/media_id?
+    </div>
+  </div>
+
+  <!-- Causa 2 -->
+  <div class="card" style="margin-bottom:14px;border-color:rgba(255,209,102,0.2)">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <span style="background:rgba(255,209,102,0.12);color:var(--accent4);padding:3px 10px;border-radius:8px;font-size:0.7rem;font-weight:700;font-family:'JetBrains Mono',monospace">25%</span>
+      <span style="font-size:0.9rem;font-weight:700">Causa 2 — Upload para Storage não está acontecendo</span>
+    </div>
+    <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;">
+      Mesmo baixando o binário, o n8n precisa fazer upload para o bucket correto no Supabase Storage. Fluxo correto completo:
+    </div>
+    <div class="code">Meta webhook → media_id
+  → GET graph.facebook.com/{media_id} → URL temporária
+  → GET URL temporária → binário
+  → POST storage.supabase/{bucket}/{org_id}/{conversa_id}/{timestamp}-{filename}
+  → UPDATE whatsapp_mensagens SET media_url = URL_DO_STORAGE</div>
+  </div>
+
+  <!-- Causa 3 -->
+  <div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <span style="background:rgba(91,196,245,0.1);color:var(--accent5);padding:3px 10px;border-radius:8px;font-size:0.7rem;font-weight:700;font-family:'JetBrains Mono',monospace">10%</span>
+      <span style="font-size:0.9rem;font-weight:700">Causa 3 — Bucket privado + getPublicUrl() = HTTP 403</span>
+    </div>
+    <div style="font-size:0.82rem;color:var(--text-muted);">
+      Se o bucket é privado, <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--accent3)">getPublicUrl()</code> retorna URL que resulta em 403. Solução: usar <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--accent3)">createSignedUrl()</code> com TTL ou tornar o bucket público.
+      <br><br>
+      <strong>Verificação:</strong> Tentar abrir a media_url de uma mensagem recebida no navegador. Dá 403? 404?
+    </div>
+  </div>
+
+  <!-- Causa 4 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <span style="background:rgba(122,130,168,0.1);color:var(--text-muted);padding:3px 10px;border-radius:8px;font-size:0.7rem;font-weight:700;font-family:'JetBrains Mono',monospace">5%</span>
+      <span style="font-size:0.9rem;font-weight:700">Causa 4 — n8n salvando URL temporária da Meta</span>
+    </div>
+    <div style="font-size:0.82rem;color:var(--text-muted);">
+      A URL <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--accent3)">lookaside.fbsbx.com</code> da Meta expira em ~5 minutos. Se o n8n salvar essa URL direto no <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--accent3)">media_url</code> em vez de baixar e reuplodar → imagem carrega por 5min e quebra permanentemente.
+    </div>
+  </div>
+
+  <!-- Fluxo correto visual -->
+  <div class="card" style="border-color:rgba(79,255,176,0.2)">
+    <div style="font-size:0.82rem;font-weight:700;color:var(--accent3);margin-bottom:16px;">Fluxo Correto Completo (implementar no n8n)</div>
+    <div class="media-flow">
+
+      <div class="media-step">
+        <div class="media-step-line">
+          <div class="media-dot" style="border-color:rgba(91,196,245,0.5);color:var(--accent5)">WA</div>
+          <div class="media-connector" style="background:linear-gradient(180deg,rgba(91,196,245,0.3),var(--border))"></div>
+        </div>
+        <div class="media-content">
+          <div class="media-label" style="color:var(--accent5)">WhatsApp Webhook (Meta)</div>
+          <div class="media-detail">payload.entry[0].changes[0].value.messages[0]<br>type: "image", image: &#123; id: "media_id_123" &#125;</div>
+        </div>
+      </div>
+
+      <div class="media-step">
+        <div class="media-step-line">
+          <div class="media-dot" style="border-color:rgba(255,209,102,0.4);color:var(--accent4)">1</div>
+          <div class="media-connector" style="background:linear-gradient(180deg,rgba(255,209,102,0.3),var(--border))"></div>
+        </div>
+        <div class="media-content">
+          <div class="media-label" style="color:var(--accent4)">n8n: Resolve media_id → URL temporária</div>
+          <div class="media-detail">GET graph.facebook.com/v20.0/&#123;media_id&#125;<br>Auth: Bearer &#123;WHATSAPP_TOKEN&#125;<br>→ response.url = "https://lookaside.fbsbx.com/..."</div>
+        </div>
+      </div>
+
+      <div class="media-step">
+        <div class="media-step-line">
+          <div class="media-dot" style="border-color:rgba(255,209,102,0.4);color:var(--accent4)">2</div>
+          <div class="media-connector" style="background:linear-gradient(180deg,rgba(255,209,102,0.3),var(--border))"></div>
+        </div>
+        <div class="media-content">
+          <div class="media-label" style="color:var(--accent4)">n8n: Baixa binário do arquivo</div>
+          <div class="media-detail">GET &#123;url_temporaria&#125; | Auth: Bearer &#123;WHATSAPP_TOKEN&#125;<br>→ binary = arquivo real (ANTES de expirar)</div>
+        </div>
+      </div>
+
+      <div class="media-step">
+        <div class="media-step-line">
+          <div class="media-dot" style="border-color:rgba(124,109,255,0.4);color:var(--accent)">3</div>
+          <div class="media-connector" style="background:linear-gradient(180deg,rgba(124,109,255,0.3),var(--border))"></div>
+        </div>
+        <div class="media-content">
+          <div class="media-label" style="color:var(--accent)">n8n: Upload Supabase Storage</div>
+          <div class="media-detail">bucket: mdzap-media (confirmar nome!)<br>path: &#123;org_id&#125;/&#123;conversa_id&#125;/&#123;timestamp&#125;-&#123;filename&#125;<br>→ storage_url = URL permanente</div>
+        </div>
+      </div>
+
+      <div class="media-step">
+        <div class="media-step-line">
+          <div class="media-dot" style="border-color:rgba(79,255,176,0.4);color:var(--accent3)">4</div>
+        </div>
+        <div class="media-content" style="border-color:rgba(79,255,176,0.2)">
+          <div class="media-label" style="color:var(--accent3)">n8n: Salva no banco com URL permanente</div>
+          <div class="media-detail">INSERT/UPDATE whatsapp_mensagens<br>media_url = storage_url (NUNCA a URL temporária da Meta!)<br>tipo = 'image' | 'document' | 'video' | 'audio' | direcao = 'entrada'</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="alert-card warn" style="margin-top:12px;">
+      <div class="alert-title">Inconsistência detectada — confirmar antes de implementar</div>
+      <div style="font-size:0.78rem;color:var(--text-muted)">Diagnóstico cita bucket <code style="font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;color:var(--accent3)">mdzap-media</code> · relatorio-preview-media.html cita <code style="font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;color:var(--accent3)">chat-media</code>. Verificar no Supabase Storage quais buckets existem antes de codificar qualquer workflow.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 6 — SPEC PREVIEW MÍDIA -->
+<section id="s6" class="section">
+  <div class="section-header">
+    <span class="section-icon">⚙️</span>
+    <h2>Seção 6 — Spec Técnico: Preview e Recebimento de Mídia</h2>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-title" style="color:var(--accent)">Envio (Frontend → WhatsApp)</div>
+      <div style="font-size:0.82rem;display:flex;flex-direction:column;gap:6px;color:var(--text-muted)">
+        <div><strong style="color:var(--text)">Ctrl+V:</strong> intercepta evento paste → extrai imagens do clipboard → blobUrl → MultiAttachmentPreview</div>
+        <div><strong style="color:var(--text)">Drag & Drop:</strong> onDrop → filtra tipos suportados → mesmo fluxo do Ctrl+V</div>
+        <div style="margin-top:8px;">
+          <strong style="color:var(--text)">Tipos aceitos:</strong>
+          <div class="grid g2" style="gap:6px;margin-top:6px;">
+            <div style="background:var(--surface2);padding:6px 10px;border-radius:6px;font-size:0.75rem;font-family:'JetBrains Mono',monospace">image (jpg/png) 5MB</div>
+            <div style="background:var(--surface2);padding:6px 10px;border-radius:6px;font-size:0.75rem;font-family:'JetBrains Mono',monospace">video (mp4/3gpp) 16MB</div>
+            <div style="background:var(--surface2);padding:6px 10px;border-radius:6px;font-size:0.75rem;font-family:'JetBrains Mono',monospace">document (pdf/doc/xls) 100MB</div>
+            <div style="background:var(--surface2);padding:6px 10px;border-radius:6px;font-size:0.75rem;font-family:'JetBrains Mono',monospace">audio 16MB</div>
+          </div>
+        </div>
+        <div style="margin-top:4px;"><strong style="color:var(--text)">Fluxo:</strong> Upload → Storage bucket → INSERT otimista com status 'pending' → Edge Function → WhatsApp</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--accent5)">Recebimento (WhatsApp → Frontend)</div>
+      <div style="font-size:0.82rem;display:flex;flex-direction:column;gap:6px;color:var(--text-muted)">
+        <div><strong style="color:var(--text)">n8n:</strong> media_id → GET graph.facebook.com → URL temporária → baixar binário → upload Storage → salvar URL permanente</div>
+        <div><strong style="color:var(--text)">Segurança:</strong> Signed URLs se bucket privado (TTL configurável)</div>
+        <div style="margin-top:8px;">
+          <strong style="color:var(--text)">Renderização por tipo:</strong>
+          <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;gap:8px;"><span style="min-width:60px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">image</span><span>elemento &lt;img&gt; com fallback skeleton</span></div>
+            <div style="display:flex;gap:8px;"><span style="min-width:60px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">video</span><span>elemento &lt;video controls&gt; com poster</span></div>
+            <div style="display:flex;gap:8px;"><span style="min-width:60px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">audio</span><span>elemento &lt;audio controls&gt; compacto</span></div>
+            <div style="display:flex;gap:8px;"><span style="min-width:60px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">document</span><span>ícone + nome do arquivo + tamanho formatado</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 7 — CAUSAS RAIZ -->
+<section id="s7" class="section">
+  <div class="section-header">
+    <span class="section-icon">🔍</span>
+    <h2>Seção 7 — Causa Raiz dos Problemas</h2>
+  </div>
+
+  <!-- Problema 1 -->
+  <div class="card" style="margin-bottom:14px;">
+    <div style="font-size:0.92rem;font-weight:700;margin-bottom:14px;color:var(--accent2)">Problema 1 — Modal sem dados do lead</div>
+    <div class="prob-container">
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text)">Causa raiz:</strong> lead_id é NULL — fluxo automático de criação não implementado</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent2)">50%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-main" style="width:50%"></div></div>
+      </div>
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text-muted)">Alt-A:</strong> Doc Reader funciona, trigger de criação de lead não foi implementado</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent4)">30%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-alt1" style="width:30%"></div></div>
+      </div>
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text-muted)">Alt-B:</strong> MdzapLeadPanel não renderiza quando lead_id é null — problema de UI</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">20%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-alt2" style="width:20%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problema 2 -->
+  <div class="card" style="margin-bottom:14px;">
+    <div style="font-size:0.92rem;font-weight:700;margin-bottom:14px;color:var(--accent4)">Problema 2 — CRM não funcionando no MdZap</div>
+    <div class="prob-container">
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text)">Causa raiz:</strong> Componentes do CRM reutilizados sem a lógica — apenas populou tabelas</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent2)">60%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-main" style="width:60%"></div></div>
+      </div>
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text-muted)">Alt-A:</strong> Hooks do CRM existem mas não chamados no contexto MdZap (orgId diferente)</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent4)">25%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-alt1" style="width:25%"></div></div>
+      </div>
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text-muted)">Alt-B:</strong> RLS ou permissão impedindo queries do MdZap de acessar dados do CRM</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">15%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-alt2" style="width:15%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problema 3 -->
+  <div class="card">
+    <div style="font-size:0.92rem;font-weight:700;margin-bottom:14px;color:var(--accent5)">Problema 3 — Mídia não exibe no frontend</div>
+    <div class="prob-container">
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text)">Causa raiz:</strong> n8n não executa media_id → URL → download → upload Storage</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent2)">60%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-main" style="width:60%"></div></div>
+      </div>
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text-muted)">Alt-A:</strong> Upload acontece mas bucket privado + getPublicUrl() retorna 403</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent4)">25%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-alt1" style="width:25%"></div></div>
+      </div>
+      <div class="prob-item">
+        <div class="prob-header">
+          <span><strong style="color:var(--text-muted)">Alt-B:</strong> n8n salvando URL temporária da Meta (expira em 5min) em vez de Storage</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">15%</span>
+        </div>
+        <div class="prob-bar-bg"><div class="prob-bar pb-alt2" style="width:15%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 8 — QA R4 -->
+<section id="s8" class="section">
+  <div class="section-header">
+    <span class="section-icon">🧪</span>
+    <h2>Seção 8 — Bugs QA R4 (histórico)</h2>
+  </div>
+
+  <div class="files-table-wrap">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>P</th><th>Descrição</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">R4-BUG-01</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>webhook mdzap/ai-composer retorna HTTP 500</td>
+          <td><span class="status-pill sp-block">⛔ Aberto</span></td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">R4-BUG-02</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>webhook mdzap/julia-prompt-save retorna HTTP 500</td>
+          <td><span class="status-pill sp-block">⛔ Aberto</span></td>
+        </tr>
+        <tr class="sev-p1">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">R4-BUG-03</td>
+          <td><span class="p-badge p1-b">P1</span></td>
+          <td>mdzap_julia_lab_sessoes e mdzap_julia_prompts não tipadas no TS</td>
+          <td><span class="status-pill sp-block">⛔ Aberto</span></td>
+        </tr>
+        <tr class="sev-p2">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">R4-BUG-04</td>
+          <td><span class="p-badge p2-b">P2</span></td>
+          <td>MdzapGestaoPanel: React key=&#123;m.id&#125; com campo id undefined</td>
+          <td><span class="status-pill sp-block">⛔ Aberto</span></td>
+        </tr>
+        <tr class="sev-p2">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">R4-BUG-05</td>
+          <td><span class="p-badge p2-b">P2</span></td>
+          <td>lead_awaiting_human não propaga via realtime UPDATE</td>
+          <td><span class="status-pill sp-block">⛔ Aberto</span></td>
+        </tr>
+        <tr class="sev-p2">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">R4-BUG-06</td>
+          <td><span class="p-badge p2-b">P2</span></td>
+          <td>MdzapAppPage usa inline styles (deve usar Tailwind)</td>
+          <td><span class="status-pill sp-block">⛔ Aberto</span></td>
+        </tr>
+        <tr class="sev-p2">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">R4-BUG-07</td>
+          <td><span class="p-badge p2-b">P2</span></td>
+          <td>Atalhos: spec diz J/K para navegar, código usa ArrowDown/Up</td>
+          <td><span class="status-pill sp-block">⛔ Aberto</span></td>
+        </tr>
+        <tr class="sev-p0">
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted)">n8n-001</td>
+          <td><span class="p-badge p0-b">P0</span></td>
+          <td>Tokens ASSUMIR/DEVOLVER expirados (HTTP 500)</td>
+          <td><span class="status-pill sp-block">⛔ Aberto</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SEÇÃO 9 — PERGUNTAS DECISÓRIAS -->
+<section id="s9" class="section">
+  <div class="section-header">
+    <span class="section-icon">❓</span>
+    <h2>Seção 9 — 10 Perguntas Decisórias</h2>
+    <span class="section-desc">Responder antes de iniciar o /project mdzap</span>
+  </div>
+
+  <div class="alert-card info" style="margin-bottom:24px;">
+    <div class="alert-title">Esta é a seção mais importante do documento</div>
+    <div style="font-size:0.8rem;color:var(--text-muted)">Cada resposta impacta diretamente a arquitetura do sistema. As recomendações são baseadas em análise técnica do estado atual. Marque as respostas antes de iniciar a implementação.</div>
+  </div>
+
+  <!-- P1 -->
+  <div class="question-card qc-accent" id="p1">
+    <div class="q-header">
+      <span class="q-num qn-1">P1</span>
+      <span class="q-title">Criação Automática do Lead</span>
+    </div>
+    <div class="q-audio">"Júlia já tem que cadastrar o lead automaticamente, no caso, o contato dele. E daí, conforme eu estava testando ali no MDZAP, eu fiz diversas mudanças, só que muita coisa não mostrou, por exemplo, dos modais ali, dos dados do lead, coisas assim, porque não tinha lead vinculado à conversa."</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li><strong>whatsapp_conversas.lead_id</strong> é nullable — FK para leads</li>
+        <li>Webhook <strong>inbound-upsert-lead</strong> existe e funciona (100% success, 4 execuções)</li>
+        <li>RPC <strong>fn_mdzap_conversas</strong> retorna lead_id, lead_nome, lead_coluna</li>
+        <li>Enquanto lead_id é null: LeadDadosTab, LeadDocumentosTab, LeadRestricoesMdzapTab ficam em branco</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">Criação imediata ao primeiro contato (quando CPF chega)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Painel completo disponível desde o início</span>
+            <span class="option-pro">Lead vinculado antes dos documentos</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Pode criar leads de spam/mensagens erradas</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">Criação ao detectar CPF + dados mínimos</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Lead existe antes dos documentos</span>
+            <span class="option-pro">Painel funciona desde o início</span>
+            <span class="option-pro">Webhook inbound-upsert-lead já existe</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Leads com CPF mas sem documentos se abandonar</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO C</span>
+          <span class="option-title">Criação apenas após documentos validados</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Lead criado já com dados completos</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Fases 2-4 sem lead → modais em branco</span>
+            <span class="option-con">Mantém o problema reportado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      A Opção B resolve o problema imediatamente e usa infraestrutura existente. O webhook <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px">inbound-upsert-lead</code> já está funcionando — precisaria apenas ser ativado para criar o lead quando CPF é detectado. Filtrar mensagens com 11 dígitos numéricos mitiga o risco de spam. Dados vão sendo enriquecidos ao longo do fluxo: CPF na etapa 1, nome na etapa 2, documentos nas etapas 3-4.
+    </div>
+    <div class="recomendacao">OPÇÃO B — criar lead quando CPF é detectado, usando inbound-upsert-lead existente.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção A</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Opção B (Recomendado)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção C</span>
+      <span class="answer-opt"><span class="checkbox"></span> Outra: ___</span>
+    </div>
+  </div>
+
+  <!-- P2 -->
+  <div class="question-card qc-red" id="p2">
+    <div class="q-header">
+      <span class="q-num qn-2">P2</span>
+      <span class="q-title">Coluna CRM Inicial do Lead</span>
+    </div>
+    <div class="q-audio">"ele já pode ser cadastrado ou em novos, a coluna novos do CRM, ou no na coluna em atendimento, vamos ver qual delas, veja qual delas você sugere e acha melhor"</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li><strong>Colunas CRM:</strong> novos | em_atendimento | aguardando_documentos | aguardando_assinatura | triagem | arquivados | convertido</li>
+        <li><strong>novos</strong> = lead recém-cadastrado sem contato ativo</li>
+        <li><strong>em_atendimento</strong> = IA ou humano já está em contato ativo</li>
+        <li>Lead via WhatsApp já está com Júlia quando é criado</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">Coluna: novos</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Processo claro de funil completo</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Semanticamente errado — já está em atendimento</span>
+            <span class="option-con">Dashboards "novos sem atendimento" incorretos</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">Coluna: em_atendimento direto</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Semanticamente correto</span>
+            <span class="option-pro">Dashboards mostram dados reais</span>
+            <span class="option-pro">Não polui coluna novos</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Perde visibilidade do momento de entrada</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO C</span>
+          <span class="option-title">novos → mover para em_atendimento automaticamente quando Júlia envia 1ª msg</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Funil completo, cada lead passa por novos</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Mais um step de automação para implementar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      A coluna <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px">novos</code> serve para leads criados manualmente (formulário, CSV) que ainda não foram contactados. Leads que entram via WhatsApp com Júlia já estão em atendimento ativo. Usar <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px">em_atendimento</code> desde o início evita confusão nos dashboards e é semanticamente correto.
+    </div>
+    <div class="recomendacao">OPÇÃO B — em_atendimento direto para leads via WhatsApp.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção A</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Opção B (Recomendado)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção C</span>
+    </div>
+  </div>
+
+  <!-- P3 -->
+  <div class="question-card qc-green" id="p3">
+    <div class="q-header">
+      <span class="q-num qn-3">P3</span>
+      <span class="q-title">Arquitetura do Subagente de Documentos</span>
+    </div>
+    <div class="q-audio">"o subagente de documentos vai, um detalhe, caso esteja ilegível... a Júlia vai receber uma mensagem que ele está ilegível... o subagente vai extrair os dados... vai verificar se o comprovante de residência está no nome do cliente, ou com o próprio nome do cliente lá, ou o CPF do cliente."</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li>Doc Reader atual: <strong>manual</strong>, /components/mdzap/lead-panel/doc-reader-helpers.ts</li>
+        <li>Webhook <strong>document-received</strong> existe no n8n mas nunca foi implementado (11 mortos)</li>
+        <li>WhatsApp Media API: quando imagem/documento chega, precisa media_id → download → processamento</li>
+        <li>Claude Vision API: suporta imagens e PDFs nativamente</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">n8n workflow separado (document-received)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Segue arquitetura MdFlow (n8n executa)</span>
+            <span class="option-pro">Webhook já existe — reimplementar</span>
+            <span class="option-pro">Reutilizável para qualquer documento</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Mais um workflow para manter</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">Tool dentro do workflow da Júlia (Claude tool_use)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Contexto único, Júlia processa e responde</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Viola separação n8n executa / Julia conversa</span>
+            <span class="option-con">Aumenta complexidade do prompt</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO C</span>
+          <span class="option-title">Edge Function Supabase (trigger de banco)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Reativo ao banco, sem polling</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Sai do padrão arquitetural (n8n é o motor)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      O princípio P-11 do MdFlow diz "n8n executa". O subagente de documentos é automação de processamento, não de conversa — deve ser n8n. O webhook <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px">document-received</code> já foi criado. Usar Claude Vision API via HTTP node do n8n: baixa da Meta → envia para Claude → recebe JSON estruturado → atualiza lead → notifica Júlia via mensagem interna no workflow.
+    </div>
+    <div class="recomendacao">OPÇÃO A — n8n workflow separado, ativado quando chega mídia inbound.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Opção A (Recomendado)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção B</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção C</span>
+    </div>
+  </div>
+
+  <!-- P4 -->
+  <div class="question-card qc-yellow" id="p4">
+    <div class="q-header">
+      <span class="q-num qn-4">P4</span>
+      <span class="q-title">Campo Profissão nos Leads</span>
+    </div>
+    <div class="q-audio">"é a Júlia que vai cadastrar a profissão. Vai cadastrar na profissão do lead como desempregado. A única coisa que vai ficar pendente é a profissão. Mas então é a Júlia que vai fazer o cadastro do dado do lead da profissão."</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li><strong>profissao NÃO existe em leads</strong> — apenas em clientes (tabela separada)</li>
+        <li>clientes recebe profissão quando lead é convertido na triagem</li>
+        <li>Lead pode precisar de profissão ANTES de ser convertido (etapa 8)</li>
+        <li>Interface LeadDetail em /src/types/lead.types.ts — sem campo profissao</li>
+        <li><strong>cargo</strong> (da CTPS) vs <strong>profissao</strong> (categoria): são campos distintos</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">Migration: ADD COLUMN profissao TEXT em leads</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Campo próprio, semântico, tipado</span>
+            <span class="option-pro">Copiado para clientes na triagem</span>
+            <span class="option-pro">Indexável e filtrável</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Requer migration simples</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">Usar ai_report JSONB como temporário</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Sem migration</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Não tipado, difícil de filtrar/indexar</span>
+            <span class="option-con">Viola P-12 (dados de negócio não em JSONB)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      Campo profissão é dado de negócio core — não pode ficar em JSONB. Migration simples: <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px">ALTER TABLE leads ADD COLUMN profissao TEXT;</code> Considerar também adicionar <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px">cargo TEXT</code> se precisar diferenciar o título da CTPS da categoria profissional. Na triagem, <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px">rpc_crm_aprovar_triagem</code> deve copiar profissao e cargo para clientes.
+    </div>
+    <div class="recomendacao">OPÇÃO A — adicionar profissao TEXT em leads. Decidir se cargo TEXT é campo separado.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Sim, adicionar profissao TEXT (Recomendado)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Sim, e cargo TEXT separado</span>
+      <span class="answer-opt"><span class="checkbox"></span> Usar JSONB</span>
+    </div>
+  </div>
+
+  <!-- P5 -->
+  <div class="question-card qc-blue" id="p5">
+    <div class="q-header">
+      <span class="q-num qn-5">P5</span>
+      <span class="q-title">Notificação de Auditoria Pendente</span>
+    </div>
+    <div class="q-audio">"quando ela retornar, é pra gente ter alguma coisa, porque é o humano que vai assumir, é o humano que vai fazer a auditoria, então a gente tem que pensar em alguma feature no MD-ZAP que pode notificar que tá pendente a auditoria do lead, alguma coisa assim pra mostrar pros atendentes que tá pendente a auditoria."</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li><strong>awaiting_human</strong> (boolean) existe em leads — genérico "aguarda humano"</li>
+        <li>Badge hierárquico de 9 níveis já existe: aguardando_humano (🟡) já tem cor amarela</li>
+        <li>Tabela <strong>mdzap_conversas_timeline</strong> existe para eventos</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">Novo campo: auditoria_status TEXT CHECK ('pendente'|'em_andamento'|'concluida')</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Rastreável, histórico permanente</span>
+            <span class="option-pro">Consultável em dashboards (KPIs)</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Requer migration + mais um campo</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">awaiting_human=true + badge específico na UI (curto prazo)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Sem migration, usa infraestrutura existente</span>
+            <span class="option-pro">Badge "🔍 Auditoria Pendente" visível</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">awaiting_human genérico pode conflitar</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO C</span>
+          <span class="option-title">Evento em mdzap_conversas_timeline</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Log permanente, não conflita com awaiting_human</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Query mais complexa para renderizar badge</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      O ideal de longo prazo é Opção A (rastreabilidade total, KPIs de auditoria). Mas para MVP imediato, Opção B usa o sistema existente. Uma solução híbrida seria Opção C para log permanente + badge baseado no último evento. Se precisar de dashboard "auditorias pendentes por atendente", Opção A é obrigatória. Recomendação pragmática: B agora, planejar A na próxima sprint.
+    </div>
+    <div class="recomendacao">OPÇÃO B (imediato) — awaiting_human + badge na UI. Planejar OPÇÃO A para rastreabilidade futura.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção A</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Opção B (Recomendado curto prazo)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção C</span>
+      <span class="answer-opt"><span class="checkbox"></span> B + A híbrido</span>
+    </div>
+  </div>
+
+  <!-- P6 -->
+  <div class="question-card qc-accent" id="p6">
+    <div class="q-header">
+      <span class="q-num qn-6">P6</span>
+      <span class="q-title">Acesso da Júlia às Restrições</span>
+    </div>
+    <div class="q-audio">"a Júlia, ela vai ter acesso, ou ela pode ter acesso ao back-end ou acesso a pasta ali de restrições, eu não sei como que a gente vai fazer, mas para a Júlia falar para o lead, ou a Júlia vai falar para o lead ou o atendente... quando a gente faz a auditoria e cadastra o lead, a gente já manda a restrição para o lead"</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li><strong>leads.restricoes</strong> é JSONB array com: tipo, valor, data_restricao, empresa_nome, processavel</li>
+        <li>n8n tem acesso ao Supabase via service_role (sem RLS)</li>
+        <li>Júlia roda via n8n workflow — tem acesso indireto via queries</li>
+        <li>Ao ser ativada, Júlia recebe conversa_id → pode buscar lead_id → pode buscar restricoes</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">n8n consulta Supabase e injeta no system prompt</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Júlia sempre tem dados atualizados</span>
+            <span class="option-pro">Segue arquitetura (n8n executa queries)</span>
+            <span class="option-pro">Claude Sonnet suporta 200k tokens</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">System prompt maior por mensagem</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">Frontend passa dados ao acionar Júlia</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Sem query extra no n8n</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Dados podem estar desatualizados</span>
+            <span class="option-con">Viola separação front exibe / back guarda</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      O n8n já tem service_role do Supabase. A query é simples: <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px">SELECT restricoes FROM leads WHERE id = $lead_id</code>. Injetar no início de cada mensagem: "Contexto do lead: [nome]. Restrições identificadas: [lista agrupada por empresa]". Júlia usa esses dados para formular resposta personalizada. Claude Sonnet processa facilmente JSONB de restrições no system prompt.
+    </div>
+    <div class="recomendacao">OPÇÃO A — n8n consulta e injeta no system prompt de cada mensagem.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Opção A (Recomendado)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção B</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção C</span>
+    </div>
+  </div>
+
+  <!-- P7 -->
+  <div class="question-card qc-red" id="p7">
+    <div class="q-header">
+      <span class="q-num qn-7">P7</span>
+      <span class="q-title">Quem Envia o Resultado da Auditoria</span>
+    </div>
+    <div class="q-audio">"agora, daí depois, o atendente ou a Júlia, se for a Júlia que pegar pra continuar o atendente, como é enviado o comprovante de auditoria, provavelmente vai ser o atendente. Mas a Júlia também tem que estar treinada pra se for ela, tá?"</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li>Botão <strong>"Devolver para Júlia"</strong> existe no MdZap</li>
+        <li><strong>metadata.mode: 'human' | 'julia'</strong> controla quem está no controle</li>
+        <li><strong>mdzap_conversas_timeline</strong> registra: humano_assumiu, julia_retomou</li>
+        <li>Restrições são inseridas em leads.restricoes pelo atendente</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">Atendente sempre envia resultado (modo humano completo)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Mais controle humano, menor risco</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Atendente precisa estar disponível imediatamente</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">Atendente registra → devolve manualmente para Júlia</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Atendente valida antes de devolver</span>
+            <span class="option-pro">Júlia não comunica dado errado</span>
+            <span class="option-pro">Usa botão "Devolver para Júlia" existente</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Requer ação manual do atendente</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO C</span>
+          <span class="option-title">Júlia assume automaticamente quando restricoes é preenchido (trigger)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Totalmente automático</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Júlia pode disparar antes do atendente terminar</span>
+            <span class="option-con">Complexo — trigger de banco disparando automação</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      A Opção B é a mais segura e usa infraestrutura existente. O risco da Opção C é real: o atendente pode estar editando restrições em partes (ex: adicionar empresa por empresa) e a Júlia disparar antes de finalizar a sessão de edição. A Opção B coloca o atendente no controle: revisa o resultado completo, confirma que está correto, e clica "Devolver para Júlia" que já existe na UI.
+    </div>
+    <div class="recomendacao">OPÇÃO B — devolução manual pelo atendente após validar as restrições.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção A</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Opção B (Recomendado)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção C</span>
+    </div>
+  </div>
+
+  <!-- P8 -->
+  <div class="question-card qc-green" id="p8">
+    <div class="q-header">
+      <span class="q-num qn-8">P8</span>
+      <span class="q-title">PDF Auditoria — Nome Limpo</span>
+    </div>
+    <div class="q-audio">"se o nome dele estiver limpo, é pro PDF baixar também, mesmo não aparecendo nada, pra gente conseguir enviar pro lead que na auditoria que deu que o nome dele tá limpo. Daí se o nome dele estiver limpo, pum, ponto. Fim de contato."</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li>Integração Boa Vista existe no sistema (botão "Auditar" nas Restrições)</li>
+        <li>A Boa Vista retorna relatório PDF com resultado (limpo ou sujo)</li>
+        <li>O PDF da Boa Vista mostra "sem restrições" quando nome está limpo</li>
+        <li>Fluxo: NOME LIMPO → PDF → enviar para lead via WhatsApp → Júlia parabeniza → fim</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">Usar o próprio PDF da Boa Vista (processo manual)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Documento oficial de bureau de crédito</span>
+            <span class="option-pro">Sem implementação adicional</span>
+            <span class="option-pro">Maior credibilidade para o lead</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Atendente baixa e anexa manualmente</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">MdFlow gera documento próprio "Comprovante de Auditoria" com branding Midas</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Visual personalizado com branding Midas</span>
+            <span class="option-pro">Pode ser gerado automaticamente</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Requer implementação de geração de PDF</span>
+            <span class="option-con">Menor credibilidade vs documento oficial</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      O PDF da Boa Vista é mais credível (documento oficial de bureau). Para o lead, ver um documento oficial confirmando "nome limpo" tem mais peso que um PDF gerado pelo sistema. Solução pragmática: Opção A agora (manual, sem implementação), Opção B como melhoria futura para automatizar. O atendente baixa o PDF da Boa Vista, anexa na conversa do MdZap, e Júlia envia para o lead.
+    </div>
+    <div class="recomendacao">OPÇÃO A (curto prazo) — PDF da Boa Vista. OPÇÃO B como melhoria futura.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Opção A (Recomendado curto prazo)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção B (futuro)</span>
+      <span class="answer-opt"><span class="checkbox"></span> A agora + B depois</span>
+    </div>
+  </div>
+
+  <!-- P9 -->
+  <div class="question-card qc-yellow" id="p9">
+    <div class="q-header">
+      <span class="q-num qn-9">P9</span>
+      <span class="q-title">Renda Receita (IR)</span>
+    </div>
+    <div class="q-audio">"a gente vai fazer nós mesmos a renda receita do LID, que é ver os impostos de renda e com base nas declarações do imposto de renda. Já vai ter uma noção de quanto que o lead ganha por ano. Pra ver se ele consegue a JG ou não. Então é uma parte que a Júlia não precisa fazer. Porque é nós que vamos entrar e fazer."</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li>Nenhuma integração com Receita Federal existe no sistema</li>
+        <li>Processo: consultar declarações IR do lead no portal da RF (manual pela equipe Midas)</li>
+        <li><strong>CONFIRMADO:</strong> processo 100% humano, Júlia não executa</li>
+        <li>Júlia precisa: explicar o processo + cobrar declaração IR se faltar</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">Processo 100% manual externo (confirmado)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Confirmado no áudio, sem implementação</span>
+            <span class="option-pro">Júlia treinada apenas para explicar e cobrar</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Processo manual sujeito a erro humano</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">Integração futura com Receita Federal</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-cons">
+            <span class="option-con">Complexidade alta, fora de escopo</span>
+            <span class="option-con">API RF não disponível publicamente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      Confirmado no áudio. Júlia precisa apenas de treinamento no prompt sobre 3 pontos: (1) saber explicar o que é Renda Receita para o lead, (2) saber solicitar declaração IR em PDF se o lead não declarou, (3) saber que autônomos não precisam de comprovante de renda — a Renda Receita substitui. Nenhuma automação ou integração necessária nesta etapa.
+    </div>
+    <div class="recomendacao">OPÇÃO A confirmada. Júlia recebe treinamento no prompt sobre o processo.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Confirma processo manual (Recomendado)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Quer integração futura</span>
+      <span class="answer-opt"><span class="checkbox"></span> Outra: ___</span>
+    </div>
+  </div>
+
+  <!-- P10 -->
+  <div class="question-card qc-blue" id="p10">
+    <div class="q-header">
+      <span class="q-num qn-10">P10</span>
+      <span class="q-title">Indique Ganho</span>
+    </div>
+    <div class="q-audio">"a única coisa que a gente pode oferecer é o Indique Ganho e falar alguma coisa, de parabenizando o lead que ele tá com o nome limpo, que se ajuda que vai fazer, que então não precisa do... Dos nossos trabalhos, não especificando assim, mas parabenizando ele por ele estar com o nome limpo, tá?"</div>
+    <div class="q-context">
+      <div class="q-context-title">Contexto Técnico</div>
+      <ul>
+        <li>Página <strong>/indicacoes</strong> existe no sistema</li>
+        <li>Não se sabe se tem programa "Indique Ganho" implementado na página</li>
+        <li>Contexto: Júlia menciona após confirmação de nome limpo → fim de contato</li>
+      </ul>
+    </div>
+    <div class="options-grid">
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO A</span>
+          <span class="option-title">Júlia apenas menciona verbalmente (sem link)</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Sem implementação adicional</span>
+            <span class="option-pro">Funciona imediatamente</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Sem captura do lead indicado</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card recommended">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO B</span>
+          <span class="option-title">Júlia envia link/QR code do programa se /indicacoes funcional</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Captura indicação, fecha o funil</span>
+            <span class="option-pro">Rastreável no sistema</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Depende de verificar /indicacoes</span>
+          </div>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="option-header">
+          <span class="option-label">OPÇÃO C</span>
+          <span class="option-title">Júlia coleta nome/telefone do indicado na própria conversa</span>
+        </div>
+        <div class="option-pros-cons">
+          <div class="option-pros">
+            <span class="option-pro">Captura direta, sem depender de página</span>
+          </div>
+          <div class="option-cons">
+            <span class="option-con">Mais complexo de implementar no prompt</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brainstorm">
+      <div class="brainstorm-title">Brainstorm</div>
+      Depende do estado da página /indicacoes. Se tem fluxo de indicação por WhatsApp funcionando → Opção B maximiza o resultado. Se não → Opção A é suficiente e imediata (o objetivo principal é o parabenizar, o Indique Ganho é secundário). Verificar /indicacoes antes de decidir. Opção C é interessante de longo prazo mas aumenta a complexidade do prompt da Júlia.
+    </div>
+    <div class="recomendacao">Verificar /indicacoes — se funcional: OPÇÃO B. Se não: OPÇÃO A por enquanto.</div>
+    <div class="answer-box">
+      <span class="answer-box-title">Resposta:</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção A (verbal)</span>
+      <span class="answer-opt rec"><span class="checkbox checked"></span> Opção B (link — se /indicacoes OK)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Opção C (coleta na conversa)</span>
+      <span class="answer-opt"><span class="checkbox"></span> Verificar /indicacoes primeiro</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- SEÇÃO 10 — O QUE IMPLEMENTAR -->
+<section id="s10" class="section">
+  <div class="section-header">
+    <span class="section-icon">🚀</span>
+    <h2>Seção 10 — O Que Precisa Ser Implementado</h2>
+  </div>
+
+  <div class="impl-category">
+    <div class="impl-cat-header">
+      <span>🗄</span>
+      <span>Backend (Supabase)</span>
+    </div>
+    <div class="impl-items">
+      <div class="impl-item">
+        <span class="impl-num">01</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1">Migration: <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;color:var(--accent3)">ALTER TABLE leads ADD COLUMN profissao TEXT;</code></span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">02</span>
+        <span class="p-badge p2-b" style="flex-shrink:0">P2</span>
+        <span style="flex:1">Migration: <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;color:var(--accent3)">ADD COLUMN auditoria_status TEXT CHECK ...</code> (se Opção A da P5)</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">03</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1">Investigar por que CRM não funciona no contexto MdZap — ver causa raiz Problema 2</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="impl-category">
+    <div class="impl-cat-header">
+      <span>⚙</span>
+      <span>n8n Workflows</span>
+    </div>
+    <div class="impl-items">
+      <div class="impl-item">
+        <span class="impl-num">04</span>
+        <span class="p-badge p0-b" style="flex-shrink:0">P0</span>
+        <span style="flex:1">Corrigir tokens ASSUMIR/DEVOLVER (HTTP 500) — atualizar autenticação</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">05</span>
+        <span class="p-badge p0-b" style="flex-shrink:0">P0</span>
+        <span style="flex:1">Implementar fluxo <strong>media_id → download binário → upload Storage → URL permanente</strong> em whatsapp_mensagens</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">06</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1">Implementar webhook <strong>document-received</strong> — subagente de documentos com Claude Vision</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">07</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1">Implementar workflow Júlia com <strong>fluxo Midas completo</strong> (9 etapas desta spec)</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">08</span>
+        <span class="p-badge p2-b" style="flex-shrink:0">P2</span>
+        <span style="flex:1">Reparar ai-composer (HTTP 500) e julia-prompt-save (33% success)</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">09</span>
+        <span class="p-badge p2-b" style="flex-shrink:0">P2</span>
+        <span style="flex:1">Ativar os 11 workflows mortos conforme necessário (lead-sync, encerrar, transferir, etc.)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="impl-category">
+    <div class="impl-cat-header">
+      <span>🎨</span>
+      <span>Frontend (React)</span>
+    </div>
+    <div class="impl-items">
+      <div class="impl-item">
+        <span class="impl-num">10</span>
+        <span class="p-badge p0-b" style="flex-shrink:0">P0</span>
+        <span style="flex:1"><strong>UI-19:</strong> CPF exibido como senha — remover máscara imediatamente</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">11</span>
+        <span class="p-badge p0-b" style="flex-shrink:0">P0</span>
+        <span style="flex:1"><strong>UI-17:</strong> Mover ICP de drawer para 7ª aba da página MdZap</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">12</span>
+        <span class="p-badge p0-b" style="flex-shrink:0">P0</span>
+        <span style="flex:1"><strong>UI-08:</strong> Investigar e corrigir CRM não funcionando</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">13</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1"><strong>UI-01:</strong> Expandir width do drawer (mais à esquerda)</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">14</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1"><strong>UI-02 a UI-09:</strong> Aba Dados — remover campos e botões desnecessários (CRM, Assumir, estado civil, email, score, dropdown etapa, Boa Vista)</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">15</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1"><strong>UI-10 a UI-13:</strong> Restrições — corrigir botão auditoria falhando, redimensionar, remover Gerar Contrato</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">16</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1"><strong>UI-18:</strong> Badge CRM — adicionar dropdown para mover coluna no chat</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">17</span>
+        <span class="p-badge p2-b" style="flex-shrink:0">P2</span>
+        <span style="flex:1"><strong>UI-14:</strong> Investigar geração de pastas das restrições</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">18</span>
+        <span class="p-badge p2-b" style="flex-shrink:0">P2</span>
+        <span style="flex:1"><strong>UI-04:</strong> Corrigir alinhamento de inputs (data nascimento, telefone, profissão)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="impl-category">
+    <div class="impl-cat-header">
+      <span>✦</span>
+      <span>Prompts (Júlia)</span>
+    </div>
+    <div class="impl-items">
+      <div class="impl-item">
+        <span class="impl-num">19</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1">System prompt completo com fluxo Midas (9 etapas + regras P0 + tratamento de cada estado)</span>
+      </div>
+      <div class="impl-item">
+        <span class="impl-num">20</span>
+        <span class="p-badge p1-b" style="flex-shrink:0">P1</span>
+        <span style="flex:1">Prompt do subagente de documentos (extração de campos por tipo de documento)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO 11 — ARQUIVOS CRÍTICOS -->
+<section id="s11" class="section">
+  <div class="section-header">
+    <span class="section-icon">📁</span>
+    <h2>Seção 11 — Arquivos Críticos</h2>
+  </div>
+
+  <div class="files-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Arquivo</th>
+          <th>Propósito</th>
+          <th>Por que é crítico agora</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/pages/mdzap/index.tsx</td>
+          <td>Página principal MdZap</td>
+          <td><span class="p-badge p0-b">P0</span> UI-17 (ICP), UI-18 (badge CRM), UI-19 (CPF)</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/components/mdzap/lead-panel/LeadDadosTab.tsx</td>
+          <td>Aba Dados do drawer</td>
+          <td><span class="p-badge p1-b">P1</span> Bugs UI-02 a UI-09</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/components/mdzap/lead-panel/LeadRestricoesMdzapTab.tsx</td>
+          <td>Aba Restrições</td>
+          <td><span class="p-badge p0-b">P0</span> Bugs UI-10 a UI-13</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/components/mdzap/lead-panel/LeadDocumentosTab.tsx</td>
+          <td>Aba Documentos</td>
+          <td><span class="p-badge p0-b">P0</span> Bug UI-14 (pastas restrições)</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/components/mdzap/MdzapLeadPanel.tsx</td>
+          <td>Container drawer lead</td>
+          <td><span class="p-badge p1-b">P1</span> UI-01 (width), UI-17 (remover ICP)</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/components/mdzap/MdzapJuliaLab.tsx</td>
+          <td>Sandbox Júlia</td>
+          <td><span class="p-badge p1-b">P1</span> Fluxo Midas precisa ser treinado</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/components/mdzap/MdzapAdminIA.tsx</td>
+          <td>Admin prompts Júlia</td>
+          <td><span class="p-badge p1-b">P1</span> Gestão dos 7 tipos de prompt</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/components/mdzap/lead-panel/doc-reader-helpers.ts</td>
+          <td>OCR atual (manual)</td>
+          <td><span class="p-badge p1-b">P1</span> Base para subagente autônomo</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/types/mdzap.types.ts</td>
+          <td>Interfaces WhatsApp</td>
+          <td><span class="p-badge p1-b">P1</span> R4-BUG-03 (tabelas não tipadas)</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/types/lead.types.ts</td>
+          <td>Interface Lead</td>
+          <td><span class="p-badge p1-b">P1</span> Adicionar campo profissao após migration</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/src/hooks/crm/useLeadFollowup.ts</td>
+          <td>Sistema de follow-up</td>
+          <td><span class="p-badge p1-b">P1</span> Follow-ups da Júlia após procuração</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/supabase/migrations/20260319000001_mdzap_novas_tabelas.sql</td>
+          <td>Schema MdZap principal</td>
+          <td>Referência para migrations novas</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/supabase/migrations/20260319000002_fn_mdzap_conversas.sql</td>
+          <td>RPC vinculação conversa-lead</td>
+          <td><span class="p-badge p0-b">P0</span> Causa raiz dos modais em branco</td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">/supabase/migrations/20260402100001_mdzap_db001_005_n8n_webhooks.sql</td>
+          <td>Webhooks n8n registrados</td>
+          <td><span class="p-badge p1-b">P1</span> document-received para subagente</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SEÇÃO 12 — PRÓXIMOS PASSOS -->
+<section id="s12" class="section">
+  <div class="section-header">
+    <span class="section-icon">✅</span>
+    <h2>Seção 12 — Próximos Passos</h2>
+    <span class="section-desc">Ordem de execução recomendada</span>
+  </div>
+
+  <div class="grid g2">
+    <div>
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent2);font-weight:700;margin-bottom:10px;">Imediato — Antes do /project</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-square"></div><span><strong>Responder P1 a P10</strong> neste documento</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Gerar HTML definitivo com respostas incorporadas</span></div>
+        <div class="check-item"><div class="check-square"></div><span><strong>P0:</strong> CPF oculto (UI-19) — corrigir antes de qualquer teste</span></div>
+        <div class="check-item"><div class="check-square"></div><span><strong>P0:</strong> Tokens n8n ASSUMIR/DEVOLVER — renovar</span></div>
+        <div class="check-item"><div class="check-square"></div><span><strong>P0:</strong> ICP mover para aba da página (UI-17)</span></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent4);font-weight:700;margin-bottom:10px;">Sprint 1 — Fundação</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-square"></div><span>Rodar <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px">/project mdzap</code> com este SPEC</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Migration <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px">profissao TEXT</code> em leads</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Implementar subagente de documentos (n8n + Claude Vision)</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Implementar fluxo Midas nos prompts da Júlia</span></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent5);font-weight:700;margin-bottom:10px;">Sprint 2 — Mídia e Integração</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-square"></div><span>Corrigir mídia inbound (fluxo media_id → Storage)</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Reparar webhooks quebrados (ai-composer, julia-prompt-save)</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Implementar badge auditoria pendente</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Corrigir bugs UI aba Dados (UI-02 a UI-09)</span></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent3);font-weight:700;margin-bottom:10px;">Sprint 3 — Telemetria e Polimento</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-square"></div><span>Revisar ICP telemetria (aba completa com gráficos)</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Corrigir bugs remanescentes UI-10 a UI-16</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Ativar 11 workflows mortos conforme necessário</span></div>
+        <div class="check-item"><div class="check-square"></div><span>Verificar /indicacoes para Indique Ganho (P10)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer">
+  🐙 Jarbas 2.0 — MdLab LegalTech · MdZap SPEC Completo v2.0 · 07 de abril de 2026
+</div>
+
+</main>
+</div>
+
+<script>
+// Sidebar active link on scroll
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.sidebar-link');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      links.forEach(link => link.classList.remove('active'));
+      const activeLink = document.querySelector(`.sidebar-link[href="#${entry.target.id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+
+sections.forEach(section => observer.observe(section));
+
+// Smooth scroll
+links.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Animate probability bars on scroll
+const probBars = document.querySelectorAll('.prob-bar');
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.width = entry.target.style.width;
+    }
+  });
+}, { threshold: 0.3 });
+
+probBars.forEach(bar => barObserver.observe(bar));
+</script>
+
+</body>
+</html>
