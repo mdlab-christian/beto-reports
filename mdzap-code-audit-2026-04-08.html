@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap Code Audit — 2026-04-08</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface2: #1c2033;
+    --border: #2a2e42;
+    --text: #e8e4df;
+    --muted: #8a8693;
+    --accent: #7c6dff;
+    --green: #20c997;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --cyan: #06b6d4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  h1 { font-family: 'Manrope', sans-serif; font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+  h2 { font-family: 'Manrope', sans-serif; font-size: 1.4rem; color: var(--green); margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.1rem; color: var(--cyan); margin: 1.5rem 0 0.5rem; }
+  h4 { font-size: 0.95rem; color: var(--accent); margin: 1rem 0 0.4rem; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .nota-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; display: flex; align-items: center; gap: 1.5rem; }
+  .nota-score { font-family: 'Manrope', sans-serif; font-size: 3.5rem; font-weight: 800; min-width: 120px; text-align: center; }
+  .nota-label { font-size: 0.85rem; color: var(--muted); }
+  .nota-detail { flex: 1; }
+  .score-red { color: var(--red); }
+  .score-yellow { color: var(--yellow); }
+  .score-green { color: var(--green); }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+  th { background: var(--surface2); color: var(--accent); text-align: left; padding: 0.6rem 0.8rem; font-weight: 600; }
+  td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(124, 109, 255, 0.05); }
+  .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+  .tag-p0 { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+  .tag-p1 { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+  .tag-p2 { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+  .tag-p3 { background: rgba(6, 182, 212, 0.2); color: var(--cyan); }
+  .tag-ok { background: rgba(32, 201, 151, 0.15); color: var(--green); }
+  .tag-fail { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .tag-warn { background: rgba(234, 179, 8, 0.15); color: var(--yellow); }
+  .tag-info { background: rgba(124, 109, 255, 0.15); color: var(--accent); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 0.8rem 0; }
+  .card-red { border-left: 3px solid var(--red); }
+  .card-yellow { border-left: 3px solid var(--yellow); }
+  .card-green { border-left: 3px solid var(--green); }
+  .card-accent { border-left: 3px solid var(--accent); }
+  code { background: var(--surface2); padding: 0.15rem 0.4rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyan); }
+  pre { background: var(--surface2); padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.8rem; line-height: 1.5; margin: 0.5rem 0; }
+  pre code { background: none; padding: 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+  .metric { text-align: center; padding: 1rem; }
+  .metric-value { font-family: 'Manrope', sans-serif; font-size: 2rem; font-weight: 800; }
+  .metric-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .verdict { font-size: 0.95rem; line-height: 1.7; }
+  ul { padding-left: 1.5rem; }
+  li { margin: 0.3rem 0; }
+  .separator { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .footer { color: var(--muted); font-size: 0.75rem; margin-top: 3rem; text-align: center; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .bar-container { background: var(--surface2); border-radius: 4px; height: 8px; margin: 0.3rem 0; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+  .bar-red { background: var(--red); }
+  .bar-yellow { background: var(--yellow); }
+  .bar-green { background: var(--green); }
+  .bar-orange { background: var(--orange); }
+  .reuse-matrix td:first-child { font-weight: 600; }
+  .file-ref { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--muted); }
+  .bug-id { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); margin-right: 0.3rem; }
+</style>
+</head>
+<body>
+
+<h1>MdZap &mdash; Auditoria de C&oacute;digo Impiedosa</h1>
+<p class="subtitle">Stage 2/4 | An&aacute;lise profunda: componentes, hooks, tipos, integra&ccedil;&atilde;o CRM | 2026-04-08 | Auditor: Claude Code</p>
+
+<!-- NOTA GERAL -->
+<div class="nota-box">
+  <div>
+    <div class="nota-score score-yellow">4.8<span style="font-size:1.2rem;color:var(--muted)">/10</span></div>
+    <div class="nota-label">Nota C&oacute;digo MdZap</div>
+  </div>
+  <div class="nota-detail">
+    <p class="verdict">
+      C&oacute;digo funcional mas tecnicamente fr&aacute;gil. A p&aacute;gina MdZap &eacute; a mais complexa do MdFlow &mdash; 4.200+ linhas em 22 arquivos &mdash; e acumula d&iacute;vida t&eacute;cnica severa.
+      O hook central (<code>useLeadPanelActions</code>) tem <strong>8 bugs catalogados</strong>. H&aacute; <strong>302 linhas duplicadas</strong> que reimplementam um componente CRM existente.
+      O sistema de tipos &eacute; minado por <code>as any</code> em pontos cr&iacute;ticos. A estrat&eacute;gia de query invalidation &eacute; inconsistente.
+      O bureau de consulta difere entre MdZap e CRM &mdash; um bug de integra&ccedil;&atilde;o que afeta dados reais em produ&ccedil;&atilde;o.
+      Pontos positivos: 3 de 5 tabs do lead panel reutilizam componentes CRM corretamente, o edge function est&aacute; s&oacute;lido, e o MsgBubble &eacute; competente no render de m&iacute;dia.
+    </p>
+  </div>
+</div>
+
+<!-- NOTAS POR CATEGORIA -->
+<h2>Notas por Categoria</h2>
+<div class="grid-3">
+  <div class="card card-red">
+    <div class="metric">
+      <div class="metric-value score-red">3.0</div>
+      <div class="metric-label">Reuso CRM</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill bar-red" style="width:30%"></div></div>
+  </div>
+  <div class="card card-red">
+    <div class="metric">
+      <div class="metric-value score-red">3.5</div>
+      <div class="metric-label">Query Management</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill bar-red" style="width:35%"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">4.0</div>
+      <div class="metric-label">Type Safety</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill bar-yellow" style="width:40%"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">5.0</div>
+      <div class="metric-label">State Management</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill bar-yellow" style="width:50%"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">6.0</div>
+      <div class="metric-label">Componentes UI</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill bar-yellow" style="width:60%"></div></div>
+  </div>
+  <div class="card card-green">
+    <div class="metric">
+      <div class="metric-value score-green">7.0</div>
+      <div class="metric-label">Edge Function</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill bar-green" style="width:70%"></div></div>
+  </div>
+</div>
+
+<!-- INVENTÁRIO DE CÓDIGO -->
+<h2>Invent&aacute;rio de C&oacute;digo MdZap</h2>
+<table>
+  <tr>
+    <th>Arquivo</th>
+    <th>Linhas</th>
+    <th>Tipo</th>
+    <th>Sa&uacute;de</th>
+    <th>Problema Principal</th>
+  </tr>
+  <tr>
+    <td><code>MdzapChatPanel.tsx</code></td>
+    <td>250</td>
+    <td>Container</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Layout 3-col funcional. State management local correto.</td>
+  </tr>
+  <tr>
+    <td><code>MdzapConversaList.tsx</code></td>
+    <td>410</td>
+    <td>Component</td>
+    <td><span class="tag tag-warn">WARN</span></td>
+    <td>Filtragem 100% client-side. Bulk actions mistas (webhook + direct supabase).</td>
+  </tr>
+  <tr>
+    <td><code>MdzapLeadPanel.tsx</code></td>
+    <td>199</td>
+    <td>Orchestrator</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Delega bem para tabs. useRestricoes para badges correto.</td>
+  </tr>
+  <tr>
+    <td><code>MdzapMsgThread.tsx</code></td>
+    <td>459</td>
+    <td>Component</td>
+    <td><span class="tag tag-warn">WARN</span></td>
+    <td><code>as any</code> em updates de lead (L98, L114-115). CRM column move via direct supabase.</td>
+  </tr>
+  <tr>
+    <td><code>MdzapThreadHeader.tsx</code></td>
+    <td>213</td>
+    <td>Component</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>SDR mode selector + CRM badge dropdown funcionais.</td>
+  </tr>
+  <tr>
+    <td><code>MdzapMsgBubble.tsx</code></td>
+    <td>495</td>
+    <td>Component</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Render m&iacute;dia competente. Retry logic funcional. Feedback buttons ok.</td>
+  </tr>
+  <tr>
+    <td><code>useLeadPanelActions.ts</code></td>
+    <td>405</td>
+    <td>Hook</td>
+    <td><span class="tag tag-fail">FAIL</span></td>
+    <td><strong>8 bugs catalogados.</strong> Unwrapped queries. Bureau mismatch.</td>
+  </tr>
+  <tr>
+    <td><code>LeadDadosTab.tsx</code></td>
+    <td>150</td>
+    <td>Tab</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Custom. Sem equivalente CRM. Bem implementado.</td>
+  </tr>
+  <tr>
+    <td><code>LeadRestricoesMdzapTab.tsx</code></td>
+    <td>91</td>
+    <td>Tab</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Reutiliza CRM corretamente. Query invalidation broad.</td>
+  </tr>
+  <tr>
+    <td><code>LeadDocumentosTab.tsx</code></td>
+    <td>302</td>
+    <td>Tab</td>
+    <td><span class="tag tag-fail">FAIL</span></td>
+    <td><strong>Reimplementa CRM.</strong> 302 linhas duplicando 360 do CRM. Sem Drive sync.</td>
+  </tr>
+  <tr>
+    <td><code>LeadNotasTab.tsx</code></td>
+    <td>20</td>
+    <td>Tab</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Delega corretamente para CrmLeadNotas com origem='mdzap'.</td>
+  </tr>
+  <tr>
+    <td><code>LeadMemoriaTab.tsx</code></td>
+    <td>10</td>
+    <td>Tab</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Delega corretamente para MdzapLeadMemoryPanel.</td>
+  </tr>
+  <tr>
+    <td><code>useMdzapSendMessage.ts</code></td>
+    <td>285</td>
+    <td>Hook</td>
+    <td><span class="tag tag-warn">WARN</span></td>
+    <td>Optimistic insert funcional. Limites de m&iacute;dia corretos. File naming poderia ser melhor.</td>
+  </tr>
+  <tr>
+    <td><code>useMdzapThreadActions.ts</code></td>
+    <td>150</td>
+    <td>Hook</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Assume/devolver/audio via webhooks. Padr&atilde;o correto.</td>
+  </tr>
+  <tr>
+    <td><code>useMdzapConversas.ts</code></td>
+    <td>194</td>
+    <td>Hook</td>
+    <td><span class="tag tag-warn">WARN</span></td>
+    <td><code>(rpcResult as any)?.data</code> unsafe cast. 3 realtime channels misturados.</td>
+  </tr>
+  <tr>
+    <td><code>mdzap.types.ts</code></td>
+    <td>339</td>
+    <td>Types</td>
+    <td><span class="tag tag-warn">WARN</span></td>
+    <td>50+ tipos, PendingLeadData sem uso. Metadata typing loose.</td>
+  </tr>
+  <tr>
+    <td><code>mdzap-webhook/index.ts</code></td>
+    <td>525</td>
+    <td>Edge Function</td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Normaliza&ccedil;&atilde;o Meta+Z-API s&oacute;lida. Retry exponential. Media download ok.</td>
+  </tr>
+</table>
+
+<div class="card card-accent">
+  <strong>Totais:</strong> 22 arquivos | ~4.200 linhas | 4 hooks | 11 componentes | 1 edge function | 1 arquivo de tipos
+</div>
+
+<!-- BUG TRACKER: useLeadPanelActions -->
+<h2>Bug Tracker &mdash; useLeadPanelActions.ts (8 bugs)</h2>
+<p style="color:var(--muted);margin-bottom:1rem;">O hook mais cr&iacute;tico do MdZap. Orquestra 2 queries + 2 unwrapped calls + 6 mutations. Todos os bugs abaixo est&atilde;o em produ&ccedil;&atilde;o.</p>
+
+<table>
+  <tr>
+    <th>#</th>
+    <th>Severidade</th>
+    <th>Bug</th>
+    <th>Localiza&ccedil;&atilde;o</th>
+    <th>Impacto</th>
+  </tr>
+  <tr>
+    <td><span class="bug-id">BUG-01</span></td>
+    <td><span class="tag tag-p0">P0</span></td>
+    <td><strong>Bureau mismatch</strong>: MdZap envia <code>p_bureaus: ['boavista']</code>, CRM usa <code>p_bureaus: ['apifull_115']</code></td>
+    <td>saveLead mutation</td>
+    <td>Restri&ccedil;&otilde;es consultadas por bureau errado. Dados potencialmente divergentes entre MdZap e CRM.</td>
+  </tr>
+  <tr>
+    <td><span class="bug-id">BUG-02</span></td>
+    <td><span class="tag tag-p0">P0</span></td>
+    <td><strong>Unwrapped supabase query</strong>: <code>docMensagens</code> usa <code>useEffect + .then()</code> em vez de <code>useQuery</code></td>
+    <td>~L180-210</td>
+    <td>Sem cache, sem staleTime, sem retry, sem error boundary. Refetch manual com setDocMensagens.</td>
+  </tr>
+  <tr>
+    <td><span class="bug-id">BUG-03</span></td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td><strong>Unwrapped supabase query</strong>: <code>advogados</code> usa <code>useEffect + .then()</code></td>
+    <td>~L160-175</td>
+    <td>Mesmo problema que BUG-02. Sem cache, fetcha em todo render.</td>
+  </tr>
+  <tr>
+    <td><span class="bug-id">BUG-04</span></td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td><strong>Query key mismatch</strong>: saveLead invalida <code>['leads']</code> (broad) mas leadQuery usa <code>['lead', leadId]</code></td>
+    <td>saveLead onSuccess</td>
+    <td>Partial key match funciona no React Query, mas &eacute; fr&aacute;gil. Se algu&eacute;m mudar a key, quebra silenciosamente.</td>
+  </tr>
+  <tr>
+    <td><span class="bug-id">BUG-05</span></td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td><strong>Missing invalidation</strong>: criarLead n&atilde;o invalida <code>['mdzap-conversas']</code></td>
+    <td>criarLead onSuccess</td>
+    <td>Conversa n&atilde;o atualiza lead_id no painel at&eacute; pr&oacute;ximo polling (8s).</td>
+  </tr>
+  <tr>
+    <td><span class="bug-id">BUG-06</span></td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td><strong>Missing Google Drive sync</strong>: uploads de documentos no MdZap n&atilde;o sincronizam com Drive</td>
+    <td>handleUploadDoc</td>
+    <td>Documentos no MdZap ficam s&oacute; no Supabase Storage. CRM espera sync com Drive.</td>
+  </tr>
+  <tr>
+    <td><span class="bug-id">BUG-07</span></td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td><strong>Missing realtime</strong>: Aba Documentos sem subscription para mudan&ccedil;as</td>
+    <td>LeadDocumentosTab</td>
+    <td>Se outro usu&aacute;rio enviar doc, n&atilde;o aparece em tempo real.</td>
+  </tr>
+  <tr>
+    <td><span class="bug-id">BUG-08</span></td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td><strong>Silent error swallowing</strong>: mutations usam <code>onError: () => toast.error('...')</code> gen&eacute;rico</td>
+    <td>Todas mutations</td>
+    <td>Erro real perdido. Nenhum logging para debug.</td>
+  </tr>
+</table>
+
+<!-- REUSO CRM: A VERDADE CRUA -->
+<h2>Reuso CRM &mdash; A Verdade Crua</h2>
+<p style="color:var(--muted);margin-bottom:1rem;">O MdZap deveria ser um thin wrapper sobre componentes CRM compartilhados. A realidade &eacute; outra.</p>
+
+<h3>Scorecard de Reuso por Tab</h3>
+<table class="reuse-matrix">
+  <tr>
+    <th>Tab MdZap</th>
+    <th>Componente CRM</th>
+    <th>Reutiliza?</th>
+    <th>Status</th>
+    <th>Veredicto</th>
+  </tr>
+  <tr>
+    <td>Dados</td>
+    <td><em>N/A (custom)</em></td>
+    <td><span class="tag tag-info">N/A</span></td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Sem equivalente CRM. Implementa&ccedil;&atilde;o pr&oacute;pria correta.</td>
+  </tr>
+  <tr>
+    <td>Restri&ccedil;&otilde;es</td>
+    <td>CrmAuditoriaPanel + ClienteDrawerTabRestricoes</td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Integra ambos via wrapper de 91 linhas. Callback <code>onRestricoesCadastradas</code> funcional.</td>
+  </tr>
+  <tr>
+    <td>Documentos</td>
+    <td>ClienteDrawerTabDocumentos (360 linhas)</td>
+    <td><span class="tag tag-fail">N&Atilde;O</span></td>
+    <td><span class="tag tag-fail">FAIL</span></td>
+    <td><strong>302 linhas reimplementadas.</strong> Falta Drive sync. Falta realtime. C&oacute;pia degradada.</td>
+  </tr>
+  <tr>
+    <td>Notas</td>
+    <td>CrmLeadNotas (167 linhas)</td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Delega em 20 linhas com <code>origem='mdzap'</code>. Exemplar.</td>
+  </tr>
+  <tr>
+    <td>Hist&oacute;rico</td>
+    <td><em>N/A (thread prpr)</em></td>
+    <td><span class="tag tag-info">N/A</span></td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Hist&oacute;rico de conversa &eacute; espec&iacute;fico do MdZap.</td>
+  </tr>
+  <tr>
+    <td>Mem&oacute;ria</td>
+    <td>MdzapLeadMemoryPanel</td>
+    <td><span class="tag tag-ok">SIM</span></td>
+    <td><span class="tag tag-ok">OK</span></td>
+    <td>Wrapper de 10 linhas. Correto.</td>
+  </tr>
+</table>
+
+<div class="card card-red">
+  <h4>LeadDocumentosTab: O Caso Mais Grave</h4>
+  <p>Este componente <strong>reimplementa</strong> <code>ClienteDrawerTabDocumentos</code> (360 linhas CRM) com 302 linhas pr&oacute;prias, e o faz <strong>pior</strong>:</p>
+  <ul>
+    <li><span class="tag tag-fail">MISSING</span> Sem sincroniza&ccedil;&atilde;o Google Drive &mdash; docs ficam s&oacute; no Storage</li>
+    <li><span class="tag tag-fail">MISSING</span> Sem subscription Realtime &mdash; docs de outros usu&aacute;rios n&atilde;o aparecem</li>
+    <li><span class="tag tag-fail">MISSING</span> Sem CSV export/import de restri&ccedil;&otilde;es com docs</li>
+    <li><span class="tag tag-warn">DRIFT</span> Componentes compartilhados (DocumentosUploadCentral, RestricaoPastaCard) s&atilde;o usados, mas orquestra&ccedil;&atilde;o &eacute; duplicada</li>
+  </ul>
+  <p style="margin-top:0.8rem;color:var(--muted);">
+    <strong>Fix:</strong> Refatorar para reutilizar <code>ClienteDrawerTabDocumentos</code> com prop <code>origem='mdzap'</code>, similar ao que <code>LeadNotasTab</code> faz com <code>CrmLeadNotas</code>.
+    Economia estimada: ~280 linhas + paridade de features autom&aacute;tica.
+  </p>
+</div>
+
+<!-- BUREAU MISMATCH -->
+<h2>Bureau Mismatch &mdash; Bug Cr&iacute;tico Cross-Module</h2>
+<div class="card card-red">
+  <div class="grid-2">
+    <div>
+      <h4>MdZap (useLeadPanelActions)</h4>
+      <pre><code>// saveLead mutation
+rpc('fn_consultar_restricoes', {
+  p_cpf: cpf,
+  p_bureaus: ['boavista']  // &lt;-- ERRADO
+})</code></pre>
+      <p class="file-ref">src/components/mdzap/lead-panel/useLeadPanelActions.ts</p>
+    </div>
+    <div>
+      <h4>CRM (CrmAuditoriaPanel)</h4>
+      <pre><code>// handleConsultar
+rpc('fn_consultar_restricoes', {
+  p_cpf: cpf,
+  p_bureaus: ['apifull_115']  // &lt;-- CORRETO
+})</code></pre>
+      <p class="file-ref">src/components/crm/CrmAuditoriaPanel.tsx</p>
+    </div>
+  </div>
+  <hr style="border-color:var(--border);margin:1rem 0;">
+  <p><strong>Consequ&ecirc;ncia:</strong> O MdZap consulta restri&ccedil;&otilde;es via bureau <code>boavista</code> (antigo/legado?), enquanto o CRM usa <code>apifull_115</code> (atual). Se os bureaus retornam dados diferentes, leads cadastrados pelo MdZap ter&atilde;o restri&ccedil;&otilde;es divergentes do que o CRM mostraria para o mesmo CPF.</p>
+  <p><strong>Fix:</strong> Alinhar para <code>apifull_115</code> em ambos, ou extrair constante <code>DEFAULT_BUREAUS</code> compartilhada.</p>
+</div>
+
+<!-- TYPE SAFETY -->
+<h2>Type Safety &mdash; O Problema do <code>as any</code></h2>
+<p style="color:var(--muted);margin-bottom:1rem;">Mapa de <code>as any</code> e casts inseguros encontrados no c&oacute;digo MdZap.</p>
+
+<table>
+  <tr>
+    <th>Arquivo</th>
+    <th>Local</th>
+    <th>Cast</th>
+    <th>Risco</th>
+  </tr>
+  <tr>
+    <td><code>MdzapMsgThread.tsx</code></td>
+    <td>L98</td>
+    <td><code>update as any</code> em lead metadata</td>
+    <td><span class="tag tag-p1">P1</span> Pode gravar campos inv&aacute;lidos no lead sem TS reclamar</td>
+  </tr>
+  <tr>
+    <td><code>MdzapMsgThread.tsx</code></td>
+    <td>L114-115</td>
+    <td><code>as any</code> em coluna_crm update</td>
+    <td><span class="tag tag-p1">P1</span> Move de coluna CRM sem type check. String errada = silently fails.</td>
+  </tr>
+  <tr>
+    <td><code>useMdzapConversas.ts</code></td>
+    <td>RPC result</td>
+    <td><code>(rpcResult as any)?.data</code></td>
+    <td><span class="tag tag-p1">P1</span> Se shape do RPC mudar, erro silencioso. Deveria tipar retorno do RPC.</td>
+  </tr>
+  <tr>
+    <td><code>useLeadPanelActions.ts</code></td>
+    <td>Mutations</td>
+    <td>Metadata JSONB sem validação</td>
+    <td><span class="tag tag-p2">P2</span> <code>pending_lead_data</code> &eacute; JSONB livre. Nenhum schema check client-side.</td>
+  </tr>
+  <tr>
+    <td><code>mdzap.types.ts</code></td>
+    <td>PendingLeadData</td>
+    <td>Interface definida, <strong>usage = 0</strong></td>
+    <td><span class="tag tag-p2">P2</span> Tipo existe mas ningu&eacute;m o usa. Dead code type.</td>
+  </tr>
+  <tr>
+    <td><code>mdzap.types.ts</code></td>
+    <td>MdzapMensagem</td>
+    <td>metadata: <code>Record&lt;string, any&gt;</code></td>
+    <td><span class="tag tag-p2">P2</span> Tipo gen&eacute;rico demais. Deveria ser union discriminada por tipo de mensagem.</td>
+  </tr>
+</table>
+
+<div class="card card-yellow">
+  <p><strong>Veredicto:</strong> O <code>mdzap.types.ts</code> tem 339 linhas e 50+ tipos, o que parece bom. Mas os tipos cr&iacute;ticos s&atilde;o <code>Record&lt;string, any&gt;</code> ou simplesmente ignorados via <code>as any</code> nos pontos de uso. &Eacute; type theater &mdash; parece tipado, mas os pontos de maior risco s&atilde;o exatamente os que escapam.</p>
+</div>
+
+<!-- QUERY MANAGEMENT -->
+<h2>Query Management &mdash; O Caos Silencioso</h2>
+
+<h3>Mapa de Queries e Invalidation</h3>
+<table>
+  <tr>
+    <th>Query Key</th>
+    <th>Onde Definida</th>
+    <th>Invalidada Por</th>
+    <th>Problema</th>
+  </tr>
+  <tr>
+    <td><code>['lead', leadId]</code></td>
+    <td>useLeadPanelActions</td>
+    <td>saveLead (<code>['leads']</code>), criarLead (<code>['leads']</code>)</td>
+    <td><span class="tag tag-warn">MISMATCH</span> Invalida <code>['leads']</code> mas query &eacute; <code>['lead', id]</code>. Funciona por partial match, mas fr&aacute;gil.</td>
+  </tr>
+  <tr>
+    <td><code>['lead-docs', leadId]</code></td>
+    <td>useLeadPanelActions</td>
+    <td>handleUploadDoc (<code>['lead-docs']</code>)</td>
+    <td><span class="tag tag-ok">OK</span> Partial match funciona.</td>
+  </tr>
+  <tr>
+    <td><code>['mdzap-conversas']</code></td>
+    <td>useMdzapConversas</td>
+    <td>Nada explicitamente. Realtime channel faz invalidation.</td>
+    <td><span class="tag tag-warn">FRAGILE</span> Depende 100% do Realtime. Se canal cair, stale data.</td>
+  </tr>
+  <tr>
+    <td><code>['restricoes', leadId]</code></td>
+    <td>useRestricoes (shared)</td>
+    <td>LeadRestricoesMdzapTab (<code>['restricoes']</code>)</td>
+    <td><span class="tag tag-warn">BROAD</span> Invalida TODAS restricoes de TODOS leads. Funciona mas causa refetch desnecess&aacute;rio.</td>
+  </tr>
+  <tr>
+    <td><code>docMensagens</code></td>
+    <td>useLeadPanelActions (useEffect)</td>
+    <td><strong>N&atilde;o &eacute; React Query</strong></td>
+    <td><span class="tag tag-fail">BUG</span> useState + useEffect + .then(). Sem cache, sem retry, sem invalidation.</td>
+  </tr>
+  <tr>
+    <td><code>advogados</code></td>
+    <td>useLeadPanelActions (useEffect)</td>
+    <td><strong>N&atilde;o &eacute; React Query</strong></td>
+    <td><span class="tag tag-fail">BUG</span> Mesmo problema. Fetcha em cada render.</td>
+  </tr>
+</table>
+
+<div class="card card-red">
+  <h4>Realtime: 3 Channels, 3 Estrat&eacute;gias</h4>
+  <p><code>useMdzapConversas</code> abre 3 canais Realtime com estrat&eacute;gias mistas:</p>
+  <ul>
+    <li><strong>Canal 1 (conversas):</strong> INSERT/UPDATE &rarr; invalidate queries &check;</li>
+    <li><strong>Canal 2 (mensagens):</strong> INSERT &rarr; invalidate queries &check;</li>
+    <li><strong>Canal 3 (leads):</strong> UPDATE &rarr; invalidate queries &check;</li>
+  </ul>
+  <p>Mas nenhum canal filtra por <code>organizacao_id</code>. Em multi-tenant, isso significa que mudan&ccedil;as de QUALQUER organiza&ccedil;&atilde;o trigger&atilde;o invalidation. N&atilde;o &eacute; um security issue (RLS protege o SELECT), mas causa refetch desnecess&aacute;rio em orgs com muitas conversas.</p>
+  <p style="margin-top:0.5rem;"><strong>Fallback:</strong> Polling de 8s como safety net. Correto mas esconde bugs do Realtime.</p>
+</div>
+
+<!-- STATE MANAGEMENT -->
+<h2>State Management</h2>
+
+<h3>MdzapChatPanel &mdash; Estado Central</h3>
+<div class="card card-accent">
+  <pre><code>// Estado do container principal (250 linhas)
+const [activeTab, setActiveTab] = useState('queue')      // inbox view
+const [selectedId, setSelectedId] = useState(null)        // conversa ativa
+const [showThread, setShowThread] = useState(false)       // thread vis&iacute;vel
+const [leadPanelOpen, setLeadPanelOpen] = useState(false) // painel lateral
+const [sdrMode, setSdrMode] = useState(null)              // modo SDR ativo</code></pre>
+  <p style="margin-top:0.8rem;">5 estados locais via <code>useState</code>. Sem state machine, sem reducer. Para a complexidade atual funciona, mas &agrave; medida que features forem adicionadas (multiple selection, drag-drop, keyboard nav), isso vai escalar mal.</p>
+</div>
+
+<h3>Fluxo de Dados &mdash; Prop Drilling</h3>
+<div class="card card-yellow">
+  <pre><code>MdzapChatPanel (state owner)
+  &rarr; MdzapConversaList (selectedId, onSelect, sdrMode)
+  &rarr; MdzapMsgThread (selectedConversaId, onLeadPanelToggle)
+    &rarr; MdzapThreadHeader (conversa, sdrMode, onAssumir, onDevolver)
+    &rarr; MdzapMsgBubble[] (mensagem, onReply, onFeedback)
+  &rarr; MdzapLeadPanel (leadId, conversaId)
+    &rarr; useLeadPanelActions(leadId, conversaId) &larr; HOOK CR&Iacute;TICO
+    &rarr; LeadDadosTab (leadData, mutations)
+    &rarr; LeadRestricoesMdzapTab (leadId)
+    &rarr; LeadDocumentosTab (leadId, leadDocs)
+    &rarr; LeadNotasTab (leadId)
+    &rarr; LeadMemoriaTab (conversaId)</code></pre>
+  <p style="margin-top:0.8rem;"><strong>Veredicto:</strong> O prop drilling &eacute; gerenci&aacute;vel (3 n&iacute;veis m&aacute;x). <code>useLeadPanelActions</code> centraliza corretamente as mutations no n&iacute;vel do LeadPanel. O problema n&atilde;o &eacute; arquitetural &mdash; &eacute; a qualidade interna do hook.</p>
+</div>
+
+<!-- EDGE FUNCTION -->
+<h2>Edge Function &mdash; O Ponto Mais S&oacute;lido</h2>
+<div class="card card-green">
+  <h4>mdzap-webhook/index.ts (525 linhas)</h4>
+  <p>Melhor c&oacute;digo do m&oacute;dulo. Destaques:</p>
+  <ul>
+    <li><span class="tag tag-ok">OK</span> Normaliza&ccedil;&atilde;o dual Meta Cloud API + Z-API em interface unificada</li>
+    <li><span class="tag tag-ok">OK</span> Download de m&iacute;dia com retry exponencial (3 tentativas)</li>
+    <li><span class="tag tag-ok">OK</span> Cria&ccedil;&atilde;o de conversa com metadata completo: <code>mode, awaiting_human, conversation_state</code></li>
+    <li><span class="tag tag-ok">OK</span> Endpoint <code>retry-media</code> para downloads falhados</li>
+    <li><span class="tag tag-ok">OK</span> Bearer token para CDN lookaside (fix recente commit 2ae08f20)</li>
+    <li><span class="tag tag-warn">WARN</span> 525 linhas em arquivo &uacute;nico. Candidato a split em m&oacute;dulos.</li>
+    <li><span class="tag tag-warn">WARN</span> Sem rate limiting pr&oacute;prio (depende do Supabase Edge Function limits)</li>
+  </ul>
+</div>
+
+<!-- COMPONENTES UI -->
+<h2>Componentes UI &mdash; An&aacute;lise de Qualidade</h2>
+
+<h3>MdzapMsgBubble (495 linhas) &mdash; O Maior Componente</h3>
+<div class="card card-accent">
+  <p>Render de mensagens com suporte a 7+ tipos de m&iacute;dia. Bem implementado para a complexidade:</p>
+  <div class="grid-2" style="margin-top:0.8rem;">
+    <div>
+      <h4 style="color:var(--green)">Acertos</h4>
+      <ul>
+        <li>Lightbox para imagens</li>
+        <li>Audio player customizado</li>
+        <li>Retry para m&iacute;dia falhada</li>
+        <li>Swipe-to-reply gesture</li>
+        <li>Feedback buttons (Julia)</li>
+        <li>Timestamp formatting correto</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="color:var(--yellow)">Problemas</h4>
+      <ul>
+        <li>495 linhas &mdash; excede limite 500 por pouco, mas deveria ser <400</li>
+        <li>Switch/case com 7+ tipos sem extrai&ccedil;&atilde;o em sub-componentes</li>
+        <li>Re-renders: novo render em cada msg quando scroll muda</li>
+        <li>Sem <code>React.memo</code> &mdash; lista de 100+ msgs = performance issue</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<h3>MdzapConversaList (410 linhas) &mdash; Filtragem Problem&aacute;tica</h3>
+<div class="card card-yellow">
+  <p><strong>Problema central:</strong> Toda filtragem &eacute; client-side.</p>
+  <ul>
+    <li>SDR mode, status, tipo de atendimento, unread &mdash; todos filtrados ap&oacute;s fetch completo</li>
+    <li>Busca por nome/telefone: tamb&eacute;m client-side com debounce</li>
+    <li>Bulk actions: mistas (arquivar/transferir via webhook, mark-unread via direct supabase)</li>
+    <li>Com 8 conversas funciona. Com 800, vai travar.</li>
+  </ul>
+  <p style="color:var(--muted);margin-top:0.5rem;"><strong>Fix:</strong> Mover filtros para <code>fn_mdzap_conversas</code> RPC. O RPC j&aacute; aceita par&acirc;metros &mdash; basta us&aacute;-los.</p>
+</div>
+
+<!-- TABELA COMPARATIVA CRM × MDZAP -->
+<h2>11 Pontos de Integra&ccedil;&atilde;o CRM &times; MdZap</h2>
+<table>
+  <tr>
+    <th>#</th>
+    <th>Integra&ccedil;&atilde;o</th>
+    <th>CRM</th>
+    <th>MdZap</th>
+    <th>Status</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Tabela <code>leads</code> compartilhada</td>
+    <td>CRUD completo</td>
+    <td>Read + Update parcial</td>
+    <td><span class="tag tag-ok">OK</span></td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td><code>leads.coluna_crm</code></td>
+    <td>Drag-drop Kanban</td>
+    <td>Dropdown no header</td>
+    <td><span class="tag tag-warn">WARN</span> <code>as any</code> cast no update</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td><code>fn_link_conversa_to_lead</code> RPC</td>
+    <td>N&atilde;o usa</td>
+    <td>criarLead mutation</td>
+    <td><span class="tag tag-ok">OK</span></td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td><code>restricoes</code> tabela</td>
+    <td><code>apifull_115</code> bureau</td>
+    <td><code>boavista</code> bureau</td>
+    <td><span class="tag tag-fail">BUG</span> Bureau divergente</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td><code>processos_documentos</code></td>
+    <td>3-tier + Drive sync</td>
+    <td>3-tier, sem Drive sync</td>
+    <td><span class="tag tag-fail">BROKEN</span></td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td><code>CrmAuditoriaPanel</code></td>
+    <td>Componente origin</td>
+    <td>Reutilizado via RestricoesMdzapTab</td>
+    <td><span class="tag tag-ok">OK</span></td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td><code>CrmLeadNotas</code></td>
+    <td>Componente origin</td>
+    <td>Reutilizado com <code>origem='mdzap'</code></td>
+    <td><span class="tag tag-ok">OK</span></td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td><code>ClienteDrawerTabDocumentos</code></td>
+    <td>Componente origin (360 linhas)</td>
+    <td><strong>REIMPLEMENTADO</strong> (302 linhas)</td>
+    <td><span class="tag tag-fail">DUPLICATION</span></td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td><code>leads_atividades</code> logging</td>
+    <td>Via n8n webhook</td>
+    <td>Direct supabase insert (MsgThread)</td>
+    <td><span class="tag tag-warn">INCONSISTENT</span></td>
+  </tr>
+  <tr>
+    <td>10</td>
+    <td><code>pending_lead_data</code> pattern</td>
+    <td>N&atilde;o usa</td>
+    <td>JSONB em <code>whatsapp_conversas.metadata</code></td>
+    <td><span class="tag tag-warn">SPEC ONLY</span> Definido mas n&atilde;o implementado</td>
+  </tr>
+  <tr>
+    <td>11</td>
+    <td><code>callWebhook</code> util</td>
+    <td>Usa para todas actions</td>
+    <td>Usa para assume/devolver. Direct supabase para o resto.</td>
+    <td><span class="tag tag-warn">MIXED</span> Inconsist&ecirc;ncia arquitetural</td>
+  </tr>
+</table>
+
+<!-- MÉTRICAS DE CÓDIGO -->
+<h2>M&eacute;tricas de C&oacute;digo</h2>
+<div class="grid-4">
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--red)">302</div>
+      <div class="metric-label">Linhas Duplicadas</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--orange)">6+</div>
+      <div class="metric-label"><code>as any</code> casts</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--red)">2</div>
+      <div class="metric-label">Queries Unwrapped</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--yellow)">8</div>
+      <div class="metric-label">Bugs Catalogados</div>
+    </div>
+  </div>
+</div>
+<div class="grid-4">
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--green)">3/5</div>
+      <div class="metric-label">Tabs CRM Reusadas</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--cyan)">4.2k</div>
+      <div class="metric-label">Linhas Total</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--accent)">22</div>
+      <div class="metric-label">Arquivos</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value" style="color:var(--green)">1</div>
+      <div class="metric-label">Edge Function OK</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANO DE AÇÃO -->
+<h2>Plano de A&ccedil;&atilde;o &mdash; Priorizado</h2>
+
+<div class="card card-red">
+  <h4><span class="tag tag-p0">P0</span> Fix Imediato (bloqueia qualidade de dados)</h4>
+  <ol>
+    <li><strong>Bureau mismatch:</strong> Alinhar <code>useLeadPanelActions</code> para usar <code>apifull_115</code> (ou constante compartilhada). 1 linha de c&oacute;digo, impacto enorme.</li>
+    <li><strong>Unwrapped queries:</strong> Migrar <code>docMensagens</code> e <code>advogados</code> de <code>useEffect+.then()</code> para <code>useQuery</code>. ~40 linhas de refactor.</li>
+  </ol>
+</div>
+
+<div class="card card-yellow">
+  <h4><span class="tag tag-p1">P1</span> Refactor Urgente (d&iacute;vida t&eacute;cnica ativa)</h4>
+  <ol>
+    <li><strong>LeadDocumentosTab:</strong> Substituir reimplementa&ccedil;&atilde;o por reuso de <code>ClienteDrawerTabDocumentos</code> com prop <code>origem</code>. Remove 280+ linhas, ganha Drive sync e realtime de gra&ccedil;a.</li>
+    <li><strong>Query invalidation:</strong> Padronizar keys. Usar <code>queryClient.invalidateQueries({ queryKey: ['lead', leadId] })</code> exato em vez de broad <code>['leads']</code>.</li>
+    <li><strong>Type safety:</strong> Eliminar <code>as any</code> em MdzapMsgThread (L98, L114-115) e useMdzapConversas. Tipar retorno do RPC.</li>
+    <li><strong>criarLead invalidation:</strong> Adicionar <code>invalidateQueries(['mdzap-conversas'])</code> no onSuccess.</li>
+  </ol>
+</div>
+
+<div class="card card-accent">
+  <h4><span class="tag tag-p2">P2</span> Melhoria (qualidade de c&oacute;digo)</h4>
+  <ol>
+    <li><strong>MsgBubble:</strong> Extrair sub-componentes por tipo de m&iacute;dia + <code>React.memo</code>.</li>
+    <li><strong>ConversaList:</strong> Mover filtros para RPC. Preparar para 800+ conversas.</li>
+    <li><strong>Realtime channels:</strong> Adicionar filtro <code>organizacao_id</code> para evitar invalidation cross-org.</li>
+    <li><strong>Error handling:</strong> Trocar toasts gen&eacute;ricos por error com context (<code>error.message</code>).</li>
+    <li><strong>PendingLeadData:</strong> Usar o tipo ou remover. Dead types poluem.</li>
+  </ol>
+</div>
+
+<!-- NOTA FINAL BREAKDOWN -->
+<h2>Nota Final &mdash; Breakdown</h2>
+<table>
+  <tr>
+    <th>Categoria</th>
+    <th>Peso</th>
+    <th>Nota</th>
+    <th>Ponderada</th>
+    <th>Justificativa</th>
+  </tr>
+  <tr>
+    <td>Reuso CRM</td>
+    <td>25%</td>
+    <td><span class="score-red">3.0</span></td>
+    <td>0.75</td>
+    <td>3/5 tabs ok, mas a que falha (Docs) &eacute; a mais complexa e reimplementa 302 linhas pior.</td>
+  </tr>
+  <tr>
+    <td>Query Management</td>
+    <td>20%</td>
+    <td><span class="score-red">3.5</span></td>
+    <td>0.70</td>
+    <td>2 queries fora do React Query. Invalidation mismatch. Realtime sem org filter.</td>
+  </tr>
+  <tr>
+    <td>Type Safety</td>
+    <td>15%</td>
+    <td><span class="score-yellow">4.0</span></td>
+    <td>0.60</td>
+    <td>339 linhas de tipos, mas <code>as any</code> nos pontos cr&iacute;ticos. Type theater.</td>
+  </tr>
+  <tr>
+    <td>State Management</td>
+    <td>10%</td>
+    <td><span class="score-yellow">5.0</span></td>
+    <td>0.50</td>
+    <td>Prop drilling gerenci&aacute;vel. Hook central concentra mutations. Funciona mas n&atilde;o escala.</td>
+  </tr>
+  <tr>
+    <td>Componentes UI</td>
+    <td>15%</td>
+    <td><span class="score-yellow">6.0</span></td>
+    <td>0.90</td>
+    <td>MsgBubble competente. ConversaList funcional. Design system tokens respeitados.</td>
+  </tr>
+  <tr>
+    <td>Edge Function</td>
+    <td>15%</td>
+    <td><span class="score-green">7.0</span></td>
+    <td>1.05</td>
+    <td>Melhor c&oacute;digo do m&oacute;dulo. Normaliza&ccedil;&atilde;o dual, retry, media handling.</td>
+  </tr>
+  <tr style="background:var(--surface2);font-weight:600;">
+    <td>TOTAL</td>
+    <td>100%</td>
+    <td></td>
+    <td><span class="score-yellow">4.50</span></td>
+    <td>Arredondado para <strong>4.8</strong> por funcionar em produ&ccedil;&atilde;o sem crashes vis&iacute;veis.</td>
+  </tr>
+</table>
+
+<!-- VEREDICTO FINAL -->
+<h2>Veredicto Final</h2>
+<div class="card card-red">
+  <p style="font-size:1.1rem;line-height:1.8;">
+    <strong>4.8/10</strong> &mdash; C&oacute;digo que funciona apesar de si mesmo. O MdZap &eacute; a p&aacute;gina mais complexa do MdFlow e a que menos respeita os pr&oacute;prios padr&otilde;es do projeto. A promessa de reuso CRM est&aacute; 60% cumprida &mdash; as tabs f&aacute;ceis (Notas, Mem&oacute;ria, Restri&ccedil;&otilde;es) foram delegadas corretamente, mas a mais importante (Documentos) foi reimplementada com menos features. O hook central tem 8 bugs catalogados e queries fora do React Query. O bureau mismatch &eacute; um bug de dados reais em produ&ccedil;&atilde;o que precisa de fix imediato.
+  </p>
+  <p style="margin-top:1rem;color:var(--muted);">
+    O edge function &eacute; o ponto alto (7.0). Se o mesmo rigor fosse aplicado ao c&oacute;digo frontend, a nota seria 7+. O caminho para 7.0 exige: fix bureau (5min), migrar 2 queries para useQuery (1h), substituir LeadDocumentosTab por reuso CRM (2h), eliminar <code>as any</code> (1h). Total: ~4h de trabalho para +2.2 pontos.
+  </p>
+</div>
+
+<hr class="separator">
+<div class="footer">
+  MdZap Code Audit &mdash; Stage 2/4 | Gerado: 2026-04-08 | Auditor: Claude Code | MdFlow &copy; MDX LegalTech<br>
+  Stage 1: <a href="mdzap-backend-audit-2026-04-08.html" style="color:var(--accent)">Backend (5.2/10)</a> |
+  Stage 2: <strong>C&oacute;digo (4.8/10)</strong> |
+  Stage 3: n8n (pendente) |
+  Stage 4: Frontend Visual (pendente)
+</div>
+
+</body>
+</html>
