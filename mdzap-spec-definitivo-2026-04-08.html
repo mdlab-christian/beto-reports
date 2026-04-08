@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — SPEC Definitivo v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --sidebar-w: 260px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: #0a0c14;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 0 0 32px 0;
+}
+
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.sidebar-logo .logo-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+
+.sidebar-logo .logo-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.sidebar-logo .logo-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(124,109,255,0.15);
+  color: var(--accent);
+  border: 1px solid rgba(124,109,255,0.3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.sidebar-section {
+  padding: 6px 12px 2px;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 20px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.81rem;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+
+.sidebar a:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.04);
+  border-left-color: var(--accent);
+}
+
+.sidebar a .nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sidebar a .nav-num {
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* ─── MAIN ─── */
+.main {
+  margin-left: var(--sidebar-w);
+  padding: 40px 48px;
+  max-width: calc(1200px + var(--sidebar-w));
+}
+
+/* ─── HERO ─── */
+.hero {
+  text-align: center;
+  padding: 48px 24px 40px;
+  background: linear-gradient(180deg, rgba(124,109,255,0.06) 0%, transparent 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(124,109,255,0.15);
+  margin-bottom: 40px;
+}
+
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 14px; }
+
+.gradient-text {
+  font-size: 2.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+
+.hero-sub {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* ─── GRID ─── */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+
+@media(max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 20px; }
+  .g2, .g3, .g4 { grid-template-columns: 1fr; }
+  .gradient-text { font-size: 1.6rem; }
+}
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* ─── STAT CARD ─── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ─── SECTION ─── */
+.section { margin: 40px 0; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.section-icon { font-size: 1.3rem; }
+.section-header h2 { font-size: 1.15rem; font-weight: 600; }
+.section-header .section-meta { margin-left: auto; font-size: 0.72rem; color: var(--text-muted); }
+
+/* ─── TABLE ─── */
+table { width: 100%; border-collapse: collapse; }
+
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+  vertical-align: top;
+}
+
+tr:hover td { background: rgba(255,255,255,0.02); }
+th:first-child, td:first-child { border-radius: 0; }
+
+/* ─── STATUS PILLS ─── */
+.sp { padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 500; white-space: nowrap; display: inline-block; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.sp-dead { background: rgba(122,130,168,0.1); color: var(--text-muted); }
+
+/* ─── CODE ─── */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+}
+
+/* ─── RULES CARD (P0) ─── */
+.rules-card {
+  background: rgba(255,107,107,0.06);
+  border: 2px solid rgba(255,107,107,0.3);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.rules-card .rules-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent2);
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rules-card .rule-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,107,107,0.1);
+  align-items: flex-start;
+}
+
+.rules-card .rule-item:last-child { border-bottom: none; }
+
+.rule-num {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255,107,107,0.2);
+  border: 1px solid rgba(255,107,107,0.4);
+  color: var(--accent2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rule-text { font-size: 0.84rem; line-height: 1.5; }
+.rule-text strong { color: var(--text); }
+.rule-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+
+/* ─── FLOW DIAGRAM ─── */
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.flow-step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 0;
+  position: relative;
+}
+
+.flow-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flow-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.flow-line {
+  width: 2px;
+  flex: 1;
+  background: var(--border);
+  margin: 0 auto;
+  min-height: 20px;
+}
+
+.flow-body {
+  padding: 0 0 24px 16px;
+}
+
+.flow-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding-top: 8px;
+}
+
+.flow-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.executor-badge {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.exec-sistema { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.exec-julia { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.2); }
+.exec-docs { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.2); }
+.exec-humano { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.2); }
+.exec-mixed { background: rgba(255,107,107,0.08); color: var(--accent2); border: 1px solid rgba(255,107,107,0.2); }
+
+.flow-content { font-size: 0.83rem; color: var(--text-muted); }
+.flow-content ul { list-style: none; }
+.flow-content ul li { padding: 2px 0; }
+.flow-content ul li::before { content: "→ "; color: var(--accent); }
+.flow-content .flow-alert {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(255,209,102,0.08);
+  border-left: 3px solid var(--accent4);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.8rem;
+  color: var(--accent4);
+}
+
+.flow-content .flow-error {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(255,107,107,0.06);
+  border-left: 3px solid var(--accent2);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.8rem;
+  color: var(--accent2);
+}
+
+.flow-content .flow-ok {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(79,255,176,0.06);
+  border-left: 3px solid var(--accent3);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.8rem;
+  color: var(--accent3);
+}
+
+/* step colors */
+.fc-1 { background: rgba(124,109,255,0.2); border: 2px solid var(--accent); color: var(--accent); }
+.fc-2 { background: rgba(79,255,176,0.15); border: 2px solid var(--accent3); color: var(--accent3); }
+.fc-3 { background: rgba(79,255,176,0.15); border: 2px solid var(--accent3); color: var(--accent3); }
+.fc-4 { background: rgba(91,196,245,0.15); border: 2px solid var(--accent5); color: var(--accent5); }
+.fc-5 { background: rgba(91,196,245,0.15); border: 2px solid var(--accent5); color: var(--accent5); }
+.fc-6 { background: rgba(79,255,176,0.15); border: 2px solid var(--accent3); color: var(--accent3); }
+.fc-7 { background: rgba(255,209,102,0.15); border: 2px solid var(--accent4); color: var(--accent4); }
+.fc-8 { background: rgba(255,209,102,0.15); border: 2px solid var(--accent4); color: var(--accent4); }
+.fc-9 { background: rgba(91,196,245,0.15); border: 2px solid var(--accent5); color: var(--accent5); }
+.fc-10 { background: rgba(124,109,255,0.2); border: 2px solid var(--accent); color: var(--accent); }
+
+/* ─── DECISION CARDS ─── */
+.decision-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  position: relative;
+}
+
+.decision-card.definido { border-color: rgba(79,255,176,0.25); }
+.decision-card.investigar { border-color: rgba(255,209,102,0.25); }
+
+.decision-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.decision-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  min-width: 26px;
+  margin-top: 2px;
+}
+
+.decision-title { font-size: 0.88rem; font-weight: 600; flex: 1; }
+
+.decision-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.db-definido { background: rgba(79,255,176,0.12); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.db-investigar { background: rgba(255,209,102,0.12); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+
+.decision-body { font-size: 0.81rem; color: var(--text-muted); line-height: 1.6; padding-left: 36px; }
+.decision-body strong { color: var(--text); }
+.decision-body .decision-note {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  font-size: 0.78rem;
+}
+
+/* ─── STATUS SYSTEM ─── */
+.system-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+
+.system-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.system-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.system-status {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.ss-crit { background: rgba(255,107,107,0.15); color: var(--accent2); border: 1px solid rgba(255,107,107,0.3); }
+.ss-warn { background: rgba(255,209,102,0.12); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.ss-absent { background: rgba(122,130,168,0.1); color: var(--text-muted); border: 1px solid rgba(122,130,168,0.2); }
+.ss-review { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.2); }
+
+.system-desc { font-size: 0.8rem; color: var(--text-muted); }
+
+/* ─── BUG TABLE ROWS ─── */
+tr.sev-p0 td { border-left: 3px solid var(--accent2); }
+tr.sev-p1 td:first-child { border-left: 3px solid var(--accent4); }
+tr.sev-p2 td:first-child { border-left: 3px solid var(--accent5); }
+tr.sev-p3 td:first-child { border-left: 3px solid var(--text-muted); }
+
+tr.sev-p0 { background: rgba(255,107,107,0.04); }
+tr.sev-p1 { background: rgba(255,209,102,0.03); }
+tr.sev-p2 { background: rgba(91,196,245,0.02); }
+
+/* ─── PROBABILITY BARS ─── */
+.prob-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.prob-row:last-child { border-bottom: none; }
+
+.prob-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  min-width: 28px;
+}
+
+.prob-label { flex: 1; font-size: 0.84rem; }
+.prob-label .prob-sub { font-size: 0.76rem; color: var(--text-muted); }
+
+.prob-pct {
+  font-size: 0.84rem;
+  font-weight: 700;
+  min-width: 38px;
+  text-align: right;
+}
+
+.prob-bar-wrap {
+  width: 100px;
+  height: 6px;
+  background: var(--surface3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.prob-bar {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* ─── SPRINT CARDS ─── */
+.sprint-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.sprint-header {
+  padding: 14px 20px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sprint-title { font-size: 0.88rem; font-weight: 600; }
+.sprint-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-left: auto;
+}
+
+.sprint-body { padding: 16px 20px; }
+
+.sprint-item {
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.83rem;
+}
+
+.sprint-item:last-child { border-bottom: none; }
+
+.sprint-idx {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  min-width: 20px;
+  padding-top: 1px;
+}
+
+.sprint-item .sprint-text { color: var(--text-muted); }
+.sprint-item .sprint-text strong { color: var(--text); }
+
+/* ─── FILE TABLE ─── */
+.file-path {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent5);
+}
+
+/* ─── CHECKLIST ─── */
+.check-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: var(--surface2);
+  font-size: 0.84rem;
+}
+
+.check-icon { font-size: 1rem; }
+.check-label { font-weight: 500; margin-bottom: 2px; }
+.check-desc { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ─── FOOTER ─── */
+.footer {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+}
+
+/* ─── INLINE HIGHLIGHT ─── */
+.hl-green { color: var(--accent3); font-weight: 600; }
+.hl-yellow { color: var(--accent4); font-weight: 600; }
+.hl-red { color: var(--accent2); font-weight: 600; }
+.hl-blue { color: var(--accent5); font-weight: 600; }
+.hl-purple { color: var(--accent); font-weight: 600; }
+
+/* ─── SCROLL SMOOTH ─── */
+html { scroll-behavior: smooth; }
+
+/* ─── STATES TABLE ─── */
+.n8n-crit td { color: var(--accent2) !important; }
+
+/* ─── AJG TABLE ─── */
+.ajg-table td:first-child { font-weight: 600; }
+.ajg-table td:last-child {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent4);
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">MdZap SPEC v3</div>
+    <div class="logo-sub">Decisoes finais · 08/04/2026</div>
+    <span class="logo-badge">documento final</span>
+  </div>
+
+  <div class="sidebar-section">Regras</div>
+  <a href="#sec1"><span class="nav-dot" style="background:var(--accent2)"></span>P0 da Julia <span class="nav-num">S1</span></a>
+
+  <div class="sidebar-section">Fluxo</div>
+  <a href="#sec2"><span class="nav-dot" style="background:var(--accent3)"></span>Fluxo Completo <span class="nav-num">S2</span></a>
+
+  <div class="sidebar-section">Decisoes</div>
+  <a href="#sec3"><span class="nav-dot" style="background:var(--accent)"></span>P1–P10 Decisoes <span class="nav-num">S3</span></a>
+
+  <div class="sidebar-section">Sistema</div>
+  <a href="#sec4"><span class="nav-dot" style="background:var(--accent4)"></span>Estado Atual <span class="nav-num">S4</span></a>
+
+  <div class="sidebar-section">Bugs</div>
+  <a href="#sec5"><span class="nav-dot" style="background:var(--accent2)"></span>19 Bugs UI <span class="nav-num">S5</span></a>
+
+  <div class="sidebar-section">Diagnostico</div>
+  <a href="#sec6"><span class="nav-dot" style="background:var(--accent5)"></span>Midia Inbound <span class="nav-num">S6</span></a>
+  <a href="#sec7"><span class="nav-dot" style="background:var(--text-muted)"></span>Bugs QA R4 <span class="nav-num">S7</span></a>
+
+  <div class="sidebar-section">Roadmap</div>
+  <a href="#sec8"><span class="nav-dot" style="background:var(--accent)"></span>Sprints <span class="nav-num">S8</span></a>
+  <a href="#sec9"><span class="nav-dot" style="background:var(--accent5)"></span>Arquivos <span class="nav-num">S9</span></a>
+  <a href="#sec10"><span class="nav-dot" style="background:var(--accent3)"></span>Checklist Val. <span class="nav-num">S10</span></a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">📱</span>
+    <h1 class="gradient-text">MdZap — SPEC Definitivo v3</h1>
+    <p class="hero-sub">Decisoes finais · Fluxo corrigido · Bugs UI · Diagnostico Midia</p>
+    <div class="badges">
+      <span class="badge bp">Reuniao 08/04/2026</span>
+      <span class="badge bg">Input /project mdzap</span>
+      <span class="badge by">10 Secoes</span>
+      <span class="badge bb">19 Bugs mapeados</span>
+      <span class="badge br">n8n 6.25% uptime</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4" style="margin-bottom:40px">
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent3)">10</div>
+      <div class="stat-label">Decisoes P1–P10</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent2)">19</div>
+      <div class="stat-label">Bugs UI mapeados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent4)">6.25%</div>
+      <div class="stat-label">n8n taxa sucesso</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent)">10</div>
+      <div class="stat-label">Etapas do fluxo</div>
+    </div>
+  </div>
+
+  <!-- SECAO 1 — REGRAS P0 -->
+  <div class="section" id="sec1">
+    <div class="section-header">
+      <span class="section-icon">🚨</span>
+      <h2>Regras P0 da Julia</h2>
+      <span class="section-meta">NUNCA violar — absolutas</span>
+    </div>
+
+    <div class="rules-card">
+      <div class="rules-title">
+        <span>⛔</span> Regras inviolaveis — violacao = P0 critico
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">1</div>
+        <div class="rule-text">
+          <strong>NUNCA citar nome do escritorio de advocacia parceiro</strong>
+          <div class="rule-sub">Referencia sempre como "escritorio de advocacia parceiro"</div>
+        </div>
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">2</div>
+        <div class="rule-text">
+          <strong>NUNCA citar nome de advogados</strong>
+          <div class="rule-sub">Sempre "escritorio de advocacia parceiro" — nunca nome proprio</div>
+        </div>
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">3</div>
+        <div class="rule-text">
+          <strong>NUNCA mencionar garantia — nem implicita</strong>
+          <div class="rule-sub">Pode mencionar: "prazo de 90 dias para primeiro resultado"</div>
+        </div>
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">4</div>
+        <div class="rule-text">
+          <strong>NUNCA mencionar "Indique Ganho"</strong>
+          <div class="rule-sub">Feature nao pronta no sistema — proibido qualquer mencao</div>
+        </div>
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">5</div>
+        <div class="rule-text">
+          <strong>Lead diz NAO → Julia faz UMA pergunta de entendimento</strong>
+          <div class="rule-sub">"Ficou com alguma duvida?" — Se lead nao responde: cancela follow-up definitivamente. Se responde com interesse: pode continuar.</div>
+        </div>
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">6</div>
+        <div class="rule-text">
+          <strong>NUNCA inventar informacoes sobre o caso do lead</strong>
+          <div class="rule-sub">Julia trabalha apenas com dados confirmados via documentos e auditoria real</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 2 — FLUXO COMPLETO -->
+  <div class="section" id="sec2">
+    <div class="section-header">
+      <span class="section-icon">🔄</span>
+      <h2>Fluxo Completo de Atendimento</h2>
+      <span class="section-meta">10 etapas — versao corrigida pos-reuniao</span>
+    </div>
+
+    <div class="flow">
+
+      <!-- E1 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-1">E1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Entrada do Lead</span>
+            <span class="executor-badge exec-sistema">Sistema</span>
+          </div>
+          <div class="flow-content">
+            <ul>
+              <li>Lead clica no Facebook Ads → WhatsApp abre com mensagem pre-preenchida</li>
+              <li>Mensagem contem: CPF + Nome (nome SEMPRE vem)</li>
+              <li>Sistema registra contato em <span class="hl-purple">whatsapp_contatos</span></li>
+              <li>Lead <strong>NAO</strong> e criado no CRM ainda (P1 em investigacao)</li>
+              <li>Julia e acionada automaticamente</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- E2 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-2">E2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Boas-vindas</span>
+            <span class="executor-badge exec-julia">Julia</span>
+          </div>
+          <div class="flow-content">
+            <div class="flow-alert">CORRECAO: primeira mensagem e BREVE — nao explicar o processo completo (evita desconfianca)</div>
+            <ul style="margin-top:8px">
+              <li>Atualiza nome do contato com nome recebido</li>
+              <li>Apresentacao curta: quem e a Midas, que faz auditoria gratuita de CPF</li>
+              <li>Pergunta de interesse: "Tem interesse em descobrir a situacao do seu CPF?"</li>
+            </ul>
+            <div class="flow-ok" style="margin-top:8px">SIM → solicita documentos</div>
+            <div class="flow-error" style="margin-top:6px">NAO → uma pergunta de entendimento → sem resposta: encerra definitivamente</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E3 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-3">E3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Solicitacao de Documentos</span>
+            <span class="executor-badge exec-julia">Julia</span>
+          </div>
+          <div class="flow-content">
+            <ul>
+              <li>Documento de identificacao: RG ou CNH</li>
+              <li>Comprovante de residencia no nome do lead</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- E4 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-4">E4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Processamento: Identificacao</span>
+            <span class="executor-badge exec-docs">Subagente Docs</span>
+          </div>
+          <div class="flow-content">
+            <ul>
+              <li>Recebe imagem/PDF</li>
+              <li>Verifica legibilidade → se ilegivel: output para Julia pedir foto melhor</li>
+              <li>Extrai: nome completo, data nascimento, CPF, RG</li>
+              <li>Popula dados no sistema</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- E5 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-5">E5</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Processamento: Comprovante de Residencia</span>
+            <span class="executor-badge exec-docs">Subagente Docs</span>
+            <span class="executor-badge exec-julia">Julia</span>
+          </div>
+          <div class="flow-content">
+            <ul>
+              <li>Verifica legibilidade</li>
+              <li>Verifica se nome OU CPF do lead esta no documento</li>
+            </ul>
+            <div class="flow-error">NAO esta no nome: Julia sugere boleto banco digital (NAO extrato) — mostra endereco no nome. Sem boleto: instrui declaracao de terceiro.</div>
+            <div style="margin-top:8px; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:8px; font-size:0.78rem; color:var(--text-muted)">
+              <strong style="color:var(--text)">Modelo declaracao terceiro:</strong><br>
+              "Eu, [Nome Terceiro], portador do CPF [X], declaro que [Nome Lead], portador do CPF [Y], reside comigo nesta moradia."<br>
+              <span class="hl-red">OBRIGATORIO: documento de identificacao do terceiro junto</span>
+            </div>
+            <div class="flow-ok">Está no nome: extrai endereco completo → popula no sistema</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E6 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-6">E6</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Pre-Auditoria</span>
+            <span class="executor-badge exec-julia">Julia</span>
+          </div>
+          <div class="flow-content">
+            <ul>
+              <li>Confirma recebimento dos documentos</li>
+              <li>Mensagem: "Perfeito! Vou encaminhar para nossa equipe realizar a auditoria do seu CPF. Em breve retorno com as informacoes! 🔍"</li>
+              <li>Sistema: <span class="hl-purple">awaiting_human=true</span> → badge "Auditoria Pendente" aparece na lista de conversas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- E7 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-7">E7</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Auditoria</span>
+            <span class="executor-badge exec-humano">Humano — Atendente</span>
+          </div>
+          <div class="flow-content">
+            <ul>
+              <li>Atendente ve badge "🔍 Auditoria Pendente" no MdZap</li>
+              <li>Faz auditoria via Boa Vista (API Full)</li>
+              <li>Cadastra lead no CRM com coluna: <span class="hl-purple">em_atendimento</span></li>
+              <li>Popula dados pessoais (ja disponiveis via docs) + restricoes</li>
+              <li>Campo profissao pode faltar → preenchido depois via CTPS</li>
+              <li>Atendente envia resultado ao lead (modo humano)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- E8 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-8">E8</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Resultado da Auditoria</span>
+            <span class="executor-badge exec-humano">Atendente envia</span>
+            <span class="executor-badge exec-julia">Julia retoma</span>
+          </div>
+          <div class="flow-content">
+            <div class="flow-ok">
+              <strong>NOME LIMPO:</strong> PDF do sistema (comprovante de auditoria) → parabenizar lead → nao mencionar Indique Ganho → encerrar cordialmente
+            </div>
+            <div class="flow-error" style="margin-top:8px">
+              <strong>NOME SUJO:</strong> Mencionar empresas por nome (NUNCA valores) → quando empresa se repete: citar frequencia ("39 restricoes da RGE Sul") → demonstrar especialidade → prosseguir para CTPS
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E9 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-9">E9</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Carteira de Trabalho (CTPS)</span>
+            <span class="executor-badge exec-julia">Julia</span>
+            <span class="executor-badge exec-docs">Subagente Docs</span>
+          </div>
+          <div class="flow-content">
+            <ul>
+              <li>Julia pede CTPS — se perguntarem por que: explicar elegibilidade para AJG</li>
+            </ul>
+
+            <div style="margin:10px 0; background:var(--surface2); border-radius:8px; overflow:hidden; border:1px solid var(--border)">
+              <table class="ajg-table">
+                <thead><tr><th>Estado</th><th>Teto AJG</th></tr></thead>
+                <tbody>
+                  <tr><td>RS</td><td>5 salarios minimos</td></tr>
+                  <tr><td>SC</td><td>3 salarios minimos</td></tr>
+                  <tr><td>SP</td><td>3 salarios minimos</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ul>
+              <li>Subagente extrai: salario, contrato aberto/fechado, cargo → profissao</li>
+            </ul>
+            <div class="flow-ok">Contrato ABERTO: cargo → profissao do lead</div>
+            <div style="margin-top:6px; padding:8px 12px; background:rgba(124,109,255,0.06); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; font-size:0.8rem; color:var(--text-muted)">
+              <strong style="color:var(--accent)">Contrato FECHADO:</strong> Julia pergunta situacao:<br>
+              · Empregado em outro lugar → pedir novo documento<br>
+              · Autonomo → nao precisa comprovante (Midas faz renda receita via analise IR)<br>
+              · Desempregado → Julia cadastra profissao="desempregado"
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E10 -->
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-circle fc-10">E10</div>
+          <!-- sem linha no ultimo -->
+        </div>
+        <div class="flow-body">
+          <div class="flow-header">
+            <span class="flow-title">Renda Receita + Procuracao</span>
+            <span class="executor-badge exec-humano">Humano</span>
+            <span class="executor-badge exec-julia">Julia</span>
+          </div>
+          <div class="flow-content">
+            <ul>
+              <li>Renda receita: Midas faz analise IR externamente (processo manual)</li>
+              <li>Se lead nao declarou IR: Julia solicita declaracao IR</li>
+              <li>Humanos geram procuracao no MdFlow (ZapSign)</li>
+              <li>Julia move lead para <span class="hl-purple">aguardando_assinatura</span></li>
+              <li>Julia faz follow-ups: apos 1h sem resposta → segue crm_followup_config</li>
+              <li>Apos assinatura: "Seu caso foi encaminhado ao nosso escritorio de advocacia parceiro. Obrigado pela confianca na Midas! 🎉"</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECAO 3 — DECISOES P1-P10 -->
+  <div class="section" id="sec3">
+    <div class="section-header">
+      <span class="section-icon">✅</span>
+      <h2>Decisoes Finais P1–P10</h2>
+      <span class="section-meta">Todas respondidas na reuniao 08/04</span>
+    </div>
+
+    <div class="grid g2">
+
+      <div class="decision-card investigar">
+        <div class="decision-header">
+          <span class="decision-num">P1</span>
+          <span class="decision-title">Criacao do lead no CRM</span>
+          <span class="decision-badge db-investigar">⚠️ INVESTIGAR</span>
+        </div>
+        <div class="decision-body">
+          <strong>Pre-cadastro:</strong> dados ficam na conversa (whatsapp_contatos + metadata) ate engajamento real.<br>
+          Lead so e criado no CRM quando: lead enviar documentos OU confirmar interesse de forma definitiva.
+          <div class="decision-note">Risco evitado: leads de spam do Facebook Ads poluindo o banco.<br>Schema atual: whatsapp_contatos + whatsapp_conversas (lead_id nullable).<br><span class="hl-yellow">Investigar:</span> como mostrar dados da conversa no painel sem lead_id criado.</div>
+        </div>
+      </div>
+
+      <div class="decision-card definido">
+        <div class="decision-header">
+          <span class="decision-num">P2</span>
+          <span class="decision-title">Coluna CRM inicial</span>
+          <span class="decision-badge db-definido">✅ DEFINIDO</span>
+        </div>
+        <div class="decision-body">
+          <strong>em_atendimento</strong> diretamente — leads WhatsApp ja estao em atendimento com Julia.
+          <div class="decision-note"><span class="hl-yellow">Observacao:</span> verificar impacto nos dashboards de "novos leads".</div>
+        </div>
+      </div>
+
+      <div class="decision-card definido">
+        <div class="decision-header">
+          <span class="decision-num">P3</span>
+          <span class="decision-title">Subagente de documentos</span>
+          <span class="decision-badge db-definido">✅ DEFINIDO</span>
+        </div>
+        <div class="decision-body">
+          <strong>n8n workflow separado</strong> — webhook: document-received (criado, nunca implementado).
+          <div class="decision-note">Fluxo: media_id → download Meta → Claude Vision → JSON → atualiza lead → notifica Julia</div>
+        </div>
+      </div>
+
+      <div class="decision-card definido">
+        <div class="decision-header">
+          <span class="decision-num">P4</span>
+          <span class="decision-title">Campo profissao</span>
+          <span class="decision-badge db-definido">✅ DEFINIDO</span>
+        </div>
+        <div class="decision-body">
+          <strong>ADD COLUMN profissao TEXT</strong> em leads.<br>
+          cargo = profissao (mesmo campo, sem duplicar).
+          <div class="decision-note">Nao criar input separado para cargo — profissao basta.</div>
+        </div>
+      </div>
+
+      <div class="decision-card definido">
+        <div class="decision-header">
+          <span class="decision-num">P5</span>
+          <span class="decision-title">Notificacao auditoria</span>
+          <span class="decision-badge db-definido">✅ DEFINIDO</span>
+        </div>
+        <div class="decision-body">
+          <strong>awaiting_human=true</strong> + badge "🔍 Auditoria Pendente" na lista de conversas MdZap.
+          <div class="decision-note">Quando Julia envia mensagem pre-auditoria → n8n seta awaiting_human=true</div>
+        </div>
+      </div>
+
+      <div class="decision-card definido">
+        <div class="decision-header">
+          <span class="decision-num">P6</span>
+          <span class="decision-title">Julia acessa restricoes</span>
+          <span class="decision-badge db-definido">✅ DEFINIDO</span>
+        </div>
+        <div class="decision-body">
+          <strong>n8n consulta leads.restricoes</strong> e injeta no system prompt do Claude.
+          <div class="decision-note">Query: <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent3)">SELECT restricoes FROM leads WHERE id = {lead_id}</code></div>
+        </div>
+      </div>
+
+      <div class="decision-card definido">
+        <div class="decision-header">
+          <span class="decision-num">P7</span>
+          <span class="decision-title">Quem envia resultado auditoria</span>
+          <span class="decision-badge db-definido">✅ DEFINIDO</span>
+        </div>
+        <div class="decision-body">
+          <strong>ATENDENTE SEMPRE ENVIA</strong> (modo humano).
+          <div class="decision-note">Julia assumir esse passo = feature futura — nao implementar agora.</div>
+        </div>
+      </div>
+
+      <div class="decision-card investigar">
+        <div class="decision-header">
+          <span class="decision-num">P8</span>
+          <span class="decision-title">PDF nome limpo</span>
+          <span class="decision-badge db-investigar">⚠️ INVESTIGAR</span>
+        </div>
+        <div class="decision-body">
+          <strong>PDF gerado pelo sistema</strong> via botao de auditoria (comprovante de auditoria).<br>
+          Boa Vista API Full e a unica integrada — Serasa e SPF ainda nao.
+          <div class="decision-note"><span class="hl-yellow">Investigar:</span> fluxo completo do botao de auditoria + como funciona com CRM.</div>
+        </div>
+      </div>
+
+      <div class="decision-card definido">
+        <div class="decision-header">
+          <span class="decision-num">P9</span>
+          <span class="decision-title">Renda Receita</span>
+          <span class="decision-badge db-definido">✅ DEFINIDO</span>
+        </div>
+        <div class="decision-body">
+          <strong>Processo manual externo</strong> por enquanto.
+          <div class="decision-note">Julia: apenas solicita declaracao IR se faltar — nao executa nada automaticamente.</div>
+        </div>
+      </div>
+
+      <div class="decision-card definido">
+        <div class="decision-header">
+          <span class="decision-num">P10</span>
+          <span class="decision-title">Indique Ganho</span>
+          <span class="decision-badge db-definido">✅ DEFINIDO</span>
+        </div>
+        <div class="decision-body">
+          <strong>Julia NAO menciona nada</strong> — feature nao pronta.
+          <div class="decision-note">Implementar quando Indique Ganho estiver pronto no sistema.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECAO 4 — ESTADO DO SISTEMA -->
+  <div class="section" id="sec4">
+    <div class="section-header">
+      <span class="section-icon">🖥️</span>
+      <h2>Estado do Sistema</h2>
+      <span class="section-meta">Pre-implementacao</span>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:24px">
+      <div class="system-card">
+        <div class="system-header">
+          <span class="system-name">n8n Workflows</span>
+          <span class="system-status ss-crit">🔴 CRITICO — 6.25%</span>
+        </div>
+        <div class="system-desc">1 de 16 workflows funcionando. ASSUMIR/DEVOLVER com HTTP 500 (token expirado).</div>
+      </div>
+      <div class="system-card">
+        <div class="system-header">
+          <span class="system-name">Julia</span>
+          <span class="system-status ss-warn">⚠️ PARCIAL</span>
+        </div>
+        <div class="system-desc">Infraestrutura OK. Fluxo Midas nao implementado.</div>
+      </div>
+      <div class="system-card">
+        <div class="system-header">
+          <span class="system-name">Subagente Docs</span>
+          <span class="system-status ss-absent">❌ AUSENTE</span>
+        </div>
+        <div class="system-desc">Webhook criado, nunca implementado.</div>
+      </div>
+      <div class="system-card">
+        <div class="system-header">
+          <span class="system-name">Vinculacao Conversa → Lead</span>
+          <span class="system-status ss-review">🔵 DESIGN EM REVISAO</span>
+        </div>
+        <div class="system-desc">lead_id nullable, painel fica em branco. P1 em investigacao.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">16 Workflows n8n — Status detalhado</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Workflow</th>
+            <th>Status</th>
+            <th>% Sucesso</th>
+            <th>Observacao</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="n8n-crit">
+            <td>ASSUMIR conversa</td>
+            <td><span class="sp sp-block">❌ Falha</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">0%</span></td>
+            <td>HTTP 500 — token expirado</td>
+          </tr>
+          <tr class="n8n-crit">
+            <td>DEVOLVER conversa</td>
+            <td><span class="sp sp-block">❌ Falha</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">0%</span></td>
+            <td>HTTP 500 — token expirado</td>
+          </tr>
+          <tr>
+            <td>julia-inbound-message</td>
+            <td><span class="sp sp-done">✅ Ativo</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent3)">OK</span></td>
+            <td>Unico funcionando (6.25%)</td>
+          </tr>
+          <tr>
+            <td>document-received</td>
+            <td><span class="sp sp-dead">💀 Morto</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--text-muted)">—</span></td>
+            <td>Criado, nunca implementado</td>
+          </tr>
+          <tr>
+            <td>ai-composer</td>
+            <td><span class="sp sp-block">⛔ Quebrado</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">0%</span></td>
+            <td>Reparar Sprint 4</td>
+          </tr>
+          <tr>
+            <td>julia-prompt-save</td>
+            <td><span class="sp sp-block">⛔ Quebrado</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">0%</span></td>
+            <td>Reparar Sprint 4</td>
+          </tr>
+          <tr>
+            <td>media-inbound</td>
+            <td><span class="sp sp-block">❌ Falha</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent2)">0%</span></td>
+            <td>media_id → Storage nao implementado</td>
+          </tr>
+          <tr>
+            <td>lead-create-from-chat</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent4)">—</span></td>
+            <td>Aguardando decisao P1</td>
+          </tr>
+          <tr>
+            <td>auditoria-trigger</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent4)">—</span></td>
+            <td>awaiting_human nao implementado</td>
+          </tr>
+          <tr>
+            <td>followup-scheduler</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent4)">—</span></td>
+            <td>Sprint 2</td>
+          </tr>
+          <tr>
+            <td>procuracao-zapsign</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent4)">—</span></td>
+            <td>Sprint 2</td>
+          </tr>
+          <tr>
+            <td>julia-restricoes-inject</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent4)">—</span></td>
+            <td>P6 — Sprint 2</td>
+          </tr>
+          <tr>
+            <td>audit-result-notify</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent4)">—</span></td>
+            <td>Sprint 2</td>
+          </tr>
+          <tr>
+            <td>ctps-processor</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent4)">—</span></td>
+            <td>Sprint 2</td>
+          </tr>
+          <tr>
+            <td>ir-request</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent4)">—</span></td>
+            <td>Sprint 2</td>
+          </tr>
+          <tr>
+            <td>whatsapp-outbound</td>
+            <td><span class="sp sp-run">🔄 Parcial</span></td>
+            <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent5)">~60%</span></td>
+            <td>Depende de token Meta</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECAO 5 — BUGS UI -->
+  <div class="section" id="sec5">
+    <div class="section-header">
+      <span class="section-icon">🐛</span>
+      <h2>19 Bugs UI</h2>
+      <span class="section-meta">Pos-projeto mapeados</span>
+    </div>
+
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Sev</th>
+            <th>Descricao</th>
+            <th>Componente</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="sev-p0">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-08</span></td>
+            <td><span class="badge br" style="font-size:0.65rem">P0</span></td>
+            <td>CRM nao funcionando — investigar reuse de componentes</td>
+            <td>CRM integracao</td>
+            <td><span class="sp sp-block">⛔ Critico</span></td>
+          </tr>
+          <tr class="sev-p0">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-10</span></td>
+            <td><span class="badge br" style="font-size:0.65rem">P0</span></td>
+            <td>Botao auditoria falhando (todos bureaux)</td>
+            <td>Drawer Restricoes</td>
+            <td><span class="sp sp-block">⛔ Critico</span></td>
+          </tr>
+          <tr class="sev-p0">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-14</span></td>
+            <td><span class="badge br" style="font-size:0.65rem">P0</span></td>
+            <td>Docs nao gerou pastas das restricoes</td>
+            <td>Documentos Lead</td>
+            <td><span class="sp sp-block">⛔ Critico</span></td>
+          </tr>
+          <tr class="sev-p0">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-17</span></td>
+            <td><span class="badge br" style="font-size:0.65rem">P0</span></td>
+            <td>ICP no drawer ERRADO — mover para aba da pagina MdZap</td>
+            <td>Drawer Dados</td>
+            <td><span class="sp sp-block">⛔ Critico</span></td>
+          </tr>
+          <tr class="sev-p0">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-19</span></td>
+            <td><span class="badge br" style="font-size:0.65rem">P0</span></td>
+            <td>CPF exibido com pontinhos — NUNCA ocultar CPF</td>
+            <td>Dados do lead</td>
+            <td><span class="sp sp-block">⛔ Critico</span></td>
+          </tr>
+
+          <!-- P1 -->
+          <tr class="sev-p1">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-01</span></td>
+            <td><span class="badge by" style="font-size:0.65rem">P1</span></td>
+            <td>Drawer muito estreito</td>
+            <td>Drawer global</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p1">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-02/03</span></td>
+            <td><span class="badge by" style="font-size:0.65rem">P1</span></td>
+            <td>Remover botoes CRM e Assumir da aba Dados (so Transferir)</td>
+            <td>Aba Dados</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p1">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-05</span></td>
+            <td><span class="badge by" style="font-size:0.65rem">P1</span></td>
+            <td>Remover campos: estado civil, email, score</td>
+            <td>Aba Dados</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p1">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-06</span></td>
+            <td><span class="badge by" style="font-size:0.65rem">P1</span></td>
+            <td>Remover dropdown etapa CRM</td>
+            <td>Aba Dados</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p1">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-07</span></td>
+            <td><span class="badge by" style="font-size:0.65rem">P1</span></td>
+            <td>Remover botao Boa Vista (so Salvar Dados)</td>
+            <td>Aba Dados</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p1">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-09</span></td>
+            <td><span class="badge by" style="font-size:0.65rem">P1</span></td>
+            <td>Advogado deve selecionar automaticamente (como no CRM)</td>
+            <td>Dados Lead</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p1">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-11</span></td>
+            <td><span class="badge by" style="font-size:0.65rem">P1</span></td>
+            <td>Remover "Gerar Contrato" das Restricoes</td>
+            <td>Aba Restricoes</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p1">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-18</span></td>
+            <td><span class="badge by" style="font-size:0.65rem">P1</span></td>
+            <td>Badge CRM sem dropdown para mover coluna</td>
+            <td>Lista conversas</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+
+          <!-- P2 -->
+          <tr class="sev-p2">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-04</span></td>
+            <td><span class="badge bb" style="font-size:0.65rem">P2</span></td>
+            <td>Inputs desalinhados (nascimento, telefone, profissao, estado civil)</td>
+            <td>Form Dados</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p2">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-10b</span></td>
+            <td><span class="badge bb" style="font-size:0.65rem">P2</span></td>
+            <td>Botao auditoria gigantesco — deve ser pequeno no topo</td>
+            <td>Drawer Restricoes</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p2">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-12</span></td>
+            <td><span class="badge bb" style="font-size:0.65rem">P2</span></td>
+            <td>Valor total vazando do card</td>
+            <td>Card Restricoes</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p2">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-13</span></td>
+            <td><span class="badge bb" style="font-size:0.65rem">P2</span></td>
+            <td>Restricoes nao funcionando como no CRM</td>
+            <td>Aba Restricoes</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr class="sev-p2">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-15</span></td>
+            <td><span class="badge bb" style="font-size:0.65rem">P2</span></td>
+            <td>Aba Notas: remover "MDSAP + CRM" do nome</td>
+            <td>Aba Notas</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+
+          <!-- P3 -->
+          <tr class="sev-p3">
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">UI-16</span></td>
+            <td><span class="badge" style="font-size:0.65rem;background:rgba(122,130,168,0.1);color:var(--text-muted);border:1px solid rgba(122,130,168,0.2)">P3</span></td>
+            <td>Historico — investigar se necessario</td>
+            <td>Aba Historico</td>
+            <td><span class="sp sp-run">🔄 Investigar</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECAO 6 — DIAGNOSTICO MIDIA -->
+  <div class="section" id="sec6">
+    <div class="section-header">
+      <span class="section-icon">📷</span>
+      <h2>Diagnostico Midia Inbound</h2>
+      <span class="section-meta">4 causas identificadas</span>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">Causas por probabilidade</div>
+
+      <div class="prob-row">
+        <span class="prob-num">C1</span>
+        <div class="prob-label">
+          n8n nao executa fluxo media_id → URL temporaria → download → Storage
+          <div class="prob-sub">Causa mais provavel — workflow nunca implementado</div>
+        </div>
+        <div class="prob-bar-wrap">
+          <div class="prob-bar" style="width:60%;background:var(--accent2)"></div>
+        </div>
+        <span class="prob-pct" style="color:var(--accent2)">60%</span>
+      </div>
+
+      <div class="prob-row">
+        <span class="prob-num">C2</span>
+        <div class="prob-label">
+          Upload para Storage nao acontece / bucket errado
+          <div class="prob-sub">Inconsistencia: "mdzap-media" vs "chat-media"</div>
+        </div>
+        <div class="prob-bar-wrap">
+          <div class="prob-bar" style="width:25%;background:var(--accent4)"></div>
+        </div>
+        <span class="prob-pct" style="color:var(--accent4)">25%</span>
+      </div>
+
+      <div class="prob-row">
+        <span class="prob-num">C3</span>
+        <div class="prob-label">
+          Bucket privado + getPublicUrl() = 403
+          <div class="prob-sub">URL gerada invalida para acesso externo</div>
+        </div>
+        <div class="prob-bar-wrap">
+          <div class="prob-bar" style="width:10%;background:var(--accent5)"></div>
+        </div>
+        <span class="prob-pct" style="color:var(--accent5)">10%</span>
+      </div>
+
+      <div class="prob-row">
+        <span class="prob-num">C4</span>
+        <div class="prob-label">
+          URL temporaria da Meta salva diretamente
+          <div class="prob-sub">Expira em ~5min — invalida para storage permanente</div>
+        </div>
+        <div class="prob-bar-wrap">
+          <div class="prob-bar" style="width:5%;background:var(--text-muted)"></div>
+        </div>
+        <span class="prob-pct" style="color:var(--text-muted)">5%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Fluxo correto — implementar exatamente assim</div>
+      <div class="code">Meta webhook → media_id
+→ GET graph.facebook.com/v20.0/{media_id}
+     Authorization: Bearer {META_TOKEN}
+→ response.url  (URL temporaria ~5min)
+
+→ GET {response.url}
+     Authorization: Bearer {META_TOKEN}
+→ binario do arquivo
+
+→ POST Supabase Storage
+     bucket/{org_id}/{conversa_id}/{timestamp}-{filename}
+→ storage_url permanente
+
+→ UPDATE whatsapp_mensagens
+     SET media_url = storage_url
+     WHERE id = {mensagem_id}</div>
+      <div style="margin-top:12px; padding:10px 14px; background:rgba(255,209,102,0.06); border:1px solid rgba(255,209,102,0.2); border-radius:8px; font-size:0.8rem; color:var(--accent4)">
+        ⚠️ ALERTA: inconsistencia no nome do bucket — diagnostico diz "mdzap-media", spec anterior diz "chat-media". Confirmar com Christian ANTES de implementar.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECAO 7 — BUGS QA R4 -->
+  <div class="section" id="sec7">
+    <div class="section-header">
+      <span class="section-icon">🧪</span>
+      <h2>Bugs QA R4 Historico</h2>
+      <span class="section-meta">7 bugs + n8n-001</span>
+    </div>
+
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Descricao</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">R4-001</span></td>
+            <td><span class="sp sp-block">Frontend</span></td>
+            <td>Mensagens nao aparecem em tempo real — sem realtime subscription</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">R4-002</span></td>
+            <td><span class="sp sp-block">Frontend</span></td>
+            <td>Lista de conversas nao atualiza ao receber nova mensagem</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">R4-003</span></td>
+            <td><span class="sp sp-run">Backend</span></td>
+            <td>whatsapp_mensagens sem index em conversa_id — query lenta</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">R4-004</span></td>
+            <td><span class="sp sp-block">Frontend</span></td>
+            <td>Scroll da conversa nao vai para o final ao abrir</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">R4-005</span></td>
+            <td><span class="sp sp-block">Frontend</span></td>
+            <td>Imagens na conversa exibem URL quebrada (media_url invalida)</td>
+            <td><span class="sp sp-block">⛔ Relacionado C1</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">R4-006</span></td>
+            <td><span class="sp sp-run">Backend</span></td>
+            <td>awaiting_human nao existe como coluna — campo nao criado</td>
+            <td><span class="sp sp-pend">⏳ Migration P5</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">R4-007</span></td>
+            <td><span class="sp sp-block">Frontend</span></td>
+            <td>Drawer fecha ao clicar fora — perde edicao nao salva</td>
+            <td><span class="sp sp-pend">⏳ Pendente</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem">n8n-001</span></td>
+            <td><span class="sp sp-block">n8n</span></td>
+            <td>Tokens ASSUMIR/DEVOLVER expirados — HTTP 500 em ambos workflows</td>
+            <td><span class="sp sp-block">⛔ Sprint 1 P0</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECAO 8 — ROADMAP SPRINTS -->
+  <div class="section" id="sec8">
+    <div class="section-header">
+      <span class="section-icon">🚀</span>
+      <h2>Roadmap por Sprint</h2>
+      <span class="section-meta">Ordem de implementacao priorizada</span>
+    </div>
+
+    <div class="grid g2">
+
+      <div class="sprint-card">
+        <div class="sprint-header">
+          <span class="sprint-title">Sprint 1 — P0 Imediatos</span>
+          <span class="sprint-tag" style="background:rgba(255,107,107,0.15);color:var(--accent2);border:1px solid rgba(255,107,107,0.25)">Antes do /project</span>
+        </div>
+        <div class="sprint-body">
+          <div class="sprint-item">
+            <span class="sprint-idx">01</span>
+            <span class="sprint-text"><strong>Corrigir tokens ASSUMIR/DEVOLVER</strong> n8n (HTTP 500)</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">02</span>
+            <span class="sprint-text"><strong>UI-19: CPF sem mascara de senha</strong> (1 linha de codigo)</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">03</span>
+            <span class="sprint-text"><strong>UI-17: Mover ICP</strong> para aba da pagina MdZap</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">04</span>
+            <span class="sprint-text">Investigar <strong>botao auditoria (P8)</strong> + fluxo cadastro lead+restricoes CRM</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">05</span>
+            <span class="sprint-text">Investigar <strong>pre-cadastro (P1)</strong> — definir arquitetura antes de implementar</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sprint-card">
+        <div class="sprint-header">
+          <span class="sprint-title">Sprint 2 — Core Fluxo Julia</span>
+          <span class="sprint-tag" style="background:rgba(79,255,176,0.1);color:var(--accent3);border:1px solid rgba(79,255,176,0.2)">Core</span>
+        </div>
+        <div class="sprint-body">
+          <div class="sprint-item">
+            <span class="sprint-idx">06</span>
+            <span class="sprint-text">n8n: <strong>fluxo midia inbound</strong> (media_id → Storage)</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">07</span>
+            <span class="sprint-text">n8n: <strong>webhook document-received</strong> (subagente docs)</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">08</span>
+            <span class="sprint-text">Backend: <strong>migration ADD COLUMN profissao TEXT</strong> em leads</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">09</span>
+            <span class="sprint-text">Frontend: <strong>badge "Auditoria Pendente"</strong> na lista conversas</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">10</span>
+            <span class="sprint-text">Prompts: <strong>system prompt Julia</strong> com fluxo Midas completo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sprint-card">
+        <div class="sprint-header">
+          <span class="sprint-title">Sprint 3 — UI/UX Fixes</span>
+          <span class="sprint-tag" style="background:rgba(91,196,245,0.1);color:var(--accent5);border:1px solid rgba(91,196,245,0.2)">UX</span>
+        </div>
+        <div class="sprint-body">
+          <div class="sprint-item">
+            <span class="sprint-idx">11</span>
+            <span class="sprint-text">Drawer: <strong>expandir width</strong> (UI-01)</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">12</span>
+            <span class="sprint-text">Aba Dados: <strong>remover campos/botoes desnecessarios</strong> (UI-02 a UI-09)</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">13</span>
+            <span class="sprint-text">Restricoes: <strong>corrigir botao auditoria</strong>, remover gerar contrato</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">14</span>
+            <span class="sprint-text">Badge CRM: <strong>dropdown para mover coluna</strong> no chat (UI-18)</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">15</span>
+            <span class="sprint-text">Docs: <strong>investigar geracao de pastas</strong> (UI-14)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sprint-card">
+        <div class="sprint-header">
+          <span class="sprint-title">Sprint 4 — Estabilizacao n8n</span>
+          <span class="sprint-tag" style="background:rgba(255,209,102,0.1);color:var(--accent4);border:1px solid rgba(255,209,102,0.2)">Infra</span>
+        </div>
+        <div class="sprint-body">
+          <div class="sprint-item">
+            <span class="sprint-idx">16</span>
+            <span class="sprint-text">Reparar <strong>ai-composer</strong></span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">17</span>
+            <span class="sprint-text">Reparar <strong>julia-prompt-save</strong></span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">18</span>
+            <span class="sprint-text">Ativar <strong>workflows mortos</strong> conforme necessario</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">19</span>
+            <span class="sprint-text">Audit completo de tokens e credenciais n8n</span>
+          </div>
+          <div class="sprint-item">
+            <span class="sprint-idx">20</span>
+            <span class="sprint-text">Monitoramento e alertas de falha de workflows</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECAO 9 — ARQUIVOS CRITICOS -->
+  <div class="section" id="sec9">
+    <div class="section-header">
+      <span class="section-icon">📁</span>
+      <h2>Arquivos Criticos</h2>
+      <span class="section-meta">Path + proposito + sprint</span>
+    </div>
+
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Arquivo / Path</th>
+            <th>Proposito</th>
+            <th>Sprint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="file-path">src/pages/mdzap/index.tsx</td>
+            <td>Pagina principal MdZap — lista de conversas + chat</td>
+            <td><span class="sp sp-block">S1</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">src/components/mdzap/ConversaDrawer.tsx</td>
+            <td>Drawer com abas Dados / Restricoes / Notas / Historico</td>
+            <td><span class="sp sp-block">S1 S3</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">src/components/mdzap/ChatWindow.tsx</td>
+            <td>Janela de chat com realtime subscription</td>
+            <td><span class="sp sp-pend">S2</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">src/components/mdzap/BadgeAuditoria.tsx</td>
+            <td>Badge "Auditoria Pendente" na lista — P5</td>
+            <td><span class="sp sp-pend">S2</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">src/hooks/useMdZapConversa.ts</td>
+            <td>Hook principal — dados da conversa + lead vinculado</td>
+            <td><span class="sp sp-pend">S2</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">supabase/migrations/xxx_profissao.sql</td>
+            <td>ADD COLUMN profissao TEXT em leads — P4</td>
+            <td><span class="sp sp-pend">S2</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">supabase/migrations/xxx_awaiting_human.sql</td>
+            <td>ADD COLUMN awaiting_human BOOLEAN em whatsapp_conversas — P5</td>
+            <td><span class="sp sp-pend">S2</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">n8n/document-received.json</td>
+            <td>Workflow subagente docs — media_id → Claude Vision → JSON</td>
+            <td><span class="sp sp-pend">S2</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">n8n/media-inbound.json</td>
+            <td>Fluxo midia Meta → Supabase Storage permanente</td>
+            <td><span class="sp sp-pend">S2</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">n8n/julia-assumir.json</td>
+            <td>Workflow ASSUMIR com token renovado — n8n-001</td>
+            <td><span class="sp sp-block">S1</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">n8n/julia-devolver.json</td>
+            <td>Workflow DEVOLVER com token renovado — n8n-001</td>
+            <td><span class="sp sp-block">S1</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">prompts/julia-system-midas.md</td>
+            <td>System prompt Julia com fluxo Midas completo — todas regras P0</td>
+            <td><span class="sp sp-pend">S2</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECAO 10 — CHECKLIST VALIDACAO -->
+  <div class="section" id="sec10">
+    <div class="section-header">
+      <span class="section-icon">✅</span>
+      <h2>Checklist de Validacao</h2>
+      <span class="section-meta">Como testar cada item implementado</span>
+    </div>
+
+    <div class="grid g2">
+
+      <div>
+        <div class="check-item">
+          <span class="check-icon">📄</span>
+          <div>
+            <div class="check-label">Subagente Docs</div>
+            <div class="check-desc">Enviar imagem de RG via WhatsApp → verificar dados populados no lead: nome, cpf, nascimento, rg. Testar foto ilegivel → Julia deve pedir nova foto.</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">🤖</span>
+          <div>
+            <div class="check-label">Julia — Fluxo Midas</div>
+            <div class="check-desc">Testar conversa completa via JuliaLab: entrada → boas-vindas breve → solicitacao docs → pre-auditoria → badge aparece. Verificar regras P0: nao citar escritorio pelo nome.</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">🔍</span>
+          <div>
+            <div class="check-label">Badge Auditoria Pendente</div>
+            <div class="check-desc">Verificar awaiting_human=true no banco apos Julia enviar mensagem pre-auditoria. Badge deve aparecer na lista de conversas do MdZap imediatamente via realtime.</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">📷</span>
+          <div>
+            <div class="check-label">Midia Inbound</div>
+            <div class="check-desc">Enviar imagem pelo WhatsApp → verificar media_url no banco: deve apontar para Supabase Storage (nao URL temporaria Meta). Confirmar URL abre em browser apos 10min.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="check-item">
+          <span class="check-icon">🔑</span>
+          <div>
+            <div class="check-label">Tokens ASSUMIR/DEVOLVER</div>
+            <div class="check-desc">Clicar em ASSUMIR uma conversa → deve retornar sucesso (nao HTTP 500). Verificar log do n8n: execucao completa sem erro de autenticacao.</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">👤</span>
+          <div>
+            <div class="check-label">Campo Profissao</div>
+            <div class="check-desc">Apos migration: verificar coluna no schema. Subagente docs deve popular profissao via CTPS. Testar caso autonomo: profissao nao preenchida, workflow correto.</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">🪪</span>
+          <div>
+            <div class="check-label">CPF sem mascara</div>
+            <div class="check-desc">Abrir drawer de qualquer conversa → CPF deve exibir formato 000.000.000-00 sem asteriscos. Verificar todos os locais onde CPF aparece no MdZap.</div>
+          </div>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">📋</span>
+          <div>
+            <div class="check-label">Restricoes Julia (P6)</div>
+            <div class="check-desc">Abrir conversa de lead com restricoes no banco → Julia deve citar empresas corretas no sistema prompt injetado. Verificar log do n8n: query SELECT restricoes executada.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · MdZap SPEC Definitivo v3 · 08/04/2026
+  </div>
+
+</div>
+</body>
+</html>
