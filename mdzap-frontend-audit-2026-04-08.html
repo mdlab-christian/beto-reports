@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap Frontend Visual Audit — 2026-04-08</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface2: #1c2033;
+    --border: #2a2e42;
+    --text: #e8e4df;
+    --muted: #8a8693;
+    --accent: #7c6dff;
+    --green: #20c997;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --cyan: #06b6d4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6; padding: 2rem; max-width: 1300px; margin: 0 auto; }
+  h1 { font-family: 'Manrope', sans-serif; font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+  h2 { font-family: 'Manrope', sans-serif; font-size: 1.4rem; color: var(--green); margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.1rem; color: var(--cyan); margin: 1.5rem 0 0.5rem; }
+  h4 { font-size: 0.95rem; color: var(--accent); margin: 1rem 0 0.4rem; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .nota-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; display: flex; align-items: center; gap: 1.5rem; }
+  .nota-score { font-family: 'Manrope', sans-serif; font-size: 3.5rem; font-weight: 800; min-width: 120px; text-align: center; }
+  .nota-label { font-size: 0.85rem; color: var(--muted); }
+  .nota-detail { flex: 1; }
+  .score-red { color: var(--red); }
+  .score-yellow { color: var(--yellow); }
+  .score-green { color: var(--green); }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.82rem; }
+  th { background: var(--surface2); color: var(--accent); text-align: left; padding: 0.5rem 0.6rem; font-weight: 600; }
+  td { padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(124, 109, 255, 0.05); }
+  .tag { display: inline-block; padding: 0.12rem 0.45rem; border-radius: 4px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+  .tag-p0 { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+  .tag-p1 { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+  .tag-p2 { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+  .tag-ok { background: rgba(32, 201, 151, 0.15); color: var(--green); }
+  .tag-fail { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .tag-warn { background: rgba(234, 179, 8, 0.15); color: var(--yellow); }
+  .tag-info { background: rgba(124, 109, 255, 0.15); color: var(--accent); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin: 0.8rem 0; }
+  .card-red { border-left: 3px solid var(--red); }
+  .card-yellow { border-left: 3px solid var(--yellow); }
+  .card-green { border-left: 3px solid var(--green); }
+  .card-accent { border-left: 3px solid var(--accent); }
+  code { background: var(--surface2); padding: 0.12rem 0.35rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--cyan); }
+  pre { background: var(--surface2); padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.78rem; line-height: 1.5; margin: 0.5rem 0; }
+  pre code { background: none; padding: 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+  .metric { text-align: center; padding: 1rem; }
+  .metric-value { font-family: 'Manrope', sans-serif; font-size: 2rem; font-weight: 800; }
+  .metric-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; }
+  .verdict { font-size: 0.95rem; line-height: 1.7; }
+  ul { padding-left: 1.5rem; }
+  li { margin: 0.3rem 0; }
+  .separator { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .footer { color: var(--muted); font-size: 0.75rem; margin-top: 3rem; text-align: center; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .bar-container { background: var(--surface2); border-radius: 4px; height: 8px; margin: 0.3rem 0; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .screenshot-note { font-size: 0.72rem; color: var(--muted); font-style: italic; margin-top: 0.3rem; }
+</style>
+</head>
+<body>
+
+<h1>MdZap &mdash; Auditoria Frontend Visual Impiedosa</h1>
+<p class="subtitle">Stage 4/4 | Playwright automated screenshots | 5 tabs + 6 lead panel tabs + 4 breakpoints | 2026-04-08 | Auditor: Claude Code</p>
+
+<!-- NOTA GERAL -->
+<div class="nota-box">
+  <div>
+    <div class="nota-score score-yellow">6.2<span style="font-size:1.2rem;color:var(--muted)">/10</span></div>
+    <div class="nota-label">Nota Frontend Visual MdZap</div>
+  </div>
+  <div class="nota-detail">
+    <p class="verdict">
+      Surpreendentemente, a melhor nota das 4 etapas. O frontend visual do MdZap est&aacute; <strong>coerente com o Design System v5</strong> &mdash;
+      zero cores hardcoded, tipografia correta (Inter/JetBrains Mono/Manrope), zero erros de console.
+      O layout desktop 3-colunas funciona bem em 1440px. O Dashboard &eacute; informativo. Julia Lab tem UX profissional.
+      Os problemas est&atilde;o na <strong>responsividade</strong> (touch targets &lt;44px no mobile, sem split-view no tablet),
+      na <strong>navega&ccedil;&atilde;o confusa</strong> entre abas top-level e SDR modes, no <strong>bureau erro vis&iacute;vel</strong> na aba Restri&ccedil;&otilde;es,
+      e na <strong>data de nascimento em formato americano</strong> (MM/DD/YYYY em vez de DD/MM/YYYY).
+    </p>
+  </div>
+</div>
+
+<!-- NOTAS POR CATEGORIA -->
+<h2>Notas por Categoria</h2>
+<div class="grid-3">
+  <div class="card card-green">
+    <div class="metric">
+      <div class="metric-value score-green">8.5</div>
+      <div class="metric-label">Design System Compliance</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:85%;background:var(--green)"></div></div>
+  </div>
+  <div class="card card-green">
+    <div class="metric">
+      <div class="metric-value score-green">7.5</div>
+      <div class="metric-label">Desktop Layout</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:75%;background:var(--green)"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">6.0</div>
+      <div class="metric-label">Informa&ccedil;&atilde;o & UX</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:60%;background:var(--yellow)"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">5.5</div>
+      <div class="metric-label">Lead Panel</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:55%;background:var(--yellow)"></div></div>
+  </div>
+  <div class="card card-red">
+    <div class="metric">
+      <div class="metric-value score-red">4.0</div>
+      <div class="metric-label">Responsividade</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:40%;background:var(--red)"></div></div>
+  </div>
+  <div class="card card-yellow">
+    <div class="metric">
+      <div class="metric-value score-yellow">5.0</div>
+      <div class="metric-label">Navega&ccedil;&atilde;o / IA</div>
+    </div>
+    <div class="bar-container"><div class="bar-fill" style="width:50%;background:var(--yellow)"></div></div>
+  </div>
+</div>
+
+<!-- AUDITORIA POR TELA -->
+<h2>Auditoria por Tela &mdash; Desktop 1440px</h2>
+
+<!-- CONVERSAS TAB -->
+<h3>Tab: Conversas (Tela Principal)</h3>
+<div class="card card-green">
+  <h4>Acertos</h4>
+  <ul>
+    <li>Layout 3-colunas (lista 320px | thread flex-1 | lead panel 360px) &mdash; propor&ccedil;&otilde;es corretas</li>
+    <li>Empty state central com &iacute;cone + texto &ldquo;Selecione uma conversa&rdquo; &mdash; informativo</li>
+    <li>Inbox views (Fila / Minhas / Todas) com badge count funcional</li>
+    <li>3 filtros dropdown inline (status, tipo, SDR) &mdash; compactos</li>
+    <li>Badges &ldquo;Julia Ativa&rdquo; em verde nas conversas &mdash; leitura r&aacute;pida do status</li>
+    <li>Timestamps relativos (&ldquo;h&aacute; 11 minutos&rdquo;, &ldquo;h&aacute; 2 dias&rdquo;) &mdash; correto</li>
+    <li>Bot&atilde;o &ldquo;Ver arquivadas&rdquo; discreto</li>
+  </ul>
+</div>
+<div class="card card-yellow">
+  <h4>Problemas</h4>
+  <table>
+    <tr>
+      <th>Issue</th>
+      <th>Sev.</th>
+      <th>Detalhe</th>
+    </tr>
+    <tr>
+      <td>Nome &ldquo;.&rdquo; na primeira conversa</td>
+      <td><span class="tag tag-p1">P1</span></td>
+      <td>Contato sem nome exibe apenas &ldquo;.&rdquo; &mdash; deveria mostrar n&uacute;mero de telefone como fallback</td>
+    </tr>
+    <tr>
+      <td>3 dropdowns &ldquo;Todos&rdquo; id&ecirc;nticos sem label</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Os 3 filtros mostram todos &ldquo;Todos&rdquo; sem indicar o que filtram. Faltam labels ou placeholders descritivos (Status, Tipo, SDR)</td>
+    </tr>
+    <tr>
+      <td>Bot&atilde;o &ldquo;Arquivar&rdquo; repetido 7x</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Cada conversa tem bot&atilde;o Arquivar vis&iacute;vel. Deveria ser a&ccedil;&atilde;o contextual (hover ou swipe), n&atilde;o sempre vis&iacute;vel</td>
+    </tr>
+    <tr>
+      <td>Sem preview de &uacute;ltima mensagem</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Lista mostra nome + badges mas n&atilde;o mostra trecho da &uacute;ltima mensagem. WhatsApp/Intercom mostram.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- THREAD -->
+<h3>Tab: Thread de Mensagens</h3>
+<div class="card card-green">
+  <h4>Acertos</h4>
+  <ul>
+    <li>Bubbles com alinhamento correto (recebidas esquerda, enviadas direita)</li>
+    <li>Badge &ldquo;Julia&rdquo; em mensagens do agente &mdash; identifica&ccedil;&atilde;o clara</li>
+    <li>Smart replies na base (3 sugest&otilde;es cl&aacute;ssicas) &mdash; &oacute;timo UX</li>
+    <li>Header com CPF em <code>JetBrains Mono</code> (862.584.970-53) &mdash; correto per DS v5</li>
+    <li>Badges CRM (Ag. Documentos) + Julia SDR Leads dropdown &mdash; informa&ccedil;&atilde;o densa</li>
+    <li>Bot&otilde;es Assumir + Info no header</li>
+    <li>Placeholder inteligente &ldquo;Julia est&aacute; respondendo... (assuma para escrever)&rdquo;</li>
+    <li>&Iacute;cones de anexo (clip) + AI Composer (sparkles) + mic + send no input</li>
+  </ul>
+</div>
+<div class="card card-yellow">
+  <h4>Problemas</h4>
+  <table>
+    <tr>
+      <th>Issue</th>
+      <th>Sev.</th>
+      <th>Detalhe</th>
+    </tr>
+    <tr>
+      <td>Mensagens curtas sem padding consistente</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Mensagem &ldquo;i&rdquo; e &ldquo;fala&rdquo; aparecem em bubbles minúsculas. Min-width deveria ser ~80px para legibilidade.</td>
+    </tr>
+    <tr>
+      <td>Markdown literal na mensagem Julia</td>
+      <td><span class="tag tag-p1">P1</span></td>
+      <td>Mensagem exibe <code>**Midas Advocacia**</code> com asteriscos literais. Bold n&atilde;o renderizado.</td>
+    </tr>
+    <tr>
+      <td>Nome do remetente &ldquo;Gustavo Paz&rdquo; na bubble enviada</td>
+      <td><span class="tag tag-info">INFO</span></td>
+      <td>Exibe nome+avatar nas enviadas &mdash; ocupa espa&ccedil;o. WhatsApp n&atilde;o mostra em 1:1. Mas pode ser &uacute;til para multi-atendente.</td>
+    </tr>
+    <tr>
+      <td>Bot&atilde;o &ldquo;Nova mensagem&rdquo; cobrindo smart replies</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Banner &ldquo;Nova mensagem&rdquo; com seta sobrepõe parcialmente as smart replies.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- LEAD PANEL -->
+<h3>Lead Panel (Sidebar Direita)</h3>
+<div class="card card-green">
+  <h4>Acertos</h4>
+  <ul>
+    <li>6 tabs em 2 rows (Dados | Restr. | Docs | Notas + Hist. | Mem.) &mdash; organiza&ccedil;&atilde;o l&oacute;gica</li>
+    <li>Valida&ccedil;&atilde;o inline de CPF (&ldquo;CPF inv&aacute;lido&rdquo; em vermelho) &mdash; feedback imediato</li>
+    <li>Campos de endere&ccedil;o completos (logradouro, n&ordm;, bairro, CEP, cidade, UF)</li>
+    <li>Bot&atilde;o &ldquo;Salvar dados&rdquo; em primary verde &mdash; a&ccedil;&atilde;o clara</li>
+    <li>Badge count em Restr. (1 vermelho) &mdash; aten&ccedil;&atilde;o visual</li>
+    <li>Header com nome + telefone + status CRM (&ldquo;aguardando_documentos&rdquo;)</li>
+    <li>Bot&atilde;o &ldquo;Transferir&rdquo; acess&iacute;vel</li>
+  </ul>
+</div>
+<div class="card card-red">
+  <h4>Problemas Cr&iacute;ticos</h4>
+  <table>
+    <tr>
+      <th>Issue</th>
+      <th>Sev.</th>
+      <th>Detalhe</th>
+    </tr>
+    <tr>
+      <td>Data de nascimento em formato americano</td>
+      <td><span class="tag tag-p0">P0</span></td>
+      <td>Exibe <code>07/14/1992</code> (MM/DD/YYYY). Deveria ser <code>14/07/1992</code> (DD/MM/YYYY pt-BR). Viola conven&ccedil;&atilde;o MdFlow: <code>format(parseISO(str),'dd/MM/yyyy',{locale:ptBR})</code></td>
+    </tr>
+    <tr>
+      <td>Consulta de restri&ccedil;&otilde;es falhou visivelmente</td>
+      <td><span class="tag tag-p0">P0</span></td>
+      <td>Tab Restr. mostra &ldquo;Consulta falhou: Todos os bureaus falharam: apifull_115 (requisicao invalida)&rdquo; &mdash; erro t&eacute;cnico exposto ao usu&aacute;rio</td>
+    </tr>
+    <tr>
+      <td>CPF inv&aacute;lido sem bloqueio de submit</td>
+      <td><span class="tag tag-p1">P1</span></td>
+      <td>Campo CPF mostra &ldquo;CPF inv&aacute;lido&rdquo; mas bot&atilde;o &ldquo;Salvar dados&rdquo; continua habilitado. Deveria bloquear.</td>
+    </tr>
+    <tr>
+      <td>Painel muito apertado em 1440px</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Com thread + panel abertos, o panel fica com ~300px. Campos de CPF/RG ficam apertados. Valor &ldquo;R$ 3.3...&rdquo; truncado nos KPIs de restri&ccedil;&otilde;es.</td>
+    </tr>
+    <tr>
+      <td>Status CRM com underscore</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Exibe &ldquo;aguardando_documentos&rdquo; com underscore. Deveria exibir &ldquo;Aguardando Documentos&rdquo; humanizado.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- DASHBOARD -->
+<h3>Tab: Dashboard</h3>
+<div class="card card-green">
+  <h4>Acertos</h4>
+  <ul>
+    <li>6 KPIs claros (Conversas ativas, Aguardando humano, Tempo m&eacute;dio, Taxa handoff, N&uacute;meros conectados, Total)</li>
+    <li>Gr&aacute;fico donut &ldquo;Distribui&ccedil;&atilde;o de Sentimento&rdquo; &mdash; verde/cinza leg&iacute;vel</li>
+    <li>Gr&aacute;fico barras &ldquo;Conversas por Status&rdquo; &mdash; compacto</li>
+    <li>Se&ccedil;&atilde;o ICP Telemetria com KPIs (Leads convertidos, Score m&eacute;dio, Tempo capta&ccedil;&atilde;o, Valor causa)</li>
+    <li>Filtro &ldquo;7 dias&rdquo; no topo direito</li>
+    <li>Empty state &ldquo;Nenhum lead aguardando &mdash; &oacute;timo!&rdquo; com &iacute;cone positivo</li>
+  </ul>
+</div>
+<div class="card card-yellow">
+  <h4>Problemas</h4>
+  <table>
+    <tr>
+      <th>Issue</th>
+      <th>Sev.</th>
+      <th>Detalhe</th>
+    </tr>
+    <tr>
+      <td>KPI &ldquo;0min&rdquo; sem unidade clara</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>&ldquo;Tempo m&eacute;dio resposta&rdquo; mostra &ldquo;0min&rdquo; colado. Deveria ser &ldquo;0 min&rdquo; ou &ldquo;&lt; 1 min&rdquo;</td>
+    </tr>
+    <tr>
+      <td>ICP Score m&eacute;dio mostra &ldquo;&mdash;&rdquo;</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Dash em vez de n&uacute;mero. Se n&atilde;o h&aacute; dados, deveria mostrar &ldquo;N/A&rdquo; ou &ldquo;Sem dados&rdquo;</td>
+    </tr>
+    <tr>
+      <td>Gr&aacute;fico de barras com muito espa&ccedil;o vazio</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>Com s&oacute; 2 barras (ativa + arquivada), o gr&aacute;fico fica 80% vazio. Considerar donut ou horizontal.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- JULIA LAB -->
+<h3>Tab: Julia Lab</h3>
+<div class="card card-green">
+  <h4>Acertos</h4>
+  <ul>
+    <li>Layout 3-col profissional (sessions | chat | lead data)</li>
+    <li>3 m&oacute;dulos SDR no topo (SDR Leads, SDR Acordos, SDR Docs)</li>
+    <li>Bot&atilde;o &ldquo;+ Nova sess&atilde;o&rdquo; proeminente</li>
+    <li>Lead data panel com valida&ccedil;&atilde;o CPF inline</li>
+    <li>Hist&oacute;rico de sess&otilde;es com datas</li>
+    <li>Input &ldquo;Simule uma mensagem do lead...&rdquo; + bot&otilde;es &ldquo;Refinar prompt&rdquo; + &ldquo;Resetar&rdquo;</li>
+    <li>Badge &ldquo;Simula&ccedil;&atilde;o&rdquo; em vermelho sutil &mdash; indica claramente que n&atilde;o &eacute; real</li>
+  </ul>
+</div>
+<div class="card card-yellow">
+  <h4>Problemas</h4>
+  <ul>
+    <li><span class="tag tag-p1">P1</span> Mesma data em formato americano (07/14/1992) que o Lead Panel</li>
+    <li><span class="tag tag-p2">P2</span> Chat area mostra &ldquo;Digite uma mensagem para iniciar &mdash; M&oacute;dulo: SDR Leads&rdquo; &mdash; redundante com os tabs no topo</li>
+  </ul>
+</div>
+
+<!-- TEMPLATES -->
+<h3>Tab: Templates</h3>
+<div class="card card-green">
+  <p><strong>Tela mais limpa do m&oacute;dulo.</strong> Lista simples com 3 templates. Filtros por categoria (Todas, Comercial, Operacional, Cobran&ccedil;a). Bot&atilde;o &ldquo;+ Novo&rdquo; em primary. Zero problemas visuais.</p>
+  <p style="color:var(--muted);margin-top:0.5rem;">Nota: Usar snake_case nos nomes (<code>boas_vindas_lead</code>) &eacute; t&eacute;cnico demais. Considerar display names humanizados.</p>
+</div>
+
+<!-- GESTÃO -->
+<h3>Tab: Gest&atilde;o</h3>
+<div class="card card-green">
+  <h4>Acertos</h4>
+  <ul>
+    <li>Layout master-detail (sidebar prompts | editor textarea)</li>
+    <li>Agrupamento por tipo (Agentes SDR, M&oacute;dulos) &mdash; organiza&ccedil;&atilde;o l&oacute;gica</li>
+    <li>Versionamento vis&iacute;vel (v17, v5, v3, v2, v7) &mdash; &oacute;timo para auditoria</li>
+    <li>Bot&atilde;o &ldquo;Salvar Nova Vers&atilde;o&rdquo; no rodap&eacute;</li>
+    <li>Prompt content leg&iacute;vel em textarea com monospace</li>
+  </ul>
+</div>
+<div class="card card-yellow">
+  <p><span class="tag tag-p2">P2</span> Textarea do prompt muito alta com conte&uacute;do curto (&ldquo;Ol&aacute;! Voc&ecirc; &eacute; Julia, SDR [QA TEST v2]&rdquo; em espa&ccedil;o para 20 linhas). Deveria ter min-height adaptativo.</p>
+</div>
+
+<!-- RESPONSIVIDADE -->
+<h2>Responsividade &mdash; A Fraqueza</h2>
+
+<h3>Mobile 375px</h3>
+<div class="card card-red">
+  <table>
+    <tr>
+      <th>Issue</th>
+      <th>Sev.</th>
+      <th>Detalhe</th>
+    </tr>
+    <tr>
+      <td><strong>15 touch targets &lt;44px</strong></td>
+      <td><span class="tag tag-p0">P0</span></td>
+      <td>Bot&otilde;es de 26-40px de altura. Tabs &ldquo;Leads&rdquo;(26px), &ldquo;Docs&rdquo;(26px), &ldquo;Acordos&rdquo;(26px), &ldquo;Conversas&rdquo;(28px). Todos abaixo do m&iacute;nimo 44px para touch. Viola DS v5: &ldquo;touch 44px&rdquo;.</td>
+    </tr>
+    <tr>
+      <td>Tabs cortadas</td>
+      <td><span class="tag tag-p1">P1</span></td>
+      <td>Tab &ldquo;Templates&rdquo; cortada para &ldquo;Tem...&rdquo;. Sem scroll horizontal vis&iacute;vel. Gest&atilde;o possivelmente inacess&iacute;vel.</td>
+    </tr>
+    <tr>
+      <td>Lista sem thread</td>
+      <td><span class="tag tag-p1">P1</span></td>
+      <td>Mobile mostra apenas lista de conversas. Sem split-view ou slide-in para thread. O usu&aacute;rio v&ecirc; as conversas mas n&atilde;o consegue interagir com a thread completa.</td>
+    </tr>
+    <tr>
+      <td>3 filtros dropdown em linha</td>
+      <td><span class="tag tag-p2">P2</span></td>
+      <td>3 dropdowns &ldquo;Todos&rdquo; em 375px ficam apertados. Considerar collapse em bot&atilde;o &ldquo;Filtros&rdquo; &uacute;nico.</td>
+    </tr>
+    <tr>
+      <td>Input de busca full-width ok</td>
+      <td><span class="tag tag-ok">OK</span></td>
+      <td>Search field se adapta bem ao mobile.</td>
+    </tr>
+  </table>
+</div>
+
+<h3>Tablet 768px</h3>
+<div class="card card-yellow">
+  <ul>
+    <li><span class="tag tag-p1">P1</span> Apenas lista de conversas &mdash; sem thread vis&iacute;vel. Desperdi&ccedil;a espa&ccedil;o horizontal.</li>
+    <li><span class="tag tag-p2">P2</span> Bot&atilde;o &ldquo;Todas 7&rdquo; com width desproporcional (ocupa 50% da row).</li>
+    <li><span class="tag tag-ok">OK</span> Sidebar global recolhida (hamburger). Correto.</li>
+    <li><span class="tag tag-ok">OK</span> Todas 5 tabs vis&iacute;veis sem truncamento.</li>
+  </ul>
+</div>
+
+<h3>Wide 1920px</h3>
+<div class="card card-green">
+  <ul>
+    <li><span class="tag tag-ok">OK</span> Layout 3-col estica corretamente. Lista mantém ~280px, thread expande.</li>
+    <li><span class="tag tag-ok">OK</span> Smart replies vis&iacute;veis na base do thread.</li>
+    <li><span class="tag tag-ok">OK</span> Header com CPF + CRM status + badges.</li>
+    <li><span class="tag tag-ok">OK</span> Sidebar icons recolhidos &agrave; esquerda.</li>
+    <li><span class="tag tag-p2">P2</span> Thread area &eacute; muito larga (>900px) sem max-width &mdash; bubbles ficam muito esticadas.</li>
+  </ul>
+</div>
+
+<!-- DESIGN SYSTEM COMPLIANCE -->
+<h2>Design System v5 &mdash; Compliance</h2>
+<div class="grid-2">
+  <div class="card card-green">
+    <h4>Aprovado</h4>
+    <table>
+      <tr><td>Cores hardcoded</td><td><span class="tag tag-ok">ZERO</span></td></tr>
+      <tr><td>Tipografia Inter (corpo)</td><td><span class="tag tag-ok">394 elementos</span></td></tr>
+      <tr><td>JetBrains Mono (CNJ/CPF)</td><td><span class="tag tag-ok">15 elementos</span></td></tr>
+      <tr><td>Manrope (headings)</td><td><span class="tag tag-ok">1+ elementos</span></td></tr>
+      <tr><td>Console errors</td><td><span class="tag tag-ok">ZERO</span></td></tr>
+      <tr><td>Glassmorphism indevido</td><td><span class="tag tag-ok">ZERO</span></td></tr>
+      <tr><td>Primary color #20c997</td><td><span class="tag tag-ok">Correto</span></td></tr>
+      <tr><td>Warm Charcoal background</td><td><span class="tag tag-ok">Correto</span></td></tr>
+    </table>
+  </div>
+  <div class="card card-red">
+    <h4>Reprovado</h4>
+    <table>
+      <tr><td>Touch targets 44px</td><td><span class="tag tag-fail">15 falhas</span></td></tr>
+      <tr><td>Data pt-BR (dd/MM/yyyy)</td><td><span class="tag tag-fail">MM/DD/YYYY</span></td></tr>
+      <tr><td>Status humanizado</td><td><span class="tag tag-fail">snake_case vis&iacute;vel</span></td></tr>
+      <tr><td>Markdown rendering</td><td><span class="tag tag-fail">Asteriscos literais</span></td></tr>
+      <tr><td>Overflow texto</td><td><span class="tag tag-warn">1 truncamento (nome)</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- NAVEGAÇÃO CONFUSA -->
+<h2>Navega&ccedil;&atilde;o &mdash; O Problema das 2 Camadas</h2>
+<div class="card card-yellow">
+  <p>O MdZap tem <strong>2 n&iacute;veis de navega&ccedil;&atilde;o</strong> que confundem:</p>
+  <div class="grid-2" style="margin-top:0.8rem;">
+    <div>
+      <h4>N&iacute;vel 1: Tabs Top-level</h4>
+      <pre><code>Conversas | Dashboard | Julia Lab | Templates | Gest&atilde;o</code></pre>
+      <p style="color:var(--muted);font-size:0.82rem;">Muda a tela inteira. Claro.</p>
+    </div>
+    <div>
+      <h4>N&iacute;vel 2: SDR Mode Tabs</h4>
+      <pre><code>Leads | Docs | Acordos</code></pre>
+      <p style="color:var(--muted);font-size:0.82rem;">Filtra conversas por SDR mode. <strong>Confuso:</strong> &ldquo;Docs&rdquo; parece ser aba de documentos mas &eacute; filtro SDR.</p>
+    </div>
+  </div>
+  <p style="margin-top:1rem;">
+    <span class="tag tag-p1">P1</span> Quando o usu&aacute;rio clica &ldquo;Docs&rdquo; no topo, espera ver documentos. Em vez disso, a lista de conversas filtra por SDR mode &ldquo;docs&rdquo; e se n&atilde;o h&aacute; conversas nesse mode, mostra &ldquo;Nenhuma conversa ativa&rdquo; com lead panel vazio.
+    <strong>Sugest&atilde;o:</strong> Renomear SDR tabs para &ldquo;SDR: Leads&rdquo; / &ldquo;SDR: Docs&rdquo; / &ldquo;SDR: Acordos&rdquo; ou usar &iacute;cones diferenciados.
+  </p>
+</div>
+
+<!-- BUG VISUAL BUREAU -->
+<h2>Bug Visual Confirm&aacute;vel &mdash; Bureau Error Exposto</h2>
+<div class="card card-red">
+  <p>Na aba <strong>Restri&ccedil;&otilde;es</strong> do Lead Panel, o erro do bureau &eacute; <strong>vis&iacute;vel ao usu&aacute;rio final</strong>:</p>
+  <pre><code>Consulta falhou
+Todos os bureaus falharam: apifull_115
+(requisi&ccedil;&atilde;o inv&aacute;lida: N&atilde;o houve resposta da API!)</code></pre>
+  <p style="margin-top:0.8rem;">Isso confirma o BUG-01 (bureau mismatch) do code audit. O usu&aacute;rio v&ecirc; a mensagem t&eacute;cnica do backend.</p>
+  <p style="color:var(--muted);margin-top:0.5rem;"><strong>Fix (UX):</strong> Mensagem deveria ser &ldquo;N&atilde;o foi poss&iacute;vel consultar restri&ccedil;&otilde;es. Tente novamente.&rdquo; sem expor nome do bureau.</p>
+</div>
+
+<!-- BUGS VISUAIS CONSOLIDADOS -->
+<h2>Todos os Bugs Visuais</h2>
+<table>
+  <tr>
+    <th>#</th>
+    <th>Sev.</th>
+    <th>Tela</th>
+    <th>Bug</th>
+    <th>Fix</th>
+  </tr>
+  <tr>
+    <td>VIS-01</td>
+    <td><span class="tag tag-p0">P0</span></td>
+    <td>Lead Panel</td>
+    <td>Data nascimento em MM/DD/YYYY (americano)</td>
+    <td><code>format(parseISO(str),'dd/MM/yyyy',{locale:ptBR})</code></td>
+  </tr>
+  <tr>
+    <td>VIS-02</td>
+    <td><span class="tag tag-p0">P0</span></td>
+    <td>Lead Panel Restr.</td>
+    <td>Erro t&eacute;cnico do bureau exposto ao usu&aacute;rio</td>
+    <td>Mensagem amig&aacute;vel + log t&eacute;cnico separado</td>
+  </tr>
+  <tr>
+    <td>VIS-03</td>
+    <td><span class="tag tag-p0">P0</span></td>
+    <td>Mobile 375px</td>
+    <td>15 touch targets &lt;44px (26-40px)</td>
+    <td>Aumentar min-height para 44px em todos buttons/tabs mobile</td>
+  </tr>
+  <tr>
+    <td>VIS-04</td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>Thread</td>
+    <td>Markdown n&atilde;o renderizado (**bold** literal)</td>
+    <td>Usar react-markdown ou parser simples</td>
+  </tr>
+  <tr>
+    <td>VIS-05</td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>Conversas</td>
+    <td>Contato sem nome mostra &ldquo;.&rdquo;</td>
+    <td>Fallback para n&uacute;mero de telefone</td>
+  </tr>
+  <tr>
+    <td>VIS-06</td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>SDR Tabs</td>
+    <td>&ldquo;Docs&rdquo; confunde com documentos, &eacute; filtro SDR</td>
+    <td>Renomear para &ldquo;SDR: Docs&rdquo; ou usar &iacute;cone diferente</td>
+  </tr>
+  <tr>
+    <td>VIS-07</td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>Mobile</td>
+    <td>Tabs cortadas (&ldquo;Tem...&rdquo;), &uacute;ltimas inacess&iacute;veis</td>
+    <td>Scroll horizontal com indicador ou overflow menu</td>
+  </tr>
+  <tr>
+    <td>VIS-08</td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>Lead Panel</td>
+    <td>CPF inv&aacute;lido n&atilde;o bloqueia &ldquo;Salvar dados&rdquo;</td>
+    <td>Disabled button quando valida&ccedil;&atilde;o falha</td>
+  </tr>
+  <tr>
+    <td>VIS-09</td>
+    <td><span class="tag tag-p1">P1</span></td>
+    <td>Mobile/Tablet</td>
+    <td>Thread inacess&iacute;vel em &lt;768px (s&oacute; lista)</td>
+    <td>Slide-in ou navega&ccedil;&atilde;o push para thread mobile</td>
+  </tr>
+  <tr>
+    <td>VIS-10</td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td>Lead Panel</td>
+    <td>Status CRM com underscore (&ldquo;aguardando_documentos&rdquo;)</td>
+    <td>Humanizar: <code>str.replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase())</code></td>
+  </tr>
+  <tr>
+    <td>VIS-11</td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td>Conversas</td>
+    <td>3 dropdowns &ldquo;Todos&rdquo; sem labels</td>
+    <td>Adicionar placeholder: Status, Tipo, SDR</td>
+  </tr>
+  <tr>
+    <td>VIS-12</td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td>Lead Panel</td>
+    <td>KPI &ldquo;R$ 3.3...&rdquo; truncado</td>
+    <td>Painel mais largo ou valor abreviado (R$ 3,3k)</td>
+  </tr>
+  <tr>
+    <td>VIS-13</td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td>Templates</td>
+    <td>Nomes em snake_case (<code>boas_vindas_lead</code>)</td>
+    <td>Display names humanizados</td>
+  </tr>
+  <tr>
+    <td>VIS-14</td>
+    <td><span class="tag tag-p2">P2</span></td>
+    <td>Wide 1920</td>
+    <td>Bubbles muito largas sem max-width</td>
+    <td><code>max-width: 65%</code> nas bubbles de mensagem</td>
+  </tr>
+</table>
+
+<!-- PLANO DE AÇÃO -->
+<h2>Plano de A&ccedil;&atilde;o</h2>
+<div class="card card-red">
+  <h4><span class="tag tag-p0">P0</span> Fix Imediato</h4>
+  <ol>
+    <li><strong>Data pt-BR:</strong> Trocar formato de nascimento para <code>dd/MM/yyyy</code>. (~5min)</li>
+    <li><strong>Bureau error msg:</strong> Trocar mensagem t&eacute;cnica por amig&aacute;vel no CrmAuditoriaPanel. (~10min)</li>
+    <li><strong>Touch targets mobile:</strong> CSS <code>@media (max-width: 640px) { button, [role=tab] { min-height: 44px; } }</code> (~15min)</li>
+  </ol>
+</div>
+<div class="card card-yellow">
+  <h4><span class="tag tag-p1">P1</span> Melhorias Urgentes</h4>
+  <ol>
+    <li><strong>Markdown rendering:</strong> Adicionar parser b&aacute;sico (bold/italic) nas mensagens Julia. (~30min)</li>
+    <li><strong>Contato fallback:</strong> Quando nome &eacute; vazio ou &ldquo;.&rdquo;, mostrar n&uacute;mero formatado. (~10min)</li>
+    <li><strong>SDR tabs naming:</strong> Prefixar com &ldquo;SDR:&rdquo; ou usar &iacute;cones distintos. (~10min)</li>
+    <li><strong>Mobile thread:</strong> Implementar slide-in ou push navigation. (~2h)</li>
+    <li><strong>CPF validation blocking:</strong> Desabilitar submit quando CPF inv&aacute;lido. (~10min)</li>
+  </ol>
+</div>
+
+<!-- NOTA FINAL -->
+<h2>Nota Final &mdash; Breakdown</h2>
+<table>
+  <tr>
+    <th>Categoria</th>
+    <th>Peso</th>
+    <th>Nota</th>
+    <th>Ponderada</th>
+    <th>Justificativa</th>
+  </tr>
+  <tr>
+    <td>Design System Compliance</td>
+    <td>20%</td>
+    <td><span class="score-green">8.5</span></td>
+    <td>1.70</td>
+    <td>Zero hardcoded colors. Tipografia correta. Warm Charcoal ok. Console limpo.</td>
+  </tr>
+  <tr>
+    <td>Desktop Layout</td>
+    <td>25%</td>
+    <td><span class="score-green">7.5</span></td>
+    <td>1.88</td>
+    <td>3-col funcional. 5 tabs bem organizadas. Dashboard + Julia Lab profissionais.</td>
+  </tr>
+  <tr>
+    <td>Informa&ccedil;&atilde;o &amp; UX</td>
+    <td>15%</td>
+    <td><span class="score-yellow">6.0</span></td>
+    <td>0.90</td>
+    <td>Smart replies bom. Markdown literais, data errada, erro técnico exposto.</td>
+  </tr>
+  <tr>
+    <td>Lead Panel</td>
+    <td>15%</td>
+    <td><span class="score-yellow">5.5</span></td>
+    <td>0.83</td>
+    <td>6 tabs funcionais, validação CPF, mas data errada, error exposto, painel apertado.</td>
+  </tr>
+  <tr>
+    <td>Responsividade</td>
+    <td>15%</td>
+    <td><span class="score-red">4.0</span></td>
+    <td>0.60</td>
+    <td>15 touch targets violam DS. Tabs cortadas. Thread inacessível em mobile.</td>
+  </tr>
+  <tr>
+    <td>Navega&ccedil;&atilde;o / IA</td>
+    <td>10%</td>
+    <td><span class="score-yellow">5.0</span></td>
+    <td>0.50</td>
+    <td>2 níveis de tabs confusos. SDR &ldquo;Docs&rdquo; engana. Status snake_case.</td>
+  </tr>
+  <tr style="background:var(--surface2);font-weight:600;">
+    <td>TOTAL</td>
+    <td>100%</td>
+    <td></td>
+    <td><span class="score-yellow">6.41</span></td>
+    <td>Arredondado para <strong>6.2</strong> pelo impacto da data em formato errado (afeta todo o módulo).</td>
+  </tr>
+</table>
+
+<!-- VEREDICTO FINAL -->
+<h2>Veredicto Final</h2>
+<div class="card card-accent">
+  <p style="font-size:1.1rem;line-height:1.8;">
+    <strong>6.2/10</strong> &mdash; A melhor nota das 4 etapas, o que diz mais sobre as outras etapas do que sobre esta.
+    O frontend visual do MdZap demonstra disciplina com o Design System v5 &mdash; zero cores hardcoded, tipografia correta,
+    console limpo. O layout desktop &eacute; funcional e as 5 tabs oferecem boa organizacao. Dashboard e Julia Lab est&atilde;o acima da m&eacute;dia.
+  </p>
+  <p style="margin-top:1rem;color:var(--muted);">
+    O que puxa para baixo: data em formato americano (P0 indefens&aacute;vel), erro t&eacute;cnico do bureau exposto ao usu&aacute;rio,
+    15 touch targets violando o m&iacute;nimo 44px no mobile, thread inacess&iacute;vel em &lt;768px, e navega&ccedil;&atilde;o confusa entre tabs top-level e SDR modes.
+    O caminho para 8.0 exige: corrigir data (5min), error msg (10min), touch targets (15min), markdown (30min), mobile thread (2h). Total: ~3h.
+  </p>
+</div>
+
+<!-- RESUMO 4 ETAPAS -->
+<h2>Resumo Consolidado &mdash; 4 Etapas</h2>
+<div class="grid-4">
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value score-yellow">5.2</div>
+      <div class="metric-label">Stage 1: Backend</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value score-yellow">4.8</div>
+      <div class="metric-label">Stage 2: C&oacute;digo</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value score-red">3.5</div>
+      <div class="metric-label">Stage 3: n8n</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="metric">
+      <div class="metric-value score-yellow">6.2</div>
+      <div class="metric-label">Stage 4: Frontend</div>
+    </div>
+  </div>
+</div>
+<div class="card card-accent">
+  <div class="metric">
+    <div class="metric-value" style="color:var(--yellow);font-size:2.5rem;">4.9<span style="font-size:1rem;color:var(--muted)">/10</span></div>
+    <div class="metric-label" style="font-size:0.9rem;">M&Eacute;DIA GERAL MDZAP</div>
+  </div>
+  <p style="text-align:center;color:var(--muted);margin-top:0.5rem;">
+    M&oacute;dulo funcional com d&iacute;vida t&eacute;cnica severa. O n8n &eacute; o elo mais fraco (3.5). O frontend visual &eacute; o mais s&oacute;lido (6.2).
+    Investimento estimado de ~15h corrige os P0 de todas as 4 etapas e sobe a m&eacute;dia para ~7.0.
+  </p>
+</div>
+
+<hr class="separator">
+<div class="footer">
+  MdZap Frontend Visual Audit &mdash; Stage 4/4 | Gerado: 2026-04-08 | Auditor: Claude Code + Playwright | MdFlow &copy; MDX LegalTech<br>
+  <a href="mdzap-backend-audit-2026-04-08.html">Stage 1: Backend (5.2/10)</a> |
+  <a href="mdzap-code-audit-2026-04-08.html">Stage 2: C&oacute;digo (4.8/10)</a> |
+  <a href="mdzap-n8n-audit-2026-04-08.html">Stage 3: n8n (3.5/10)</a> |
+  <strong>Stage 4: Frontend (6.2/10)</strong> |
+  <strong style="color:var(--yellow)">M&eacute;dia: 4.9/10</strong>
+</div>
+
+</body>
+</html>
