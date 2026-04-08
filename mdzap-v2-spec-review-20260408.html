@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap v2 — Spec Review 2026-04-08</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --primary: #20c997;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 24px;
+}
+
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 48px 24px 36px;
+}
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.bprimary { background: rgba(32,201,151,0.1); color: var(--primary); border: 1px solid rgba(32,201,151,0.25); }
+
+/* STATS */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* SECTIONS */
+.section { margin: 32px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* STATUS PILLS */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.sp-p0 { background: rgba(255,107,107,0.18); color: var(--accent2); border: 1px solid rgba(255,107,107,0.35); font-weight: 700; }
+.sp-p1 { background: rgba(255,209,102,0.12); color: var(--accent4); border: 1px solid rgba(255,209,102,0.3); font-weight: 600; }
+
+/* CODE */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* ===================== FLUXO ===================== */
+.flow-container { display: flex; flex-direction: column; gap: 0; }
+.flow-phase {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 0;
+  position: relative;
+}
+.flow-phase:last-child .flow-line { display: none; }
+
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4px;
+}
+.flow-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  border: 2px solid;
+  z-index: 1;
+}
+.flow-line {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  margin: 4px auto 0;
+}
+
+.phase-f1 .flow-circle { background: rgba(124,109,255,0.15); color: var(--accent); border-color: var(--accent); }
+.phase-f1 .flow-line { background: linear-gradient(to bottom, var(--accent), rgba(124,109,255,0.2)); }
+.phase-f2 .flow-circle { background: rgba(91,196,245,0.12); color: var(--accent5); border-color: var(--accent5); }
+.phase-f2 .flow-line { background: linear-gradient(to bottom, var(--accent5), rgba(91,196,245,0.2)); }
+.phase-f3 .flow-circle { background: rgba(32,201,151,0.12); color: var(--primary); border-color: var(--primary); }
+.phase-f3 .flow-line { background: linear-gradient(to bottom, var(--primary), rgba(32,201,151,0.2)); }
+.phase-f4 .flow-circle { background: rgba(255,209,102,0.12); color: var(--accent4); border-color: var(--accent4); }
+.phase-f4 .flow-line { background: linear-gradient(to bottom, var(--accent4), rgba(255,209,102,0.2)); }
+.phase-f5 .flow-circle { background: rgba(255,107,107,0.1); color: var(--accent2); border-color: var(--accent2); }
+.phase-f5 .flow-line { background: linear-gradient(to bottom, var(--accent2), rgba(255,107,107,0.15)); }
+.phase-f6 .flow-circle { background: rgba(79,255,176,0.1); color: var(--accent3); border-color: var(--accent3); }
+.phase-f6 .flow-line { background: transparent; }
+
+.flow-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-left: 12px;
+  margin-bottom: 12px;
+}
+
+.phase-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.phase-f1 .phase-title { color: var(--accent); }
+.phase-f2 .phase-title { color: var(--accent5); }
+.phase-f3 .phase-title { color: var(--primary); }
+.phase-f4 .phase-title { color: var(--accent4); }
+.phase-f5 .phase-title { color: var(--accent2); }
+.phase-f6 .phase-title { color: var(--accent3); }
+
+.flow-actors { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.actor-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 180px;
+  flex: 1;
+}
+.actor-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.actor-julia { color: var(--primary); }
+.actor-docreader { color: var(--accent5); }
+.actor-atendente { color: var(--accent4); }
+.actor-items { font-size: 0.82rem; color: var(--text); line-height: 1.7; }
+.actor-items li { list-style: none; padding-left: 0; }
+.actor-items li::before { content: "→ "; color: var(--text-muted); }
+
+.flow-rules {
+  margin-top: 10px;
+  background: rgba(255,107,107,0.06);
+  border: 1px solid rgba(255,107,107,0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.flow-rules-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--accent2); font-weight: 600; margin-bottom: 4px; }
+.flow-rules ul { list-style: none; }
+.flow-rules li { font-size: 0.82rem; color: var(--text); }
+.flow-rules li::before { content: "⚠ "; color: var(--accent2); }
+
+/* REGRAS CRITICAS */
+.rules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media(max-width: 900px) { .rules-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width: 580px) { .rules-grid { grid-template-columns: 1fr; } }
+
+.rule-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rule-card.critical { border: 1px solid rgba(255,107,107,0.4); background: rgba(255,107,107,0.05); }
+.rule-card.warn { border: 1px solid rgba(255,209,102,0.35); background: rgba(255,209,102,0.04); }
+.rule-card.info { border: 1px solid rgba(91,196,245,0.3); background: rgba(91,196,245,0.04); }
+.rule-card.ok { border: 1px solid rgba(79,255,176,0.3); background: rgba(79,255,176,0.04); }
+
+.rule-icon { font-size: 1.4rem; }
+.rule-title { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+.rule-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+/* BUG CARDS */
+.bug-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bug-header { display: flex; align-items: center; gap: 10px; }
+.bug-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--surface2);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.bug-title { font-size: 0.9rem; font-weight: 600; color: var(--text); flex: 1; }
+.bug-desc { font-size: 0.82rem; color: var(--text-muted); }
+.bug-expect { font-size: 0.82rem; color: var(--primary); }
+.bug-expect strong { color: var(--primary); }
+
+/* BEFORE/AFTER TABLE */
+.ba-table { width: 100%; border-collapse: collapse; }
+.ba-table th { background: var(--surface2); padding: 10px 14px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
+.ba-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.83rem; vertical-align: top; }
+.ba-table tr:hover td { background: rgba(255,255,255,0.02); }
+.col-before { color: var(--accent2); }
+.col-after { color: var(--accent3); }
+.col-item { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent4); }
+
+/* FEATURE CARDS */
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.feature-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.feature-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(124,109,255,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(124,109,255,0.25);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.feature-title { font-size: 0.9rem; font-weight: 600; }
+.feature-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+.feature-detail { font-size: 0.8rem; color: var(--text); margin-top: 6px; line-height: 1.6; }
+
+/* DECISIONS TABLE */
+.decisions-table { width: 100%; border-collapse: collapse; }
+.decisions-table th { background: var(--surface2); padding: 10px 14px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); text-align: left; }
+.decisions-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.84rem; vertical-align: top; }
+.decisions-table tr:hover td { background: rgba(255,255,255,0.02); }
+.decision-q { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent4); font-weight: 600; }
+.decision-a { color: var(--accent3); font-weight: 600; }
+
+/* OUT OF SCOPE */
+.oos-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.oos-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.oos-content {}
+.oos-title { font-weight: 600; font-size: 0.88rem; color: var(--text); }
+.oos-reason { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+/* INVESTIGATION CARDS */
+.inv-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent4);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.inv-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.inv-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,209,102,0.12);
+  border: 1px solid rgba(255,209,102,0.3);
+  color: var(--accent4);
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.inv-title { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.inv-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+.inv-hint { font-size: 0.78rem; color: var(--accent5); margin-top: 6px; }
+.inv-hint::before { content: "Hint: "; font-weight: 600; }
+
+/* SEPARATOR */
+.sep { height: 1px; background: var(--border); margin: 8px 0; }
+
+.tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-right: 4px;
+}
+.tag-n8n { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.2); }
+.tag-db { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.2); }
+.tag-front { background: rgba(124,109,255,0.1); color: var(--accent); border: 1px solid rgba(124,109,255,0.2); }
+.tag-future { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.2); }
+
+.notice {
+  background: rgba(32,201,151,0.07);
+  border: 1px solid rgba(32,201,151,0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+.notice strong { color: var(--primary); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">🟣</span>
+    <h1 class="gradient-text">MdZap v2 — Spec Review</h1>
+    <p class="hero-sub">Christian, confirme se tudo abaixo foi capturado corretamente. Esta é a base do que será implementado.</p>
+    <div class="badges">
+      <span class="badge bp">v2 / 2026-04-08</span>
+      <span class="badge bprimary">Baseado nos áudios + reunião semanal</span>
+      <span class="badge by">Aguardando validação</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent);">6</div>
+      <div class="stat-label">Fases Julia</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent2);">5</div>
+      <div class="stat-label">Bugs críticos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent4);">11</div>
+      <div class="stat-label">Refinamentos UI</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--primary);">10</div>
+      <div class="stat-label">Decisões reunião</div>
+    </div>
+  </div>
+
+  <!-- ============== SEÇÃO 1 — FLUXO JULIA ============== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔄</span>
+      <h2>Seção 1 — Fluxo de Atendimento Julia (6 Fases)</h2>
+    </div>
+
+    <div class="notice">
+      <strong>Contexto:</strong> Este fluxo descreve a lógica que o frontend deve <strong>suportar</strong>. O prompt da Julia em si é responsabilidade do Matheus — não está nesta iteração.
+    </div>
+
+    <div class="flow-container">
+
+      <!-- FASE 1 -->
+      <div class="flow-phase phase-f1">
+        <div class="flow-node">
+          <div class="flow-circle">F1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="phase-title">Fase 1 — Entrada do Lead</div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;">Lead clica no anúncio Facebook Ads → WhatsApp abre com nome + CPF pré-preenchidos.</p>
+          <div class="flow-actors">
+            <div class="actor-block">
+              <div class="actor-label actor-julia">Julia</div>
+              <ul class="actor-items">
+                <li>Recebe mensagem com nome + CPF</li>
+                <li>Cadastra contato automaticamente (nome + número)</li>
+                <li>Envia boas-vindas apresentando "Midas Restrições"</li>
+                <li>Explica: auditoria de crédito, descobrir brechas</li>
+                <li>Pergunta: tem interesse em descobrir a situação no CPF?</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flow-rules">
+            <div class="flow-rules-title">Regras desta fase</div>
+            <ul>
+              <li>NUNCA citar nome do escritório de advocacia</li>
+              <li>NUNCA citar nome de advogado</li>
+              <li>Empresa apresentada: "Midas Restrições" — apenas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 2 -->
+      <div class="flow-phase phase-f2">
+        <div class="flow-node">
+          <div class="flow-circle">F2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="phase-title">Fase 2 — Coleta de Documentos</div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;">Julia pede CNH/RG + comprovante de residência. Lead envia em qualquer ordem.</p>
+          <div class="flow-actors">
+            <div class="actor-block">
+              <div class="actor-label actor-julia">Julia</div>
+              <ul class="actor-items">
+                <li>Solicita documento de identificação (CNH ou RG)</li>
+                <li>Solicita comprovante de residência</li>
+                <li>Se comprovante não bate com titular → pede declaração de terceiro</li>
+                <li>NUNCA sugere extrato bancário</li>
+                <li>Sugere boleto de banco digital (mostra endereço no nome)</li>
+              </ul>
+            </div>
+            <div class="actor-block">
+              <div class="actor-label actor-docreader">Doc Reader — Identificação</div>
+              <ul class="actor-items">
+                <li>Verifica legibilidade (ilegível → pede foto melhor/PDF)</li>
+                <li>Extrai: nome, CPF, RG, data nascimento, sexo, validade</li>
+                <li>Salva PDF no storage</li>
+                <li>Score de confiança por campo</li>
+              </ul>
+            </div>
+            <div class="actor-block">
+              <div class="actor-label actor-docreader">Doc Reader — Comprovante</div>
+              <ul class="actor-items">
+                <li>Verifica legibilidade</li>
+                <li>Verifica se nome/CPF bate com titular</li>
+                <li>Se bate → extrai endereço → salva PDF</li>
+                <li>Se não bate → passa output para Julia pedir declaração</li>
+                <li>Declaração recebida → processa → extrai endereço</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flow-rules">
+            <div class="flow-rules-title">Declaração de terceiro (quando necessário)</div>
+            <ul>
+              <li>"Eu, [nome terceiro], CPF [X], declaro que [nome lead], CPF [Y], reside comigo nesta moradia."</li>
+              <li>Documento de identificação do terceiro obrigatório</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 3 -->
+      <div class="flow-phase phase-f3">
+        <div class="flow-node">
+          <div class="flow-circle">F3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="phase-title">Fase 3 — Pré-cadastro (pending_lead_data)</div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;">Doc Reader popula o metadata da conversa. Atendente confirma e cria o lead formal.</p>
+          <div class="flow-actors">
+            <div class="actor-block">
+              <div class="actor-label actor-docreader">Doc Reader</div>
+              <ul class="actor-items">
+                <li>Popula <span style="font-family:JetBrains Mono,monospace;color:var(--accent3)">whatsapp_conversas.metadata.pending_lead_data</span></li>
+              </ul>
+            </div>
+            <div class="actor-block">
+              <div class="actor-label actor-atendente">Atendente (Frontend)</div>
+              <ul class="actor-items">
+                <li>Vê formulário pré-preenchido no MdZap</li>
+                <li>Confirma os dados</li>
+                <li>Cria lead formal com coluna CRM: <strong style="color:var(--primary)">em_atendimento</strong></li>
+              </ul>
+            </div>
+          </div>
+          <div class="flow-rules">
+            <div class="flow-rules-title">Decisão reunião (P2)</div>
+            <ul>
+              <li>Opção B confirmada: ao criar o lead, coluna CRM = 'em_atendimento'</li>
+              <li>NÃO fazer cadastro automático em massa — risco de overload</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 4 -->
+      <div class="flow-phase phase-f4">
+        <div class="flow-node">
+          <div class="flow-circle">F4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="phase-title">Fase 4 — Auditoria (Atendente Assume)</div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;">Notificação aparece no MdZap → atendente assume → faz auditoria Boa Vista → sistema cadastra restrições.</p>
+          <div class="flow-actors">
+            <div class="actor-block">
+              <div class="actor-label actor-atendente">Atendente</div>
+              <ul class="actor-items">
+                <li>Assume conversa via notificação de auditoria pendente</li>
+                <li>Faz auditoria Boa Vista pelo sistema MdFlow</li>
+                <li>Sistema cadastra restrições automaticamente</li>
+                <li>Comprovante PDF gerado pelo próprio MdFlow (não API externa)</li>
+              </ul>
+            </div>
+            <div class="actor-block">
+              <div class="actor-label actor-julia">Julia (pós-auditoria)</div>
+              <ul class="actor-items">
+                <li>[Nome limpo] → parabeniza → encerra conversa</li>
+                <li>[Nome sujo] → informa SOMENTE empresas (nunca valores)</li>
+                <li>"Vimos X ocorrências da empresa [Y]"</li>
+                <li>Prazo máximo: "90 dias para o primeiro resultado"</li>
+                <li>Indique Ganho → FEATURE FUTURA (não mencionar)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flow-rules">
+            <div class="flow-rules-title">Regras desta fase</div>
+            <ul>
+              <li>Só Boa Vista por enquanto — Serasa não integrado</li>
+              <li>NUNCA mencionar valores das restrições, apenas empresas</li>
+              <li>NUNCA dar garantia — prazo máximo "90 dias para primeiro resultado"</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 5 -->
+      <div class="flow-phase phase-f5">
+        <div class="flow-node">
+          <div class="flow-circle">F5</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="phase-title">Fase 5 — CTPS / Elegibilidade AJG</div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;">Julia pede CTPS para comprovar elegibilidade AJG. Teto varia por estado.</p>
+          <div class="flow-actors">
+            <div class="actor-block">
+              <div class="actor-label actor-julia">Julia</div>
+              <ul class="actor-items">
+                <li>Pede CTPS — explica o porquê: comprovar renda abaixo do teto para <strong>AJG</strong></li>
+                <li>NUNCA usa o termo "JG" — usa sempre "AJG"</li>
+                <li>RS: teto = 5 salários mínimos</li>
+                <li>SC e SP: teto = 3 salários mínimos</li>
+                <li>Se autônomo → nós fazemos renda/receita (não Julia)</li>
+                <li>Se desempregado → cadastra profissao = "Desempregado"</li>
+              </ul>
+            </div>
+            <div class="actor-block">
+              <div class="actor-label actor-docreader">Doc Reader — CTPS</div>
+              <ul class="actor-items">
+                <li>[Contrato aberto] → extrai cargo (= profissão) + data_admissao → UPDATE leads.profissao</li>
+                <li>[Contrato fechado] → extrai último vínculo → profissão → Julia pergunta se ainda trabalha</li>
+                <li>[Renda receita] → feito por humano → Julia monitora se falta declaração IR</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flow-rules">
+            <div class="flow-rules-title">Decisão reunião (P4)</div>
+            <ul>
+              <li>cargo = profissão — campo único, não criar campo separado</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 6 -->
+      <div class="flow-phase phase-f6">
+        <div class="flow-node">
+          <div class="flow-circle">F6</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="phase-title">Fase 6 — Procuração ZapSign</div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;">Humano gera procuração via MdFlow → envia link ZapSign → Julia acompanha assinatura.</p>
+          <div class="flow-actors">
+            <div class="actor-block">
+              <div class="actor-label actor-atendente">Humano (atendente)</div>
+              <ul class="actor-items">
+                <li>Gera procuração via MdFlow</li>
+                <li>Envia link ZapSign para o lead</li>
+                <li>Lead vai para coluna CRM: <strong style="color:var(--accent3)">aguardando_assinatura</strong></li>
+              </ul>
+            </div>
+            <div class="actor-block">
+              <div class="actor-label actor-julia">Julia (follow-up)</div>
+              <ul class="actor-items">
+                <li>Fica responsável por cobrar assinatura</li>
+                <li>1h sem resposta → follow-up automático (n8n cron)</li>
+                <li>Lead assina → Julia confirma encaminhamento ao escritório parceiro</li>
+                <li>Lead diz "não quer" → pergunta sobre dúvida → sem resposta → cancela follow-up</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flow-rules">
+            <div class="flow-rules-title">Regras desta fase</div>
+            <ul>
+              <li>Geração de procuração = humano — Julia NUNCA gera</li>
+              <li>Julia NUNCA cita o nome do escritório ao confirmar encaminhamento</li>
+              <li>Follow-up: máximo X tentativas configurável</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============== SEÇÃO 2 — REGRAS JULIA ============== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <h2>Seção 2 — Regras Críticas da Julia</h2>
+    </div>
+
+    <div class="rules-grid">
+      <div class="rule-card critical">
+        <div class="rule-icon">🚫</div>
+        <div class="rule-title">NUNCA citar escritório</div>
+        <div class="rule-desc">Julia nunca menciona o nome do escritório de advocacia em nenhuma etapa do atendimento.</div>
+      </div>
+      <div class="rule-card critical">
+        <div class="rule-icon">🚫</div>
+        <div class="rule-title">NUNCA citar advogado</div>
+        <div class="rule-desc">Julia nunca menciona o nome de nenhum advogado. Encaminha "para o escritório parceiro" — genérico.</div>
+      </div>
+      <div class="rule-card critical">
+        <div class="rule-icon">🚫</div>
+        <div class="rule-title">NUNCA dar garantia</div>
+        <div class="rule-desc">Prazo máximo permitido: "90 dias para o primeiro resultado". Nada além disso. Nunca prometer resultado certo.</div>
+      </div>
+      <div class="rule-card critical">
+        <div class="rule-icon">🔢</div>
+        <div class="rule-title">CPF NUNCA mascarado</div>
+        <div class="rule-desc">Em etapa alguma. Nem no frontend, nem no log, nem no histórico. CPF completo sempre visível.</div>
+      </div>
+      <div class="rule-card warn">
+        <div class="rule-icon">💬</div>
+        <div class="rule-title">Lead diz "não quer"</div>
+        <div class="rule-desc">Julia pergunta se há alguma dúvida. Se não responde → cancela o follow-up. Não insiste.</div>
+      </div>
+      <div class="rule-card warn">
+        <div class="rule-icon">⚖️</div>
+        <div class="rule-title">AJG — nunca "JG"</div>
+        <div class="rule-desc">Sempre "Assistência Jurídica Gratuita (AJG)". RS = 5 salários. SC e SP = 3 salários.</div>
+      </div>
+      <div class="rule-card warn">
+        <div class="rule-icon">🏦</div>
+        <div class="rule-title">Comprovante: boleto digital</div>
+        <div class="rule-desc">Julia NUNCA sugere extrato bancário. Sempre sugere boleto de banco digital (mostra endereço no nome).</div>
+      </div>
+      <div class="rule-card info">
+        <div class="rule-icon">💸</div>
+        <div class="rule-title">NUNCA falar valores</div>
+        <div class="rule-desc">Julia informa SOMENTE os nomes das empresas credoras. Nunca os valores das restrições.</div>
+      </div>
+      <div class="rule-card info">
+        <div class="rule-icon">🔮</div>
+        <div class="rule-title">Indique Ganho: feature futura</div>
+        <div class="rule-desc">Não mencionar ao lead. Não implementar nesta iteração. Aguardar o produto ficar pronto.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== SEÇÃO 3 — BUGS ============== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🐛</span>
+      <h2>Seção 3 — Bugs Críticos (pós-v1)</h2>
+    </div>
+
+    <div class="grid g2">
+
+      <div class="bug-card" style="border-left:3px solid var(--accent2);">
+        <div class="bug-header">
+          <span class="bug-id">BUG-01</span>
+          <span class="bug-title">CPF mascarado (pontinhos)</span>
+          <span class="status-pill sp-p0">P0</span>
+        </div>
+        <div class="bug-desc">O CPF está sendo exibido com máscara de senha (pontos/asteriscos) no header da thread e possivelmente em outros lugares do MdZap.</div>
+        <div class="sep"></div>
+        <div class="bug-expect"><strong>Esperado:</strong> CPF sempre visível, completo, sem mascaramento em qualquer etapa.</div>
+        <div style="margin-top:6px;"><span class="tag tag-front">MdzapThreadHeader.tsx</span></div>
+      </div>
+
+      <div class="bug-card" style="border-left:3px solid var(--accent4);">
+        <div class="bug-header">
+          <span class="bug-id">BUG-02</span>
+          <span class="bug-title">Badge CRM dropdown não abre</span>
+          <span class="status-pill sp-p1">P1</span>
+        </div>
+        <div class="bug-desc">O badge de CRM no header da thread não abre as opções para mover o lead de coluna. T15 foi executado mas o problema persiste.</div>
+        <div class="sep"></div>
+        <div class="bug-expect"><strong>Esperado:</strong> Clicar no badge abre dropdown com as colunas disponíveis e o lead é movido ao selecionar.</div>
+        <div style="margin-top:6px;"><span class="tag tag-front">MdzapThreadHeader.tsx</span> <span class="tag tag-front">MdzapMsgThread.tsx</span></div>
+      </div>
+
+      <div class="bug-card" style="border-left:3px solid var(--accent4);">
+        <div class="bug-header">
+          <span class="bug-id">BUG-03</span>
+          <span class="bug-title">Aba Restrições diferente do CRM</span>
+          <span class="status-pill sp-p1">P1</span>
+        </div>
+        <div class="bug-desc">A aba de restrições no drawer do MdZap foi criada como componente reutilizado, mas sem a lógica correta do CRM. Cadastro e visualização não funcionam como esperado.</div>
+        <div class="sep"></div>
+        <div class="bug-expect"><strong>Esperado:</strong> Mesmo comportamento do painel de auditoria/restrições do CRM. Investigação necessária antes de implementar.</div>
+        <div style="margin-top:6px;"><span class="tag tag-front">LeadRestricoesMdzapTab.tsx</span></div>
+      </div>
+
+      <div class="bug-card" style="border-left:3px solid var(--accent4);">
+        <div class="bug-header">
+          <span class="bug-id">BUG-04</span>
+          <span class="bug-title">Aba Docs sem pastas das restrições</span>
+          <span class="status-pill sp-p1">P1</span>
+        </div>
+        <div class="bug-desc">A aba de documentos não gerou as pastas das restrições conforme planejado. A estrutura esperada de organização por tipo de restrição não existe.</div>
+        <div class="sep"></div>
+        <div class="bug-expect"><strong>Esperado:</strong> Pastas organizadas por restrição. Investigação necessária para entender a spec original.</div>
+        <div style="margin-top:6px;"><span class="tag tag-front">LeadDocumentosTab.tsx</span></div>
+      </div>
+
+      <div class="bug-card" style="border-left:3px solid var(--accent4); grid-column: 1 / -1;">
+        <div class="bug-header">
+          <span class="bug-id">BUG-05</span>
+          <span class="bug-title">ICP webhook T06 — Railway restart</span>
+          <span class="status-pill sp-p1">P1</span>
+        </div>
+        <div class="bug-desc">O webhook <span class="code" style="display:inline;padding:2px 6px;">mdzap/icp-analise</span> foi criado na v1 mas pode estar sem registro ativo após restart do Railway. Pode estar retornando erro ou não respondendo.</div>
+        <div class="sep"></div>
+        <div class="bug-expect"><strong>Esperado:</strong> Webhook ativo e respondendo após reinício do Railway. Testar e validar antes de marcar como resolvido.</div>
+        <div style="margin-top:6px;"><span class="tag tag-n8n">mdzap/icp-analise</span> <span class="tag tag-n8n">Railway</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============== SEÇÃO 4 — REFINAMENTOS UI ============== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🎨</span>
+      <h2>Seção 4 — Refinamentos UI/UX (Áudio 2)</h2>
+    </div>
+
+    <div class="card">
+      <table class="ba-table">
+        <thead>
+          <tr>
+            <th style="width:80px;">ID</th>
+            <th style="width:180px;">Componente</th>
+            <th>Antes (estado atual)</th>
+            <th>Depois (esperado)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="col-item">UI-01</span></td>
+            <td>Drawer do lead</td>
+            <td class="col-before">Largura padrão (estreito)</td>
+            <td class="col-after">Mais largo — aprox. 360–380px, mais à esquerda</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-02</span></td>
+            <td>Aba Dados</td>
+            <td class="col-before">Botões "CRM" e "Assumir" dentro da aba</td>
+            <td class="col-after">Remover ambos — já existem no topo do drawer</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-03</span></td>
+            <td>Aba Dados — campos</td>
+            <td class="col-before">Estado civil, email, score, etapa CRM, advogado presentes</td>
+            <td class="col-after">Remover todos esses campos — não são necessários aqui</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-04</span></td>
+            <td>Aba Dados — alinhamento</td>
+            <td class="col-before">Inputs desalinhados (nascimento/telefone, profissão)</td>
+            <td class="col-after">Alinhamento correto dos inputs em grid</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-05</span></td>
+            <td>Aba Dados — campos finais</td>
+            <td class="col-before">Múltiplos campos desnecessários</td>
+            <td class="col-after">Apenas: nome, CPF, RG, nascimento, telefone, profissão, endereço + botão Salvar</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-06</span></td>
+            <td>Aba Restrições — layout</td>
+            <td class="col-before">Botão de auditoria sem posição definida no layout</td>
+            <td class="col-after">Botão auditoria pequeno no topo → restrições listadas logo abaixo</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-07</span></td>
+            <td>Aba Restrições — botão</td>
+            <td class="col-before">Botão "Gerar Contrato" presente</td>
+            <td class="col-after">Remover botão "Gerar Contrato"</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-08</span></td>
+            <td>Aba Restrições — valor total</td>
+            <td class="col-before">Valor total com overflow (transborda o card)</td>
+            <td class="col-after">Fonte menor para valor total — sem overflow</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-09</span></td>
+            <td>Aba Notas — label</td>
+            <td class="col-before">Label com texto "mdsap mais crm" ou similar</td>
+            <td class="col-after">Label simples: "Notas"</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-10</span></td>
+            <td>Aba Histórico</td>
+            <td class="col-before">Aba existe no drawer</td>
+            <td class="col-after">Avaliar se deve existir — investigar uso real antes de decidir</td>
+          </tr>
+          <tr>
+            <td><span class="col-item">UI-11</span></td>
+            <td>Aba ICP</td>
+            <td class="col-before">Aba ICP dentro do drawer do lead</td>
+            <td class="col-after">REMOVER do drawer — lugar errado. ICP vai para tab Telemetria na página /mdzap</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============== SEÇÃO 5 — NOVAS FUNCIONALIDADES ============== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">✨</span>
+      <h2>Seção 5 — Novas Funcionalidades</h2>
+    </div>
+
+    <div class="grid g2">
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-id">NEW-01</span>
+          <span class="feature-title">Tab "Telemetria" na página /mdzap</span>
+          <span class="tag tag-front">Frontend</span>
+        </div>
+        <div class="feature-desc">Nova tab na página principal do MdZap. O painel ICP (que estava no drawer do lead) se move para cá.</div>
+        <div class="feature-detail">
+          Substitui/absorve o que estava incorretamente no drawer. Investigar o HTML de investigação de Telemetria/ICP em ~/beto-reports/ — já foi planejado anteriormente.
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-id">NEW-02</span>
+          <span class="feature-title">Notificação de auditoria pendente</span>
+          <span class="tag tag-front">Frontend</span>
+        </div>
+        <div class="feature-desc">Badge ou indicador visual na conversa/lista indicando que aquele lead está aguardando auditoria.</div>
+        <div class="feature-detail">
+          Implementar no drawer e na lista de conversas. Quando atendente assume → notificação some. Decisão reunião P5: Opção B.
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-id">NEW-03</span>
+          <span class="feature-title">Coluna CRM "aguardando_assinatura"</span>
+          <span class="tag tag-db">Banco</span>
+        </div>
+        <div class="feature-desc">Verificar se a coluna 'aguardando_assinatura' já existe no CHECK constraint de leads.coluna_crm. Criar migration se necessário.</div>
+        <div class="feature-detail">
+          <span style="font-family:JetBrains Mono,monospace;color:var(--accent3);font-size:0.78rem;">Migration M-V2-01:</span> adicionar 'aguardando_assinatura' ao CHECK de leads.coluna_crm (P1).
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-id">NEW-04</span>
+          <span class="feature-title">Lead pré-cadastro + em_atendimento</span>
+          <span class="tag tag-db">Banco</span>
+          <span class="tag tag-front">Frontend</span>
+        </div>
+        <div class="feature-desc">Vincular conversa ao lead antes do cadastro formal. Ao criar lead, coluna CRM = 'em_atendimento' direto.</div>
+        <div class="feature-detail">
+          T18 da v1 pode já ter implementado o pending_lead_data → criarLead. Verificar se está funcionando antes de reimplementar.
+        </div>
+      </div>
+
+      <div class="feature-card" style="grid-column: 1 / -1;">
+        <div class="feature-header">
+          <span class="feature-id">NEW-05</span>
+          <span class="feature-title">Sistema de follow-up ZapSign (n8n cron)</span>
+          <span class="tag tag-n8n">n8n</span>
+        </div>
+        <div class="feature-desc">Quando lead entra em 'aguardando_assinatura' → agenda follow-up para 1h depois. n8n verifica se ainda sem resposta → Julia envia mensagem.</div>
+        <div class="feature-detail">
+          Webhook <span style="font-family:JetBrains Mono,monospace;color:var(--accent5);">mdzap/follow-up</span> não existe ainda — criar. Configurável: máximo de tentativas. Cancelar se lead responde ou diz que não quer. Indicador visual no drawer quando follow-up está ativo.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============== SEÇÃO 6 — DECISÕES REUNIÃO ============== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>Seção 6 — Decisões da Reunião (2026-04-08)</h2>
+    </div>
+
+    <div class="card">
+      <table class="decisions-table">
+        <thead>
+          <tr>
+            <th style="width:60px;">Pergunta</th>
+            <th>Contexto</th>
+            <th>Decisão do Christian</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="decision-q">P1</span></td>
+            <td>Lead precisa ser cadastrado formalmente para ver as restrições?</td>
+            <td><span class="decision-a">Estudar o pré-cadastro</span> — pode ser complexo. Não implementar ainda.</td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P2a</span></td>
+            <td>Fazer cadastro automático em massa quando conversa chega?</td>
+            <td><span class="decision-a">Não</span> — risco de overload. Manter pré-cadastro manual pelo atendente.</td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P2b</span></td>
+            <td>Qual coluna CRM ao criar o lead?</td>
+            <td><span class="decision-a">Opção B</span> — coluna 'em_atendimento' direto ao criar.</td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P3</span></td>
+            <td>Arquitetura do subagente Doc Reader</td>
+            <td><span class="decision-a">Opção A</span></td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P4</span></td>
+            <td>Criar campo separado para "cargo" além de "profissão"?</td>
+            <td><span class="decision-a">Não</span> — cargo = profissão. Campo único. Sem campo separado.</td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P5</span></td>
+            <td>Sistema de notificações de auditoria pendente</td>
+            <td><span class="decision-a">Opção B</span></td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P6</span></td>
+            <td>—</td>
+            <td><span class="decision-a">Opção A</span></td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P7</span></td>
+            <td>Quem envia o resultado da auditoria para o lead?</td>
+            <td><span class="decision-a">Atendente</span> por enquanto. Julia fazendo isso = feature futura.</td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P8</span></td>
+            <td>Como gerar comprovante de auditoria?</td>
+            <td><span class="decision-a">Opção A</span> — gera pelo próprio sistema MdFlow (Boa Vista). Sem API externa.</td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">P9</span></td>
+            <td>Integração futura</td>
+            <td><span class="decision-a">Opção A</span> por enquanto.</td>
+          </tr>
+          <tr>
+            <td><span class="decision-q">PD</span></td>
+            <td>Indique Ganho — quando implementar?</td>
+            <td><span class="decision-a">Opção B</span> — mas <strong>não implementar agora</strong>. Pendência futura. Aguardar o produto ficar pronto.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============== SEÇÃO 7 — FORA DO ESCOPO ============== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🚧</span>
+      <h2>Seção 7 — O que NÃO está nesta iteração (mas foi mencionado)</h2>
+    </div>
+
+    <div class="oos-item">
+      <span class="oos-icon">📝</span>
+      <div class="oos-content">
+        <div class="oos-title">Prompt da Julia</div>
+        <div class="oos-reason">Responsabilidade do Matheus. Não é tarefa técnica de desenvolvimento. Não implementar nesta iteração.</div>
+      </div>
+    </div>
+
+    <div class="oos-item">
+      <span class="oos-icon">🔍</span>
+      <div class="oos-content">
+        <div class="oos-title">Integração Serasa</div>
+        <div class="oos-reason">Apenas Boa Vista por enquanto. Serasa não integrado — sem data de implementação definida.</div>
+      </div>
+    </div>
+
+    <div class="oos-item">
+      <span class="oos-icon">🎁</span>
+      <div class="oos-content">
+        <div class="oos-title">Indique Ganho</div>
+        <div class="oos-reason">Feature futura. Aguardar o produto ficar pronto. Não mencionar ao lead. Decisão PD = Opção B mas pendente.</div>
+      </div>
+    </div>
+
+    <div class="oos-item">
+      <span class="oos-icon">✍️</span>
+      <div class="oos-content">
+        <div class="oos-title">ZapSign — geração de procuração</div>
+        <div class="oos-reason">Geração é feita pelo humano (atendente) via MdFlow. Julia só acompanha o follow-up. A integração de geração em si não está no escopo.</div>
+      </div>
+    </div>
+
+    <div class="oos-item">
+      <span class="oos-icon">🤖</span>
+      <div class="oos-content">
+        <div class="oos-title">Julia com acesso direto ao backend</div>
+        <div class="oos-reason">A definir em iteração futura. Julia não terá acesso direto ao banco de dados nesta versão.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============== SEÇÃO 8 — INVESTIGAÇÕES ============== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔬</span>
+      <h2>Seção 8 — Investigações Pendentes (para o BREAK)</h2>
+    </div>
+
+    <div style="background: rgba(255,209,102,0.06); border: 1px solid rgba(255,209,102,0.2); border-radius: 10px; padding: 12px 16px; font-size:0.82rem; color:var(--accent4); margin-bottom:16px;">
+      Estas investigações devem ser feitas na fase PLAN de cada tarefa — antes de qualquer implementação.
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <div class="inv-card">
+        <div class="inv-header">
+          <div class="inv-num">1</div>
+          <div class="inv-title">Por que Restrições não funciona igual ao CRM?</div>
+        </div>
+        <div class="inv-desc">Verificar como funciona o cadastro de restrições no CRM real. Identificar qual código é diferente em LeadRestricoesMdzapTab.tsx vs /crm. Investigar CrmAuditoriaPanel.tsx — lógica de cadastro após auditoria.</div>
+        <div class="inv-hint">~/beta-mdflow/docs/_crm (E3) + CrmAuditoriaPanel.tsx</div>
+      </div>
+
+      <div class="inv-card">
+        <div class="inv-header">
+          <div class="inv-num">2</div>
+          <div class="inv-title">O que eram as "pastas das restrições"?</div>
+        </div>
+        <div class="inv-desc">O que era esperado na aba de documentos? Pastas separadas por tipo de restrição? Investigar spec de documentos no CRM e entender a estrutura esperada.</div>
+        <div class="inv-hint">~/beta-mdflow/docs/_resumido___clientes.txt — padrão CRM para estrutura de docs</div>
+      </div>
+
+      <div class="inv-card">
+        <div class="inv-header">
+          <div class="inv-num">3</div>
+          <div class="inv-title">HTML de Telemetria/ICP — o que foi planejado anteriormente?</div>
+        </div>
+        <div class="inv-desc">Pesquisar em ~/beto-reports/ o HTML de investigação de Telemetria. Entender o que já foi planejado para a tab antes de implementar a NEW-01.</div>
+        <div class="inv-hint">~/beto-reports/ — buscar "telemetria" ou "icp" nos HTMLs de investigação</div>
+      </div>
+
+      <div class="inv-card">
+        <div class="inv-header">
+          <div class="inv-num">4</div>
+          <div class="inv-title">Badge CRM dropdown — debug do T15</div>
+        </div>
+        <div class="inv-desc">T15 foi executado e o commit foi feito. Por que o dropdown ainda não abre? Verificar MdzapThreadHeader.tsx atual — o dropdown está renderizando? Está recebendo as opções? Há erro no handler de moveLead?</div>
+        <div class="inv-hint">MdzapThreadHeader.tsx + MdzapMsgThread.tsx — verificar handler moveLead e opções do dropdown</div>
+      </div>
+
+      <div class="inv-card">
+        <div class="inv-header">
+          <div class="inv-num">5</div>
+          <div class="inv-title">Vincular conversa ao lead antes do cadastro formal</div>
+        </div>
+        <div class="inv-desc">Reunião: Opção B = criar lead direto em 'em_atendimento'. Verificar se a T18 da v1 já implementou o fluxo pending_lead_data → criarLead. Se sim: apenas testar e validar o fluxo. Se não: implementar.</div>
+        <div class="inv-hint">~/beto-vault/projetos/mdzap/logs/ — log da T18 para ver o que foi entregue</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🟣 MdZap v2 — Spec Review · MdLab LegalTech · 2026-04-08
+    <br>
+    <span style="font-size:0.72rem;margin-top:4px;display:block;">Christian: revise cada seção e confirme ou corrija o que estiver errado antes do break.</span>
+  </div>
+
+</div>
+</body>
+</html>
