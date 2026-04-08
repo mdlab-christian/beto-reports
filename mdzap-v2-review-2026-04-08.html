@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mdzap-v2 — Revisão Profunda · 2026-04-08</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.g5 { grid-template-columns: repeat(5, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4,.g5 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.sp-warn { background: rgba(255,209,102,0.12); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.sp-crit { background: rgba(255,107,107,0.12); color: var(--accent2); border: 1px solid rgba(255,107,107,0.3); }
+.sp-ok { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.sp-valid { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+
+/* task cards */
+.task-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.task-card.crit { border-color: rgba(255,107,107,0.35); }
+.task-card.warn { border-color: rgba(255,209,102,0.3); }
+.task-card.ok   { border-color: rgba(79,255,176,0.2); }
+.task-card.valid { border-color: rgba(91,196,245,0.2); }
+
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.task-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(124,109,255,0.12);
+  border: 1px solid rgba(124,109,255,0.25);
+  border-radius: 8px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.task-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
+.task-body { padding: 20px; }
+
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.checklist li { display: flex; align-items: flex-start; gap: 8px; font-size: 0.83rem; }
+.checklist li .ci { flex-shrink: 0; font-size: 0.9rem; margin-top: 1px; }
+.checklist li.pass .ci::before { content: '✅'; }
+.checklist li.fail .ci::before { content: '❌'; }
+.checklist li.warn .ci::before { content: '⚠️'; }
+.checklist li.info .ci::before { content: 'ℹ️'; }
+
+.issue-box {
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+.issue-crit { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); }
+.issue-warn { background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.2); }
+.issue-info { background: rgba(91,196,245,0.07); border: 1px solid rgba(91,196,245,0.2); }
+
+.issue-label { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.issue-crit .issue-label { color: var(--accent2); }
+.issue-warn .issue-label { color: var(--accent4); }
+.issue-info .issue-label { color: var(--accent5); }
+
+.fix-box { background: rgba(79,255,176,0.05); border: 1px solid rgba(79,255,176,0.15); border-radius: 10px; padding: 12px 16px; margin-top: 10px; font-size: 0.83rem; }
+.fix-label { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent3); margin-bottom: 6px; }
+
+/* summary stat cards */
+.stat-crit { color: var(--accent2); }
+.stat-warn { color: var(--accent4); }
+.stat-ok { color: var(--accent3); }
+.stat-valid { color: var(--accent5); }
+.stat-total { color: var(--accent); }
+
+/* next steps */
+.next-step { display: flex; align-items: flex-start; gap: 14px; padding: 16px; background: var(--surface2); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 12px; }
+.next-step-num { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--accent); background: rgba(124,109,255,0.12); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.next-step-content h4 { font-size: 0.88rem; font-weight: 600; margin-bottom: 4px; }
+.next-step-content p { font-size: 0.81rem; color: var(--text-muted); line-height: 1.5; }
+.next-step.urgent { border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.04); }
+.next-step.urgent .next-step-num { color: var(--accent2); background: rgba(255,107,107,0.12); }
+
+/* timeline bar */
+.timeline-bar { display: flex; gap: 4px; margin: 16px 0; border-radius: 8px; overflow: hidden; height: 10px; }
+.tbar-ok   { background: var(--accent3); opacity: 0.7; }
+.tbar-warn { background: var(--accent4); opacity: 0.7; }
+.tbar-crit { background: var(--accent2); opacity: 0.7; }
+.tbar-valid { background: var(--accent5); opacity: 0.7; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">🔬</span>
+    <h1 class="gradient-text">mdzap-v2 — Revisão Profunda</h1>
+    <p class="hero-sub">Auditoria individual de T01–T10 · Sessão 2026-04-08</p>
+    <div class="badges">
+      <span class="badge bp">mdzap-v2</span>
+      <span class="badge bb">10 Tarefas Revisadas</span>
+      <span class="badge br">1 Bug Crítico P1</span>
+      <span class="badge by">2 Issues Moderados</span>
+      <span class="badge bg">7 Tarefas Limpas</span>
+    </div>
+  </div>
+
+  <!-- SUMMARY STATS -->
+  <div class="grid g5" style="margin-bottom: 32px;">
+    <div class="stat-card">
+      <div class="stat-value stat-total">10</div>
+      <div class="stat-label">Total Tarefas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value stat-valid">2</div>
+      <div class="stat-label">Validadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value stat-ok">5</div>
+      <div class="stat-label">OK / Limpas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value stat-warn">2</div>
+      <div class="stat-label">Issues Moderados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value stat-crit">1</div>
+      <div class="stat-label">Bug Crítico</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE VISUAL -->
+  <div class="card" style="margin-bottom: 32px;">
+    <div class="card-title">Distribuição de status por tarefa</div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T01</span>
+      <div style="flex:1; background: rgba(255,209,102,0.12); border: 1px solid rgba(255,209,102,0.25); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent4);">⚠️ ATENÇÃO — RPC orphaned, não chamada em nenhum lugar</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T02</span>
+      <div style="flex:1; background: rgba(91,196,245,0.07); border: 1px solid rgba(91,196,245,0.2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent5);">✅ VALIDADA — lead_coluna presente do banco ao componente</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T03</span>
+      <div style="flex:1; background: rgba(79,255,176,0.07); border: 1px solid rgba(79,255,176,0.2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent3);">✅ OK — Drawer 360px, ICP removida, label Notas correto</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T04</span>
+      <div style="flex:1; background: rgba(255,209,102,0.12); border: 1px solid rgba(255,209,102,0.25); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent4);">⚠️ ATENÇÃO — UI simplificada mas data model faz SELECT de campos removidos</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T05</span>
+      <div style="flex:1; background: rgba(79,255,176,0.07); border: 1px solid rgba(79,255,176,0.2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent3);">✅ OK — CPF mascarado via formatCpf, badge Radix corrigido</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T06</span>
+      <div style="flex:1; background: rgba(91,196,245,0.07); border: 1px solid rgba(91,196,245,0.2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent5);">✅ VALIDADA — 3 fixes confirmados no código</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T07</span>
+      <div style="flex:1; background: rgba(79,255,176,0.07); border: 1px solid rgba(79,255,176,0.2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent3);">✅ OK — Pastas Tier 2 por restrição com drag-and-drop</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T08</span>
+      <div style="flex:1; background: rgba(79,255,176,0.07); border: 1px solid rgba(79,255,176,0.2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent3);">✅ OK — Tab Telemetria com 5 KPIs + 2 charts + ICP embutida</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T09</span>
+      <div style="flex:1; background: rgba(79,255,176,0.07); border: 1px solid rgba(79,255,176,0.2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent3);">✅ OK — Badge auditoria pendente com lógica correta</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+      <span style="font-size: 0.78rem; color: var(--text-muted); width: 36px; text-align: right; font-family: monospace;">T10</span>
+      <div style="flex:1; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.3); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; color: var(--accent2);">❌ BUG CRÍTICO P1 — IF node type error, zero follow-ups enviados desde 04-08</div>
+    </div>
+  </div>
+
+  <!-- TASK CARDS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔍</span>
+      <h2>Revisão Individual por Tarefa</h2>
+    </div>
+
+    <!-- T01 -->
+    <div class="task-card warn">
+      <div class="task-header">
+        <span class="task-id">T01</span>
+        <span class="task-title">RPC fn_link_conversa_to_lead</span>
+        <span class="status-pill sp-warn">⚠️ ATENÇÃO</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> Migration existe: <code style="font-family:monospace;color:var(--accent3)">20260408000001_mdzap_v2_t01_fn_link_conversa_to_lead.sql</code></li>
+          <li class="pass"><span class="ci"></span> SECURITY DEFINER declarado</li>
+          <li class="pass"><span class="ci"></span> Org isolation: valida lead e conversa pertencem à mesma organização</li>
+          <li class="pass"><span class="ci"></span> GRANTs aplicados para <code style="font-family:monospace;color:var(--accent3)">authenticated</code> e <code style="font-family:monospace;color:var(--accent3)">service_role</code></li>
+          <li class="fail"><span class="ci"></span> Nenhum componente, hook ou webhook chama <code style="font-family:monospace;color:var(--accent3)">fn_link_conversa_to_lead</code></li>
+        </ul>
+        <div class="issue-box issue-warn">
+          <div class="issue-label">Issue Moderado — RPC Orphaned</div>
+          A RPC existe no banco mas nunca é invocada. O vínculo conversa→lead pós-cadastro não acontece automaticamente em nenhum fluxo atual — nem no frontend nem via n8n webhook. A função está criada mas morta.
+        </div>
+        <div class="fix-box">
+          <div class="fix-label">Acao necessaria</div>
+          Chamar a RPC em um dos dois pontos: (A) webhook n8n pós-cadastro de lead — <code style="font-family:monospace;color:var(--accent3)">POST rpc/fn_link_conversa_to_lead</code> com <code style="font-family:monospace;color:var(--accent3)">{conversa_id, lead_id}</code>, ou (B) no frontend logo após confirmação de criação de lead no MdzapLeadPanel.
+        </div>
+      </div>
+    </div>
+
+    <!-- T02 -->
+    <div class="task-card valid">
+      <div class="task-header">
+        <span class="task-id">T02</span>
+        <span class="task-title">Fix fn_mdzap_conversas retornar lead_coluna</span>
+        <span class="status-pill sp-valid">✅ VALIDADA</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> Sem migration necessária — <code style="font-family:monospace;color:var(--accent3)">lead_coluna</code> já existia desde v1</li>
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">mdzap.types.ts</code> linha 194 declara o campo</li>
+          <li class="pass"><span class="ci"></span> Migration <code style="font-family:monospace;color:var(--accent3)">20260401182559</code> linha 46: <code style="font-family:monospace;color:var(--accent3)">l.coluna_crm AS lead_coluna</code></li>
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">useMdzapConversas.ts</code> retorna o campo corretamente</li>
+          <li class="pass"><span class="ci"></span> Badge CRM em MdzapSwipeableCard usa <code style="font-family:monospace;color:var(--accent3)">lead_coluna</code> para renderização</li>
+          <li class="pass"><span class="ci"></span> Presença confirmada em: MdzapMsgBubble, MdzapThreadHeader, MdzapLeadPanel</li>
+        </ul>
+        <div class="issue-box issue-info">
+          <div class="issue-label">Observacao</div>
+          Campo flui corretamente do banco até os componentes folha. Nenhuma inconsistência detectada. Tarefa dispensou migration por campo já existir — diagnóstico correto.
+        </div>
+      </div>
+    </div>
+
+    <!-- T03 -->
+    <div class="task-card ok">
+      <div class="task-header">
+        <span class="task-id">T03</span>
+        <span class="task-title">Drawer 360px + remover ICP + label Notas</span>
+        <span class="status-pill sp-ok">✅ OK</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">w-[360px]</code> aplicado em MdzapAppPage.tsx linha 239</li>
+          <li class="pass"><span class="ci"></span> MdzapChatPanel.tsx linhas 184 e 226 usam 360px com <code style="font-family:monospace;color:var(--accent3)">min-width</code></li>
+          <li class="pass"><span class="ci"></span> TabsTrigger ICP removida de MdzapLeadPanel.tsx — exatamente 6 tabs: Dados, Restr., Docs, Notas, Hist., Mem.</li>
+          <li class="pass"><span class="ci"></span> Label "Notas" sem sufixo "(MdZap + CRM)" — linha 112 confirmada</li>
+          <li class="pass"><span class="ci"></span> Zero issues encontrados na auditoria completa</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- T04 -->
+    <div class="task-card warn">
+      <div class="task-header">
+        <span class="task-id">T04</span>
+        <span class="task-title">Aba Dados: simplificar campos e botões</span>
+        <span class="status-pill sp-warn">⚠️ ATENÇÃO MODERADA</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> UI simplificada: campos email, estado_civil, score, advogado, etapa_crm removidos da view</li>
+          <li class="pass"><span class="ci"></span> Botões "CRM" e "Assumir" removidos — só "Cliente" + "Transferir" em LeadDadosTab.tsx</li>
+          <li class="pass"><span class="ci"></span> Campos obrigatórios presentes: nome, CPF, RG, nascimento, telefone, profissão, endereço</li>
+          <li class="warn"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">useLeadPanelActions.ts</code> linha 65 ainda faz SELECT de <code style="font-family:monospace;color:var(--accent3)">email, estado_civil, score, advogado_id, coluna_crm</code></li>
+          <li class="warn"><span class="ci"></span> Type <code style="font-family:monospace;color:var(--accent3)">LeadDados</code> ainda declara os campos removidos</li>
+        </ul>
+        <div class="issue-box issue-warn">
+          <div class="issue-label">Issue Moderado — Dead Code no Data Model</div>
+          A simplificação foi aplicada apenas na camada de apresentação. O hook continua buscando e mantendo em estado campos que nenhum componente renderiza. Não quebra nada, mas viola P-01 (Backend é Lei — UI 1:1) e adiciona overhead de query desnecessário.
+        </div>
+        <div class="fix-box">
+          <div class="fix-label">Acao sugerida</div>
+          Remover <code style="font-family:monospace;color:var(--accent3)">email, estado_civil, score, advogado_id, coluna_crm</code> do SELECT em <code style="font-family:monospace;color:var(--accent3)">useLeadPanelActions.ts</code> e limpar o type <code style="font-family:monospace;color:var(--accent3)">LeadDados</code>. Prioridade P2 — não bloqueia nada.
+        </div>
+      </div>
+    </div>
+
+    <!-- T05 -->
+    <div class="task-card ok">
+      <div class="task-header">
+        <span class="task-id">T05</span>
+        <span class="task-title">Fix badge CRM dropdown + CPF mascarado</span>
+        <span class="status-pill sp-ok">✅ OK</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> CPF: MdzapMsgBubble.tsx usa <code style="font-family:monospace;color:var(--accent3)">formatCpf(cpf)</code> de <code style="font-family:monospace;color:var(--accent3)">@/lib/crm-utils</code> linha 54</li>
+          <li class="pass"><span class="ci"></span> Nenhum <code style="font-family:monospace;color:var(--accent3)">type="password"</code> ou regex de masking encontrado em componentes mdzap</li>
+          <li class="pass"><span class="ci"></span> Badge CRM: MdzapThreadHeader.tsx usa <code style="font-family:monospace;color:var(--accent3)">badgeVariants({variant:'outline'})</code> diretamente no DropdownMenuTrigger</li>
+          <li class="pass"><span class="ci"></span> Padrão sem <code style="font-family:monospace;color:var(--accent3)">asChild+Badge</code> que quebrava o Radix — fix correto</li>
+          <li class="pass"><span class="ci"></span> Badge SDR Mode segue mesmo padrão correto</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- T06 -->
+    <div class="task-card valid">
+      <div class="task-header">
+        <span class="task-id">T06</span>
+        <span class="task-title">Aba Restricoes: 3 fixes</span>
+        <span class="status-pill sp-valid">✅ VALIDADA</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">onRestricoesCadastradas</code> callback passado para CrmAuditoriaPanel (linha 56) com invalidação de query</li>
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">hideGerarContrato={true}</code> aplicado em ClienteDrawerTabRestricoes linha 85</li>
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">truncate</code> no KPI "Valor Total" linha 234 com classes corretas</li>
+          <li class="info"><span class="ci"></span> truncate aplicado a todos KPIs — adequado, counts também podem overflow</li>
+        </ul>
+        <div class="issue-box issue-info">
+          <div class="issue-label">Observacao</div>
+          Os 3 fixes foram confirmados no código. A aplicação de truncate em todos os KPIs (não só Valor Total) é uma decisão defensiva adequada — nenhum problema.
+        </div>
+      </div>
+    </div>
+
+    <!-- T07 -->
+    <div class="task-card ok">
+      <div class="task-header">
+        <span class="task-id">T07</span>
+        <span class="task-title">Aba Docs: pastas Tier 2 por restricao</span>
+        <span class="status-pill sp-ok">✅ OK</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> LeadDocumentosTab.tsx (301 linhas) — implementação completa sem TODOs</li>
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">useRestricoes</code> importado e usado para buscar restrições processáveis</li>
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">MdzapRestricaoPastaWrapper</code> renderiza <code style="font-family:monospace;color:var(--accent3)">RestricaoPastaCard</code> por restrição (linhas 218–231)</li>
+          <li class="pass"><span class="ci"></span> <code style="font-family:monospace;color:var(--accent3)">handleDropOnCard</code>: <code style="font-family:monospace;color:var(--accent3)">categoria='documento_restricao'</code> + <code style="font-family:monospace;color:var(--accent3)">restricao_id</code> passados corretamente</li>
+          <li class="pass"><span class="ci"></span> Tier 1 (<code style="font-family:monospace;color:var(--accent3)">documento_lead</code>) preservado na seção "Documentos salvos" linhas 177–190</li>
+          <li class="pass"><span class="ci"></span> Drag-and-drop por restrição funcionando com categorias corretas</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- T08 -->
+    <div class="task-card ok">
+      <div class="task-header">
+        <span class="task-id">T08</span>
+        <span class="task-title">Tab Telemetria na pagina /mdzap</span>
+        <span class="status-pill sp-ok">✅ OK</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> MdzapBottomNav.tsx: tab 'telemetria' com ícone BarChart3</li>
+          <li class="pass"><span class="ci"></span> MdzapAppPage.tsx renderiza MdzapTelemetriaPanel quando <code style="font-family:monospace;color:var(--accent3)">activeTab === 'telemetria'</code> (linha 72)</li>
+          <li class="pass"><span class="ci"></span> 5 KPIs: Leads hoje, Cadastrados, Com restrições, Distribuídos, Conv. rate</li>
+          <li class="pass"><span class="ci"></span> 2 charts: "Por Estado" (top 5 UFs) + "Motivação principal" (top 5 tipos de restrição)</li>
+          <li class="pass"><span class="ci"></span> MdzapIcpTab embutida no painel (linha 166) — ICP corretamente migrada do drawer para nível de página</li>
+          <li class="pass"><span class="ci"></span> useMdzapTelemetria.ts: 6 queries Supabase reais com <code style="font-family:monospace;color:var(--accent3)">staleTime: 30_000</code></li>
+        </ul>
+        <div class="issue-box issue-info">
+          <div class="issue-label">Observacao</div>
+          ICP foi corretamente movida de dentro do drawer (aba removida em T03) para a tab de Telemetria em nível de página. Coerência arquitetural adequada.
+        </div>
+      </div>
+    </div>
+
+    <!-- T09 -->
+    <div class="task-card ok">
+      <div class="task-header">
+        <span class="task-id">T09</span>
+        <span class="task-title">Notificacao auditoria pendente</span>
+        <span class="status-pill sp-ok">✅ OK</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> MdzapSwipeableCard.tsx linha 72: lógica <code style="font-family:monospace;color:var(--accent3)">precisaAuditoria = !!lead_id && lead_awaiting_human === true && !!lead_cpf</code></li>
+          <li class="pass"><span class="ci"></span> Badge orange (linhas 259–264): classes <code style="font-family:monospace;color:var(--accent3)">bg-warning/10 text-warning border-warning/30</code></li>
+          <li class="pass"><span class="ci"></span> Ícone ClipboardCheck + label "Auditoria" corretos</li>
+          <li class="pass"><span class="ci"></span> Lógica de 3 condições: lead cadastrado + aguardando humano + tem CPF</li>
+        </ul>
+        <div class="issue-box issue-info">
+          <div class="issue-label">Observacao</div>
+          A lógica tripla é correta e defensiva — evita mostrar badge sem CPF (lead incompleto) ou sem o flag <code style="font-family:monospace;color:var(--accent3)">lead_awaiting_human</code> (já processado).
+        </div>
+      </div>
+    </div>
+
+    <!-- T10 -->
+    <div class="task-card crit">
+      <div class="task-header">
+        <span class="task-id">T10</span>
+        <span class="task-title">n8n Workflow Follow-up ZapSign</span>
+        <span class="status-pill sp-crit">❌ BUG CRÍTICO P1</span>
+      </div>
+      <div class="task-body">
+        <ul class="checklist">
+          <li class="pass"><span class="ci"></span> Workflow ID: <code style="font-family:monospace;color:var(--accent3)">dyQrhlrrsB7tgbpe</code> — MDZAP-FOLLOWUP-ZAPSIGN</li>
+          <li class="pass"><span class="ci"></span> Ativo: SIM</li>
+          <li class="pass"><span class="ci"></span> Cron: <code style="font-family:monospace;color:var(--accent3)">0 * * * *</code> (a cada hora) — configurado corretamente</li>
+          <li class="pass"><span class="ci"></span> Estrutura: 7 nodes com branching correto (true: Processar | false: Nenhum lead)</li>
+          <li class="pass"><span class="ci"></span> Build script <code style="font-family:monospace;color:var(--accent3)">/Users/beto/beta-mdflow/n8n-workflows/build-mdzap-followup-zapsign.mjs</code> bem estruturado</li>
+          <li class="fail"><span class="ci"></span> Node "Tem leads?" (IF v2): erro <code style="font-family:monospace;color:var(--accent3)">Wrong type: '0' is a string but was expecting a number [condition 0, item 0]</code></li>
+        </ul>
+        <div class="issue-box issue-crit">
+          <div class="issue-label">Bug Critico P1 — IF Node Type Mismatch</div>
+          O node IF v2 usa strict typeValidation. O lado esquerdo retorna <code style="font-family:monospace;color:var(--accent3)">"2"</code> (string) mas o operador <code style="font-family:monospace;color:var(--accent3)">&gt;</code> espera número. O workflow falha neste nó desde <strong>2026-04-08 05:37:22</strong> — nunca chega ao nó "Processar Leads". Zero follow-ups ZapSign estão sendo enviados.
+          <br><br>
+          <strong>Causa raiz:</strong> Build script não incluiu <code style="font-family:monospace;color:var(--accent3)">convertTypes: true</code> no IF node, e o <code style="font-family:monospace;color:var(--accent3)">rightValue</code> foi passado como string <code style="font-family:monospace;color:var(--accent3)">"0"</code> em vez de número <code style="font-family:monospace;color:var(--accent3)">0</code>.
+        </div>
+        <div class="fix-box">
+          <div class="fix-label">Fix — duas opcoes</div>
+          <strong>Opção A (rápida):</strong> Editar o node IF diretamente no n8n UI — trocar <code style="font-family:monospace;color:var(--accent3)">rightValue: "0"</code> para <code style="font-family:monospace;color:var(--accent3)">rightValue: 0</code> (número).
+          <br><br>
+          <strong>Opção B (via build script):</strong> Adicionar <code style="font-family:monospace;color:var(--accent3)">convertTypes: true</code> no IF node em <code style="font-family:monospace;color:var(--accent3)">build-mdzap-followup-zapsign.mjs</code> e re-deploy via PATCH na API n8n.
+          <br><br>
+          Após o fix: testar manualmente via "Execute Workflow" no n8n UI com leads pendentes no banco.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELA RESUMO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <h2>Tabela Resumo — T01 a T10</h2>
+    </div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Tarefa</th>
+            <th>Descrição</th>
+            <th>Status</th>
+            <th>Severidade</th>
+            <th>Acao Necessaria</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T01</span></td>
+            <td>RPC fn_link_conversa_to_lead</td>
+            <td><span class="status-pill sp-warn">⚠️ Atenção</span></td>
+            <td><span style="color:var(--accent4)">P2</span></td>
+            <td>Integrar RPC em webhook n8n ou frontend pós-cadastro</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T02</span></td>
+            <td>Fix fn_mdzap_conversas lead_coluna</td>
+            <td><span class="status-pill sp-valid">✅ Validada</span></td>
+            <td><span style="color:var(--accent3)">Nenhuma</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T03</span></td>
+            <td>Drawer 360px + remover ICP + Notas</td>
+            <td><span class="status-pill sp-ok">✅ OK</span></td>
+            <td><span style="color:var(--accent3)">Nenhuma</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T04</span></td>
+            <td>Aba Dados: simplificar campos e botões</td>
+            <td><span class="status-pill sp-warn">⚠️ Atenção</span></td>
+            <td><span style="color:var(--accent4)">P2</span></td>
+            <td>Limpar SELECT e type LeadDados de campos não usados</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T05</span></td>
+            <td>Badge CRM dropdown + CPF mascarado</td>
+            <td><span class="status-pill sp-ok">✅ OK</span></td>
+            <td><span style="color:var(--accent3)">Nenhuma</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T06</span></td>
+            <td>Aba Restrições: 3 fixes</td>
+            <td><span class="status-pill sp-valid">✅ Validada</span></td>
+            <td><span style="color:var(--accent3)">Nenhuma</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T07</span></td>
+            <td>Aba Docs: pastas Tier 2 por restrição</td>
+            <td><span class="status-pill sp-ok">✅ OK</span></td>
+            <td><span style="color:var(--accent3)">Nenhuma</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T08</span></td>
+            <td>Tab Telemetria /mdzap</td>
+            <td><span class="status-pill sp-ok">✅ OK</span></td>
+            <td><span style="color:var(--accent3)">Nenhuma</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T09</span></td>
+            <td>Notificação auditoria pendente</td>
+            <td><span class="status-pill sp-ok">✅ OK</span></td>
+            <td><span style="color:var(--accent3)">Nenhuma</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span style="font-family:monospace;color:var(--accent)">T10</span></td>
+            <td>n8n Workflow Follow-up ZapSign</td>
+            <td><span class="status-pill sp-crit">❌ Bug Crítico</span></td>
+            <td><span style="color:var(--accent2)">P1</span></td>
+            <td>Fix IF node: rightValue 0 (número) ou convertTypes: true</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PROXIMOS PASSOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⏭️</span>
+      <h2>Proximos Passos</h2>
+    </div>
+
+    <div class="next-step urgent">
+      <div class="next-step-num">1</div>
+      <div class="next-step-content">
+        <h4>Fix imediato T10 — IF node n8n (P1, URGENTE)</h4>
+        <p>Editar node "Tem leads?" no workflow <code style="font-family:monospace;color:var(--accent3)">dyQrhlrrsB7tgbpe</code>: trocar <code style="font-family:monospace;color:var(--accent3)">rightValue: "0"</code> para <code style="font-family:monospace;color:var(--accent3)">rightValue: 0</code> (número) ou adicionar <code style="font-family:monospace;color:var(--accent3)">convertTypes: true</code>. Follow-ups ZapSign estão parados desde 2026-04-08 05:37:22.</p>
+      </div>
+    </div>
+
+    <div class="next-step">
+      <div class="next-step-num">2</div>
+      <div class="next-step-content">
+        <h4>Integrar T01 — fn_link_conversa_to_lead (P2)</h4>
+        <p>A RPC existe mas está orphaned. Opção recomendada: chamar via webhook n8n pós-cadastro de lead com <code style="font-family:monospace;color:var(--accent3)">{conversa_id, lead_id}</code>. Alternativa: chamar no frontend imediatamente após confirmação de criação de lead no MdzapLeadPanel.</p>
+      </div>
+    </div>
+
+    <div class="next-step">
+      <div class="next-step-num">3</div>
+      <div class="next-step-content">
+        <h4>Limpar dead code T04 — data model LeadDados (P2)</h4>
+        <p>Remover de <code style="font-family:monospace;color:var(--accent3)">useLeadPanelActions.ts</code> o SELECT de <code style="font-family:monospace;color:var(--accent3)">email, estado_civil, score, advogado_id, coluna_crm</code>. Atualizar o type <code style="font-family:monospace;color:var(--accent3)">LeadDados</code>. Não bloqueia nada mas melhora coerência arquitetural.</p>
+      </div>
+    </div>
+
+    <div class="next-step">
+      <div class="next-step-num">4</div>
+      <div class="next-step-content">
+        <h4>T11 — Polish: loading/empty states + responsividade</h4>
+        <p>Tarefa pendente que depende de T03/T04/T06/T07 concluídas. Focar em estados de loading nas queries do MdzapTelemetriaPanel e estados vazios nas abas do drawer. Validar responsividade em 375px e 768px.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- O QUE FALTA (PENDENCIAS FORMAIS) -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>Pendencias Formais Identificadas</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">T11 — Nao iniciada</div>
+        <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom: 10px;">Polish de loading/empty states e responsividade. Bloqueada por conclusão das tarefas anteriores.</p>
+        <span class="status-pill sp-pend">⏳ pendente</span>
+      </div>
+      <div class="card">
+        <div class="card-title">fn_link_conversa_to_lead — Sem invocador</div>
+        <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom: 10px;">RPC criada mas nunca chamada. Vínculo conversa→lead não acontece automaticamente no fluxo atual.</p>
+        <span class="status-pill sp-warn">⚠️ sem integração</span>
+      </div>
+      <div class="card">
+        <div class="card-title">T10 Workflow — Zero follow-ups enviados</div>
+        <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom: 10px;">Bug ativo desde 2026-04-08 05:37:22. Follow-ups ZapSign não estão sendo disparados. Requer fix urgente.</p>
+        <span class="status-pill sp-block">⛔ bloqueado</span>
+      </div>
+      <div class="card">
+        <div class="card-title">LeadDados — Dead code</div>
+        <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom: 10px;">SELECT busca campos não renderizados. Overhead de query desnecessário. Prioridade baixa mas deve ser limpo.</p>
+        <span class="status-pill sp-pend">⏳ P2</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · mdzap-v2 Deep Review · 2026-04-08
+  </div>
+
+</div>
+</body>
+</html>
