@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap v2 — Break · 2026-04-08</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #20c997;
+  --accent-purple: #7c6dff;
+  --accent-red: #ff6b6b;
+  --accent-yellow: #ffd166;
+  --accent-blue: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --layer-backend: #20c997;
+  --layer-frontend: #5bc4f5;
+  --layer-n8n: #7c6dff;
+  --layer-polish: #ffd166;
+  --cmd-plan-bg: #1e1b4b;
+  --cmd-plan-border: #7c6dff;
+  --cmd-exec-bg: #062916;
+  --cmd-exec-border: #20c997;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 24px;
+}
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 48px 24px 36px;
+}
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-size: 2.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #20c997, #5bc4f5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 20px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+.badge { padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.badge-backend { background: rgba(32,201,151,0.15); color: var(--accent); border: 1px solid rgba(32,201,151,0.3); }
+.badge-frontend { background: rgba(91,196,245,0.15); color: var(--accent-blue); border: 1px solid rgba(91,196,245,0.3); }
+.badge-n8n { background: rgba(124,109,255,0.15); color: var(--accent-purple); border: 1px solid rgba(124,109,255,0.3); }
+.badge-polish { background: rgba(255,209,102,0.15); color: var(--accent-yellow); border: 1px solid rgba(255,209,102,0.3); }
+
+/* Progress bar */
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.progress-bar {
+  width: 220px;
+  height: 8px;
+  background: var(--surface2);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #20c997, #5bc4f5);
+  border-radius: 8px;
+  transition: width 0.4s;
+}
+.progress-label { color: var(--text-muted); font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
+
+/* Stats */
+.grid { display: grid; gap: 16px; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g4 { grid-template-columns: 1fr 1fr; } }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-value { font-size: 2.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.sv-green { color: var(--accent); }
+.sv-blue { color: var(--accent-blue); }
+.sv-purple { color: var(--accent-purple); }
+.sv-yellow { color: var(--accent-yellow); }
+
+/* Section */
+.section { margin: 36px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+.section-header .wave-badge {
+  margin-left: auto;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.wb-1 { background: rgba(32,201,151,0.12); color: var(--accent); border: 1px solid rgba(32,201,151,0.3); }
+.wb-2 { background: rgba(255,209,102,0.12); color: var(--accent-yellow); border: 1px solid rgba(255,209,102,0.3); }
+.wb-3 { background: rgba(255,107,107,0.12); color: var(--accent-red); border: 1px solid rgba(255,107,107,0.3); }
+
+/* Explicação visual waves */
+.waves-overview {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+.waves-overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+@media(max-width:768px) { .waves-overview-grid { grid-template-columns: 1fr; } }
+.wave-box {
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+.wb-green { background: rgba(32,201,151,0.05); border-color: rgba(32,201,151,0.25); }
+.wb-yellow { background: rgba(255,209,102,0.05); border-color: rgba(255,209,102,0.25); }
+.wb-red { background: rgba(255,107,107,0.05); border-color: rgba(255,107,107,0.25); }
+.wave-box-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+.wave-box-title.wt-green { color: var(--accent); }
+.wave-box-title.wt-yellow { color: var(--accent-yellow); }
+.wave-box-title.wt-red { color: var(--accent-red); }
+.wave-box-count {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 4px;
+}
+.wc-green { color: var(--accent); }
+.wc-yellow { color: var(--accent-yellow); }
+.wc-red { color: var(--accent-red); }
+.wave-box-desc { color: var(--text-muted); font-size: 0.78rem; line-height: 1.5; }
+.wave-box-note {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+.wn-green { background: rgba(32,201,151,0.08); color: var(--accent); }
+.wn-yellow { background: rgba(255,209,102,0.08); color: var(--accent-yellow); }
+.wn-red { background: rgba(255,107,107,0.08); color: var(--accent-red); }
+.max-badge {
+  margin-top: 16px;
+  text-align: center;
+  padding: 10px;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.max-badge strong { color: var(--text); }
+
+/* Terminal cards */
+.terminal-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media(max-width:900px) { .terminal-cards-grid { grid-template-columns: 1fr; } }
+
+.terminal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  border-left: 4px solid var(--accent);
+  position: relative;
+}
+.tc-backend { border-left-color: var(--layer-backend); }
+.tc-frontend { border-left-color: var(--layer-frontend); }
+.tc-n8n { border-left-color: var(--layer-n8n); }
+.tc-polish { border-left-color: var(--layer-polish); }
+
+.tc-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 18px 12px;
+}
+.tc-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 48px;
+}
+.tcn-backend { color: var(--layer-backend); }
+.tcn-frontend { color: var(--layer-frontend); }
+.tcn-n8n { color: var(--layer-n8n); }
+.tcn-polish { color: var(--layer-polish); }
+
+.tc-meta { flex: 1; }
+.tc-task-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.tc-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 6px; }
+.tc-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.tc-wave-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.layer-pill {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.lp-backend { background: rgba(32,201,151,0.12); color: var(--layer-backend); }
+.lp-frontend { background: rgba(91,196,245,0.12); color: var(--layer-frontend); }
+.lp-n8n { background: rgba(124,109,255,0.12); color: var(--layer-n8n); }
+.lp-polish { background: rgba(255,209,102,0.12); color: var(--layer-polish); }
+
+.complexity-pill {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+}
+
+.tc-body { padding: 0 18px 18px; }
+
+.tc-dep-note {
+  margin-bottom: 10px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dep-yellow { background: rgba(255,209,102,0.08); color: var(--accent-yellow); border: 1px solid rgba(255,209,102,0.2); }
+.dep-red { background: rgba(255,107,107,0.08); color: var(--accent-red); border: 1px solid rgba(255,107,107,0.2); }
+
+/* Task rows for multi-task terminal */
+.task-row {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.task-row-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.task-row-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.task-row-title { font-size: 0.82rem; font-weight: 500; }
+.task-row-seq {
+  margin-left: auto;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background: var(--surface3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Command blocks */
+.cmd-block {
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+.cmd-plan {
+  background: var(--cmd-plan-bg);
+  border: 1px solid var(--cmd-plan-border);
+}
+.cmd-exec {
+  background: var(--cmd-exec-bg);
+  border: 1px solid var(--cmd-exec-border);
+}
+.cmd-icon { font-size: 1rem; flex-shrink: 0; }
+.cmd-content { flex: 1; min-width: 0; }
+.cmd-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+.cmd-plan .cmd-label { color: var(--accent-purple); }
+.cmd-exec .cmd-label { color: var(--accent); }
+.cmd-text {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  color: var(--text);
+  word-break: break-all;
+}
+.cmd-copy-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.cmd-copy-btn:hover { background: rgba(255,255,255,0.13); color: var(--text); }
+.cmd-copy-btn.copied { color: var(--accent); border-color: var(--accent); }
+
+.cmd-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* Dependency diagram */
+.dep-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  overflow-x: auto;
+}
+.dep-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.dep-row:last-child { margin-bottom: 0; }
+.dep-node {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dn-backend { background: rgba(32,201,151,0.12); color: var(--layer-backend); border: 1px solid rgba(32,201,151,0.25); }
+.dn-frontend { background: rgba(91,196,245,0.12); color: var(--layer-frontend); border: 1px solid rgba(91,196,245,0.25); }
+.dn-n8n { background: rgba(124,109,255,0.12); color: var(--layer-n8n); border: 1px solid rgba(124,109,255,0.25); }
+.dn-target { background: rgba(255,209,102,0.12); color: var(--accent-yellow); border: 1px solid rgba(255,209,102,0.25); }
+.dn-polish { background: rgba(255,107,107,0.1); color: var(--accent-red); border: 1px solid rgba(255,107,107,0.25); }
+.dep-arrow { color: var(--text-muted); font-size: 1rem; }
+.dep-none { color: var(--text-muted); font-size: 0.75rem; font-style: italic; }
+.dep-label { font-size: 0.75rem; color: var(--text-muted); }
+
+/* Summary table */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.83rem;
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.015); }
+
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent-yellow); }
+.sp-dep { background: rgba(255,107,107,0.1); color: var(--accent-red); }
+
+.cnj-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Wave separator */
+.wave-separator {
+  margin: 8px 0 16px;
+  padding: 8px 14px;
+  background: var(--surface2);
+  border-left: 3px solid;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.ws-green { border-color: var(--accent); color: var(--accent); }
+.ws-yellow { border-color: var(--accent-yellow); color: var(--accent-yellow); }
+.ws-red { border-color: var(--accent-red); color: var(--accent-red); }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="hero-emoji">🐙</span>
+    <h1 class="gradient-text">MdZap v2 — Break</h1>
+    <p class="hero-sub">Plano de execução paralela — Claude Code · 2026-04-08</p>
+    <div class="badges">
+      <span class="badge badge-backend">2 backend</span>
+      <span class="badge badge-frontend">7 frontend</span>
+      <span class="badge badge-n8n">1 n8n</span>
+      <span class="badge badge-polish">1 polish</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-label" id="progressLabel">0 / 11 concluídas</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid g4" style="margin-bottom:32px">
+    <div class="stat-card">
+      <div class="stat-value sv-green">11</div>
+      <div class="stat-label">Tarefas totais</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-blue">3</div>
+      <div class="stat-label">Waves</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-purple">7</div>
+      <div class="stat-label">Terminais simultâneos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-yellow">18</div>
+      <div class="stat-label">Comandos no total</div>
+    </div>
+  </div>
+
+  <!-- Quantos terminais -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🖥️</span>
+      <h2>Quantos terminais usar?</h2>
+    </div>
+    <div class="waves-overview">
+      <div class="waves-overview-grid">
+        <div class="wave-box wb-green">
+          <div class="wave-box-title wt-green">Wave 1 — Iniciar AGORA</div>
+          <div class="wave-box-count wc-green">7</div>
+          <div class="wave-box-desc">terminais simultâneos<br>T01+T02 no mesmo terminal (sequencial)<br>T03, T04, T06, T07, T09, T10 — cada um no próprio terminal</div>
+          <div class="wave-box-note wn-green">Nenhuma dependência — abrir todos ao mesmo tempo</div>
+        </div>
+        <div class="wave-box wb-yellow">
+          <div class="wave-box-title wt-yellow">Wave 2 — Após deps</div>
+          <div class="wave-box-count wc-yellow">2</div>
+          <div class="wave-box-desc">terminais assim que liberados<br>T05 → aguardar T02 concluída<br>T08 → aguardar T03 concluída</div>
+          <div class="wave-box-note wn-yellow">Reutilizar terminais 1 e 2 quando ficarem livres</div>
+        </div>
+        <div class="wave-box wb-red">
+          <div class="wave-box-title wt-red">Wave 3 — Polish final</div>
+          <div class="wave-box-count wc-red">1</div>
+          <div class="wave-box-desc">terminal único<br>T11 → aguardar T03 + T04 + T06 + T07 todas concluídas</div>
+          <div class="wave-box-note wn-red">Varredura de loading/empty states e responsividade</div>
+        </div>
+      </div>
+      <div class="max-badge">
+        Máximo simultâneo: <strong>7 terminais</strong> (Wave 1) · Total de terminais necessários: <strong>7 janelas do Claude Code</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wave 1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚡</span>
+      <h2>Wave 1 — Iniciar AGORA</h2>
+      <span class="wave-badge wb-1">7 terminais simultâneos</span>
+    </div>
+
+    <div class="terminal-cards-grid">
+
+      <!-- Terminal 1: T01 + T02 -->
+      <div class="terminal-card tc-backend">
+        <span class="tc-wave-badge wb-1">Wave 1</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-backend">T1</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T01 → T02 (sequencial)</div>
+            <div class="tc-title">Backend: RPC + Fix fn_mdzap</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-backend">Backend</span>
+              <span class="complexity-pill">S + S</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="task-row">
+            <div class="task-row-header">
+              <span class="task-row-id">T01</span>
+              <span class="task-row-title">RPC fn_link_conversa_to_lead</span>
+              <span class="task-row-seq">1º — rodar primeiro</span>
+            </div>
+            <div class="cmd-block cmd-plan">
+              <span class="cmd-icon">📋</span>
+              <div class="cmd-content">
+                <div class="cmd-label">Plan</div>
+                <div class="cmd-text">/projeto mdzap-v2 plan T01</div>
+              </div>
+              <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T01')">Copiar</button>
+            </div>
+            <div class="cmd-block cmd-exec">
+              <span class="cmd-icon">▶</span>
+              <div class="cmd-content">
+                <div class="cmd-label">Execute</div>
+                <div class="cmd-text">/projeto mdzap-v2 execute T01</div>
+              </div>
+              <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T01')">Copiar</button>
+            </div>
+          </div>
+          <div class="task-row">
+            <div class="task-row-header">
+              <span class="task-row-id">T02</span>
+              <span class="task-row-title">Fix fn_mdzap_conversas lead_coluna</span>
+              <span class="task-row-seq">2º — após T01 concluída</span>
+            </div>
+            <div class="cmd-block cmd-plan">
+              <span class="cmd-icon">📋</span>
+              <div class="cmd-content">
+                <div class="cmd-label">Plan</div>
+                <div class="cmd-text">/projeto mdzap-v2 plan T02</div>
+              </div>
+              <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T02')">Copiar</button>
+            </div>
+            <div class="cmd-block cmd-exec">
+              <span class="cmd-icon">▶</span>
+              <div class="cmd-content">
+                <div class="cmd-label">Execute</div>
+                <div class="cmd-text">/projeto mdzap-v2 execute T02</div>
+              </div>
+              <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T02')">Copiar</button>
+            </div>
+          </div>
+          <div class="cmd-hint">Cole o PLAN de cada task, aguarde, depois cole o EXECUTE. T01 antes de T02.</div>
+        </div>
+      </div>
+
+      <!-- Terminal 2: T03 -->
+      <div class="terminal-card tc-frontend">
+        <span class="tc-wave-badge wb-1">Wave 1</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-frontend">T2</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T03</div>
+            <div class="tc-title">Drawer 360px + remover ICP + label Notas</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-frontend">Frontend</span>
+              <span class="complexity-pill">S</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T03</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T03')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T03</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T03')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+
+      <!-- Terminal 3: T04 -->
+      <div class="terminal-card tc-frontend">
+        <span class="tc-wave-badge wb-1">Wave 1</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-frontend">T3</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T04</div>
+            <div class="tc-title">Aba Dados: simplificar campos e botões</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-frontend">Frontend</span>
+              <span class="complexity-pill">M</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T04</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T04')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T04</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T04')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+
+      <!-- Terminal 4: T06 -->
+      <div class="terminal-card tc-frontend">
+        <span class="tc-wave-badge wb-1">Wave 1</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-frontend">T4</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T06</div>
+            <div class="tc-title">Aba Restrições: 3 fixes</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-frontend">Frontend</span>
+              <span class="complexity-pill">M</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T06</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T06')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T06</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T06')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+
+      <!-- Terminal 5: T07 -->
+      <div class="terminal-card tc-frontend">
+        <span class="tc-wave-badge wb-1">Wave 1</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-frontend">T5</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T07</div>
+            <div class="tc-title">Aba Docs: pastas Tier 2</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-frontend">Frontend</span>
+              <span class="complexity-pill">M</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T07</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T07')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T07</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T07')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+
+      <!-- Terminal 6: T09 -->
+      <div class="terminal-card tc-frontend">
+        <span class="tc-wave-badge wb-1">Wave 1</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-frontend">T6</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T09</div>
+            <div class="tc-title">Notificação auditoria pendente</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-frontend">Frontend</span>
+              <span class="complexity-pill">S</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T09</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T09')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T09</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T09')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+
+      <!-- Terminal 7: T10 -->
+      <div class="terminal-card tc-n8n">
+        <span class="tc-wave-badge wb-1">Wave 1</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-n8n">T7</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T10</div>
+            <div class="tc-title">n8n: Webhook follow-up ZapSign</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-n8n">n8n</span>
+              <span class="complexity-pill">M</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T10</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T10')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T10</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T10')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Wave 2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⏳</span>
+      <h2>Wave 2 — Após dependências</h2>
+      <span class="wave-badge wb-2">2 terminais</span>
+    </div>
+
+    <div class="terminal-cards-grid">
+
+      <!-- Terminal 1 livre: T05 -->
+      <div class="terminal-card tc-frontend">
+        <span class="tc-wave-badge wb-2">Wave 2</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-frontend">T1</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T05</div>
+            <div class="tc-title">Badge CRM dropdown + CPF mascarado</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-frontend">Frontend</span>
+              <span class="complexity-pill">S</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="tc-dep-note dep-yellow">
+            <span>⏳</span>
+            <span>Aguardar <strong>T02 concluída</strong> — reutilizar Terminal 1 quando T01+T02 finalizarem</span>
+          </div>
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T05</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T05')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T05</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T05')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+
+      <!-- Terminal 2 livre: T08 -->
+      <div class="terminal-card tc-frontend">
+        <span class="tc-wave-badge wb-2">Wave 2</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-frontend">T2</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T08</div>
+            <div class="tc-title">Tab Telemetria na página /mdzap</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-frontend">Frontend</span>
+              <span class="complexity-pill">M</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="tc-dep-note dep-yellow">
+            <span>⏳</span>
+            <span>Aguardar <strong>T03 concluída</strong> — reutilizar Terminal 2 quando T03 finalizar</span>
+          </div>
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T08</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T08')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T08</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T08')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Wave 3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">✨</span>
+      <h2>Wave 3 — Polish final</h2>
+      <span class="wave-badge wb-3">1 terminal</span>
+    </div>
+
+    <div style="max-width: 560px;">
+      <div class="terminal-card tc-polish">
+        <span class="tc-wave-badge wb-3">Wave 3</span>
+        <div class="tc-header">
+          <div class="tc-number tcn-polish">T1</div>
+          <div class="tc-meta">
+            <div class="tc-task-id">T11</div>
+            <div class="tc-title">Polish: loading/empty states + responsividade</div>
+            <div class="tc-pills">
+              <span class="layer-pill lp-polish">Polish</span>
+              <span class="complexity-pill">S</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <div class="tc-dep-note dep-red">
+            <span>🔴</span>
+            <span>Aguardar <strong>T03 + T04 + T06 + T07</strong> todas concluídas antes de iniciar</span>
+          </div>
+          <div class="cmd-block cmd-plan">
+            <span class="cmd-icon">📋</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Plan</div>
+              <div class="cmd-text">/projeto mdzap-v2 plan T11</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 plan T11')">Copiar</button>
+          </div>
+          <div class="cmd-block cmd-exec">
+            <span class="cmd-icon">▶</span>
+            <div class="cmd-content">
+              <div class="cmd-label">Execute</div>
+              <div class="cmd-text">/projeto mdzap-v2 execute T11</div>
+            </div>
+            <button class="cmd-copy-btn" onclick="copyCmd(this, '/projeto mdzap-v2 execute T11')">Copiar</button>
+          </div>
+          <div class="cmd-hint">Cole o PLAN, aguarde, depois cole o EXECUTE.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hierarquia de dependências -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔗</span>
+      <h2>Hierarquia de dependências</h2>
+    </div>
+    <div class="dep-diagram">
+      <div class="dep-row">
+        <span class="dep-node dn-backend">T01</span>
+        <span class="dep-arrow">──────────────────────────────────────────────────────────</span>
+        <span class="dep-none">(sem dependências de saída)</span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-node dn-backend">T02</span>
+        <span class="dep-arrow">──────────────────────────────────────────────────────────→</span>
+        <span class="dep-node dn-target">T05 Badge CRM + CPF mascarado</span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-node dn-frontend">T03</span>
+        <span class="dep-arrow">──────────────────────────────────────────────────────────→</span>
+        <span class="dep-node dn-target">T08 Tab Telemetria</span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-node dn-frontend">T04</span>
+        <span class="dep-arrow" style="margin-right:4px">──────────────────────────────────┐</span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-node dn-frontend">T06</span>
+        <span class="dep-arrow" style="margin-right:4px">──────────────────────────────────┤</span>
+        <span class="dep-arrow">────→</span>
+        <span class="dep-node dn-polish">T11 Polish final</span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-node dn-frontend">T07</span>
+        <span class="dep-arrow" style="margin-right:4px">──────────────────────────────────┘</span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-node dn-frontend">T09</span>
+        <span class="dep-arrow">──────────────────────────────────────────────────────────</span>
+        <span class="dep-none">(sem dependências de saída)</span>
+      </div>
+      <div class="dep-row">
+        <span class="dep-node dn-n8n">T10</span>
+        <span class="dep-arrow">──────────────────────────────────────────────────────────</span>
+        <span class="dep-none">(sem dependências de saída)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela resumo -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>Resumo de todas as tarefas</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Camada</th>
+            <th>Complex.</th>
+            <th>Wave</th>
+            <th>Deps</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cnj-mono">T01</td>
+            <td>RPC fn_link_conversa_to_lead</td>
+            <td><span class="layer-pill lp-backend">Backend</span></td>
+            <td><span class="complexity-pill">S</span></td>
+            <td>Wave 1</td>
+            <td style="color:var(--text-muted)">—</td>
+            <td><span class="status-pill sp-pend">⏳ pendente</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T02</td>
+            <td>Fix fn_mdzap_conversas lead_coluna</td>
+            <td><span class="layer-pill lp-backend">Backend</span></td>
+            <td><span class="complexity-pill">S</span></td>
+            <td>Wave 1</td>
+            <td style="color:var(--text-muted)">após T01</td>
+            <td><span class="status-pill sp-pend">⏳ pendente</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T03</td>
+            <td>Drawer 360px + remover ICP + label Notas</td>
+            <td><span class="layer-pill lp-frontend">Frontend</span></td>
+            <td><span class="complexity-pill">S</span></td>
+            <td>Wave 1</td>
+            <td style="color:var(--text-muted)">—</td>
+            <td><span class="status-pill sp-pend">⏳ pendente</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T04</td>
+            <td>Aba Dados: simplificar campos e botões</td>
+            <td><span class="layer-pill lp-frontend">Frontend</span></td>
+            <td><span class="complexity-pill">M</span></td>
+            <td>Wave 1</td>
+            <td style="color:var(--text-muted)">—</td>
+            <td><span class="status-pill sp-pend">⏳ pendente</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T05</td>
+            <td>Badge CRM dropdown + CPF mascarado</td>
+            <td><span class="layer-pill lp-frontend">Frontend</span></td>
+            <td><span class="complexity-pill">S</span></td>
+            <td>Wave 2</td>
+            <td><span style="color:var(--accent-yellow);font-family:monospace;font-size:0.78rem">T02</span></td>
+            <td><span class="status-pill sp-dep">🔴 aguardando</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T06</td>
+            <td>Aba Restrições: 3 fixes</td>
+            <td><span class="layer-pill lp-frontend">Frontend</span></td>
+            <td><span class="complexity-pill">M</span></td>
+            <td>Wave 1</td>
+            <td style="color:var(--text-muted)">—</td>
+            <td><span class="status-pill sp-pend">⏳ pendente</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T07</td>
+            <td>Aba Docs: pastas Tier 2</td>
+            <td><span class="layer-pill lp-frontend">Frontend</span></td>
+            <td><span class="complexity-pill">M</span></td>
+            <td>Wave 1</td>
+            <td style="color:var(--text-muted)">—</td>
+            <td><span class="status-pill sp-pend">⏳ pendente</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T08</td>
+            <td>Tab Telemetria na página /mdzap</td>
+            <td><span class="layer-pill lp-frontend">Frontend</span></td>
+            <td><span class="complexity-pill">M</span></td>
+            <td>Wave 2</td>
+            <td><span style="color:var(--accent-yellow);font-family:monospace;font-size:0.78rem">T03</span></td>
+            <td><span class="status-pill sp-dep">🔴 aguardando</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T09</td>
+            <td>Notificação auditoria pendente</td>
+            <td><span class="layer-pill lp-frontend">Frontend</span></td>
+            <td><span class="complexity-pill">S</span></td>
+            <td>Wave 1</td>
+            <td style="color:var(--text-muted)">—</td>
+            <td><span class="status-pill sp-pend">⏳ pendente</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T10</td>
+            <td>n8n: Webhook follow-up ZapSign</td>
+            <td><span class="layer-pill lp-n8n">n8n</span></td>
+            <td><span class="complexity-pill">M</span></td>
+            <td>Wave 1</td>
+            <td style="color:var(--text-muted)">—</td>
+            <td><span class="status-pill sp-pend">⏳ pendente</span></td>
+          </tr>
+          <tr>
+            <td class="cnj-mono">T11</td>
+            <td>Polish: loading/empty states + responsividade</td>
+            <td><span class="layer-pill lp-polish">Polish</span></td>
+            <td><span class="complexity-pill">S</span></td>
+            <td>Wave 3</td>
+            <td><span style="color:var(--accent-yellow);font-family:monospace;font-size:0.78rem">T03+T04+T06+T07</span></td>
+            <td><span class="status-pill sp-dep">🔴 aguardando</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · 2026-04-08
+  </div>
+
+</div>
+
+<script>
+function copyCmd(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copiar';
+      btn.classList.remove('copied');
+    }, 1800);
+  });
+}
+</script>
+</body>
+</html>
