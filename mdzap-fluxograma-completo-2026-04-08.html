@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Fluxograma Completo & Mapeamento Definitivo</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface2: #1c2033;
+    --accent: #7c6dff;
+    --accent2: #20c997;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --text-muted: #8892b0;
+    --border: #2a2f45;
+    --red: #ef4444;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --blue: #3b82f6;
+    --pink: #ec4899;
+    --cyan: #06b6d4;
+    --orange: #f97316;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+  /* HEADER */
+  .header { text-align: center; padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+  .header h1 { font-family: 'Manrope', sans-serif; font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .header .subtitle { color: var(--text-muted); font-size: 1rem; margin-top: 0.5rem; }
+  .header .meta { display: flex; gap: 2rem; justify-content: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+  .header .meta span { background: var(--surface); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1px solid var(--border); }
+
+  /* NAV */
+  .nav { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.75rem 0; margin-bottom: 2rem; }
+  .nav-inner { display: flex; flex-wrap: wrap; gap: 0.5rem; max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+  .nav a { color: var(--accent); text-decoration: none; font-size: 0.8rem; padding: 0.25rem 0.6rem; border-radius: 4px; border: 1px solid var(--border); transition: all 0.2s; }
+  .nav a:hover { background: var(--accent); color: white; }
+
+  /* SECTIONS */
+  section { margin-bottom: 3rem; }
+  h2 { font-family: 'Manrope', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--accent); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+  h3 { font-size: 1.15rem; color: var(--accent2); margin: 1.5rem 0 0.75rem; font-weight: 600; }
+  h4 { font-size: 1rem; color: var(--yellow); margin: 1rem 0 0.5rem; }
+
+  /* CARDS */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1rem; }
+
+  /* FLOW DIAGRAM */
+  .flow { display: flex; flex-direction: column; gap: 0; align-items: center; }
+  .flow-step { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; width: 100%; max-width: 900px; position: relative; }
+  .flow-step.active { border-color: var(--accent2); }
+  .flow-step.warning { border-color: var(--yellow); }
+  .flow-step.error { border-color: var(--red); }
+  .flow-arrow { width: 2px; height: 32px; background: var(--border); position: relative; }
+  .flow-arrow::after { content: '▼'; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); color: var(--text-muted); font-size: 0.7rem; }
+  .flow-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); font-weight: 600; margin-bottom: 0.25rem; }
+  .flow-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.25rem; }
+  .flow-desc { color: var(--text-muted); font-size: 0.85rem; }
+  .flow-fields { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+  .flow-fields .chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); }
+  .flow-fields .chip.required { border-color: var(--accent2); color: var(--accent2); }
+  .flow-fields .chip.webhook { border-color: var(--accent); color: var(--accent); }
+  .flow-fields .chip.rpc { border-color: var(--yellow); color: var(--yellow); }
+  .flow-fields .chip.bug { border-color: var(--red); color: var(--red); }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.5rem 0; }
+  th { background: var(--surface2); color: var(--accent); font-weight: 600; text-align: left; padding: 0.6rem 0.75rem; border: 1px solid var(--border); font-size: 0.8rem; }
+  td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(124, 109, 255, 0.05); }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
+  .badge-p0 { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid var(--red); }
+  .badge-p1 { background: rgba(245, 158, 11, 0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+  .badge-p2 { background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid var(--blue); }
+  .badge-ok { background: rgba(34, 197, 94, 0.15); color: var(--green); border: 1px solid var(--green); }
+  .badge-missing { background: rgba(236, 72, 153, 0.15); color: var(--pink); border: 1px solid var(--pink); }
+  .badge-stub { background: rgba(249, 115, 22, 0.15); color: var(--orange); border: 1px solid var(--orange); }
+
+  /* STATUS */
+  .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1rem 0; }
+  .status-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; }
+  .status-card .number { font-family: 'Manrope', sans-serif; font-size: 2rem; font-weight: 800; }
+  .status-card .label { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem; }
+  .status-card.red .number { color: var(--red); }
+  .status-card.yellow .number { color: var(--yellow); }
+  .status-card.green .number { color: var(--green); }
+  .status-card.blue .number { color: var(--blue); }
+
+  /* AGENT DIAGRAM */
+  .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .agent-card { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+  .agent-card h4 { margin-top: 0; }
+  .agent-card .role { color: var(--text-muted); font-size: 0.82rem; }
+  .agent-card .trigger { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--cyan); margin-top: 0.5rem; }
+
+  /* TREE */
+  .tree { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; overflow-x: auto; white-space: pre; line-height: 1.5; }
+
+  /* PENDENCIES */
+  .pend-phase { margin-bottom: 1.5rem; }
+  .pend-phase h4 { display: flex; align-items: center; gap: 0.5rem; }
+  .pend-item { background: var(--surface); border-left: 3px solid var(--border); padding: 0.75rem 1rem; margin: 0.5rem 0; border-radius: 0 8px 8px 0; font-size: 0.88rem; }
+  .pend-item.p0 { border-left-color: var(--red); }
+  .pend-item.p1 { border-left-color: var(--yellow); }
+  .pend-item.p2 { border-left-color: var(--blue); }
+  .pend-item .pend-title { font-weight: 600; }
+  .pend-item .pend-detail { color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem; }
+  .pend-item .pend-files { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--cyan); margin-top: 0.25rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .container { padding: 1rem; }
+    .header h1 { font-size: 1.6rem; }
+    .status-grid { grid-template-columns: repeat(2, 1fr); }
+    .card-grid { grid-template-columns: 1fr; }
+    .agent-grid { grid-template-columns: 1fr; }
+    table { font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>MdZap — Fluxograma Completo</h1>
+    <div class="subtitle">Mapeamento definitivo: fluxos, campos, webhooks, agentes, documentos e pendências</div>
+    <div class="meta">
+      <span>Data: 2026-04-08</span>
+      <span>Auditorias: Backend 5.2 | Code 4.8 | n8n 3.5 | Frontend 6.2</span>
+      <span>Nota Consolidada: 4.9/10</span>
+    </div>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#resumo">Resumo Executivo</a>
+    <a href="#fluxo-lead">Fluxo do Lead</a>
+    <a href="#campos-fase">Campos por Fase</a>
+    <a href="#webhooks">Webhooks</a>
+    <a href="#agentes">Agentes IA</a>
+    <a href="#documentos">Sistema Documentos</a>
+    <a href="#restricoes">Restrições</a>
+    <a href="#componentes">Árvore Componentes</a>
+    <a href="#tabelas">Schema Backend</a>
+    <a href="#rpcs">RPCs</a>
+    <a href="#realtime">Realtime & Queries</a>
+    <a href="#pendencias">Pendências por Fase</a>
+    <a href="#roadmap">Roadmap Projeto</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ==================== RESUMO EXECUTIVO ==================== -->
+<section id="resumo">
+  <h2>1. Resumo Executivo</h2>
+
+  <div class="status-grid">
+    <div class="status-card red">
+      <div class="number">23</div>
+      <div class="label">Pendências P0</div>
+    </div>
+    <div class="status-card yellow">
+      <div class="number">18</div>
+      <div class="label">Pendências P1</div>
+    </div>
+    <div class="status-card blue">
+      <div class="number">12</div>
+      <div class="label">Pendências P2</div>
+    </div>
+    <div class="status-card green">
+      <div class="number">75</div>
+      <div class="label">Arquivos Mapeados</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Escopo do Mapeamento</h3>
+    <table>
+      <tr><th>Dimensão</th><th>Quantidade</th><th>Detalhes</th></tr>
+      <tr><td>Componentes Frontend</td><td class="mono">54 arquivos</td><td>~5.800 linhas em components/mdzap/</td></tr>
+      <tr><td>Hooks</td><td class="mono">20 hooks</td><td>~1.580 linhas (15 em hooks/mdzap/ + 5 relacionados)</td></tr>
+      <tr><td>Tabelas Backend</td><td class="mono">17 tabelas</td><td>leads, whatsapp_*, mdzap_*, restricoes</td></tr>
+      <tr><td>RPCs</td><td class="mono">58 funções</td><td>Negócio + triggers + views</td></tr>
+      <tr><td>Webhooks n8n</td><td class="mono">21 paths</td><td>14 ativos, 7 stub/missing</td></tr>
+      <tr><td>Workflows n8n</td><td class="mono">38 total</td><td>17 ativos, 21 inativos</td></tr>
+      <tr><td>Agentes IA</td><td class="mono">4 agentes</td><td>Julia, Doc Reader, Memory, ICP/Telemetry</td></tr>
+      <tr><td>React Query Keys</td><td class="mono">13 patterns</td><td>4 canais Realtime</td></tr>
+      <tr><td>CHECK Constraints</td><td class="mono">27 constraints</td><td>Validação de domínio em todas tabelas</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== FLUXO DO LEAD ==================== -->
+<section id="fluxo-lead">
+  <h2>2. Fluxo Completo do Lead (11 Fases)</h2>
+
+  <div class="flow">
+
+    <!-- FASE 1 -->
+    <div class="flow-step active">
+      <div class="flow-label">FASE 1 — INBOX</div>
+      <div class="flow-title">Mensagem chega via WhatsApp</div>
+      <div class="flow-desc">
+        Meta Cloud API envia webhook → Edge Function <code>whatsapp-webhook</code> normaliza →
+        INSERT em <code>whatsapp_mensagens</code> + UPDATE <code>whatsapp_conversas</code> →
+        Fire-and-forget POST para n8n <code>mdzap/orquestrador</code> (Julia decide resposta)
+      </div>
+      <div class="flow-fields">
+        <span class="chip webhook">Edge Function</span>
+        <span class="chip webhook">mdzap/orquestrador</span>
+        <span class="chip">whatsapp_mensagens.INSERT</span>
+        <span class="chip">whatsapp_conversas.UPSERT</span>
+        <span class="chip">Realtime: whatsapp_mensagens</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 2 -->
+    <div class="flow-step active">
+      <div class="flow-label">FASE 2 — DETECÇÃO & VISUALIZAÇÃO</div>
+      <div class="flow-title">Operador vê conversa no MdZap</div>
+      <div class="flow-desc">
+        <code>useMdzapConversas</code> (RPC <code>fn_mdzap_conversas</code>) lista conversas com unread count.
+        Click na conversa → <code>useMdzapMensagens</code> carrega mensagens (50/page, infinite scroll).
+        Se lead não existe → botão "Criar Lead". Se lead existe → LeadPanel abre com dados.
+        Doc Reader pode já ter pré-preenchido <code>pending_lead_data</code> na conversa.
+      </div>
+      <div class="flow-fields">
+        <span class="chip rpc">fn_mdzap_conversas</span>
+        <span class="chip">useMdzapConversas</span>
+        <span class="chip">useMdzapMensagens</span>
+        <span class="chip">MdzapConversaList</span>
+        <span class="chip">MdzapMsgThread</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 3 -->
+    <div class="flow-step active">
+      <div class="flow-label">FASE 3 — CRIAR/VINCULAR LEAD</div>
+      <div class="flow-title">Criação do lead a partir da conversa</div>
+      <div class="flow-desc">
+        <code>useLeadPanelActions.criarLead()</code> → INSERT em <code>leads</code> com dados do contato →
+        RPC <code>fn_link_conversa_to_lead</code> vincula <code>whatsapp_conversas.lead_id</code> ao novo lead.
+        Coluna CRM inicia como <code>'novos'</code>. Se Doc Reader pré-preencheu, dados são copiados.
+      </div>
+      <div class="flow-fields">
+        <span class="chip rpc">fn_link_conversa_to_lead</span>
+        <span class="chip required">leads.INSERT</span>
+        <span class="chip">useLeadPanelActions</span>
+        <span class="chip">coluna_crm='novos'</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 4 -->
+    <div class="flow-step active">
+      <div class="flow-label">FASE 4 — PREENCHIMENTO DE DADOS</div>
+      <div class="flow-title">Operador preenche dados do lead (LeadDadosTab)</div>
+      <div class="flow-desc">
+        Form em <code>LeadDadosTab</code> + <code>LeadDadosFields</code> com campos: nome, cpf, email, telefone,
+        whatsapp, rg, data_nascimento, sexo, profissao, estado_civil, endereço completo.
+        <code>saveLead()</code> faz UPDATE direto em <code>leads</code>. Não passa por webhook.
+      </div>
+      <div class="flow-fields">
+        <span class="chip required">nome</span>
+        <span class="chip required">cpf</span>
+        <span class="chip">email</span>
+        <span class="chip">telefone</span>
+        <span class="chip">whatsapp</span>
+        <span class="chip">rg</span>
+        <span class="chip">data_nascimento</span>
+        <span class="chip">sexo</span>
+        <span class="chip">profissao</span>
+        <span class="chip">estado_civil</span>
+        <span class="chip">endereco_logradouro</span>
+        <span class="chip">endereco_numero</span>
+        <span class="chip">endereco_complemento</span>
+        <span class="chip">endereco_bairro</span>
+        <span class="chip">endereco_cidade</span>
+        <span class="chip">endereco_uf</span>
+        <span class="chip">endereco_cep</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 5 -->
+    <div class="flow-step warning">
+      <div class="flow-label">FASE 5 — AUDITORIA (Bureau)</div>
+      <div class="flow-title">Disparo de auditoria de restrições no bureau</div>
+      <div class="flow-desc">
+        <code>useLeadPanelActions.triggerCadastrarLead()</code> → RPC <code>rpc_disparar_auditoria</code> →
+        n8n recebe e chama bureau <code>apifull_115</code> com CPF do lead → resultado cria registros
+        em <code>restricoes</code> automaticamente. Lead move para <code>coluna_crm='em_atendimento'</code>.
+      </div>
+      <div class="flow-fields">
+        <span class="chip rpc">rpc_disparar_auditoria</span>
+        <span class="chip webhook">n8n: apifull_115</span>
+        <span class="chip">restricoes.INSERT (auto)</span>
+        <span class="chip bug">P1: sem feedback visual de progresso</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 6 -->
+    <div class="flow-step active">
+      <div class="flow-label">FASE 6 — GESTÃO DE RESTRIÇÕES</div>
+      <div class="flow-title">Cadastro e gestão de restrições do lead</div>
+      <div class="flow-desc">
+        <code>LeadRestricoesMdzapTab</code> exibe restrições. RPC <code>fn_restricao_salvar</code>
+        cria/atualiza restrições com: tipo (comprador/devedor/fiador/avalista), empresa credora,
+        valor original, parcelas, datas. Cada restrição pode gerar um processo futuro.
+      </div>
+      <div class="flow-fields">
+        <span class="chip rpc">fn_restricao_salvar</span>
+        <span class="chip required">tipo</span>
+        <span class="chip">empresa_credora</span>
+        <span class="chip">valor_original</span>
+        <span class="chip">contrato</span>
+        <span class="chip">data_inclusao</span>
+        <span class="chip">data_vencimento</span>
+        <span class="chip">orgao_registro</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 7 -->
+    <div class="flow-step warning">
+      <div class="flow-label">FASE 7 — UPLOAD DE DOCUMENTOS</div>
+      <div class="flow-title">Sistema de documentos em 3 tiers</div>
+      <div class="flow-desc">
+        <code>LeadDocumentosTab</code> gerencia upload para Supabase Storage.
+        3 tiers: (1) Documentos centrais do lead (RG, CPF, comprovante),
+        (2) Documentos por restrição (contrato, extrato específico),
+        (3) Documentos por processo (após conversão).
+        RPC <code>fn_doc_append</code> registra metadados.
+      </div>
+      <div class="flow-fields">
+        <span class="chip rpc">fn_doc_append</span>
+        <span class="chip rpc">fn_doc_get_signed_url</span>
+        <span class="chip rpc">fn_doc_delete</span>
+        <span class="chip">Tier 1: lead_docs</span>
+        <span class="chip">Tier 2: restricao_docs</span>
+        <span class="chip">Tier 3: processo_docs</span>
+        <span class="chip bug">P0: Doc Reader webhook NOT IMPLEMENTED</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 8 -->
+    <div class="flow-step error">
+      <div class="flow-label">FASE 8 — ASSUMIR / DEVOLVER JULIA</div>
+      <div class="flow-title">Controle de atendimento humano ↔ IA</div>
+      <div class="flow-desc">
+        <strong>Assumir:</strong> <code>useMdzapThreadActions.assumirConversa()</code> →
+        webhook <code>mdzap/assumir-conversa</code> → n8n MISSING (webhook não existe!).
+        Frontend faz UPDATE direto em <code>whatsapp_conversas.usuario_id_responsavel</code>.
+        <br><strong>Devolver:</strong> webhook <code>mdzap/devolver-julia</code> →
+        2 workflows conflitantes no n8n (path collision).
+      </div>
+      <div class="flow-fields">
+        <span class="chip webhook">mdzap/assumir-conversa</span>
+        <span class="chip webhook">mdzap/devolver-julia</span>
+        <span class="chip bug">P0: assumir-conversa n8n MISSING</span>
+        <span class="chip bug">P0: devolver-julia 2 WFs conflitantes</span>
+        <span class="chip">whatsapp_conversas.UPDATE</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 9 -->
+    <div class="flow-step active">
+      <div class="flow-label">FASE 9 — MENSAGENS (Envio/Recebimento)</div>
+      <div class="flow-title">Fluxo completo de envio de mensagens</div>
+      <div class="flow-desc">
+        <code>useMdzapSendMessage</code>: INSERT otimístico em <code>whatsapp_mensagens</code>
+        (status='pending') → webhook <code>mdzap/enviar-mensagem</code> → n8n chama Meta Cloud API →
+        callback atualiza status para 'sent'/'delivered'/'read'. Se falha → status='failed' + toast.
+        Suporta: text, image, audio, video, document, template, link.
+      </div>
+      <div class="flow-fields">
+        <span class="chip webhook">mdzap/enviar-mensagem</span>
+        <span class="chip webhook">mdzap/enviar-template</span>
+        <span class="chip webhook">mdzap/enviar-audio</span>
+        <span class="chip">whatsapp_mensagens.INSERT (optimistic)</span>
+        <span class="chip">Realtime: status updates</span>
+        <span class="chip bug">P1: enviar-audio é stub</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 10 -->
+    <div class="flow-step active">
+      <div class="flow-label">FASE 10 — MOVIMENTAÇÃO CRM</div>
+      <div class="flow-title">Lead move entre colunas do CRM</div>
+      <div class="flow-desc">
+        Badge dropdown no <code>MdzapThreadHeader</code> permite mover lead entre colunas CRM.
+        UPDATE direto em <code>leads.coluna_crm</code>. Colunas válidas: novos, em_atendimento,
+        aguardando_documentos, aguardando_assinatura, triagem, arquivados, convertido, documentos_pendentes.
+      </div>
+      <div class="flow-fields">
+        <span class="chip">MdzapBadgeStatus</span>
+        <span class="chip">leads.coluna_crm UPDATE</span>
+        <span class="chip">novos</span>
+        <span class="chip">em_atendimento</span>
+        <span class="chip">aguardando_documentos</span>
+        <span class="chip">aguardando_assinatura</span>
+        <span class="chip">triagem</span>
+        <span class="chip">convertido</span>
+        <span class="chip">documentos_pendentes</span>
+        <span class="chip">arquivados</span>
+      </div>
+    </div>
+    <div class="flow-arrow"></div>
+
+    <!-- FASE 11 -->
+    <div class="flow-step active">
+      <div class="flow-label">FASE 11 — AÇÕES BULK & CONVERSÃO</div>
+      <div class="flow-title">Arquivar, transferir em massa, converter para cliente</div>
+      <div class="flow-desc">
+        <strong>Bulk:</strong> <code>mdzap/arquivar-conversas-bulk</code>, <code>mdzap/transferir-conversas-bulk</code>,
+        <code>mdzap/bulk-negociacoes</code>, <code>mdzap/bulk-documentos</code>.
+        <strong>Conversão:</strong> quando lead atinge <code>coluna_crm='convertido'</code>, dados migram para
+        <code>clientes</code> + <code>processos</code> via RPCs dedicadas.
+      </div>
+      <div class="flow-fields">
+        <span class="chip webhook">mdzap/arquivar-conversas-bulk</span>
+        <span class="chip webhook">mdzap/transferir-conversas-bulk</span>
+        <span class="chip webhook">mdzap/bulk-negociacoes</span>
+        <span class="chip webhook">mdzap/bulk-documentos</span>
+        <span class="chip rpc">fn_lead_converter</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== CAMPOS POR FASE ==================== -->
+<section id="campos-fase">
+  <h2>3. Campos do Backend por Fase</h2>
+
+  <div class="card">
+    <h3>Fase 1-2: Inbox & Visualização</h3>
+    <table>
+      <tr><th>Tabela</th><th>Campo</th><th>Tipo</th><th>Obrigatório</th><th>Descrição</th></tr>
+      <tr><td class="mono">whatsapp_conversas</td><td class="mono">id</td><td>UUID</td><td>PK</td><td>ID único da conversa</td></tr>
+      <tr><td class="mono">whatsapp_conversas</td><td class="mono">numero_id</td><td>UUID FK</td><td>NOT NULL</td><td>Número WhatsApp usado</td></tr>
+      <tr><td class="mono">whatsapp_conversas</td><td class="mono">contato_numero</td><td>TEXT</td><td>NOT NULL</td><td>Número do contato (E.164)</td></tr>
+      <tr><td class="mono">whatsapp_conversas</td><td class="mono">status</td><td>TEXT CHECK</td><td>NOT NULL</td><td>ativa | encerrada | arquivada</td></tr>
+      <tr><td class="mono">whatsapp_conversas</td><td class="mono">lead_id</td><td>UUID FK</td><td>nullable</td><td>Vínculo com lead (auto trigger)</td></tr>
+      <tr><td class="mono">whatsapp_conversas</td><td class="mono">usuario_id_responsavel</td><td>UUID</td><td>nullable</td><td>Quem está atendendo</td></tr>
+      <tr><td class="mono">whatsapp_conversas</td><td class="mono">tags</td><td>JSONB</td><td>nullable</td><td>Tags da conversa (Julia/humano)</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">tipo</td><td>TEXT CHECK</td><td>NOT NULL</td><td>text|image|audio|video|document|template|link</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">direcao</td><td>TEXT CHECK</td><td>NOT NULL</td><td>entrada | saida</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">conteudo</td><td>TEXT</td><td>nullable</td><td>Texto da mensagem</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">media_url</td><td>TEXT</td><td>nullable</td><td>URL da mídia no Storage</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">remetente_tipo</td><td>TEXT CHECK</td><td>NOT NULL</td><td>user|nina|human|julia|system</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">status</td><td>TEXT CHECK</td><td>NOT NULL</td><td>pending|sent|delivered|read|received</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Fase 3-4: Criação do Lead & Preenchimento</h3>
+    <table>
+      <tr><th>Campo</th><th>Tipo</th><th>Obrigatório</th><th>Fase</th><th>Preenchido por</th></tr>
+      <tr><td class="mono">leads.nome</td><td>TEXT</td><td>NOT NULL</td><td>3 (criação)</td><td>Operador / Doc Reader</td></tr>
+      <tr><td class="mono">leads.cpf</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador / Doc Reader</td></tr>
+      <tr><td class="mono">leads.email</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.telefone</td><td>TEXT</td><td>nullable</td><td>3 (auto)</td><td>Contato WhatsApp</td></tr>
+      <tr><td class="mono">leads.whatsapp</td><td>TEXT</td><td>nullable</td><td>3 (auto)</td><td>Contato WhatsApp</td></tr>
+      <tr><td class="mono">leads.rg</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.data_nascimento</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.sexo</td><td>TEXT CHECK</td><td>nullable</td><td>4</td><td>masculino|feminino|outro</td></tr>
+      <tr><td class="mono">leads.profissao</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.estado_civil</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.endereco_logradouro</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.endereco_numero</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.endereco_complemento</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.endereco_bairro</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.endereco_cidade</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.endereco_uf</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador (UF)</td></tr>
+      <tr><td class="mono">leads.endereco_cep</td><td>TEXT</td><td>nullable</td><td>4</td><td>Operador</td></tr>
+      <tr><td class="mono">leads.coluna_crm</td><td>TEXT CHECK</td><td>NOT NULL</td><td>3 (default)</td><td>Sistema (novos)</td></tr>
+      <tr><td class="mono">leads.organizacao_id</td><td>UUID FK</td><td>NOT NULL</td><td>3</td><td>Sistema (JWT)</td></tr>
+      <tr><td class="mono">leads.origem_id</td><td>UUID FK</td><td>nullable</td><td>3</td><td>Campanha/Indicação</td></tr>
+      <tr><td class="mono">leads.responsavel_id</td><td>UUID FK</td><td>nullable</td><td>3/8</td><td>Sistema/Assumir</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Fase 5: Auditoria (Bureau)</h3>
+    <table>
+      <tr><th>Campo</th><th>Tipo</th><th>Usado em</th><th>Descrição</th></tr>
+      <tr><td class="mono">leads.cpf</td><td>TEXT</td><td>Input</td><td>CPF enviado ao bureau</td></tr>
+      <tr><td class="mono">leads.ai_report</td><td>TEXT</td><td>Output</td><td>Resultado bruto do bureau</td></tr>
+      <tr><td class="mono">leads.icp_score</td><td>NUMERIC</td><td>Output</td><td>Score ICP calculado</td></tr>
+      <tr><td class="mono">leads.score</td><td>NUMERIC</td><td>Output</td><td>Score geral do lead</td></tr>
+      <tr><td class="mono">restricoes.*</td><td>—</td><td>Output</td><td>Restrições criadas automaticamente</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Fase 6: Restrições</h3>
+    <table>
+      <tr><th>Campo</th><th>Tipo</th><th>Obrigatório</th><th>CHECK</th></tr>
+      <tr><td class="mono">restricoes.id</td><td>UUID</td><td>PK</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.organizacao_id</td><td>UUID FK</td><td>NOT NULL</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.lead_id</td><td>UUID FK</td><td>NOT NULL</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.tipo</td><td>TEXT</td><td>NOT NULL</td><td>comprador|devedor|fiador|avalista</td></tr>
+      <tr><td class="mono">restricoes.empresa_credora</td><td>TEXT</td><td>nullable</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.contrato</td><td>TEXT</td><td>nullable</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.valor_original</td><td>BIGINT</td><td>nullable</td><td>centavos</td></tr>
+      <tr><td class="mono">restricoes.valor_atualizado</td><td>BIGINT</td><td>nullable</td><td>centavos</td></tr>
+      <tr><td class="mono">restricoes.data_inclusao</td><td>DATE</td><td>nullable</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.data_vencimento</td><td>DATE</td><td>nullable</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.orgao_registro</td><td>TEXT</td><td>nullable</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.status</td><td>TEXT</td><td>nullable</td><td>—</td></tr>
+      <tr><td class="mono">restricoes.processo_id</td><td>UUID FK</td><td>nullable</td><td>Vínculo com processo</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Fase 7: Documentos (processos_documentos)</h3>
+    <table>
+      <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+      <tr><td class="mono">processos_documentos.id</td><td>UUID</td><td>PK</td></tr>
+      <tr><td class="mono">processos_documentos.organizacao_id</td><td>UUID FK</td><td>Tenant</td></tr>
+      <tr><td class="mono">processos_documentos.lead_id</td><td>UUID FK</td><td>Tier 1: documento do lead</td></tr>
+      <tr><td class="mono">processos_documentos.restricao_id</td><td>UUID FK</td><td>Tier 2: documento da restrição</td></tr>
+      <tr><td class="mono">processos_documentos.processo_id</td><td>UUID FK</td><td>Tier 3: documento do processo</td></tr>
+      <tr><td class="mono">processos_documentos.tipo_documento</td><td>TEXT</td><td>RG, CPF, comprovante, etc.</td></tr>
+      <tr><td class="mono">processos_documentos.nome_arquivo</td><td>TEXT</td><td>Nome original do arquivo</td></tr>
+      <tr><td class="mono">processos_documentos.storage_path</td><td>TEXT</td><td>Path no Supabase Storage</td></tr>
+      <tr><td class="mono">processos_documentos.status</td><td>TEXT</td><td>pendente|aprovado|rejeitado</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Fase 8-9: Mensagens & Atendimento</h3>
+    <table>
+      <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+      <tr><td class="mono">whatsapp_conversas.usuario_id_responsavel</td><td>UUID</td><td>Quem está atendendo (null = Julia)</td></tr>
+      <tr><td class="mono">whatsapp_conversas.user_responsavel_assumiu_at</td><td>TIMESTAMPTZ</td><td>Quando humano assumiu</td></tr>
+      <tr><td class="mono">leads.aguardando_humano</td><td>BOOLEAN</td><td>Flag Julia aguarda input</td></tr>
+      <tr><td class="mono">leads.tentativas</td><td>BIGINT</td><td>Tentativas de contato</td></tr>
+      <tr><td class="mono">leads.ultimo_contato</td><td>TIMESTAMPTZ</td><td>Data último contato</td></tr>
+      <tr><td class="mono">leads.wa_status</td><td>TEXT</td><td>Status WhatsApp do lead</td></tr>
+      <tr><td class="mono">leads.wa_unread_count</td><td>INTEGER</td><td>Mensagens não lidas</td></tr>
+      <tr><td class="mono">leads.wa_last_message_at</td><td>TIMESTAMPTZ</td><td>Última mensagem</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Tabelas de Suporte IA</h3>
+    <table>
+      <tr><th>Tabela</th><th>Campos-chave</th><th>CHECK</th><th>Uso</th></tr>
+      <tr><td class="mono">mdzap_julia_prompts</td><td>tipo, conteudo, versao, ativo</td><td>tipo IN (sdr_principal, sentimento, sugestoes, memoria, fluxo_atendimento, regras, ai_composer, sdr_acordos, sdr_docs)</td><td>System prompts da Julia</td></tr>
+      <tr><td class="mono">mdzap_lead_memory</td><td>cpf, nome_completo, empresa_credora, valor_divida, situacao_descrita, documentos_enviados, dados_extras</td><td>—</td><td>Memória extraída por Julia</td></tr>
+      <tr><td class="mono">mdzap_icp_analises</td><td>lead_id, score, resultado, criterios</td><td>—</td><td>Análise ICP (Ideal Customer Profile)</td></tr>
+      <tr><td class="mono">mdzap_ai_modules</td><td>slug, nome, ativo, config</td><td>slug IN (julia, doc_reader, memoria, icp, telemetria, smart_replies, ai_composer, followup)</td><td>Configuração módulos IA</td></tr>
+      <tr><td class="mono">mdzap_conversas_timeline</td><td>conversa_id, evento, dados</td><td>evento IN (created, assigned, returned, archived, transferred, lead_created, lead_converted, note_added, status_changed)</td><td>Timeline de eventos</td></tr>
+      <tr><td class="mono">whatsapp_followups</td><td>lead_id, contexto, status, data_agendada</td><td>contexto IN (lead_reception, lead_cpf, lead_docs, lead_renda, lead_qualification, agreement_reminder, document_collection)</td><td>Follow-ups agendados</td></tr>
+      <tr><td class="mono">whatsapp_msg_feedback</td><td>mensagem_id, tipo_feedback, conteudo</td><td>—</td><td>Feedback em mensagens Julia</td></tr>
+      <tr><td class="mono">mdzap_julia_lab_sessoes</td><td>prompt_tipo, input, output, score</td><td>—</td><td>Sessões do Julia Lab</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== WEBHOOKS ==================== -->
+<section id="webhooks">
+  <h2>4. Mapa Completo de Webhooks</h2>
+
+  <div class="card">
+    <h3>Fluxo: Frontend → n8n</h3>
+    <table>
+      <tr>
+        <th>Path</th>
+        <th>Origem (Arquivo:Linha)</th>
+        <th>Status n8n</th>
+        <th>Ação</th>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/enviar-mensagem</td>
+        <td class="mono">useMdzapSendMessage:103,181,250<br>useMdzapSend:28</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Envia msg (text/media/link) via Meta Cloud API</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/enviar-template</td>
+        <td class="mono">useMdzapSend:58</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Envia template HSM aprovado pelo Meta</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/enviar-audio</td>
+        <td class="mono">useMdzapThreadActions:122</td>
+        <td><span class="badge badge-stub">STUB</span></td>
+        <td>Grava e envia áudio — n8n não processa de fato</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/assumir-conversa</td>
+        <td class="mono">useMdzapThreadActions:35<br>useLeadPanelActions:297</td>
+        <td><span class="badge badge-p0">MISSING</span></td>
+        <td>Atribui conversa ao humano — n8n webhook NÃO EXISTE</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/devolver-julia</td>
+        <td class="mono">useMdzapThreadActions:67<br>useLeadPanelActions:328</td>
+        <td><span class="badge badge-p0">2 WFs CONFLITANTES</span></td>
+        <td>Devolve conversa à Julia — path collision entre 2 workflows</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/arquivar-conversa</td>
+        <td class="mono">MdzapSwipeableCard:119</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Arquiva conversa individual</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/arquivar-conversas-bulk</td>
+        <td class="mono">MdzapConversaList:142</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Arquiva conversas em massa</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/transferir-conversa</td>
+        <td class="mono">MdzapTransferModal:65</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Transfere conversa para outro membro</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/transferir-conversas-bulk</td>
+        <td class="mono">MdzapConversaList:164</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Transfere conversas em massa</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/icp-analise</td>
+        <td class="mono">useMdzapIcp:66</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Dispara análise ICP do lead</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/memoria</td>
+        <td class="mono">MdzapLeadMemoryPanel:66</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Extrai memória/resumo da conversa</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/julia-feedback</td>
+        <td class="mono">MdzapMsgFeedback:93</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Feedback em mensagem da Julia</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/julia-prompt-save</td>
+        <td class="mono">MdzapAdminIA:60</td>
+        <td><span class="badge badge-p0">SEM AUTH</span></td>
+        <td>Salva system prompt — webhook sem validação de header</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/julia-lab</td>
+        <td class="mono">MdzapJuliaLab:134</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Executa sessão Julia Lab</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/julia-lab-refine</td>
+        <td class="mono">MdzapJuliaLab:183</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Refina resultado Julia Lab</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/ai-composer</td>
+        <td class="mono">MdzapAIComposer:58</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Composição de mensagem com IA</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/reconectar</td>
+        <td class="mono">GestaoNumerosSection:35</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Reconecta instância WhatsApp</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/bulk-negociacoes</td>
+        <td class="mono">useMdzapSend:88</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Envio em massa de negociações</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/bulk-documentos</td>
+        <td class="mono">useMdzapSend:121</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Envio em massa de documentos</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/doc-reader</td>
+        <td class="mono">—</td>
+        <td><span class="badge badge-missing">NOT IMPL</span></td>
+        <td>Spec E-12: agente lê docs enviados — sem frontend/n8n</td>
+      </tr>
+      <tr>
+        <td class="mono">mdzap/orquestrador</td>
+        <td class="mono">Edge Function (fire-and-forget)</td>
+        <td><span class="badge badge-ok">ATIVO</span></td>
+        <td>Orquestrador Julia — recebe msg e decide resposta</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Fluxo: WhatsApp → Edge Function → n8n</h3>
+    <div class="tree">WhatsApp (Meta Cloud API)
+  │
+  ▼ POST /functions/v1/whatsapp-webhook
+  │
+  ├─ Valida X-Hub-Signature-256 (HMAC SHA256)
+  ├─ Normaliza payload Meta → formato interno
+  ├─ UPSERT whatsapp_conversas (numero_id + contato_numero)
+  ├─ INSERT whatsapp_mensagens (tipo, conteudo, media_url, direcao='entrada')
+  ├─ Se mídia: download do CDN Meta → upload Supabase Storage (mdzap-media)
+  │
+  ▼ Fire-and-forget POST → n8n /webhook/mdzap/orquestrador
+  │
+  ├─ Julia (Sonnet) analisa: sentimento, intenção, contexto
+  ├─ Decide: responder automático vs aguardar humano
+  ├─ Se responde: INSERT whatsapp_mensagens (direcao='saida', remetente_tipo='julia')
+  ├─ POST Meta Cloud API → envia resposta
+  ├─ Se aguarda: UPDATE leads.aguardando_humano = true
+  │
+  ▼ Realtime channels notificam frontend
+    ├─ whatsapp_mensagens → useMdzapMensagens atualiza thread
+    ├─ whatsapp_conversas → useMdzapConversas atualiza lista
+    └─ leads → filtro awaiting_human</div>
+  </div>
+
+  <div class="card">
+    <h3>callWebhook Routing (services/webhook.service.ts)</h3>
+    <div class="tree">callWebhook(path, data)
+  │
+  ├─ path.startsWith('olivia/') → Edge Function proxy
+  │   URL: VITE_SUPABASE_URL/functions/v1/olivia-webhook
+  │   Headers: Authorization: Bearer ANON_KEY
+  │
+  └─ path.startsWith('mdzap/') → n8n Railway direct
+      URL: VITE_N8N_BASE_URL/webhook/mdzap/{path}
+      Headers: { mdflow: VITE_N8N_SECRET }
+      Body: { request_id, contexto, organizacao_id, actor_user_id, data }</div>
+  </div>
+</section>
+
+<!-- ==================== AGENTES ==================== -->
+<section id="agentes">
+  <h2>5. Agentes IA — Hierarquia & Comportamento</h2>
+
+  <div class="agent-grid">
+    <div class="agent-card" style="border-color: var(--accent);">
+      <h4 style="color: var(--accent);">Julia (Orquestradora)</h4>
+      <div class="role">
+        <strong>Modelo:</strong> Claude Sonnet<br>
+        <strong>Função:</strong> SDR principal — qualifica leads, coleta dados, responde WhatsApp.<br>
+        <strong>3 Modos SDR:</strong> sdr_leads (qualificação), sdr_docs (coleta documentos), sdr_acordos (negociação).<br>
+        <strong>9 Tipos de Prompt:</strong> sdr_principal, sentimento, sugestoes, memoria, fluxo_atendimento, regras, ai_composer, sdr_acordos, sdr_docs
+      </div>
+      <div class="trigger">
+        Trigger: mdzap/orquestrador (fire-and-forget da Edge Function)<br>
+        Tabelas: mdzap_julia_prompts, mdzap_lead_memory, whatsapp_mensagens<br>
+        Output: INSERT mensagem + UPDATE lead status
+      </div>
+    </div>
+
+    <div class="agent-card" style="border-color: var(--accent2);">
+      <h4 style="color: var(--accent2);">Doc Reader</h4>
+      <div class="role">
+        <strong>Modelo:</strong> Claude Sonnet<br>
+        <strong>Função:</strong> Lê documentos enviados pelo lead (fotos de RG, CPF, contracheque). Extrai dados estruturados e preenche pending_lead_data.<br>
+        <strong>Status:</strong> <span class="badge badge-missing">NOT IMPLEMENTED</span> — spec E-12 requer, mas nem frontend nem n8n existem.
+      </div>
+      <div class="trigger">
+        Trigger: deveria ser mdzap/doc-reader (não existe)<br>
+        Helper: doc-reader-helpers.ts (102 linhas — só frontend)<br>
+        Output esperado: preencher LeadDadosFields automaticamente
+      </div>
+    </div>
+
+    <div class="agent-card" style="border-color: var(--yellow);">
+      <h4 style="color: var(--yellow);">Memory Agent</h4>
+      <div class="role">
+        <strong>Modelo:</strong> Claude Sonnet<br>
+        <strong>Função:</strong> Extrai e consolida memória da conversa — CPF, nome, empresa credora, valor dívida, situação descrita, documentos enviados.<br>
+        <strong>Status:</strong> <span class="badge badge-ok">PARCIAL</span> — webhook mdzap/memoria existe, frontend MdzapLeadMemoryPanel funciona.
+      </div>
+      <div class="trigger">
+        Trigger: mdzap/memoria (MdzapLeadMemoryPanel:66)<br>
+        Tabela: mdzap_lead_memory<br>
+        Output: dados estruturados extraídos da conversa
+      </div>
+    </div>
+
+    <div class="agent-card" style="border-color: var(--cyan);">
+      <h4 style="color: var(--cyan);">ICP / Telemetria</h4>
+      <div class="role">
+        <strong>Modelo:</strong> Claude Sonnet<br>
+        <strong>Função:</strong> Calcula Ideal Customer Profile score. Analisa: valor dívida, tipo restrição, perfil socioeconômico, probabilidade de sucesso jurídico.<br>
+        <strong>Status:</strong> <span class="badge badge-ok">ATIVO</span>
+      </div>
+      <div class="trigger">
+        Trigger: mdzap/icp-analise (useMdzapIcp:66)<br>
+        Tabela: mdzap_icp_analises<br>
+        Dashboard: MdzapTelemetriaPanel + MdzapIcpTab
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 1rem;">
+    <h3>Fluxo de Decisão Julia</h3>
+    <div class="tree">Mensagem chega (direcao='entrada')
+  │
+  ▼ Julia (Orquestradora) avalia:
+  │
+  ├─ Sentimento: positivo / neutro / negativo
+  ├─ Intenção: qualificação / documento / dúvida / raiva / spam
+  ├─ Contexto: histórico de memória (mdzap_lead_memory)
+  │
+  ▼ Decisão:
+  │
+  ├─ RESPONDER AUTOMÁTICO
+  │   ├─ SDR Leads: qualifica, pede CPF, explica processo
+  │   ├─ SDR Docs: pede documentos específicos, confirma recebimento
+  │   └─ SDR Acordos: negocia, envia proposta, confirma acordo
+  │
+  ├─ ESCALAR PARA HUMANO
+  │   ├─ Sentimento negativo forte
+  │   ├─ Pedido explícito de falar com humano
+  │   ├─ Dúvida jurídica complexa
+  │   └─ UPDATE leads.aguardando_humano = true
+  │
+  └─ SILENCIAR (não responde)
+      ├─ Spam detectado
+      └─ Mensagem duplicada / status update</div>
+  </div>
+</section>
+
+<!-- ==================== SISTEMA DE DOCUMENTOS ==================== -->
+<section id="documentos">
+  <h2>6. Sistema de Documentos — 3 Tiers</h2>
+
+  <div class="card-grid">
+    <div class="card" style="border-left: 4px solid var(--accent2);">
+      <h4 style="color: var(--accent2); margin-top: 0;">Tier 1: Documentos do Lead</h4>
+      <p style="color: var(--text-muted); font-size: 0.88rem;">Documentos pessoais vinculados ao lead. Compartilhados entre todas as restrições/processos.</p>
+      <table>
+        <tr><th>Documento</th><th>Status</th></tr>
+        <tr><td>RG (frente e verso)</td><td>Padrão</td></tr>
+        <tr><td>CPF</td><td>Padrão</td></tr>
+        <tr><td>Comprovante de residência</td><td>Padrão</td></tr>
+        <tr><td>CTPS</td><td>Quando empregado</td></tr>
+        <tr><td>Contracheque</td><td>Quando renda formal</td></tr>
+        <tr><td>Extrato bancário</td><td>Complementar</td></tr>
+      </table>
+      <p class="mono" style="font-size: 0.75rem; color: var(--cyan); margin-top: 0.5rem;">FK: processos_documentos.lead_id</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--yellow);">
+      <h4 style="color: var(--yellow); margin-top: 0;">Tier 2: Documentos da Restrição</h4>
+      <p style="color: var(--text-muted); font-size: 0.88rem;">Documentos específicos de cada restrição/negativação do lead.</p>
+      <table>
+        <tr><th>Documento</th><th>Status</th></tr>
+        <tr><td>Contrato da dívida</td><td>Se disponível</td></tr>
+        <tr><td>Extrato do bureau</td><td>Gerado automaticamente</td></tr>
+        <tr><td>Notificação extrajudicial</td><td>Se recebida</td></tr>
+        <tr><td>Comprovante de pagamento</td><td>Se já pagou parcial</td></tr>
+      </table>
+      <p class="mono" style="font-size: 0.75rem; color: var(--cyan); margin-top: 0.5rem;">FK: processos_documentos.restricao_id</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--accent);">
+      <h4 style="color: var(--accent); margin-top: 0;">Tier 3: Documentos do Processo</h4>
+      <p style="color: var(--text-muted); font-size: 0.88rem;">Documentos jurídicos após conversão do lead em processo.</p>
+      <table>
+        <tr><th>Documento</th><th>Status</th></tr>
+        <tr><td>Procuração</td><td>Gerada/Assinada</td></tr>
+        <tr><td>Petição inicial</td><td>Gerada por OlivIA</td></tr>
+        <tr><td>Comprovante protocolo</td><td>Após distribuição</td></tr>
+        <tr><td>Documentos EPROC</td><td>Baixados pelo JARBAS</td></tr>
+      </table>
+      <p class="mono" style="font-size: 0.75rem; color: var(--cyan); margin-top: 0.5rem;">FK: processos_documentos.processo_id</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>RPCs de Documentos</h3>
+    <table>
+      <tr><th>RPC</th><th>Parâmetros</th><th>Retorno</th></tr>
+      <tr><td class="mono">fn_doc_append</td><td>lead_id/restricao_id/processo_id, tipo_documento, storage_path, nome_arquivo</td><td>ID do documento criado</td></tr>
+      <tr><td class="mono">fn_doc_get_signed_url</td><td>doc_id</td><td>URL assinada temporária (60 min)</td></tr>
+      <tr><td class="mono">fn_doc_delete</td><td>doc_id</td><td>Soft delete (deleted_at)</td></tr>
+      <tr><td class="mono">fn_docs_por_lead</td><td>lead_id</td><td>Todos docs do lead (3 tiers)</td></tr>
+      <tr><td class="mono">fn_docs_por_restricao</td><td>restricao_id</td><td>Docs específicos da restrição</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== RESTRIÇÕES ==================== -->
+<section id="restricoes">
+  <h2>7. Fluxo de Restrições</h2>
+
+  <div class="card">
+    <div class="tree">Lead com CPF preenchido
+  │
+  ▼ Operador clica "Auditar" (triggerCadastrarLead)
+  │
+  ├─ RPC: rpc_disparar_auditoria(lead_id, cpf)
+  │   └─ n8n: consulta bureau apifull_115
+  │
+  ▼ Bureau retorna restrições encontradas
+  │
+  ├─ Para cada restrição:
+  │   ├─ INSERT restricoes (tipo, empresa_credora, valor, datas)
+  │   ├─ tipo CHECK: comprador | devedor | fiador | avalista
+  │   └─ Vínculo: restricoes.lead_id → leads.id
+  │
+  ▼ Operador revisa em LeadRestricoesMdzapTab
+  │
+  ├─ Pode editar: empresa, valor, tipo, datas
+  ├─ Pode adicionar restrição manual
+  ├─ Pode upload docs por restrição (Tier 2)
+  │
+  ▼ Quando lead é convertido
+  │
+  ├─ Cada restrição pode gerar 1 processo
+  ├─ restricoes.processo_id → processos.id
+  └─ Docs migram de Tier 2 para Tier 3</div>
+  </div>
+</section>
+
+<!-- ==================== ÁRVORE DE COMPONENTES ==================== -->
+<section id="componentes">
+  <h2>8. Árvore de Componentes (54 arquivos)</h2>
+
+  <div class="card">
+    <div class="tree">MdzapPage (pages/mdzap/index.tsx — 20 lines)
+└── MdzapChatPanel (249 lines) — orquestrador principal
+    ├── Header
+    │   ├── MdzapTabNav (48 lines) — navegação entre tabs
+    │   ├── SdrModeToggle (67 lines) — sdr_leads | sdr_docs | sdr_acordos
+    │   └── MdzapConnectionIndicator (109 lines) — status WhatsApp
+    │
+    ├── TAB: "conversas"
+    │   └── MdzapConversaList (410 lines)
+    │       ├── MdzapSearchBar (72 lines) — busca + debounce
+    │       ├── MdzapConversaFilters (118 lines) — filtros por status/tag
+    │       └── MdzapSwipeableCard (290 lines) × N — card de conversa
+    │           ├── MdzapBadgeStatus (102 lines) — badge coluna CRM
+    │           └── MdzapContextCard (95 lines) — preview de contexto
+    │
+    ├── TAB: "thread" (ao selecionar conversa)
+    │   └── MdzapMsgThread (458 lines)
+    │       ├── MdzapThreadHeader (213 lines) — ações: assumir/devolver/transferir
+    │       │   └── MdzapTransferModal (155 lines)
+    │       ├── Messages
+    │       │   └── MdzapMsgBubble (494 lines) × N — bolha de mensagem
+    │       │       ├── MdzapMediaPreview (134 lines) — preview de mídia
+    │       │       ├── MdzapImageLightbox (31 lines) — zoom imagem
+    │       │       ├── MdzapMediaRetryButton (55 lines) — retry download
+    │       │       └── MdzapMsgFeedback (218 lines) — feedback Julia
+    │       ├── MdzapConversaTimeline (90 lines) — eventos da conversa
+    │       └── Compose Area
+    │           ├── MdzapMsgInput (272 lines) — input de mensagem
+    │           │   ├── MdzapAttachmentMenu (136 lines) — anexos
+    │           │   ├── MdzapAudioRecorder (166 lines) — gravador áudio
+    │           │   ├── MdzapSmartReplies (66 lines) — sugestões IA
+    │           │   ├── MdzapAIComposer (108 lines) — composição IA
+    │           │   └── MdzapLinkInput (147 lines) — envio de links
+    │           ├── MdzapSendButton (108 lines) — botão enviar
+    │           └── MdzapDragOverlay (20 lines) — drag-and-drop
+    │
+    ├── TAB: "dashboard"
+    │   └── MdzapDashboard (399 lines)
+    │       └── MdzapKpiWidget (38 lines) × N — cards KPI
+    │
+    ├── TAB: "julia-lab"
+    │   └── MdzapJuliaLab (497 lines) — MAIOR componente
+    │
+    ├── TAB: "templates"
+    │   └── TemplatesManagerDialog (328 lines) — CRUD templates HSM
+    │
+    ├── TAB: "gestao"
+    │   └── MdzapGestaoPanel (47 lines)
+    │       ├── GestaoNumerosSection (130 lines) — instâncias WhatsApp
+    │       ├── GestaoUserMapsSection (73 lines) — mapeamento usuários
+    │       ├── GestaoStageMapsSection (73 lines) — mapeamento estágios
+    │       └── GestaoMensagensRecentesSection (94 lines)
+    │
+    ├── Sidebar (Drawer no mobile)
+    │   └── MdzapLeadPanel (198 lines) — painel do lead
+    │       ├── LeadDadosTab (149 lines) + LeadDadosFields (191 lines)
+    │       │   └── FieldConfidenceBadge (27 lines)
+    │       ├── LeadDocumentosTab (301 lines) — 3 tiers docs
+    │       ├── LeadRestricoesMdzapTab (90 lines)
+    │       ├── LeadMemoriaTab (10 lines)
+    │       │   └── MdzapLeadMemoryPanel (219 lines)
+    │       ├── LeadNotasTab (19 lines)
+    │       └── useLeadPanelActions (404 lines) — todas ações do painel
+    │
+    ├── MdzapTelemetriaPanel (170 lines) — telemetria/analytics
+    ├── MdzapIcpTab (228 lines) — análise ICP
+    ├── MdzapAdminIA (214 lines) — admin system prompts
+    └── Bulk Actions
+        ├── AlertDialogBulkDocuments (157 lines)
+        └── AlertDialogBulkNegotiations (117 lines)</div>
+  </div>
+</section>
+
+<!-- ==================== SCHEMA BACKEND ==================== -->
+<section id="tabelas">
+  <h2>9. Schema Backend — Todas as Tabelas MdZap</h2>
+
+  <div class="card">
+    <h3>17 Tabelas Mapeadas</h3>
+    <table>
+      <tr><th>#</th><th>Tabela</th><th>Colunas</th><th>Categoria</th><th>RLS</th></tr>
+      <tr><td>1</td><td class="mono">leads</td><td>67</td><td>CRM + MdZap</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>2</td><td class="mono">whatsapp_conversas</td><td>14</td><td>Messaging</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>3</td><td class="mono">whatsapp_mensagens</td><td>15</td><td>Messaging</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>4</td><td class="mono">whatsapp_numeros</td><td>12</td><td>Config</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>5</td><td class="mono">whatsapp_templates</td><td>10</td><td>Messaging</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>6</td><td class="mono">whatsapp_notas_internas</td><td>8</td><td>Messaging</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>7</td><td class="mono">whatsapp_followups</td><td>14</td><td>Automação</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>8</td><td class="mono">whatsapp_msg_feedback</td><td>8</td><td>IA</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>9</td><td class="mono">restricoes</td><td>23</td><td>Jurídico</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>10</td><td class="mono">processos_documentos</td><td>33</td><td>Documentos</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>11</td><td class="mono">mdzap_julia_prompts</td><td>10</td><td>IA</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>12</td><td class="mono">mdzap_lead_memory</td><td>14</td><td>IA</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>13</td><td class="mono">mdzap_icp_analises</td><td>8</td><td>IA</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>14</td><td class="mono">mdzap_ai_modules</td><td>8</td><td>Config IA</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>15</td><td class="mono">mdzap_conversas_timeline</td><td>8</td><td>Timeline</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>16</td><td class="mono">mdzap_julia_lab_sessoes</td><td>10</td><td>IA Lab</td><td><span class="badge badge-ok">A</span></td></tr>
+      <tr><td>17</td><td class="mono">mdzap_message_queue</td><td>10</td><td>Queue</td><td><span class="badge badge-ok">A</span></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>CHECK Constraints Críticos</h3>
+    <table>
+      <tr><th>Tabela</th><th>Campo</th><th>Valores Permitidos</th></tr>
+      <tr><td class="mono">leads</td><td class="mono">coluna_crm</td><td class="mono">novos | em_atendimento | aguardando_documentos | aguardando_assinatura | triagem | arquivados | convertido | documentos_pendentes</td></tr>
+      <tr><td class="mono">leads</td><td class="mono">sexo</td><td class="mono">masculino | feminino | outro</td></tr>
+      <tr><td class="mono">whatsapp_conversas</td><td class="mono">status</td><td class="mono">ativa | encerrada | arquivada</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">tipo</td><td class="mono">text | image | audio | video | document | template | link</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">direcao</td><td class="mono">entrada | saida</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">remetente_tipo</td><td class="mono">user | nina | human | julia | system</td></tr>
+      <tr><td class="mono">whatsapp_mensagens</td><td class="mono">status</td><td class="mono">pending | sent | delivered | read | received</td></tr>
+      <tr><td class="mono">whatsapp_numeros</td><td class="mono">status</td><td class="mono">connected | disconnected | banned | pending</td></tr>
+      <tr><td class="mono">whatsapp_numeros</td><td class="mono">proposito</td><td class="mono">comercial | operacional | suporte</td></tr>
+      <tr><td class="mono">restricoes</td><td class="mono">tipo</td><td class="mono">comprador | devedor | fiador | avalista</td></tr>
+      <tr><td class="mono">mdzap_julia_prompts</td><td class="mono">tipo</td><td class="mono">sdr_principal | sentimento | sugestoes | memoria | fluxo_atendimento | regras | ai_composer | sdr_acordos | sdr_docs</td></tr>
+      <tr><td class="mono">mdzap_ai_modules</td><td class="mono">slug</td><td class="mono">julia | doc_reader | memoria | icp | telemetria | smart_replies | ai_composer | followup</td></tr>
+      <tr><td class="mono">mdzap_conversas_timeline</td><td class="mono">evento</td><td class="mono">created | assigned | returned | archived | transferred | lead_created | lead_converted | note_added | status_changed</td></tr>
+      <tr><td class="mono">whatsapp_followups</td><td class="mono">contexto</td><td class="mono">lead_reception | lead_cpf | lead_docs | lead_renda | lead_qualification | agreement_reminder | document_collection</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== RPCs ==================== -->
+<section id="rpcs">
+  <h2>10. RPCs (Funções PostgreSQL)</h2>
+
+  <div class="card">
+    <h3>RPCs Chamadas pelo Frontend MdZap</h3>
+    <table>
+      <tr><th>RPC</th><th>Tipo</th><th>Descrição</th></tr>
+      <tr><td class="mono">fn_mdzap_conversas</td><td>SECURITY DEFINER</td><td>Lista conversas com joins (lead, número, última msg)</td></tr>
+      <tr><td class="mono">fn_mdzap_stats</td><td>SECURITY DEFINER</td><td>Estatísticas agregadas (total, não lidas, por coluna)</td></tr>
+      <tr><td class="mono">fn_mdzap_listar_membros</td><td>SECURITY DEFINER</td><td>Membros da org para transfer</td></tr>
+      <tr><td class="mono">fn_link_conversa_to_lead</td><td>SECURITY DEFINER</td><td>Vincula conversa a lead existente ou novo</td></tr>
+      <tr><td class="mono">fn_restricao_salvar</td><td>SECURITY DEFINER</td><td>Cria/atualiza restrição</td></tr>
+      <tr><td class="mono">fn_doc_append</td><td>SECURITY DEFINER</td><td>Registra documento no 3-tier system</td></tr>
+      <tr><td class="mono">fn_doc_get_signed_url</td><td>SECURITY DEFINER</td><td>URL assinada para download</td></tr>
+      <tr><td class="mono">fn_doc_delete</td><td>SECURITY DEFINER</td><td>Soft delete de documento</td></tr>
+      <tr><td class="mono">rpc_disparar_auditoria</td><td>SECURITY DEFINER</td><td>Dispara auditoria bureau (CPF → restrições)</td></tr>
+      <tr><td class="mono">fn_lead_converter</td><td>SECURITY DEFINER</td><td>Converte lead → cliente + processos</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>RPCs Chamadas pelo n8n (Backend)</h3>
+    <table>
+      <tr><th>RPC</th><th>Descrição</th></tr>
+      <tr><td class="mono">fn_whatsapp_msg_insert</td><td>Insert mensagem com dedup (wamid/z_api_msg_id)</td></tr>
+      <tr><td class="mono">fn_whatsapp_conv_upsert</td><td>Upsert conversa (numero_id + contato_numero)</td></tr>
+      <tr><td class="mono">fn_whatsapp_msg_status_update</td><td>Atualiza status de entrega (sent→delivered→read)</td></tr>
+      <tr><td class="mono">fn_mdzap_memory_save</td><td>Salva memória extraída pela Julia</td></tr>
+      <tr><td class="mono">fn_mdzap_icp_save</td><td>Salva resultado análise ICP</td></tr>
+      <tr><td class="mono">fn_mdzap_timeline_append</td><td>Adiciona evento na timeline da conversa</td></tr>
+      <tr><td class="mono">fn_mdzap_followup_schedule</td><td>Agenda follow-up futuro</td></tr>
+      <tr><td class="mono">fn_mdzap_followup_complete</td><td>Marca follow-up como concluído</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== REALTIME & QUERIES ==================== -->
+<section id="realtime">
+  <h2>11. Realtime Channels & React Query</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>Canais Realtime (4)</h3>
+      <table>
+        <tr><th>Canal</th><th>Tabela</th><th>Eventos</th><th>Invalidação</th></tr>
+        <tr><td class="mono">whatsapp_conversas</td><td>whatsapp_conversas</td><td>INSERT, UPDATE</td><td><code>['mdzap','conversas']</code></td></tr>
+        <tr><td class="mono">whatsapp_mensagens</td><td>whatsapp_mensagens</td><td>INSERT, UPDATE</td><td><code>['mdzap','mensagens',orgId,convId]</code></td></tr>
+        <tr><td class="mono">whatsapp_numeros</td><td>whatsapp_numeros</td><td>UPDATE</td><td><code>['mdzap','numeros']</code></td></tr>
+        <tr><td class="mono">leads</td><td>leads</td><td>UPDATE (aguardando_humano)</td><td><code>['mdzap','conversas']</code></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>React Query Keys (13 padrões)</h3>
+      <table>
+        <tr><th>Key</th><th>staleTime</th><th>Hook</th></tr>
+        <tr><td class="mono">['mdzap','conversas',orgId]</td><td>8s + poll 8s</td><td>useMdzapConversas</td></tr>
+        <tr><td class="mono">['mdzap','mensagens',orgId,convId]</td><td>30s</td><td>useMdzapMensagens</td></tr>
+        <tr><td class="mono">['mdzap','templates',orgId]</td><td>30s</td><td>useMdzapTemplates</td></tr>
+        <tr><td class="mono">['mdzap','julia-prompts',orgId]</td><td>30s</td><td>useMdzapJuliaPrompts</td></tr>
+        <tr><td class="mono">['mdzap','stats',orgId]</td><td>30s</td><td>useMdzapStats</td></tr>
+        <tr><td class="mono">['mdzap','numeros',orgId]</td><td>30s</td><td>useMdzapStatus</td></tr>
+        <tr><td class="mono">['mdzap-icp-analises',orgId]</td><td>30s</td><td>useMdzapIcp</td></tr>
+        <tr><td class="mono">['mdzap-telemetria-kpis',orgId]</td><td>30s</td><td>useMdzapTelemetria</td></tr>
+        <tr><td class="mono">['mdzap-telemetria-estados',orgId]</td><td>30s</td><td>useMdzapTelemetria</td></tr>
+        <tr><td class="mono">['mdzap-telemetria-motivacao',orgId]</td><td>30s</td><td>useMdzapTelemetria</td></tr>
+        <tr><td class="mono">['mdzap-membros',orgId]</td><td>30s</td><td>useMdzapMembros</td></tr>
+        <tr><td class="mono">['mdzap-transfer-membros',orgId]</td><td>30s</td><td>MdzapTransferModal</td></tr>
+        <tr><td class="mono">['config-mdzap-ai-modules',orgId]</td><td>30s</td><td>TabWhatsapp</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PENDÊNCIAS POR FASE ==================== -->
+<section id="pendencias">
+  <h2>12. Todas as Pendências — Organizadas por Fase</h2>
+
+  <div class="status-grid" style="margin-bottom: 2rem;">
+    <div class="status-card red">
+      <div class="number">23</div>
+      <div class="label">P0 — Bloqueantes</div>
+    </div>
+    <div class="status-card yellow">
+      <div class="number">18</div>
+      <div class="label">P1 — Importantes</div>
+    </div>
+    <div class="status-card blue">
+      <div class="number">12</div>
+      <div class="label">P2 — Melhorias</div>
+    </div>
+    <div class="status-card green">
+      <div class="number">53</div>
+      <div class="label">Total Pendências</div>
+    </div>
+  </div>
+
+  <!-- FASE 1: INBOX -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p0">FASE 1</span> Inbox — Recebimento de Mensagens</h4>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-01: service_role key hardcoded em Edge Function</div>
+      <div class="pend-detail">Token service_role está hardcoded na Edge Function whatsapp-webhook. Deveria usar env var <code>SUPABASE_SERVICE_ROLE_KEY</code>.</div>
+      <div class="pend-files">supabase/functions/whatsapp-webhook/index.ts</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-02: Fire-and-forget sem retry para orquestrador</div>
+      <div class="pend-detail">Edge Function faz POST para n8n/orquestrador sem retry. Se n8n cair, mensagens ficam sem resposta da Julia e sem registro de falha.</div>
+      <div class="pend-files">supabase/functions/whatsapp-webhook/index.ts</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-01: Sem rate-limiting na Edge Function</div>
+      <div class="pend-detail">Nenhum rate-limit aplicado. Um flood de webhooks Meta pode derrubar a infra.</div>
+      <div class="pend-files">supabase/functions/whatsapp-webhook/index.ts</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-02: Referências Z-API residuais</div>
+      <div class="pend-detail">Campos <code>z_api_conversation_id</code>, <code>z_api_msg_id</code>, <code>z_api_instance_key</code>, <code>z_api_phone_id</code>, <code>z_api_token</code> em tabelas. Migração para Meta Cloud API completa mas campos legados permanecem.</div>
+      <div class="pend-files">whatsapp_conversas, whatsapp_numeros, whatsapp_mensagens</div>
+    </div>
+  </div>
+
+  <!-- FASE 2: VISUALIZAÇÃO -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">FASE 2</span> Detecção & Visualização</h4>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-03: Responsividade mobile deficiente (4.0/10)</div>
+      <div class="pend-detail">Layout 3-colunas não adapta para mobile. Sidebar drawer não funciona corretamente em <640px. Touch targets menores que 44px.</div>
+      <div class="pend-files">MdzapChatPanel.tsx, MdzapConversaList.tsx</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-04: Polling 8s como fallback do Realtime</div>
+      <div class="pend-detail"><code>useMdzapConversas</code> usa <code>refetchInterval: 8s</code> como fallback do Realtime. Deveria detectar se Realtime está ativo e desabilitar polling.</div>
+      <div class="pend-files">useMdzapConversas.ts</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-01: Busca sem debounce adequado</div>
+      <div class="pend-detail">MdzapSearchBar deveria ter debounce 300ms com min 2 chars conforme CLAUDE.md. Verificar implementação atual.</div>
+      <div class="pend-files">MdzapSearchBar.tsx</div>
+    </div>
+  </div>
+
+  <!-- FASE 3-4: CRIAR LEAD + DADOS -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">FASE 3-4</span> Criar Lead & Preencher Dados</h4>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-03: Lead criado sem organizacao_id do JWT</div>
+      <div class="pend-detail">Verificar se <code>criarLead()</code> em useLeadPanelActions passa organizacao_id do contexto auth, não hardcoded.</div>
+      <div class="pend-files">lead-panel/useLeadPanelActions.ts</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-05: Doc Reader não preenche dados automaticamente</div>
+      <div class="pend-detail">doc-reader-helpers.ts existe (102 linhas) mas o webhook mdzap/doc-reader não está implementado. Dados de fotos de documentos não são extraídos automaticamente.</div>
+      <div class="pend-files">lead-panel/doc-reader-helpers.ts</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-06: Validação de CPF no frontend insuficiente</div>
+      <div class="pend-detail">CPF deve ser validado (dígitos verificadores) antes de enviar para auditoria bureau. Validação atual pode aceitar CPFs inválidos.</div>
+      <div class="pend-files">LeadDadosFields.tsx</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-02: FieldConfidenceBadge sem uso prático</div>
+      <div class="pend-detail">Componente existe (27 linhas) mas sem integração real com Doc Reader (que não existe). Badge de confiança fica inerte.</div>
+      <div class="pend-files">lead-panel/FieldConfidenceBadge.tsx</div>
+    </div>
+  </div>
+
+  <!-- FASE 5: AUDITORIA -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">FASE 5</span> Auditoria Bureau</h4>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-07: Sem feedback visual de progresso na auditoria</div>
+      <div class="pend-detail">Quando operador dispara auditoria, não há loading spinner, progress bar ou estimativa de tempo. Bureau pode demorar 10-30s.</div>
+      <div class="pend-files">useLeadPanelActions.ts</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-08: Sem tratamento de bureau indisponível</div>
+      <div class="pend-detail">Se o bureau apifull_115 estiver fora do ar, a auditoria falha silenciosamente. Deveria ter retry + toast de erro.</div>
+      <div class="pend-files">n8n: workflow auditoria</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-03: Resultado bureau em campo TEXT (ai_report)</div>
+      <div class="pend-detail"><code>leads.ai_report</code> é TEXT plano. Deveria ser JSONB para query estruturada de campos do bureau.</div>
+      <div class="pend-files">Schema: leads.ai_report</div>
+    </div>
+  </div>
+
+  <!-- FASE 6: RESTRIÇÕES -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">FASE 6</span> Gestão de Restrições</h4>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-09: Restrição sem data exibida na aba MdZap</div>
+      <div class="pend-detail">LeadRestricoesMdzapTab (90 linhas) é muito simplificado. Não exibe data_inclusao, valor_atualizado, orgao_registro.</div>
+      <div class="pend-files">lead-panel/LeadRestricoesMdzapTab.tsx</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-04: Restrição manual sem validação de duplicatas</div>
+      <div class="pend-detail">Operador pode criar restrição manual duplicada (mesma empresa + mesmo contrato). Não há dedup check.</div>
+      <div class="pend-files">fn_restricao_salvar</div>
+    </div>
+  </div>
+
+  <!-- FASE 7: DOCUMENTOS -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p0">FASE 7</span> Upload de Documentos</h4>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-04: Doc Reader agent NÃO IMPLEMENTADO</div>
+      <div class="pend-detail">Spec E-12 exige agente que lê fotos de documentos e extrai dados. Nem webhook <code>mdzap/doc-reader</code> existe no n8n, nem frontend dispara o fluxo.</div>
+      <div class="pend-files">Criar: n8n workflow + frontend trigger + doc-reader-helpers.ts integration</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-05: Google Drive folder sync não funciona</div>
+      <div class="pend-detail">Campo <code>leads.google_drive_folder_id</code> existe mas integração de sync entre Supabase Storage e Google Drive não está implementada.</div>
+      <div class="pend-files">leads.google_drive_folder_id — sem workflow n8n</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-10: LeadDocumentosTab complexo demais (301 linhas)</div>
+      <div class="pend-detail">Componente maior que o recomendado (500 lines max). Mistura 3 tiers num único componente sem separação clara.</div>
+      <div class="pend-files">lead-panel/LeadDocumentosTab.tsx</div>
+    </div>
+  </div>
+
+  <!-- FASE 8: ASSUMIR/DEVOLVER -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p0">FASE 8</span> Assumir / Devolver Julia — CRÍTICO</h4>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-06: Webhook assumir-conversa NÃO EXISTE no n8n</div>
+      <div class="pend-detail">Frontend chama <code>mdzap/assumir-conversa</code> mas NÃO existe workflow n8n com esse webhook. Frontend faz UPDATE direto no Supabase como fallback, mas Julia não é notificada para parar de responder.</div>
+      <div class="pend-files">useMdzapThreadActions:35, useLeadPanelActions:297 → n8n: MISSING</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-07: devolver-julia tem 2 workflows conflitantes</div>
+      <div class="pend-detail">Dois workflows ativos competem pelo mesmo path <code>mdzap/devolver-julia</code>. Comportamento indefinido — depende de qual n8n executa primeiro.</div>
+      <div class="pend-files">n8n: 2 workflows com mesmo path webhook</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-08: Duplicação de lógica assumir/devolver em 2 hooks</div>
+      <div class="pend-detail"><code>useMdzapThreadActions</code> e <code>useLeadPanelActions</code> ambos implementam assumir e devolver com lógica diferente. Race conditions possíveis.</div>
+      <div class="pend-files">useMdzapThreadActions:35,67 + useLeadPanelActions:297,328</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-11: Sem indicador visual de quem está atendendo</div>
+      <div class="pend-detail">Quando outro membro assume, não há badge/avatar claro no thread header mostrando quem é o responsável atual.</div>
+      <div class="pend-files">MdzapThreadHeader.tsx</div>
+    </div>
+  </div>
+
+  <!-- FASE 9: MENSAGENS -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">FASE 9</span> Envio de Mensagens</h4>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-09: service_role key em 10+ nodes n8n</div>
+      <div class="pend-detail">Token service_role hardcoded em múltiplos nodes Supabase dentro dos workflows n8n. Deveria usar credential do n8n.</div>
+      <div class="pend-files">n8n: múltiplos workflows MdZap</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-10: Enviar áudio é STUB</div>
+      <div class="pend-detail">Webhook <code>mdzap/enviar-audio</code> existe no frontend e no n8n, mas o workflow não envia de fato o áudio via Meta API. Grava localmente mas não entrega.</div>
+      <div class="pend-files">useMdzapThreadActions:122, MdzapAudioRecorder.tsx</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-12: Optimistic update sem rollback em falha de mídia</div>
+      <div class="pend-detail">Upload de mídia faz INSERT otimístico. Se upload ao Storage falhar, mensagem fica com status 'pending' eternamente sem cleanup.</div>
+      <div class="pend-files">useMdzapSendMessage.ts</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-13: Smart Replies sem contexto de memória</div>
+      <div class="pend-detail"><code>useMdzapSmartReplies</code> sugere respostas mas não usa <code>mdzap_lead_memory</code> para contextualizar. Sugestões são genéricas.</div>
+      <div class="pend-files">useMdzapSmartReplies.ts</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-05: MdzapMsgBubble muito grande (494 linhas)</div>
+      <div class="pend-detail">Próximo do limite de 500 linhas. Contém lógica de renderização para 7 tipos de mensagem. Deveria ser split.</div>
+      <div class="pend-files">MdzapMsgBubble.tsx</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-06: MdzapJuliaLab maior componente (497 linhas)</div>
+      <div class="pend-detail">Muito próximo do limite de 500 linhas. Concentra UI do lab + lógica de sessão + renderização de resultados.</div>
+      <div class="pend-files">MdzapJuliaLab.tsx</div>
+    </div>
+  </div>
+
+  <!-- FASE 10: CRM -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">FASE 10</span> Movimentação CRM</h4>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-14: Movimento CRM sem log na timeline</div>
+      <div class="pend-detail">Quando operador muda coluna_crm do lead via badge, não é inserido evento na <code>mdzap_conversas_timeline</code>. Perda de auditoria.</div>
+      <div class="pend-files">MdzapBadgeStatus.tsx → deveria chamar fn_mdzap_timeline_append</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-07: CRM badges sem cores distintas por coluna</div>
+      <div class="pend-detail">Badges de coluna CRM poderiam usar cores do Design System para diferenciar visualmente (ex: novos=blue, convertido=green, arquivados=muted).</div>
+      <div class="pend-files">MdzapBadgeStatus.tsx</div>
+    </div>
+  </div>
+
+  <!-- FASE 11: BULK & CONVERSÃO -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">FASE 11</span> Ações Bulk & Conversão</h4>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-15: Bulk actions sem progress indicator</div>
+      <div class="pend-detail">Operações bulk (arquivar, transferir, enviar em massa) não mostram progresso. Se forem 100 conversas, operador não sabe se está funcionando.</div>
+      <div class="pend-files">MdzapConversaList.tsx, AlertDialogBulk*.tsx</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-16: Conversão lead→cliente sem validação completa</div>
+      <div class="pend-detail">fn_lead_converter deveria validar que todos campos obrigatórios (cpf, nome, endereço) estão preenchidos antes de converter. Pode criar cliente incompleto.</div>
+      <div class="pend-files">fn_lead_converter RPC</div>
+    </div>
+  </div>
+
+  <!-- TRANSVERSAL: n8n -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p0">TRANSVERSAL</span> n8n — Problemas Globais</h4>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-11: julia-prompt-save sem autenticação</div>
+      <div class="pend-detail">Webhook <code>mdzap/julia-prompt-save</code> não valida header <code>mdflow</code>. Qualquer pessoa com a URL pode sobrescrever prompts da Julia.</div>
+      <div class="pend-files">n8n: workflow julia-prompt-save</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-12: 21 workflows inativos sem cleanup</div>
+      <div class="pend-detail">21 workflows MdZap inativos ocupando espaço e confundindo manutenção. 17 devem ser deletados, 3 reativados, 1 revisado.</div>
+      <div class="pend-files">n8n: cleanup necessário</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-13: Envelope canônico não seguido em 60% dos WFs</div>
+      <div class="pend-detail">Muitos workflows não retornam <code>{ success, message, action, data }</code>. Frontend usa Action-Driven UI mas n8n nem sempre envia action.</div>
+      <div class="pend-files">n8n: múltiplos workflows</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-14: Sem sticky notes em workflows (padrão MdFlow)</div>
+      <div class="pend-detail">Padrão MdFlow exige sticky notes com documentação em cada workflow. Maioria dos workflows MdZap não tem.</div>
+      <div class="pend-files">n8n: múltiplos workflows</div>
+    </div>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-15: webhook_requests não registrado em vários WFs</div>
+      <div class="pend-detail">Padrão MdFlow exige INSERT em <code>webhook_requests</code> para audit trail. Vários workflows MdZap pulam esse passo.</div>
+      <div class="pend-files">n8n: múltiplos workflows</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-17: FOLLOWUP-ZAPSIGN IF node com bug de tipo</div>
+      <div class="pend-detail">T10 validation: IF node compara tipos incompatíveis. Follow-up de ZapSign não funciona corretamente.</div>
+      <div class="pend-files">n8n: workflow FOLLOWUP-ZAPSIGN</div>
+    </div>
+  </div>
+
+  <!-- TRANSVERSAL: FRONTEND -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">TRANSVERSAL</span> Frontend — Problemas Globais</h4>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-16: Navegação/IA confusa (5.0/10 na auditoria)</div>
+      <div class="pend-detail">6 tabs + sub-tabs sem hierarquia clara. Usuário se perde entre conversas, dashboard, julia-lab, templates, gestão. Atalhos de teclado não documentados na UI.</div>
+      <div class="pend-files">MdzapTabNav.tsx, MdzapChatPanel.tsx</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-18: Lead Panel (5.5/10 na auditoria)</div>
+      <div class="pend-detail">Painel do lead mistura muitas abas (Dados, Documentos, Restrições, Memória, Notas) sem flow guiado. Operador não sabe a sequência ideal.</div>
+      <div class="pend-files">MdzapLeadPanel.tsx</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-08: Query key inconsistência de namespace</div>
+      <div class="pend-detail">Maioria usa <code>['mdzap', ...]</code> mas ICP, telemetria e membros usam <code>['mdzap-icp-analises', ...]</code>. Deveria padronizar.</div>
+      <div class="pend-files">useMdzapIcp.ts, useMdzapTelemetria.ts, useMdzapMembros.ts</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-09: useLeadPanelActions muito grande (404 linhas)</div>
+      <div class="pend-detail">Hook com 404 linhas e muitas responsabilidades: criar lead, assumir, devolver, salvar, auditar. Deveria ser split em hooks menores.</div>
+      <div class="pend-files">lead-panel/useLeadPanelActions.ts</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-10: MdzapConversaList grande (410 linhas)</div>
+      <div class="pend-detail">Inclui lógica de filtros, seleção, bulk actions e renderização. Deveria extrair sub-componentes.</div>
+      <div class="pend-files">MdzapConversaList.tsx</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-11: 14 bugs visuais catalogados na auditoria frontend</div>
+      <div class="pend-detail">VIS-01 a VIS-14 identificados: texto cortado, ícones desalinhados, cores fora do DS, espaçamentos inconsistentes.</div>
+      <div class="pend-files">Ver: mdzap-frontend-audit-2026-04-08.html</div>
+    </div>
+  </div>
+
+  <!-- TRANSVERSAL: BACKEND -->
+  <div class="pend-phase">
+    <h4><span class="badge badge-p1">TRANSVERSAL</span> Backend — Problemas Globais</h4>
+
+    <div class="pend-item p0">
+      <div class="pend-title">P0-17: z_api_token sem encrypt-at-rest</div>
+      <div class="pend-detail"><code>whatsapp_numeros.z_api_token</code> armazenado como TEXT plano. Deveria usar <code>pgsodium</code> ou vault para encrypt-at-rest.</div>
+      <div class="pend-files">Schema: whatsapp_numeros.z_api_token</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-19: leads tem 67 colunas — schema bloated</div>
+      <div class="pend-detail">Tabela leads acumulou campos de CRM, MdZap, endereço, IA, WhatsApp. Considerar extrair grupos para tabelas auxiliares.</div>
+      <div class="pend-files">Schema: leads</div>
+    </div>
+
+    <div class="pend-item p1">
+      <div class="pend-title">P1-20: Campos duplicados wa_* vs mdzap_* em leads</div>
+      <div class="pend-detail"><code>wa_status</code> vs <code>status_lead</code>, <code>wa_last_message_at</code> vs <code>mdzap_last_activity</code> — ambiguidade entre campos legados e novos.</div>
+      <div class="pend-files">Schema: leads</div>
+    </div>
+
+    <div class="pend-item p2">
+      <div class="pend-title">P2-12: Sem índice em leads.cpf</div>
+      <div class="pend-detail">Auditoria bureau faz lookup por CPF mas não há índice dedicado. Com crescimento, queries ficam lentas.</div>
+      <div class="pend-files">Schema: leads — CREATE INDEX ON leads(cpf) WHERE cpf IS NOT NULL</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ROADMAP PROJETO ==================== -->
+<section id="roadmap">
+  <h2>13. Roadmap — Resolução por Sprints</h2>
+
+  <div class="card">
+    <h3>Sprint 1 — Segurança & Críticos (P0)</h3>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Objetivo: eliminar todos P0 de segurança e funcionalidades quebradas. Estimativa: 8-12 tarefas.</p>
+    <table>
+      <tr><th>#</th><th>Pendência</th><th>Prioridade</th><th>Esforço</th></tr>
+      <tr><td>1</td><td>P0-09: Remover service_role hardcoded de todos n8n nodes</td><td><span class="badge badge-p0">P0</span></td><td>Médio</td></tr>
+      <tr><td>2</td><td>P0-01: Remover service_role hardcoded da Edge Function</td><td><span class="badge badge-p0">P0</span></td><td>Baixo</td></tr>
+      <tr><td>3</td><td>P0-17: Encrypt z_api_token com pgsodium</td><td><span class="badge badge-p0">P0</span></td><td>Médio</td></tr>
+      <tr><td>4</td><td>P0-11: Adicionar auth header no julia-prompt-save</td><td><span class="badge badge-p0">P0</span></td><td>Baixo</td></tr>
+      <tr><td>5</td><td>P0-06: Criar workflow assumir-conversa no n8n</td><td><span class="badge badge-p0">P0</span></td><td>Médio</td></tr>
+      <tr><td>6</td><td>P0-07: Resolver conflito devolver-julia (manter 1 WF)</td><td><span class="badge badge-p0">P0</span></td><td>Baixo</td></tr>
+      <tr><td>7</td><td>P0-08: Unificar assumir/devolver em 1 hook (eliminar duplicação)</td><td><span class="badge badge-p0">P0</span></td><td>Médio</td></tr>
+      <tr><td>8</td><td>P0-13: Padronizar envelope canônico em todos WFs ativos</td><td><span class="badge badge-p0">P0</span></td><td>Alto</td></tr>
+      <tr><td>9</td><td>P0-02: Adicionar retry com DLQ no fire-and-forget do orquestrador</td><td><span class="badge badge-p0">P0</span></td><td>Médio</td></tr>
+      <tr><td>10</td><td>P0-15: Adicionar registro webhook_requests em WFs faltantes</td><td><span class="badge badge-p0">P0</span></td><td>Médio</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Sprint 2 — Funcionalidades Faltantes (P0 features + P1)</h3>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Objetivo: implementar features spec'd mas não feitas + corrigir P1 importantes.</p>
+    <table>
+      <tr><th>#</th><th>Pendência</th><th>Prioridade</th><th>Esforço</th></tr>
+      <tr><td>1</td><td>P0-04: Implementar Doc Reader agent (n8n + frontend)</td><td><span class="badge badge-p0">P0</span></td><td>Alto</td></tr>
+      <tr><td>2</td><td>P0-10: Implementar envio de áudio real via Meta API</td><td><span class="badge badge-p0">P0</span></td><td>Médio</td></tr>
+      <tr><td>3</td><td>P0-05: Implementar Google Drive folder sync ou remover campo</td><td><span class="badge badge-p0">P0</span></td><td>Alto/Remover</td></tr>
+      <tr><td>4</td><td>P0-12: Cleanup 21 workflows inativos no n8n</td><td><span class="badge badge-p0">P0</span></td><td>Baixo</td></tr>
+      <tr><td>5</td><td>P0-14: Adicionar sticky notes em todos WFs ativos</td><td><span class="badge badge-p0">P0</span></td><td>Médio</td></tr>
+      <tr><td>6</td><td>P1-01: Rate-limiting na Edge Function</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>7</td><td>P1-05: Integrar Doc Reader com LeadDadosFields</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>8</td><td>P1-07: Progress indicator na auditoria bureau</td><td><span class="badge badge-p1">P1</span></td><td>Baixo</td></tr>
+      <tr><td>9</td><td>P1-17: Fix FOLLOWUP-ZAPSIGN IF node bug</td><td><span class="badge badge-p1">P1</span></td><td>Baixo</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Sprint 3 — UX & Frontend Polish (P1)</h3>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Objetivo: melhorar experiência do operador e responsividade.</p>
+    <table>
+      <tr><th>#</th><th>Pendência</th><th>Prioridade</th><th>Esforço</th></tr>
+      <tr><td>1</td><td>P0-16: Redesign navegação/tabs com hierarquia clara</td><td><span class="badge badge-p0">P0</span></td><td>Alto</td></tr>
+      <tr><td>2</td><td>P1-03: Responsividade mobile (breakpoints, touch targets)</td><td><span class="badge badge-p1">P1</span></td><td>Alto</td></tr>
+      <tr><td>3</td><td>P1-09: Melhorar LeadRestricoesMdzapTab com mais campos</td><td><span class="badge badge-p1">P1</span></td><td>Baixo</td></tr>
+      <tr><td>4</td><td>P1-11: Indicador visual de responsável no thread header</td><td><span class="badge badge-p1">P1</span></td><td>Baixo</td></tr>
+      <tr><td>5</td><td>P1-14: Timeline event ao mover coluna CRM</td><td><span class="badge badge-p1">P1</span></td><td>Baixo</td></tr>
+      <tr><td>6</td><td>P1-15: Progress indicator em bulk actions</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>7</td><td>P1-18: Flow guiado no Lead Panel</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>8</td><td>P2-11: Corrigir 14 bugs visuais (VIS-01 a VIS-14)</td><td><span class="badge badge-p2">P2</span></td><td>Médio</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Sprint 4 — Backend & Tech Debt (P1/P2)</h3>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Objetivo: limpar tech debt, otimizar schema, padronizar código.</p>
+    <table>
+      <tr><th>#</th><th>Pendência</th><th>Prioridade</th><th>Esforço</th></tr>
+      <tr><td>1</td><td>P1-02: Remover campos Z-API residuais das tabelas</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>2</td><td>P1-04: Desabilitar polling quando Realtime ativo</td><td><span class="badge badge-p1">P1</span></td><td>Baixo</td></tr>
+      <tr><td>3</td><td>P1-06: Validação CPF frontend (dígitos verificadores)</td><td><span class="badge badge-p1">P1</span></td><td>Baixo</td></tr>
+      <tr><td>4</td><td>P1-12: Rollback de optimistic update em falha mídia</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>5</td><td>P1-13: Smart Replies com contexto de memória</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>6</td><td>P1-16: Validação completa na conversão lead→cliente</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>7</td><td>P1-19: Considerar normalizar leads (67 cols → tabelas aux)</td><td><span class="badge badge-p1">P1</span></td><td>Alto</td></tr>
+      <tr><td>8</td><td>P1-20: Resolver ambiguidade wa_* vs mdzap_* em leads</td><td><span class="badge badge-p1">P1</span></td><td>Médio</td></tr>
+      <tr><td>9</td><td>P2-03: ai_report TEXT → JSONB</td><td><span class="badge badge-p2">P2</span></td><td>Baixo</td></tr>
+      <tr><td>10</td><td>P2-05/06: Split MdzapMsgBubble e MdzapJuliaLab</td><td><span class="badge badge-p2">P2</span></td><td>Médio</td></tr>
+      <tr><td>11</td><td>P2-08: Padronizar query key namespace</td><td><span class="badge badge-p2">P2</span></td><td>Baixo</td></tr>
+      <tr><td>12</td><td>P2-09/10: Split useLeadPanelActions e MdzapConversaList</td><td><span class="badge badge-p2">P2</span></td><td>Médio</td></tr>
+      <tr><td>13</td><td>P2-12: Criar índice em leads.cpf</td><td><span class="badge badge-p2">P2</span></td><td>Baixo</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<section style="border-top: 1px solid var(--border); padding-top: 2rem; margin-top: 2rem;">
+  <div style="text-align: center; color: var(--text-muted); font-size: 0.82rem;">
+    <p><strong>MdZap — Fluxograma Completo & Mapeamento Definitivo</strong></p>
+    <p>Gerado em 2026-04-08 | Auditorias: Backend 5.2 · Code 4.8 · n8n 3.5 · Frontend 6.2 · Consolidada 4.9/10</p>
+    <p>Fontes: 4 auditorias HTML + schema Supabase prod + 75 arquivos frontend + 38 workflows n8n</p>
+    <p style="margin-top: 0.5rem;">MdFlow — MDX LegalTech | Claude Code Agent</p>
+  </div>
+</section>
+
+</div>
+</body>
+</html>
