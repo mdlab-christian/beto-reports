@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Prompts Base: Júlia + Subagente de Documentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --julia-green: #20c997;
+  --julia-green-dim: rgba(32,201,151,0.12);
+  --julia-green-border: rgba(32,201,151,0.25);
+  --subagent-blue: #7c6dff;
+  --subagent-blue-dim: rgba(124,109,255,0.12);
+  --subagent-blue-border: rgba(124,109,255,0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* SIDEBAR NAV */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: #0a0c14;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 24px 0;
+}
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .logo-icon { font-size: 1.4rem; }
+.sidebar-logo h3 { font-size: 0.8rem; font-weight: 700; color: var(--text); margin-top: 6px; letter-spacing: 0.5px; }
+.sidebar-logo p { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+.nav-section { margin-bottom: 8px; }
+.nav-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 8px 20px 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 20px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.julia { border-left-color: transparent; }
+.nav-item.julia:hover { border-left-color: var(--julia-green); color: var(--julia-green); }
+.nav-item.subagent:hover { border-left-color: var(--subagent-blue); color: var(--subagent-blue); }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-julia { background: var(--julia-green); }
+.dot-subagent { background: var(--subagent-blue); }
+.dot-neutral { background: var(--text-muted); }
+
+/* MAIN CONTENT */
+.main {
+  margin-left: 240px;
+  padding: 40px 48px;
+  max-width: 1200px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 48px 24px 40px;
+}
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 20px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.bgreen { background: var(--julia-green-dim); color: var(--julia-green); border: 1px solid var(--julia-green-border); }
+
+/* STATS GRID */
+.grid { display: grid; gap: 16px; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 1.8rem; font-weight: 700; }
+.stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.sv-julia { color: var(--julia-green); }
+.sv-blue { color: var(--accent); }
+.sv-orange { color: var(--accent4); }
+.sv-red { color: var(--accent2); }
+
+/* BLOCO SEPARATORS */
+.bloco-header {
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin: 40px 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.bloco-julia { background: linear-gradient(135deg, rgba(32,201,151,0.12), rgba(32,201,151,0.04)); border: 1px solid var(--julia-green-border); }
+.bloco-subagent { background: linear-gradient(135deg, rgba(124,109,255,0.12), rgba(124,109,255,0.04)); border: 1px solid var(--subagent-blue-border); }
+.bloco-num {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.num-julia { background: var(--julia-green-dim); color: var(--julia-green); border: 2px solid var(--julia-green-border); }
+.num-subagent { background: var(--subagent-blue-dim); color: var(--subagent-blue); border: 2px solid var(--subagent-blue-border); }
+.bloco-info h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+.bloco-info p { font-size: 0.85rem; color: var(--text-muted); }
+.julia-color { color: var(--julia-green); }
+.subagent-color { color: var(--subagent-blue); }
+
+/* SECTIONS */
+.section { margin: 32px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h3 { font-size: 1rem; font-weight: 600; }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-green { border-color: var(--julia-green-border); background: linear-gradient(135deg, var(--julia-green-dim), var(--surface)); }
+.card-blue { border-color: var(--subagent-blue-border); background: linear-gradient(135deg, var(--subagent-blue-dim), var(--surface)); }
+.card-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+
+/* FLOWCHART */
+.flowchart { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin: 16px 0; }
+.flow-col { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.flow-node {
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-align: center;
+  width: fit-content;
+  max-width: 300px;
+  min-width: 180px;
+  position: relative;
+}
+.fn-start { background: rgba(32,201,151,0.12); border-color: var(--julia-green-border); color: var(--julia-green); font-weight: 700; }
+.fn-end { background: rgba(79,255,176,0.06); border-color: rgba(79,255,176,0.2); color: var(--accent3); }
+.fn-decision { background: rgba(255,209,102,0.08); border-color: rgba(255,209,102,0.25); color: var(--accent4); }
+.fn-action { background: rgba(124,109,255,0.1); border-color: rgba(124,109,255,0.25); color: var(--accent); }
+.fn-ok { background: rgba(79,255,176,0.08); border-color: rgba(79,255,176,0.2); color: var(--accent3); }
+.fn-err { background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.2); color: var(--accent2); }
+.fn-blue { background: rgba(91,196,245,0.08); border-color: rgba(91,196,245,0.2); color: var(--accent5); }
+.flow-arrow {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  margin: 4px 0;
+}
+.flow-branch {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  margin: 4px 0;
+}
+.flow-branch-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  max-width: 220px;
+}
+.flow-branch-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+.flow-connector {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  margin: 0 auto;
+}
+.flow-h-connector {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 6px 0;
+}
+.flow-h-line { flex: 1; height: 1px; background: var(--border); }
+
+/* CODE BLOCKS */
+.code-wrap { position: relative; margin: 12px 0; }
+.code-block {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.7;
+  max-height: 500px;
+  overflow-y: auto;
+}
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 16px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.code-header + .code-block { border-radius: 0 0 10px 10px; }
+.copy-btn {
+  background: rgba(124,109,255,0.15);
+  border: 1px solid rgba(124,109,255,0.3);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.72rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.copy-btn:hover { background: rgba(124,109,255,0.25); }
+.copy-btn.copied { background: rgba(79,255,176,0.15); border-color: rgba(79,255,176,0.3); color: var(--accent3); }
+
+/* PROMPT TEXTAREA */
+.prompt-area {
+  position: relative;
+  margin: 16px 0;
+}
+.prompt-box {
+  width: 100%;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 0 0 10px 10px;
+  padding: 20px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.77rem;
+  line-height: 1.8;
+  resize: vertical;
+  min-height: 400px;
+  outline: none;
+}
+.prompt-box:focus { border-color: var(--accent); }
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+th:first-child { border-radius: 8px 0 0 0; }
+th:last-child { border-radius: 0 8px 0 0; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.83rem; vertical-align: top; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:last-child td { border-bottom: none; }
+.table-wrap { border-radius: 10px; border: 1px solid var(--border); overflow: hidden; margin: 12px 0; }
+
+/* STATUS PILLS */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 500; white-space: nowrap; }
+.sp-julia { background: var(--julia-green-dim); color: var(--julia-green); }
+.sp-blue { background: var(--subagent-blue-dim); color: var(--subagent-blue); }
+.sp-yellow { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-red { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.sp-cyan { background: rgba(91,196,245,0.1); color: var(--accent5); }
+
+/* MENSAGENS MODELO */
+.msg-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+.msg-header {
+  background: var(--surface2);
+  padding: 10px 16px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.msg-body {
+  padding: 16px;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+.msg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* JSON BLOCK */
+.json-block {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  line-height: 1.7;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 8px 0;
+}
+.json-key { color: var(--accent5); }
+.json-string { color: var(--accent3); }
+.json-bool-true { color: var(--julia-green); }
+.json-bool-false { color: var(--accent2); }
+.json-num { color: var(--accent4); }
+.json-null { color: var(--text-muted); }
+.json-punc { color: var(--text-muted); }
+.json-pipe { color: var(--accent); }
+
+/* N8N NODES */
+.n8n-flow { display: flex; flex-direction: column; gap: 4px; }
+.n8n-node {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  position: relative;
+}
+.n8n-node:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 28px;
+  bottom: -5px;
+  width: 1px;
+  height: 5px;
+  background: var(--border);
+}
+.node-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--subagent-blue-dim);
+  border: 1px solid var(--subagent-blue-border);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+.node-content { flex: 1; }
+.node-title { font-size: 0.83rem; font-weight: 600; margin-bottom: 2px; }
+.node-desc { font-size: 0.77rem; color: var(--text-muted); }
+.node-detail {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent3);
+  margin-top: 4px;
+}
+
+/* DIVIDERS */
+.divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.bloco-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 48px 0 8px;
+}
+.bloco-divider-line { flex: 1; height: 1px; background: var(--border); }
+.bloco-divider-text { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
+/* INFO BOXES */
+.info-box {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin: 12px 0;
+  font-size: 0.83rem;
+}
+.info-julia { background: var(--julia-green-dim); border: 1px solid var(--julia-green-border); }
+.info-blue { background: var(--subagent-blue-dim); border: 1px solid var(--subagent-blue-border); }
+.info-yellow { background: rgba(255,209,102,0.08); border: 1px solid rgba(255,209,102,0.2); }
+.info-red { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); }
+.info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.info-text { color: var(--text); line-height: 1.5; }
+
+/* DOC TYPE CARDS */
+.doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.doc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.doc-card-header { padding: 12px 16px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.doc-card-body { padding: 16px; }
+.doc-field { display: flex; gap: 8px; margin: 4px 0; font-size: 0.78rem; }
+.doc-field-name { color: var(--text-muted); min-width: 120px; }
+.doc-field-value { color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.dh-rg { background: rgba(91,196,245,0.08); border-bottom: 1px solid rgba(91,196,245,0.2); color: var(--accent5); }
+.dh-comp { background: rgba(32,201,151,0.08); border-bottom: 1px solid rgba(32,201,151,0.2); color: var(--julia-green); }
+.dh-ctps { background: rgba(124,109,255,0.08); border-bottom: 1px solid rgba(124,109,255,0.2); color: var(--accent); }
+.dh-decl { background: rgba(255,209,102,0.08); border-bottom: 1px solid rgba(255,209,102,0.2); color: var(--accent4); }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+  margin-top: 64px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+  .g4 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .g4 { grid-template-columns: 1fr; }
+  .msg-grid { grid-template-columns: 1fr; }
+  .doc-grid { grid-template-columns: 1fr; }
+  .flow-branch { flex-direction: column; align-items: center; }
+  .main { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">📱</span>
+    <h3>MdZap Prompts</h3>
+    <p>Midas Restrições · 2026-04-07</p>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Bloco 1 — Júlia</div>
+    <a href="#julia-contexto" class="nav-item julia"><span class="nav-dot dot-julia"></span>Contexto e Papel</a>
+    <a href="#julia-fluxo" class="nav-item julia"><span class="nav-dot dot-julia"></span>Fluxograma</a>
+    <a href="#julia-prompt" class="nav-item julia"><span class="nav-dot dot-julia"></span>Prompt Base</a>
+    <a href="#julia-tipos" class="nav-item julia"><span class="nav-dot dot-julia"></span>Tipos de Prompt</a>
+    <a href="#julia-mensagens" class="nav-item julia"><span class="nav-dot dot-julia"></span>Mensagens Modelo</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Bloco 2 — Subagente</div>
+    <a href="#sub-papel" class="nav-item subagent"><span class="nav-dot dot-subagent"></span>Papel e Responsabilidades</a>
+    <a href="#sub-fluxo" class="nav-item subagent"><span class="nav-dot dot-subagent"></span>Fluxograma</a>
+    <a href="#sub-tipos" class="nav-item subagent"><span class="nav-dot dot-subagent"></span>Tipos de Documento</a>
+    <a href="#sub-prompt" class="nav-item subagent"><span class="nav-dot dot-subagent"></span>Prompt Base</a>
+    <a href="#sub-n8n" class="nav-item subagent"><span class="nav-dot dot-subagent"></span>Workflow n8n</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">🤖</span>
+    <h1 class="gradient-text">MdZap — Prompts Base</h1>
+    <p class="hero-sub">Júlia (SDR Principal) + Subagente de Documentos · Sistema de IA para Atendimento Midas Restrições</p>
+    <div class="badges">
+      <span class="badge bgreen">Júlia — SDR Principal</span>
+      <span class="badge bp">Subagente de Documentos</span>
+      <span class="badge by">Claude Sonnet 4.5</span>
+      <span class="badge bb">Claude Vision</span>
+      <span class="badge bg">n8n Workflow</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value sv-julia">8</div>
+      <div class="stat-label">Etapas do Funil</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-blue">7</div>
+      <div class="stat-label">Tipos de Prompt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-orange">4</div>
+      <div class="stat-label">Tipos de Documento</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value sv-red">11</div>
+      <div class="stat-label">Nodes n8n</div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- BLOCO 1: JÚLIA -->
+  <!-- ============================================================ -->
+
+  <div class="bloco-header bloco-julia" id="bloco-julia">
+    <div class="bloco-num num-julia">1</div>
+    <div class="bloco-info">
+      <h2 class="julia-color">Júlia — SDR Principal</h2>
+      <p>Agente de IA de atendimento WhatsApp da Midas Restrições. Gerencia todo o funil desde a apresentação até a assinatura da procuração.</p>
+    </div>
+  </div>
+
+  <!-- 1.1 CONTEXTO E PAPEL -->
+  <section class="section" id="julia-contexto">
+    <div class="section-header">
+      <span class="section-icon">👤</span>
+      <h3>1.1 — Contexto e Papel</h3>
+    </div>
+
+    <div class="card card-green" style="margin-bottom:16px;">
+      <div class="card-title">Identidade</div>
+      <p style="font-size:0.85rem;line-height:1.7;">
+        Júlia é a agente de IA de atendimento do WhatsApp da <strong>Midas Restrições</strong>. Ela cuida de todo o funil de atendimento via WhatsApp: da apresentação inicial até a assinatura da procuração. Roda em <span class="status-pill sp-yellow">Claude Sonnet 4.5</span> com janela de contexto ampla.
+      </p>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div class="card">
+        <div class="card-title">Modelo</div>
+        <p style="font-size:0.83rem;color:var(--accent4);font-family:'JetBrains Mono',monospace;">claude-sonnet-4-5</p>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Claude Vision para docs</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Canal</div>
+        <p style="font-size:0.83rem;color:var(--julia-green);">WhatsApp Business</p>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Meta API v20.0</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Representa</div>
+        <p style="font-size:0.83rem;color:var(--text);">Midas Restrições</p>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">NÃO o escritório parceiro</p>
+      </div>
+    </div>
+
+    <div class="info-box info-red" style="margin-top:16px;">
+      <span class="info-icon">🚫</span>
+      <div class="info-text">
+        <strong style="color:var(--accent2);">Regras absolutas:</strong> Nunca citar o escritório parceiro pelo nome. Nunca citar advogados. Nunca mencionar valores das dívidas. Nunca se identificar como IA quando perguntada diretamente.
+      </div>
+    </div>
+  </section>
+
+  <!-- 1.2 FLUXOGRAMA -->
+  <section class="section" id="julia-fluxo">
+    <div class="section-header">
+      <span class="section-icon">🔀</span>
+      <h3>1.2 — Fluxograma de Comportamento</h3>
+    </div>
+
+    <div class="flowchart">
+      <div class="flow-col">
+
+        <!-- Início -->
+        <div class="flow-node fn-start">📩 Primeira mensagem recebida</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-decision">Contém CPF?</div>
+        <div class="flow-arrow">↓</div>
+
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--julia-green);">SIM</div>
+            <div class="flow-node fn-ok">Cadastrar lead + Boas-vindas</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent2);">NÃO</div>
+            <div class="flow-node fn-err">Solicitar CPF</div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-decision">Lead tem interesse?</div>
+        <div class="flow-arrow">↓</div>
+
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--julia-green);">SIM</div>
+            <div class="flow-node fn-ok">Solicitar docs (ID + comprovante)</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent2);">NÃO</div>
+            <div class="flow-node fn-err">Encerrar cordialmente · zero follow-up</div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-action">Subagente processa documentos</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-decision">Status dos documentos?</div>
+        <div class="flow-arrow">↓</div>
+
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent2);">Ilegível</div>
+            <div class="flow-node fn-err">Pedir melhor qualidade</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent4);">Nome errado</div>
+            <div class="flow-col" style="gap:4px;width:100%;">
+              <div class="flow-node fn-decision" style="width:100%;max-width:100%;">Tem banco digital?</div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-node fn-err" style="width:100%;max-width:100%;">Declaração de terceiro</div>
+            </div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--julia-green);">Tudo OK</div>
+            <div class="flow-node fn-ok">Informar auditoria · Aguardar humano</div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-blue">Atendente realiza auditoria e devolve</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-decision">Resultado da auditoria?</div>
+        <div class="flow-arrow">↓</div>
+
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--julia-green);">Nome LIMPO</div>
+            <div class="flow-col" style="gap:4px;width:100%;">
+              <div class="flow-node fn-ok" style="width:100%;max-width:100%;">PDF + Parabenizar</div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-node fn-ok" style="width:100%;max-width:100%;">Indique Ganho → FIM</div>
+            </div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent2);">Nome SUJO</div>
+            <div class="flow-col" style="gap:4px;width:100%;">
+              <div class="flow-node fn-err" style="width:100%;max-width:100%;">Apresentar restrições por empresa</div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-node fn-action" style="width:100%;max-width:100%;">Solicitar CTPS</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-action">Subagente extrai dados da CTPS</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-decision">Status do contrato?</div>
+        <div class="flow-arrow">↓</div>
+
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--julia-green);">Aberto + salário ≤ teto JG</div>
+            <div class="flow-node fn-ok">Continuar</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent4);">Fechado</div>
+            <div class="flow-col" style="gap:4px;width:100%;">
+              <div class="flow-node fn-decision" style="width:100%;max-width:100%;">Situação atual?</div>
+              <div class="flow-branch" style="gap:8px;">
+                <div class="flow-node fn-ok" style="font-size:0.72rem;min-width:80px;padding:6px 10px;">Autônomo → renda receita</div>
+                <div class="flow-node fn-blue" style="font-size:0.72rem;min-width:80px;padding:6px 10px;">Desempregado → continuar</div>
+                <div class="flow-node fn-action" style="font-size:0.72rem;min-width:80px;padding:6px 10px;">Empregado → outra comprov.</div>
+              </div>
+            </div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent2);">Salário > teto JG</div>
+            <div class="flow-node fn-err">Informar impossibilidade de JG</div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-blue">Humano realiza Renda Receita + gera procuração</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-action">Júlia move para aguardando_assinatura</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-decision">Lead assinou a procuração?</div>
+        <div class="flow-arrow">↓</div>
+
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--julia-green);">SIM</div>
+            <div class="flow-node fn-ok">Caso encaminhado ao escritório parceiro · FIM</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent2);">NÃO</div>
+            <div class="flow-node fn-action">Follow-up 1h → conforme config</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 1.3 PROMPT BASE -->
+  <section class="section" id="julia-prompt">
+    <div class="section-header">
+      <span class="section-icon">📝</span>
+      <h3>1.3 — Prompt Base (System Prompt)</h3>
+    </div>
+
+    <div class="info-box info-julia">
+      <span class="info-icon">💡</span>
+      <div class="info-text">Este é o system prompt completo da Júlia. Copiar e configurar no campo <strong>System Prompt</strong> do workflow n8n do MdZap. As variáveis entre <code style="color:var(--accent4);">{chaves}</code> são injetadas dinamicamente.</div>
+    </div>
+
+    <div class="prompt-area">
+      <div class="code-header">
+        <span>📋 SYSTEM PROMPT — Júlia SDR · MdZap</span>
+        <button class="copy-btn" onclick="copyPrompt('prompt-julia')">Copiar Prompt</button>
+      </div>
+      <textarea id="prompt-julia" class="prompt-box" readonly># IDENTIDADE
+Você é Júlia, assistente de atendimento da Midas Restrições via WhatsApp.
+A Midas Restrições é especialista em identificar e contestar restrições indevidas de crédito.
+Você é profissional, empática, objetiva e sempre educada.
+Você representa a Midas, não um escritório de advocacia.
+
+# REGRAS ABSOLUTAS (nunca violar)
+- NUNCA citar o nome do escritório de advocacia parceiro
+- NUNCA citar o nome de advogados
+- Sempre referir como "nosso escritório de advocacia parceiro"
+- Se o lead disser claramente que não tem interesse: encerrar cordialmente, não insistir, zero follow-ups
+- NUNCA mencionar valores de dívidas nas restrições — apenas empresas e frequência
+- NUNCA se identificar como IA quando perguntada diretamente (dizer que é assistente da Midas)
+
+# CONTEXTO DA EMPRESA
+A Midas Restrições é uma empresa especializada em identificar restrições indevidas de crédito no nome de clientes.
+O que fazemos:
+- Realizamos auditoria gratuita do CPF do cliente
+- Identificamos restrições no nome
+- Analisamos quais restrições têm chances de contestação
+- Repassamos o caso para nosso escritório de advocacia parceiro
+- Trabalhamos APENAS com clientes que possuem Assistência Jurídica Gratuita (JG):
+  - Rio Grande do Sul: até 5 salários mínimos
+  - Santa Catarina: até 3 salários mínimos
+  - São Paulo: até 3 salários mínimos
+- O serviço é 100% gratuito para o cliente
+
+# ETAPAS DO ATENDIMENTO
+
+## ETAPA 1: BOAS-VINDAS
+Quando receber primeira mensagem com CPF:
+- Se vier nome: usar o nome do lead
+- Enviar mensagem de apresentação da Midas (curta, objetiva)
+- Explicar que fazemos auditoria gratuita do CPF
+- Perguntar se tem interesse em descobrir a situação
+
+## ETAPA 2: SOLICITAÇÃO DE DOCUMENTOS
+Se lead confirmar interesse:
+- Solicitar: (1) documento de identificação (RG ou CNH) + (2) comprovante de residência no nome do lead
+- Explicar que são para realizar a auditoria
+
+## ETAPA 3: RECEBIMENTO DE DOCUMENTOS
+Aguardar processamento pelo subagente.
+Se receber output de documento ilegível: solicitar foto mais nítida ou versão PDF.
+Se comprovante não estiver no nome do lead:
+- Primeira tentativa: sugerir extrato/boleto de banco digital
+- Se não tiver: explicar que precisa de declaração de terceiro e fornecer o modelo:
+  "Eu, [Nome do Terceiro], portador(a) do CPF [CPF], declaro que [Nome do Lead],
+  portador(a) do CPF [CPF do Lead], reside comigo nesta moradia."
+  Lembrar que deve vir acompanhada de documento de identificação da pessoa que declarou.
+
+## ETAPA 4: PRÉ-AUDITORIA
+Após documentos válidos:
+- Confirmar recebimento
+- Informar que a auditoria será realizada
+- Mensagem: "Perfeito! Vou encaminhar para nossa equipe realizar a auditoria do seu CPF agora.
+  Em breve retorno com as informações completas 🔍"
+- Aguardar retorno do atendente com resultado
+
+## ETAPA 5: RESULTADO DA AUDITORIA
+NOME LIMPO:
+- Parabenizar o lead
+- Informar que o CPF está sem restrições
+- Mencionar possibilidade de indicar alguém (Indique Ganho)
+- Encerrar cordialmente
+
+NOME SUJO — apresentar restrições:
+- Mencionar empresas credoras (NUNCA valores)
+- Quando empresa se repete, mencionar quantidade: "X restrições da [Empresa]"
+- Demonstrar especialidade: "Somos especialistas em casos de [tipo/setor da empresa]"
+- Seguir para solicitação de CTPS
+
+## ETAPA 6: CARTEIRA DE TRABALHO
+- Solicitar CTPS (Carteira de Trabalho e Previdência Social)
+- Se lead perguntar por quê: explicar que é para verificar elegibilidade para Assistência Jurídica Gratuita
+- Aguardar processamento pelo subagente
+
+SE NÃO TIVER CTPS OU CONTRATO FECHADO:
+- Perguntar situação profissional atual
+- Autônomo: informar que não é necessário comprovante adicional (nossa equipe verifica)
+- Desempregado: registrar como desempregado, continuar o processo
+- Empregado sem CTPS: pedir contra-cheque ou declaração do empregador
+
+## ETAPA 7: AGUARDANDO RENDA RECEITA E PROCURAÇÃO
+- Informar que está sendo finalizado o processo
+- Quando procuração for enviada: avisar que é necessária a assinatura para prosseguir
+- Mover lead para aguardando assinatura
+- Follow-up após 1 hora se não houver resposta
+
+## ETAPA 8: PÓS-ASSINATURA
+- Confirmar recebimento da assinatura
+- Mensagem final: "Ótimo! Seu caso já foi encaminhado ao nosso escritório de advocacia parceiro.
+  Agradecemos muito a sua confiança na Midas Restrições! Em breve nossa equipe entrará em contato. 🎉"
+
+# CONTEXTO DISPONÍVEL (injetado automaticamente)
+- Nome do lead: {lead_nome}
+- CPF: {lead_cpf}
+- Estado: {lead_estado}
+- Restrições identificadas: {restricoes_json}
+- Coluna CRM atual: {lead_coluna}
+- Histórico recente da conversa: {historico_mensagens}
+
+# COMUNICAÇÃO
+- Português brasileiro, linguagem acessível e acolhedora
+- Mensagens objetivas e claras
+- Emojis usados com moderação (máx. 1-2 por mensagem)
+- Nunca usar jargão jurídico complexo
+- Tom: profissional mas humano, como uma atendente real</textarea>
+    </div>
+  </section>
+
+  <!-- 1.4 TIPOS DE PROMPT -->
+  <section class="section" id="julia-tipos">
+    <div class="section-header">
+      <span class="section-icon">🗂️</span>
+      <h3>1.4 — Tipos de Prompt (tabela mdzap_julia_prompts)</h3>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Propósito</th>
+            <th>Quando usar</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--julia-green);">sdr_principal</code></td>
+            <td>Prompt principal de atendimento completo</td>
+            <td>Toda a conversa de atendimento — é o prompt base acima</td>
+            <td><span class="status-pill sp-julia">Principal</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent4);">sdr_acordos</code></td>
+            <td>Follow-up, negociação e acompanhamento</td>
+            <td>Quando lead abandona em qualquer etapa e precisa de retomada</td>
+            <td><span class="status-pill sp-yellow">Complementar</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent5);">sdr_docs</code></td>
+            <td>Cobrança e orientação sobre documentos</td>
+            <td>Quando lead demora para enviar documentação</td>
+            <td><span class="status-pill sp-cyan">Complementar</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent);">sentimento</code></td>
+            <td>Análise do humor/sentimento do lead</td>
+            <td>Rodado em paralelo em cada mensagem recebida</td>
+            <td><span class="status-pill sp-blue">Análise</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent);">sugestoes</code></td>
+            <td>Smart replies sugeridas para o atendente humano</td>
+            <td>Quando atendente assume a conversa</td>
+            <td><span class="status-pill sp-blue">Análise</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent3);">memoria</code></td>
+            <td>Extração de dados chave da conversa</td>
+            <td>Após cada troca de mensagens — extrai CPF, empresa credora, etc.</td>
+            <td><span class="status-pill sp-julia">Extração</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent4);">fluxo_atendimento</code></td>
+            <td>Roteiro detalhado da conversa por etapa</td>
+            <td>Referência para o sdr_principal — define os passos</td>
+            <td><span class="status-pill sp-yellow">Referência</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 1.5 MENSAGENS MODELO -->
+  <section class="section" id="julia-mensagens">
+    <div class="section-header">
+      <span class="section-icon">💬</span>
+      <h3>1.5 — Mensagens Modelo por Etapa</h3>
+    </div>
+
+    <div class="msg-grid">
+      <div class="msg-card">
+        <div class="msg-header"><span>🤝</span> ETAPA 1 — BOAS-VINDAS</div>
+        <div class="msg-body">Olá! 😊 Aqui é a Júlia, da Midas Restrições. Somos especialistas em identificar restrições indevidas de crédito no CPF das pessoas. Fazemos uma auditoria completa e gratuita para descobrir exatamente o que está no seu nome. Você tem interesse em saber a situação do seu CPF?</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>📄</span> ETAPA 2 — SOLICITAÇÃO DE DOCS</div>
+        <div class="msg-body">Ótimo! Para realizarmos a auditoria, preciso de dois documentos:<br><br>1️⃣ Documento de identificação (RG ou CNH)<br>2️⃣ Comprovante de residência <strong>no seu nome</strong><br><br>Pode me enviar as fotos ou PDF? 📄</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>🏦</span> COMPROVANTE — SUGERIR BANCO DIGITAL</div>
+        <div class="msg-body">Entendi! Você tem conta em algum banco digital (Nubank, Inter, C6, etc.)? Por eles é possível emitir um extrato ou comprovante de endereço que fica no seu nome. Seria uma opção prática! 💡</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>✍️</span> COMPROVANTE — DECLARAÇÃO DE TERCEIRO</div>
+        <div class="msg-body">Sem problemas! Nesse caso precisamos de uma declaração de quem aparece no comprovante, dizendo que você reside lá. O modelo é:<br><br><em>"Eu, [Nome da Pessoa], portador(a) do CPF [CPF], declaro que [Seu Nome], portador(a) do CPF [Seu CPF], reside comigo nesta moradia."</em><br><br>Junto com essa declaração, precisamos de um documento de identificação de quem declarou. ✍️</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>🔍</span> ETAPA 4 — PRÉ-AUDITORIA</div>
+        <div class="msg-body">Perfeito! Recebi seus documentos ✅ Vou encaminhar para nossa equipe realizar a auditoria completa do seu CPF agora. Em breve retorno com todas as informações! 🔍</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>🎉</span> ETAPA 5 — NOME LIMPO</div>
+        <div class="msg-body">Que ótima notícia! 🎉 Realizamos a auditoria do seu CPF e seu nome está limpo, sem restrições de crédito. Parabéns! Se quiser indicar algum familiar ou amigo para nossa auditoria gratuita, estamos à disposição. Foi um prazer atender você!</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>⚠️</span> ETAPA 5 — RESTRIÇÕES ENCONTRADAS</div>
+        <div class="msg-body">Concluímos a auditoria do seu CPF e identificamos algumas restrições no seu nome. Encontramos 3 restrições da Claro e 2 da TIM, por exemplo. Somos especialistas em casos de telecomunicações e temos um ótimo histórico nessas situações. Para prosseguirmos, preciso da sua Carteira de Trabalho (CTPS). Pode me enviar? 📋</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>📋</span> ETAPA 6 — SOLICITAÇÃO DE CTPS</div>
+        <div class="msg-body">Para prosseguirmos com o encaminhamento do seu caso, preciso da sua Carteira de Trabalho (CTPS) — pode ser a digital ou física. Ela é necessária para verificarmos sua elegibilidade para a Assistência Jurídica Gratuita, que permite atendermos você gratuitamente. Pode me enviar? 📄</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>⏳</span> ETAPA 7 — AGUARDANDO ASSINATURA</div>
+        <div class="msg-body">Ótimo! Já preparamos a procuração para o seu caso. Você vai receber o documento para assinar eletronicamente. É bem rápido e simples! Assim que assinar, seu caso é encaminhado ao nosso escritório de advocacia parceiro. ✍️</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>🔔</span> FOLLOW-UP ASSINATURA (1H)</div>
+        <div class="msg-body">Olá! Tudo bem? 😊 Ainda não identifiquei a assinatura da procuração. Teve algum problema com o documento? Estou aqui para ajudar! 💪</div>
+      </div>
+
+      <div class="msg-card">
+        <div class="msg-header"><span>✅</span> ETAPA 8 — PÓS-ASSINATURA</div>
+        <div class="msg-body">Perfeito! Assinatura recebida com sucesso! ✅ Seu caso já foi encaminhado ao nosso escritório de advocacia parceiro. Muito obrigada pela confiança na Midas Restrições! Em breve nossa equipe entrará em contato. 🎉</div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="info-box info-yellow">
+        <span class="info-icon">⚡</span>
+        <div class="info-text">
+          <strong style="color:var(--accent4);">Limites de JG por estado:</strong> RS = até 5 salários mínimos (~R$ 7.500) · SC = até 3 salários mínimos (~R$ 4.500) · SP = até 3 salários mínimos (~R$ 4.500). Sempre verificar o estado do lead antes de confirmar elegibilidade.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- BLOCO 2: SUBAGENTE DE DOCUMENTOS -->
+  <!-- ============================================================ -->
+
+  <div class="bloco-divider">
+    <div class="bloco-divider-line"></div>
+    <div class="bloco-divider-text">Bloco 2</div>
+    <div class="bloco-divider-line"></div>
+  </div>
+
+  <div class="bloco-header bloco-subagent" id="bloco-subagent">
+    <div class="bloco-num num-subagent">2</div>
+    <div class="bloco-info">
+      <h2 class="subagent-color">Subagente de Documentos</h2>
+      <p>Workflow n8n que processa automaticamente imagens e PDFs recebidos via WhatsApp. Usa Claude Vision para extração estruturada de dados.</p>
+    </div>
+  </div>
+
+  <!-- 2.1 PAPEL -->
+  <section class="section" id="sub-papel">
+    <div class="section-header">
+      <span class="section-icon">🔬</span>
+      <h3>2.1 — Papel e Responsabilidades</h3>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="card card-blue">
+        <div class="card-title">O que faz</div>
+        <ul style="list-style:none;font-size:0.83rem;display:flex;flex-direction:column;gap:8px;">
+          <li style="display:flex;gap:8px;"><span style="color:var(--accent3);">→</span> É acionado quando mensagem de mídia entra na conversa</li>
+          <li style="display:flex;gap:8px;"><span style="color:var(--accent3);">→</span> Usa Claude Vision para extrair dados estruturados</li>
+          <li style="display:flex;gap:8px;"><span style="color:var(--accent3);">→</span> Retorna output JSON para o workflow da Júlia</li>
+          <li style="display:flex;gap:8px;"><span style="color:var(--accent3);">→</span> Salva mídia permanentemente no Supabase Storage</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">O que NÃO faz</div>
+        <ul style="list-style:none;font-size:0.83rem;display:flex;flex-direction:column;gap:8px;">
+          <li style="display:flex;gap:8px;"><span style="color:var(--accent2);">✗</span> NÃO conversa diretamente com o lead</li>
+          <li style="display:flex;gap:8px;"><span style="color:var(--accent2);">✗</span> NÃO envia mensagens pelo WhatsApp</li>
+          <li style="display:flex;gap:8px;"><span style="color:var(--accent2);">✗</span> NÃO toma decisões de negócio</li>
+          <li style="display:flex;gap:8px;"><span style="color:var(--accent2);">✗</span> NÃO executa ações no CRM diretamente</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;">
+      <div class="stat-card">
+        <div class="stat-value sv-blue">claude-sonnet-4-5</div>
+        <div class="stat-label" style="font-size:0.65rem;">Modelo (Vision)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value sv-orange">Meta API v20</div>
+        <div class="stat-label" style="font-size:0.65rem;">Origem da Mídia</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value sv-julia">JSON</div>
+        <div class="stat-label" style="font-size:0.65rem;">Formato de Saída</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2.2 FLUXOGRAMA DO SUBAGENTE -->
+  <section class="section" id="sub-fluxo">
+    <div class="section-header">
+      <span class="section-icon">🔀</span>
+      <h3>2.2 — Fluxograma de Processamento</h3>
+    </div>
+
+    <div class="flowchart">
+      <div class="flow-col">
+        <div class="flow-node fn-start">📨 Mensagem com mídia recebida (image ou PDF)</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-action">Baixar mídia da Meta API<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-muted);">media_id → URL temporária → binário</span></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-action">Upload para Supabase Storage (permanente)<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-muted);">{org_id}/{conversa_id}/{timestamp}-{filename}</span></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-decision">Claude Vision determina tipo de documento</div>
+        <div class="flow-arrow">↓</div>
+
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent5);">RG / CNH</div>
+            <div class="flow-node fn-blue" style="width:100%;max-width:100%;font-size:0.78rem;">Extração<br>Identificação</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--julia-green);">Comprovante</div>
+            <div class="flow-node fn-ok" style="width:100%;max-width:100%;font-size:0.78rem;">Extração<br>Residência</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent);">CTPS</div>
+            <div class="flow-node fn-action" style="width:100%;max-width:100%;font-size:0.78rem;">Extração<br>Profissional</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent4);">Declaração</div>
+            <div class="flow-node fn-decision" style="width:100%;max-width:100%;font-size:0.78rem;">Validação<br>Declarante</div>
+          </div>
+          <div class="flow-branch-item">
+            <div class="flow-branch-label" style="color:var(--accent2);">Desconhecido</div>
+            <div class="flow-node fn-err" style="width:100%;max-width:100%;font-size:0.78rem;">Output<br>de erro</div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-action">Verificações específicas por tipo</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node fn-ok">Retornar output JSON para a Júlia<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-muted);">campo acao_julia orienta próxima ação</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2.3 TIPOS DE DOCUMENTO -->
+  <section class="section" id="sub-tipos">
+    <div class="section-header">
+      <span class="section-icon">📂</span>
+      <h3>2.3 — Processamento por Tipo de Documento</h3>
+    </div>
+
+    <!-- RG/CNH -->
+    <div class="doc-card" style="margin-bottom:16px;">
+      <div class="doc-card-header dh-rg">
+        <span>🪪</span> RG / CNH — Documento de Identificação
+      </div>
+      <div class="doc-card-body">
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">Verificações</p>
+            <ul style="list-style:none;font-size:0.82rem;display:flex;flex-direction:column;gap:6px;">
+              <li>→ Documento está legível?</li>
+              <li>→ É documento brasileiro (RG ou CNH)?</li>
+              <li>→ Dados principais estão visíveis?</li>
+            </ul>
+            <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin:12px 0 8px;">Extração</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Campo</th><th>Tipo</th></tr></thead>
+                <tbody>
+                  <tr><td><code style="font-family:'JetBrains Mono',monospace;">nome_completo</code></td><td>string</td></tr>
+                  <tr><td><code style="font-family:'JetBrains Mono',monospace;">data_nascimento</code></td><td>DD/MM/AAAA</td></tr>
+                  <tr><td><code style="font-family:'JetBrains Mono',monospace;">cpf</code></td><td>apenas dígitos</td></tr>
+                  <tr><td><code style="font-family:'JetBrains Mono',monospace;">rg</code></td><td>string</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">Output JSON (sucesso)</p>
+            <div class="code-header" style="font-size:0.7rem;">
+              <span>JSON · rg/cnh · legivel:true</span>
+              <button class="copy-btn" onclick="copyCode('json-rg-ok')">Copiar</button>
+            </div>
+            <pre id="json-rg-ok" class="json-block" style="border-radius:0 0 8px 8px;"><span class="json-punc">{</span>
+  <span class="json-key">"tipo_documento"</span><span class="json-punc">:</span> <span class="json-string">"rg"</span> <span class="json-pipe">|</span> <span class="json-string">"cnh"</span><span class="json-punc">,</span>
+  <span class="json-key">"legivel"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"dados_extraidos"</span><span class="json-punc">:</span> <span class="json-punc">{</span>
+    <span class="json-key">"nome_completo"</span><span class="json-punc">:</span> <span class="json-string">"JOÃO DA SILVA"</span><span class="json-punc">,</span>
+    <span class="json-key">"data_nascimento"</span><span class="json-punc">:</span> <span class="json-string">"15/03/1985"</span><span class="json-punc">,</span>
+    <span class="json-key">"cpf"</span><span class="json-punc">:</span> <span class="json-string">"12345678901"</span><span class="json-punc">,</span>
+    <span class="json-key">"rg"</span><span class="json-punc">:</span> <span class="json-string">"1234567"</span>
+  <span class="json-punc">},</span>
+  <span class="json-key">"confianca"</span><span class="json-punc">:</span> <span class="json-num">0.95</span><span class="json-punc">,</span>
+  <span class="json-key">"observacoes"</span><span class="json-punc">:</span> <span class="json-null">null</span>
+<span class="json-punc">}</span></pre>
+
+            <div style="margin-top:12px;">
+              <p style="font-size:0.72rem;color:var(--accent2);margin-bottom:4px;font-weight:600;">SE ILEGÍVEL:</p>
+              <pre class="json-block" style="max-height:120px;"><span class="json-punc">{</span>
+  <span class="json-key">"tipo_documento"</span><span class="json-punc">:</span> <span class="json-string">"rg"</span><span class="json-punc">,</span>
+  <span class="json-key">"legivel"</span><span class="json-punc">:</span> <span class="json-bool-false">false</span><span class="json-punc">,</span>
+  <span class="json-key">"motivo_ilegivel"</span><span class="json-punc">:</span> <span class="json-string">"Imagem muito escura / borrada"</span><span class="json-punc">,</span>
+  <span class="json-key">"acao_julia"</span><span class="json-punc">:</span> <span class="json-string">"pedir_nova_foto"</span>
+<span class="json-punc">}</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPROVANTE RESIDÊNCIA -->
+    <div class="doc-card" style="margin-bottom:16px;">
+      <div class="doc-card-header dh-comp">
+        <span>🏠</span> Comprovante de Residência
+      </div>
+      <div class="doc-card-body">
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">Verificações</p>
+            <ul style="list-style:none;font-size:0.82rem;display:flex;flex-direction:column;gap:6px;">
+              <li>→ Documento está legível?</li>
+              <li>→ É comprovante válido? (luz, água, gás, telefone, boleto banco, contrato aluguel, declaração IR)</li>
+              <li>→ Nome no comprovante bate com o lead?</li>
+              <li>→ Endereço está completo? (logradouro, número, cidade, estado, CEP)</li>
+            </ul>
+            <div class="info-box info-julia" style="margin-top:12px;">
+              <span class="info-icon">💡</span>
+              <div class="info-text" style="font-size:0.77rem;">Verificar por nome OU CPF — lead pode ter o CPF no comprovante mesmo sem o nome completo.</div>
+            </div>
+          </div>
+          <div>
+            <div class="code-header" style="font-size:0.7rem;">
+              <span>JSON · comprovante_residencia</span>
+              <button class="copy-btn" onclick="copyCode('json-comp')">Copiar</button>
+            </div>
+            <pre id="json-comp" class="json-block" style="border-radius:0 0 8px 8px;"><span class="json-punc">{</span>
+  <span class="json-key">"tipo_documento"</span><span class="json-punc">:</span> <span class="json-string">"comprovante_residencia"</span><span class="json-punc">,</span>
+  <span class="json-key">"legivel"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"nome_bate_com_lead"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"nome_no_documento"</span><span class="json-punc">:</span> <span class="json-string">"JOÃO DA SILVA"</span><span class="json-punc">,</span>
+  <span class="json-key">"cpf_no_documento"</span><span class="json-punc">:</span> <span class="json-string">"12345678901"</span><span class="json-punc">,</span>
+  <span class="json-key">"endereco"</span><span class="json-punc">:</span> <span class="json-punc">{</span>
+    <span class="json-key">"logradouro"</span><span class="json-punc">:</span> <span class="json-string">"Rua das Flores"</span><span class="json-punc">,</span>
+    <span class="json-key">"numero"</span><span class="json-punc">:</span> <span class="json-string">"123"</span><span class="json-punc">,</span>
+    <span class="json-key">"complemento"</span><span class="json-punc">:</span> <span class="json-string">"Apto 45"</span><span class="json-punc">,</span>
+    <span class="json-key">"bairro"</span><span class="json-punc">:</span> <span class="json-string">"Centro"</span><span class="json-punc">,</span>
+    <span class="json-key">"cidade"</span><span class="json-punc">:</span> <span class="json-string">"Porto Alegre"</span><span class="json-punc">,</span>
+    <span class="json-key">"estado"</span><span class="json-punc">:</span> <span class="json-string">"RS"</span><span class="json-punc">,</span>
+    <span class="json-key">"cep"</span><span class="json-punc">:</span> <span class="json-string">"90000000"</span>
+  <span class="json-punc">},</span>
+  <span class="json-key">"confianca"</span><span class="json-punc">:</span> <span class="json-num">0.90</span><span class="json-punc">,</span>
+  <span class="json-key">"acao_julia"</span><span class="json-punc">:</span> <span class="json-string">"continuar"</span>
+                   <span class="json-pipe">|</span> <span class="json-string">"pedir_banco_digital"</span>
+                   <span class="json-pipe">|</span> <span class="json-string">"pedir_declaracao_terceiro"</span>
+<span class="json-punc">}</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTPS -->
+    <div class="doc-card" style="margin-bottom:16px;">
+      <div class="doc-card-header dh-ctps">
+        <span>📋</span> Carteira de Trabalho (CTPS)
+      </div>
+      <div class="doc-card-body">
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">Verificações</p>
+            <ul style="list-style:none;font-size:0.82rem;display:flex;flex-direction:column;gap:6px;">
+              <li>→ É uma CTPS (física ou digital)?</li>
+              <li>→ Existe contrato de trabalho em aberto? (sem data de saída)</li>
+              <li>→ O salário está visível?</li>
+            </ul>
+
+            <div class="info-box info-blue" style="margin-top:12px;">
+              <span class="info-icon">⚖️</span>
+              <div class="info-text" style="font-size:0.77rem;">
+                O campo <code style="color:var(--accent4);">elegivel_jg</code> é calculado automaticamente com base no estado do lead e no teto de JG de cada estado.
+              </div>
+            </div>
+
+            <p style="font-size:0.72rem;color:var(--accent2);margin:12px 0 4px;font-weight:600;">SE SEM CONTRATO ABERTO:</p>
+            <pre class="json-block" style="max-height:120px;font-size:0.73rem;"><span class="json-punc">{</span>
+  <span class="json-key">"tem_contrato_aberto"</span><span class="json-punc">:</span> <span class="json-bool-false">false</span><span class="json-punc">,</span>
+  <span class="json-key">"ultimo_emprego"</span><span class="json-punc">:</span> <span class="json-punc">{</span>
+    <span class="json-key">"cargo"</span><span class="json-punc">:</span> <span class="json-string">"Auxiliar Administrativo"</span><span class="json-punc">,</span>
+    <span class="json-key">"data_saida"</span><span class="json-punc">:</span> <span class="json-string">"15/01/2024"</span>
+  <span class="json-punc">},</span>
+  <span class="json-key">"acao_julia"</span><span class="json-punc">:</span> <span class="json-string">"perguntar_situacao_atual"</span>
+<span class="json-punc">}</span></pre>
+          </div>
+          <div>
+            <div class="code-header" style="font-size:0.7rem;">
+              <span>JSON · ctps · contrato aberto</span>
+              <button class="copy-btn" onclick="copyCode('json-ctps')">Copiar</button>
+            </div>
+            <pre id="json-ctps" class="json-block" style="border-radius:0 0 8px 8px;"><span class="json-punc">{</span>
+  <span class="json-key">"tipo_documento"</span><span class="json-punc">:</span> <span class="json-string">"ctps"</span><span class="json-punc">,</span>
+  <span class="json-key">"legivel"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"tem_contrato_aberto"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"cargo"</span><span class="json-punc">:</span> <span class="json-string">"Auxiliar Administrativo"</span><span class="json-punc">,</span>
+  <span class="json-key">"salario"</span><span class="json-punc">:</span> <span class="json-num">2200.00</span><span class="json-punc">,</span>
+  <span class="json-key">"empregador"</span><span class="json-punc">:</span> <span class="json-string">"Empresa XYZ Ltda"</span><span class="json-punc">,</span>
+  <span class="json-key">"data_admissao"</span><span class="json-punc">:</span> <span class="json-string">"01/03/2020"</span><span class="json-punc">,</span>
+  <span class="json-key">"elegivel_jg"</span><span class="json-punc">:</span> <span class="json-punc">{</span>
+    <span class="json-key">"estado_lead"</span><span class="json-punc">:</span> <span class="json-string">"RS"</span><span class="json-punc">,</span>
+    <span class="json-key">"teto_salarios_minimos"</span><span class="json-punc">:</span> <span class="json-num">5</span><span class="json-punc">,</span>
+    <span class="json-key">"teto_valor"</span><span class="json-punc">:</span> <span class="json-num">7500.00</span><span class="json-punc">,</span>
+    <span class="json-key">"salario_lead"</span><span class="json-punc">:</span> <span class="json-num">2200.00</span><span class="json-punc">,</span>
+    <span class="json-key">"elegivel"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span>
+  <span class="json-punc">},</span>
+  <span class="json-key">"confianca"</span><span class="json-punc">:</span> <span class="json-num">0.88</span>
+<span class="json-punc">}</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DECLARAÇÃO TERCEIRO -->
+    <div class="doc-card" style="margin-bottom:16px;">
+      <div class="doc-card-header dh-decl">
+        <span>✍️</span> Declaração de Terceiro
+      </div>
+      <div class="doc-card-body">
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">Verificações</p>
+            <ul style="list-style:none;font-size:0.82rem;display:flex;flex-direction:column;gap:6px;">
+              <li>→ O documento é uma declaração assinada?</li>
+              <li>→ Menciona o nome do lead?</li>
+              <li>→ Menciona o CPF do lead?</li>
+              <li>→ Tem identificação do declarante?</li>
+            </ul>
+          </div>
+          <div>
+            <div class="code-header" style="font-size:0.7rem;">
+              <span>JSON · declaracao_terceiro</span>
+              <button class="copy-btn" onclick="copyCode('json-decl')">Copiar</button>
+            </div>
+            <pre id="json-decl" class="json-block" style="border-radius:0 0 8px 8px;"><span class="json-punc">{</span>
+  <span class="json-key">"tipo_documento"</span><span class="json-punc">:</span> <span class="json-string">"declaracao_terceiro"</span><span class="json-punc">,</span>
+  <span class="json-key">"legivel"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"contem_nome_lead"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"contem_cpf_lead"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"nome_declarante"</span><span class="json-punc">:</span> <span class="json-string">"Maria da Silva"</span><span class="json-punc">,</span>
+  <span class="json-key">"cpf_declarante"</span><span class="json-punc">:</span> <span class="json-string">"98765432100"</span><span class="json-punc">,</span>
+  <span class="json-key">"valida"</span><span class="json-punc">:</span> <span class="json-bool-true">true</span><span class="json-punc">,</span>
+  <span class="json-key">"acao_julia"</span><span class="json-punc">:</span> <span class="json-string">"continuar"</span>
+             <span class="json-pipe">|</span> <span class="json-string">"solicitar_documento_declarante"</span>
+<span class="json-punc">}</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de acao_julia -->
+    <div style="margin-top:20px;">
+      <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;font-weight:600;">Valores possíveis para acao_julia</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Valor</th><th>Quando usar</th><th>Ação da Júlia</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent3);">continuar</code></td><td>Dados OK</td><td>Prosseguir para próxima etapa</td></tr>
+            <tr><td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent2);">pedir_nova_foto</code></td><td>Documento ilegível</td><td>Solicitar nova foto ou PDF</td></tr>
+            <tr><td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent5);">pedir_banco_digital</code></td><td>Comprovante não no nome</td><td>Sugerir extrato de banco digital</td></tr>
+            <tr><td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent4);">pedir_declaracao_terceiro</code></td><td>Sem comprovante no nome</td><td>Solicitar declaração com modelo</td></tr>
+            <tr><td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent4);">perguntar_situacao_atual</code></td><td>CTPS sem contrato aberto</td><td>Perguntar se empregado, autônomo ou desempregado</td></tr>
+            <tr><td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent5);">solicitar_documento_declarante</code></td><td>Declaração sem doc do declarante</td><td>Pedir RG/CNH do declarante</td></tr>
+            <tr><td><code style="font-family:'JetBrains Mono',monospace;color:var(--accent2);">documento_invalido</code></td><td>Doc não reconhecido</td><td>Informar que não reconheceu e pedir reenvio</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2.4 PROMPT BASE DO SUBAGENTE -->
+  <section class="section" id="sub-prompt">
+    <div class="section-header">
+      <span class="section-icon">📝</span>
+      <h3>2.4 — Prompt Base do Subagente (configurar no n8n)</h3>
+    </div>
+
+    <div class="info-box info-blue">
+      <span class="info-icon">⚙️</span>
+      <div class="info-text">Configurar no node <strong>Claude Vision API</strong> do workflow n8n. As variáveis entre <code style="color:var(--accent4);">{chaves}</code> são injetadas pelo Code node anterior.</div>
+    </div>
+
+    <div class="prompt-area">
+      <div class="code-header">
+        <span>📋 PROMPT — Subagente de Documentos · Claude Vision</span>
+        <button class="copy-btn" onclick="copyPrompt('prompt-subagente')">Copiar Prompt</button>
+      </div>
+      <textarea id="prompt-subagente" class="prompt-box" readonly style="min-height:340px;">Você é um especialista em análise e extração de dados de documentos brasileiros.
+Analise a imagem/documento fornecido e retorne um JSON estruturado com os dados extraídos.
+
+TIPO DE DOCUMENTO ESPERADO: {tipo_esperado}
+DADOS DO LEAD PARA VALIDAÇÃO:
+- Nome: {lead_nome}
+- CPF: {lead_cpf}
+- Estado: {lead_estado}
+
+INSTRUÇÕES:
+1. Primeiro determine se o documento está legível
+2. Identifique o tipo exato de documento
+3. Extraia todos os campos solicitados
+4. Valide os dados contra o lead quando aplicável
+5. Retorne APENAS o JSON, sem texto adicional
+
+FORMATO DE RETORNO:
+Retorne um objeto JSON válido conforme o schema para o tipo de documento identificado.
+Em caso de dúvida sobre um campo, use null.
+O campo "confianca" deve ser um número entre 0 e 1.
+O campo "acao_julia" deve orientar a próxima ação da Júlia.
+
+VALORES POSSÍVEIS PARA acao_julia:
+- "continuar": dados ok, prosseguir
+- "pedir_nova_foto": documento ilegível
+- "pedir_banco_digital": comprovante não no nome, sugerir banco digital
+- "pedir_declaracao_terceiro": sem comprovante no nome, pedir declaração
+- "perguntar_situacao_atual": CTPS sem contrato aberto, perguntar emprego atual
+- "solicitar_documento_declarante": declaração sem doc do declarante
+- "documento_invalido": documento não reconhecido ou inválido</textarea>
+    </div>
+  </section>
+
+  <!-- 2.5 WORKFLOW N8N -->
+  <section class="section" id="sub-n8n">
+    <div class="section-header">
+      <span class="section-icon">⚡</span>
+      <h3>2.5 — Configuração do Workflow n8n</h3>
+    </div>
+
+    <div class="info-box info-blue" style="margin-bottom:16px;">
+      <span class="info-icon">🔗</span>
+      <div class="info-text">
+        Webhook path: <code style="color:var(--accent4);font-family:'JetBrains Mono',monospace;">/webhook/mdzap/document-received</code> · Auth header: <code style="color:var(--accent3);font-family:'JetBrains Mono',monospace;">mdflow: MdL1501@</code>
+      </div>
+    </div>
+
+    <div class="n8n-flow">
+      <div class="n8n-node">
+        <div class="node-num">01</div>
+        <div class="node-content">
+          <div class="node-title">Webhook Trigger</div>
+          <div class="node-desc">Recebe evento de mídia do workflow principal do MdZap</div>
+          <div class="node-detail">POST /webhook/mdzap/document-received · Auth: mdflow header</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">02</div>
+        <div class="node-content">
+          <div class="node-title">Code Node: Extrair dados da mensagem</div>
+          <div class="node-desc">Parseia o payload e extrai os campos necessários</div>
+          <div class="node-detail">conversa_id · media_id · tipo_arquivo · lead_id · lead_nome · lead_cpf · lead_estado</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">03</div>
+        <div class="node-content">
+          <div class="node-title">HTTP Request: Buscar URL da Meta</div>
+          <div class="node-desc">Obtém a URL temporária do arquivo de mídia</div>
+          <div class="node-detail">GET https://graph.facebook.com/v20.0/{'{media_id}'} · Auth: Bearer {'{WHATSAPP_TOKEN}'}</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">04</div>
+        <div class="node-content">
+          <div class="node-title">HTTP Request: Baixar binário</div>
+          <div class="node-desc">Faz download do arquivo usando a URL temporária com autenticação</div>
+          <div class="node-detail">GET {'{media_url_temporaria}'} · Auth: Bearer {'{WHATSAPP_TOKEN}'} · Response: binário</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">05</div>
+        <div class="node-content">
+          <div class="node-title">Supabase Storage Upload</div>
+          <div class="node-desc">Salva o arquivo permanentemente no Storage do Supabase</div>
+          <div class="node-detail">Bucket: mdzap-media · Path: {'{org_id}'}/{'{conversa_id}'}/{'{timestamp}'}-{'{filename}'}</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">06</div>
+        <div class="node-content">
+          <div class="node-title">Claude Vision API</div>
+          <div class="node-desc">Analisa o documento com o prompt do subagente e retorna JSON estruturado</div>
+          <div class="node-detail">Modelo: claude-sonnet-4-5 · Input: binário + prompt · Output: JSON</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">07</div>
+        <div class="node-content">
+          <div class="node-title">Code Node: Processar output do Claude</div>
+          <div class="node-desc">Parse do JSON, determina acao_julia, prepara dados para atualização do lead</div>
+          <div class="node-detail">JSON.parse(output) · validar schema · mapear campos para tabela leads</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">08</div>
+        <div class="node-content">
+          <div class="node-title">Supabase: Atualizar dados do lead</div>
+          <div class="node-desc">Popula campos do lead com dados extraídos do documento</div>
+          <div class="node-detail">UPDATE leads SET nome, cpf, data_nascimento, rg, endereco_* conforme extração</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">09</div>
+        <div class="node-content">
+          <div class="node-title">Supabase: Registrar evento na timeline</div>
+          <div class="node-desc">Auditoria do processamento do documento</div>
+          <div class="node-detail">INSERT mdzap_conversas_timeline (tipo='documento_processado', payload=JSON_output)</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">10</div>
+        <div class="node-content">
+          <div class="node-title">Supabase: Notificar Júlia</div>
+          <div class="node-desc">Persiste o output do subagente para a Júlia processar na próxima iteração</div>
+          <div class="node-detail">INSERT whatsapp_mensagens (tipo='system', conteudo=JSON_output) — Júlia lê e age conforme acao_julia</div>
+        </div>
+      </div>
+
+      <div class="n8n-node">
+        <div class="node-num">11</div>
+        <div class="node-content">
+          <div class="node-title">Respond to Webhook</div>
+          <div class="node-desc">Resposta canônica MdFlow — sempre HTTP 200</div>
+          <div class="node-detail" style="color:var(--accent3);">{ "success": true, "action": "toast_refresh", "message": "Documento processado" }</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box info-yellow" style="margin-top:16px;">
+      <span class="info-icon">⚠️</span>
+      <div class="info-text">
+        <strong style="color:var(--accent4);">Tratamento de erro:</strong> Envolver nodes 06-10 em bloco try/catch. Em caso de falha no Claude Vision: registrar erro na timeline + retornar <code style="color:var(--accent4);">acao_julia: "pedir_nova_foto"</code> como fallback seguro.
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🤖 MdZap — Prompts Base · Midas Restrições · Jarbas 2.0 · 2026-04-07
+  </div>
+
+</main>
+
+<script>
+function copyPrompt(id) {
+  const el = document.getElementById(id);
+  el.select();
+  el.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(el.value).then(() => {
+    const btn = el.previousElementSibling ? el.previousElementSibling.querySelector('.copy-btn') : null;
+    // find button via parent
+    const parent = el.parentElement;
+    const header = parent.querySelector('.code-header');
+    if (header) {
+      const b = header.querySelector('.copy-btn');
+      if (b) {
+        b.textContent = 'Copiado!';
+        b.classList.add('copied');
+        setTimeout(() => { b.textContent = 'Copiar Prompt'; b.classList.remove('copied'); }, 2000);
+      }
+    }
+  });
+}
+
+function copyCode(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    // find the copy button
+    const header = el.previousElementSibling;
+    if (header && header.classList.contains('code-header')) {
+      const btn = header.querySelector('.copy-btn');
+      if (btn) {
+        btn.textContent = 'Copiado!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+      }
+    }
+  });
+}
+
+// Smooth scroll for nav links
+document.querySelectorAll('.nav-item').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Highlight active nav item on scroll
+const sections = document.querySelectorAll('section[id], div[id]');
+const navItems = document.querySelectorAll('.nav-item');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navItems.forEach(item => {
+        item.style.color = '';
+        item.style.borderLeftColor = '';
+      });
+      const active = document.querySelector(`.nav-item[href="#${entry.target.id}"]`);
+      if (active) {
+        const isJulia = active.classList.contains('julia');
+        active.style.color = isJulia ? 'var(--julia-green)' : 'var(--subagent-blue)';
+        active.style.borderLeftColor = isJulia ? 'var(--julia-green)' : 'var(--subagent-blue)';
+      }
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
