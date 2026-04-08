@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap SPEC — Júlia + Subagente de Documentos</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 24px;
+}
+
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 56px 24px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(124,109,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-size: 2.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 20px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* GRID */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* STAT CARDS */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* SECTION */
+.section { margin: 40px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+.section-icon { font-size: 1.3rem; }
+.section-header h2 { font-size: 1.15rem; font-weight: 700; }
+.section-num {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.72rem;
+  color: var(--accent);
+  margin-left: auto;
+  padding: 2px 8px;
+  background: rgba(124,109,255,0.1);
+  border-radius: 6px;
+}
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* STATUS PILLS */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.sp-warn { background: rgba(255,209,102,0.15); color: var(--accent4); border: 1px solid rgba(255,209,102,0.3); }
+.sp-crit { background: rgba(255,107,107,0.15); color: var(--accent2); border: 1px solid rgba(255,107,107,0.3); }
+
+/* CODE */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* FLOW DIAGRAM */
+.flow-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 24px;
+  overflow-x: auto;
+}
+.flow-steps {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  min-width: 900px;
+  position: relative;
+}
+.flow-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 28px;
+  right: -16px;
+  width: 32px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--border), var(--accent));
+  z-index: 1;
+}
+.flow-step:not(:last-child)::before {
+  content: '▶';
+  position: absolute;
+  top: 21px;
+  right: -22px;
+  font-size: 0.6rem;
+  color: var(--accent);
+  z-index: 2;
+}
+.flow-node {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  border: 2px solid var(--border);
+  position: relative;
+  z-index: 3;
+}
+.flow-label {
+  font-size: 0.68rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+  max-width: 90px;
+}
+.fn-entrada { background: rgba(91,196,245,0.15); border-color: rgba(91,196,245,0.4); }
+.fn-julia { background: rgba(124,109,255,0.15); border-color: rgba(124,109,255,0.4); }
+.fn-docs { background: rgba(255,209,102,0.12); border-color: rgba(255,209,102,0.3); }
+.fn-auditoria { background: rgba(255,107,107,0.12); border-color: rgba(255,107,107,0.3); }
+.fn-ctps { background: rgba(79,255,176,0.12); border-color: rgba(79,255,176,0.3); }
+.fn-proc { background: rgba(124,109,255,0.2); border-color: rgba(124,109,255,0.5); }
+.fn-fim { background: rgba(79,255,176,0.15); border-color: rgba(79,255,176,0.4); }
+
+/* FLOW VERTICAL (detalhado) */
+.flow-v { display: flex; flex-direction: column; gap: 0; }
+.flow-v-step {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+.flow-v-step:not(:last-child) .flow-v-line {
+  position: absolute;
+  left: 23px;
+  top: 48px;
+  bottom: -20px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--border) 100%);
+}
+.flow-v-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  position: relative;
+  z-index: 2;
+}
+.flow-v-content {
+  flex: 1;
+  padding-bottom: 28px;
+}
+.flow-v-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin-bottom: 4px;
+}
+.flow-v-sub {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-bottom: 8px;
+}
+.flow-v-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.flow-detail {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  background: var(--surface2);
+  border-radius: 6px;
+  border-left: 3px solid var(--border);
+}
+.fd-green { border-left-color: var(--accent3); }
+.fd-yellow { border-left-color: var(--accent4); }
+.fd-red { border-left-color: var(--accent2); }
+.fd-blue { border-left-color: var(--accent5); }
+.fd-purple { border-left-color: var(--accent); }
+
+/* STATUS SYSTEM CARDS */
+.status-system-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.status-system-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.ssc-ok::before { background: var(--accent3); }
+.ssc-warn::before { background: var(--accent4); }
+.ssc-crit::before { background: var(--accent2); }
+.ssc-partial::before { background: linear-gradient(90deg, var(--accent4), var(--accent2)); }
+
+.ssc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.ssc-title { font-weight: 700; font-size: 0.95rem; }
+.ssc-items { display: flex; flex-direction: column; gap: 6px; }
+.ssc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+.ssc-icon { flex-shrink: 0; margin-top: 1px; }
+
+/* BUG TABLE */
+.sev-p0 { color: var(--accent2); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+.sev-p1 { color: var(--accent4); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+.sev-p2 { color: var(--accent5); font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+
+/* QUESTION CARDS */
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.q-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 22px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.q-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  color: #fff;
+}
+.q-title { font-weight: 700; font-size: 0.95rem; flex: 1; }
+.q-toggle { color: var(--text-muted); font-size: 0.8rem; transition: transform 0.2s; }
+.q-toggle.open { transform: rotate(180deg); }
+
+.q-body { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+
+.q-quote {
+  background: rgba(124,109,255,0.07);
+  border: 1px solid rgba(124,109,255,0.2);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+}
+.q-quote-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.q-quote-text {
+  font-style: italic;
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.q-context {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+.q-section-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.ql-context { color: var(--accent5); }
+.ql-options { color: var(--accent4); }
+.ql-rec { color: var(--accent3); }
+.ql-resp { color: var(--accent2); }
+
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-option {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.q-option.rec { border-color: rgba(79,255,176,0.3); background: rgba(79,255,176,0.04); }
+.q-opt-label {
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+.opt-a { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.opt-b { background: rgba(124,109,255,0.15); color: var(--accent); }
+.opt-c { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.q-opt-text { font-size: 0.82rem; color: var(--text); }
+.q-opt-pros { font-size: 0.76rem; color: var(--accent3); margin-top: 3px; }
+.q-opt-cons { font-size: 0.76rem; color: var(--accent2); margin-top: 2px; }
+.rec-badge {
+  font-size: 0.65rem;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: rgba(79,255,176,0.2);
+  color: var(--accent3);
+  border: 1px solid rgba(79,255,176,0.3);
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.q-rec {
+  background: rgba(79,255,176,0.06);
+  border: 1px solid rgba(79,255,176,0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.q-answer {
+  background: rgba(255,107,107,0.05);
+  border: 1px dashed rgba(255,107,107,0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.q-answer-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent2);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.q-answer-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.q-ans-btn {
+  padding: 4px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.q-ans-btn:hover { border-color: var(--accent); color: var(--accent); }
+.q-ans-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-family: inherit;
+  resize: vertical;
+}
+.q-ans-input:focus { outline: none; border-color: var(--accent); }
+
+/* ROOT CAUSE */
+.cause-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+.cause-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 14px; }
+.cause-bar-container { margin-bottom: 8px; }
+.cause-bar-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 0.78rem;
+}
+.cause-bar-track {
+  height: 6px;
+  background: var(--surface3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.cause-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+.cb-root { background: linear-gradient(90deg, var(--accent2), #ff4444); }
+.cb-alt-a { background: var(--accent4); }
+.cb-alt-b { background: var(--accent5); }
+.cause-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+/* CHECKLIST */
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.check-box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.check-text { font-size: 0.84rem; }
+.check-tag {
+  margin-left: auto;
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.ct-back { background: rgba(255,107,107,0.15); color: var(--accent2); }
+.ct-n8n { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.ct-front { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.ct-prompt { background: rgba(79,255,176,0.15); color: var(--accent3); }
+.ct-user { background: rgba(124,109,255,0.15); color: var(--accent); }
+
+/* IMPL LIST */
+.impl-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 18px;
+  background: var(--surface2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.impl-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+.impl-text { font-size: 0.84rem; }
+.impl-tag { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
+/* FILE TABLE */
+.file-path {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  color: var(--accent3);
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 36px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 56px;
+}
+
+/* DIVIDER */
+.divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* COLLAPSE */
+.collapsible-body { display: none; }
+.collapsible-body.open { display: block; }
+
+/* RULES CARD */
+.rule-card {
+  background: rgba(255,107,107,0.06);
+  border: 1px solid rgba(255,107,107,0.25);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.rule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 0.84rem;
+  border-bottom: 1px solid rgba(255,107,107,0.1);
+}
+.rule-item:last-child { border-bottom: none; }
+.rule-icon { font-size: 1rem; flex-shrink: 0; }
+
+/* CONTEXT ITEMS */
+.ctx-item {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 3px 0;
+}
+.ctx-bold { color: var(--text); font-weight: 600; }
+
+/* JG TABLE */
+.jg-table { display: flex; gap: 12px; flex-wrap: wrap; }
+.jg-card {
+  flex: 1;
+  min-width: 140px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+}
+.jg-state { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.jg-val { font-size: 1.1rem; font-weight: 700; color: var(--accent4); }
+
+/* SCORE BADGE */
+.score-crit {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--accent2);
+  font-family: 'JetBrains Mono', monospace;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">📱</span>
+    <h1 class="gradient-text">MdZap SPEC — Júlia + Subagente de Documentos</h1>
+    <p class="hero-sub">Fluxo Completo de Atendimento Midas Restrições · Pendências + Perguntas Estruturadas</p>
+    <div class="badges">
+      <span class="badge bp">Midas Restrições</span>
+      <span class="badge bb">WhatsApp Business</span>
+      <span class="badge by">10 Perguntas Pendentes</span>
+      <span class="badge br">n8n Score: 6.25%</span>
+      <span class="badge bg">Documento de Referência</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value">9</div>
+      <div class="stat-label">Etapas do Fluxo</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent2)">11</div>
+      <div class="stat-label">Workflows Mortos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent4)">10</div>
+      <div class="stat-label">Perguntas Estruturadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent3)">10</div>
+      <div class="stat-label">Itens a Implementar</div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 1 — CONTEXTO GERAL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🏢</span>
+      <h2>Seção 1 — Contexto Geral</h2>
+      <span class="section-num">S1</span>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Contexto Operacional</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="ssc-item"><span class="ssc-icon">🏦</span><span><span class="ctx-bold">Empresa:</span> Midas Restrições</span></div>
+          <div class="ssc-item"><span class="ssc-icon">📱</span><span><span class="ctx-bold">Canal:</span> WhatsApp Business (Meta API)</span></div>
+          <div class="ssc-item"><span class="ssc-icon">🤖</span><span><span class="ctx-bold">Agente IA:</span> Júlia (Claude Sonnet)</span></div>
+          <div class="ssc-item"><span class="ssc-icon">🎯</span><span><span class="ctx-bold">Objetivo:</span> Automatizar atendimento de leads via Facebook Ads até assinatura da procuração</span></div>
+          <div class="ssc-item"><span class="ssc-icon">📢</span><span><span class="ctx-bold">Origem dos leads:</span> Facebook Ads → WhatsApp com CPF pré-preenchido</span></div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="card-title" style="color:var(--accent2);margin-bottom:12px;">⛔ Regras Absolutas da Júlia — P0 — NUNCA Violar</div>
+        <div class="rule-item">
+          <span class="rule-icon">🚫</span>
+          <span>NUNCA citar o nome do escritório de advocacia parceiro</span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-icon">🚫</span>
+          <span>NUNCA citar nomes de advogados</span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-icon">✅</span>
+          <span>Sempre referir como <strong>"escritório de advocacia parceiro"</strong></span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-icon">🛑</span>
+          <span>Se lead disser que não tem interesse: <strong>parar imediatamente</strong>, zero follow-ups</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 2 — FLUXO DE ATENDIMENTO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔄</span>
+      <h2>Seção 2 — Fluxo de Atendimento Completo</h2>
+      <span class="section-num">S2</span>
+    </div>
+
+    <!-- Mini flow visual -->
+    <div class="flow-container" style="margin-bottom:28px;">
+      <div style="text-align:center;font-size:0.72rem;color:var(--text-muted);margin-bottom:20px;text-transform:uppercase;letter-spacing:1px;">Visão Macro — 9 Etapas</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-node fn-entrada">📢</div>
+          <div class="flow-label">E1<br>Entrada<br>Facebook Ads</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node fn-julia">🤖</div>
+          <div class="flow-label">E2<br>Júlia<br>Boas-vindas</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node fn-docs">🪪</div>
+          <div class="flow-label">E3<br>Subagente<br>RG/CNH</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node fn-docs">🏠</div>
+          <div class="flow-label">E4<br>Subagente<br>Comprovante</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node fn-auditoria">🔍</div>
+          <div class="flow-label">E5<br>Auditoria<br>Boa Vista</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node fn-julia">📊</div>
+          <div class="flow-label">E6<br>Resultado<br>Restrições</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node fn-ctps">💼</div>
+          <div class="flow-label">E7<br>CTPS<br>JG Elegib.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node fn-auditoria">💰</div>
+          <div class="flow-label">E8<br>Renda<br>Receita</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-node fn-proc">✍️</div>
+          <div class="flow-label">E9<br>Procuração<br>ZapSign</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flow detalhado vertical -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:20px;">Detalhamento por Etapa</div>
+      <div class="flow-v">
+
+        <div class="flow-v-step">
+          <div class="flow-v-line"></div>
+          <div class="flow-v-icon fn-entrada">📢</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 1 — Entrada do Lead</div>
+            <div class="flow-v-sub">Lead clica no anúncio Facebook Ads</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-blue">WhatsApp abre com mensagem pré-preenchida: CPF (e possivelmente nome)</div>
+              <div class="flow-detail fd-blue">Lead envia a mensagem</div>
+              <div class="flow-detail fd-green">Sistema: cria contato automaticamente, vincula à conversa</div>
+              <div class="flow-detail fd-purple">Júlia: cadastra lead automaticamente no sistema</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-v-step">
+          <div class="flow-v-line"></div>
+          <div class="flow-v-icon fn-julia">🤖</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 2 — Primeiro Atendimento (Júlia)</div>
+            <div class="flow-v-sub">Mensagem de boas-vindas com apresentação e proposta de valor</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-purple">Apresentação: "Midas Restrições — especialistas em restrições indevidas de crédito"</div>
+              <div class="flow-detail fd-purple">Explica que a auditoria é <strong>gratuita</strong></div>
+              <div class="flow-detail fd-purple">Pergunta se tem interesse em descobrir a situação do CPF</div>
+              <div class="flow-detail fd-yellow">Se SIM: solicita RG/CNH + Comprovante de residência em nome do lead</div>
+              <div class="flow-detail fd-red">Se NÃO: encerrar imediatamente. Zero follow-ups.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-v-step">
+          <div class="flow-v-line"></div>
+          <div class="flow-v-icon fn-docs">🪪</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 3 — Subagente de Documentos: RG/CNH</div>
+            <div class="flow-v-sub">Processamento automático do documento de identificação</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-blue">Verifica legibilidade — se ilegível: Júlia pede foto melhor/PDF</div>
+              <div class="flow-detail fd-green">Extrai: nome completo, data nascimento, CPF, RG</div>
+              <div class="flow-detail fd-green">Popula dados automaticamente no sistema (lead)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-v-step">
+          <div class="flow-v-line"></div>
+          <div class="flow-v-icon fn-docs">🏠</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 4 — Subagente de Documentos: Comprovante de Residência</div>
+            <div class="flow-v-sub">Verificação de titularidade e extração de endereço</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-blue">Verifica legibilidade</div>
+              <div class="flow-detail fd-blue">Verifica se está no nome do lead (nome OU CPF)</div>
+              <div class="flow-detail fd-yellow">SE NÃO estiver no nome → Opção 1: banco digital (extrato/boleto com endereço)</div>
+              <div class="flow-detail fd-yellow">SE ainda não tiver → Opção 2: declaração de terceiro</div>
+              <div class="flow-detail fd-red">Modelo declaração: "Eu, [nome terceiro], portador CPF [X], declaro que [nome lead], portador CPF [Y], reside comigo" + doc identidade do terceiro</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-v-step">
+          <div class="flow-v-line"></div>
+          <div class="flow-v-icon fn-auditoria">🔍</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 5 — Auditoria (Humano)</div>
+            <div class="flow-v-sub">Subagente passa output para Júlia → dados populados → humano executa</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-green">Dados populados: endereço, nome, CPF, RG, data nascimento</div>
+              <div class="flow-detail fd-purple">Júlia envia: "Vamos realizar a auditoria agora, em breve retorno com as informações"</div>
+              <div class="flow-detail fd-yellow">[FEATURE PENDENTE] Badge "Auditoria Pendente" no MdZap para atendentes</div>
+              <div class="flow-detail fd-red">HUMANO executa auditoria na Boa Vista (processo externo)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-v-step">
+          <div class="flow-v-line"></div>
+          <div class="flow-v-icon fn-julia">📊</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 6 — Resultado da Auditoria</div>
+            <div class="flow-v-sub">Dois caminhos: nome limpo ou nome sujo</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-green">NOME LIMPO: PDF gerado → Júlia parabeniza → menciona "Indique Ganho" → fim de contato</div>
+              <div class="flow-detail fd-red">NOME SUJO: Júlia cita empresas credoras (NUNCA valores), com frequência das ocorrências</div>
+              <div class="flow-detail fd-yellow">Exemplo: "Identificamos 39 restrições da RGE. Somos especialistas em casos de energia elétrica..."</div>
+              <div class="flow-detail fd-blue">Atendente registra restrições → devolve para Júlia OU Júlia assume automaticamente</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-v-step">
+          <div class="flow-v-line"></div>
+          <div class="flow-v-icon fn-ctps">💼</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 7 — Carteira de Trabalho (CTPS)</div>
+            <div class="flow-v-sub">Comprovação de elegibilidade para JG (Assistência Jurídica Gratuita)</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-purple">Júlia solicita CTPS e explica o motivo se perguntado</div>
+              <div class="flow-detail fd-blue">Motivo: comprovar elegibilidade para JG (Assistência Jurídica Gratuita)</div>
+              <div class="flow-detail fd-green">Subagente extrai: salário, contrato aberto/fechado, cargo</div>
+            </div>
+            <div class="jg-table" style="margin-top:10px;">
+              <div class="jg-card">
+                <div class="jg-state">Rio Grande do Sul</div>
+                <div class="jg-val">5 SM</div>
+              </div>
+              <div class="jg-card">
+                <div class="jg-state">Santa Catarina</div>
+                <div class="jg-val">3 SM</div>
+              </div>
+              <div class="jg-card">
+                <div class="jg-state">São Paulo</div>
+                <div class="jg-val">3 SM</div>
+              </div>
+            </div>
+            <div class="flow-v-details" style="margin-top:10px;">
+              <div class="flow-detail fd-yellow">Contrato fechado: Júlia pergunta se trabalha / autônomo / desempregado</div>
+              <div class="flow-detail fd-red">Desempregado: cadastrar profissão como "desempregado"</div>
+              <div class="flow-detail fd-blue">Autônomo: não precisa comprovante — Midas faz "renda receita" (análise IR)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-v-step">
+          <div class="flow-v-line"></div>
+          <div class="flow-v-icon fn-auditoria">💰</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 8 — Renda Receita (Humano)</div>
+            <div class="flow-v-sub">Análise do Imposto de Renda do lead</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-red">Midas faz análise de IR via portal externo (processo manual)</div>
+              <div class="flow-detail fd-yellow">Se lead não declarou IR: Júlia solicita declaração do IR</div>
+              <div class="flow-detail fd-blue">Júlia tem contexto mas NÃO executa — apenas solicita documentação</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-v-step">
+          <div class="flow-v-icon fn-proc">✍️</div>
+          <div class="flow-v-content">
+            <div class="flow-v-title">Etapa 9 — Procuração (ZapSign)</div>
+            <div class="flow-v-sub">Geração e acompanhamento da assinatura digital</div>
+            <div class="flow-v-details">
+              <div class="flow-detail fd-blue">Humanos geram procuração no MdFlow (integração ZapSign)</div>
+              <div class="flow-detail fd-purple">Júlia move lead para coluna "aguardando_assinatura" no CRM</div>
+              <div class="flow-detail fd-yellow">Júlia monitora e faz follow-ups (após 1h sem resposta)</div>
+              <div class="flow-detail fd-green">Após assinatura: "Seu caso será encaminhado ao nosso escritório de advocacia parceiro. Muito obrigado!"</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 3 — ESTADO ATUAL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <h2>Seção 3 — Estado Atual do Sistema</h2>
+      <span class="section-num">S3</span>
+    </div>
+
+    <div class="grid g2">
+
+      <div class="status-system-card ssc-partial">
+        <div class="ssc-header">
+          <div>
+            <div class="ssc-title">Júlia</div>
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">Agente IA principal</div>
+          </div>
+          <span class="status-pill sp-warn">⚠️ Parcialmente Implementada</span>
+        </div>
+        <div class="ssc-items">
+          <div class="ssc-item"><span class="ssc-icon">✅</span><span>Tabelas <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">mdzap_julia_prompts</span> + <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">mdzap_julia_lab_sessoes</span></span></div>
+          <div class="ssc-item"><span class="ssc-icon">✅</span><span>7 tipos de prompt cadastrados: sdr_principal, sdr_acordos, sdr_docs, sentimento, sugestoes, memoria, fluxo_atendimento, regras</span></div>
+          <div class="ssc-item"><span class="ssc-icon">✅</span><span>Componentes: MdzapJuliaLab.tsx, MdzapAdminIA.tsx</span></div>
+          <div class="ssc-item"><span class="ssc-icon">❌</span><span>Fluxo Midas (CPF → auditoria → CTPS → procuração): <strong>NÃO implementado</strong></span></div>
+        </div>
+      </div>
+
+      <div class="status-system-card ssc-crit">
+        <div class="ssc-header">
+          <div>
+            <div class="ssc-title">Subagente de Documentos</div>
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">OCR automático RG/CNH/CTPS/comprovante</div>
+          </div>
+          <span class="status-pill sp-block">❌ Não Existe</span>
+        </div>
+        <div class="ssc-items">
+          <div class="ssc-item"><span class="ssc-icon">⚠️</span><span>Doc Reader existe mas é processamento MANUAL (usuário clica)</span></div>
+          <div class="ssc-item"><span class="ssc-icon">⚠️</span><span>Armazena em <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">metadata.doc_reader_result</span> (não automatizado)</span></div>
+          <div class="ssc-item"><span class="ssc-icon">❌</span><span>Webhook <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">document-received</span>: criado no n8n mas <strong>nunca ativado/chamado</strong></span></div>
+        </div>
+      </div>
+
+      <div class="status-system-card ssc-warn">
+        <div class="ssc-header">
+          <div>
+            <div class="ssc-title">Vinculação Conversa → Lead</div>
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">whatsapp_conversas.lead_id</div>
+          </div>
+          <span class="status-pill sp-warn">⚠️ Existe mas Quebrado</span>
+        </div>
+        <div class="ssc-items">
+          <div class="ssc-item"><span class="ssc-icon">✅</span><span><span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">whatsapp_conversas.lead_id</span> (nullable) existe</span></div>
+          <div class="ssc-item"><span class="ssc-icon">✅</span><span>RPC <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">fn_mdzap_conversas</span> retorna contexto completo</span></div>
+          <div class="ssc-item"><span class="ssc-icon">❌</span><span><strong>PROBLEMA:</strong> lead_id é NULL até atendente criar manualmente → modais sem dados</span></div>
+        </div>
+      </div>
+
+      <div class="status-system-card ssc-crit">
+        <div class="ssc-header">
+          <div>
+            <div class="ssc-title">n8n — Estado Crítico</div>
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">Motor de automações</div>
+          </div>
+          <div class="score-crit">6.25%</div>
+        </div>
+        <div class="ssc-items">
+          <div class="ssc-item"><span class="ssc-icon">✅</span><span>FUNCIONAIS: enviar-mensagem (100%), inbound-upsert-lead (100%)</span></div>
+          <div class="ssc-item"><span class="ssc-icon">⚠️</span><span>INSTÁVEIS: ai-composer (70%), julia-prompt-save (33%)</span></div>
+          <div class="ssc-item"><span class="ssc-icon">❌</span><span>QUEBRADO: julia-lab-refine (0%)</span></div>
+          <div class="ssc-item"><span class="ssc-icon">❌</span><span><strong>11 workflows "mortos"</strong> — backend criado, frontend NUNCA chamou</span></div>
+          <div class="ssc-item"><span class="ssc-icon">🔴</span><span>ASSUMIR/DEVOLVER: HTTP 500 (token expirado)</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid g2" style="margin-top:16px;">
+      <div class="status-system-card ssc-crit">
+        <div class="ssc-header">
+          <div><div class="ssc-title">Campo <span class="code" style="display:inline;padding:1px 6px;font-size:0.8rem;">profissao</span> em leads</div></div>
+          <span class="status-pill sp-block">❌ Não Existe</span>
+        </div>
+        <div class="ssc-items">
+          <div class="ssc-item"><span class="ssc-icon">⚠️</span><span>Existe apenas em <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">clientes</span>, NÃO em <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">leads</span></span></div>
+          <div class="ssc-item"><span class="ssc-icon">🔧</span><span>Precisa de migration: <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">ALTER TABLE leads ADD COLUMN profissao TEXT</span></span></div>
+        </div>
+      </div>
+      <div class="status-system-card ssc-crit">
+        <div class="ssc-header">
+          <div><div class="ssc-title">Notificação Auditoria Pendente</div></div>
+          <span class="status-pill sp-block">❌ Não Existe</span>
+        </div>
+        <div class="ssc-items">
+          <div class="ssc-item"><span class="ssc-icon">⚠️</span><span><span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">awaiting_human</span> boolean genérico existe</span></div>
+          <div class="ssc-item"><span class="ssc-icon">❌</span><span>Sem status específico de "auditoria pendente"</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 4 — CAUSA RAIZ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔬</span>
+      <h2>Seção 4 — Causa Raiz dos Problemas</h2>
+      <span class="section-num">S4</span>
+    </div>
+
+    <div class="cause-card">
+      <div class="cause-title">Problema 1 — Modais sem dados do lead no MdZap</div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent2);">🔴 Causa Raiz: lead_id NULL até criação manual — fluxo de criação automática não implementado</span>
+          <span style="color:var(--accent2);font-weight:700;">50%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-root" style="width:50%"></div></div>
+      </div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent4);">🟡 Alternativa A: Doc Reader processa mas trigger de criação não foi implementado</span>
+          <span style="color:var(--accent4);font-weight:700;">30%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-alt-a" style="width:30%"></div></div>
+        <div class="cause-desc">Dados ficam em metadata.pending_lead_data sem criar o lead</div>
+      </div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent5);">🔵 Alternativa B: MdzapLeadPanel não renderiza quando lead_id é null</span>
+          <span style="color:var(--accent5);font-weight:700;">20%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-alt-b" style="width:20%"></div></div>
+        <div class="cause-desc">Problema de UI, não de dados</div>
+      </div>
+    </div>
+
+    <div class="cause-card">
+      <div class="cause-title">Problema 2 — Júlia sem fluxo Midas</div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent2);">🔴 Causa Raiz: prompts genéricos, fluxo Midas nunca foi configurado</span>
+          <span style="color:var(--accent2);font-weight:700;">80%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-root" style="width:80%"></div></div>
+      </div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent4);">🟡 Alternativa A: Prompts existem mas não vinculados ao fluxo de mensagens inbound</span>
+          <span style="color:var(--accent4);font-weight:700;">15%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-alt-a" style="width:15%"></div></div>
+      </div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent5);">🔵 Alternativa B: Configuração de webhook inbound não aciona Júlia corretamente</span>
+          <span style="color:var(--accent5);font-weight:700;">5%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-alt-b" style="width:5%"></div></div>
+      </div>
+    </div>
+
+    <div class="cause-card">
+      <div class="cause-title">Problema 3 — Subagente de documentos inexistente</div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent2);">🔴 Causa Raiz: foi planejado mas nunca implementado — document-received na lista dos "11 workflows mortos"</span>
+          <span style="color:var(--accent2);font-weight:700;">90%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-root" style="width:90%"></div></div>
+      </div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent4);">🟡 Alternativa A: Existe mas com nome diferente no n8n</span>
+          <span style="color:var(--accent4);font-weight:700;">7%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-alt-a" style="width:7%"></div></div>
+      </div>
+      <div class="cause-bar-container">
+        <div class="cause-bar-label">
+          <span style="color:var(--accent5);">🔵 Alternativa B: Implementado como Edge Function Supabase, não como n8n</span>
+          <span style="color:var(--accent5);font-weight:700;">3%</span>
+        </div>
+        <div class="cause-bar-track"><div class="cause-bar-fill cb-alt-b" style="width:3%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 5 — BUGS QA -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🐛</span>
+      <h2>Seção 5 — Bugs Pendentes do QA (R4)</h2>
+      <span class="section-num">S5</span>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Sev.</th>
+            <th>Descrição</th>
+            <th>Impacto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code" style="display:inline;padding:2px 8px;font-size:0.75rem;">n8n-001</span></td>
+            <td><span class="sev-p0">P0</span></td>
+            <td>Tokens ASSUMIR/DEVOLVER expirados → HTTP 500</td>
+            <td style="color:var(--accent2);">Júlia não consegue assumir/devolver conversas</td>
+          </tr>
+          <tr>
+            <td><span class="code" style="display:inline;padding:2px 8px;font-size:0.75rem;">R4-BUG-01</span></td>
+            <td><span class="sev-p1">P1</span></td>
+            <td>Webhook mdzap/ai-composer retorna HTTP 500</td>
+            <td style="color:var(--accent4);">Júlia não consegue compor mensagens</td>
+          </tr>
+          <tr>
+            <td><span class="code" style="display:inline;padding:2px 8px;font-size:0.75rem;">R4-BUG-02</span></td>
+            <td><span class="sev-p1">P1</span></td>
+            <td>Webhook mdzap/julia-prompt-save retorna HTTP 500</td>
+            <td style="color:var(--accent4);">Não salva novos prompts da Júlia</td>
+          </tr>
+          <tr>
+            <td><span class="code" style="display:inline;padding:2px 8px;font-size:0.75rem;">R4-BUG-03</span></td>
+            <td><span class="sev-p1">P1</span></td>
+            <td>mdzap_julia_lab_sessoes e mdzap_julia_prompts não tipadas no TypeScript</td>
+            <td style="color:var(--accent4);">Risco de runtime errors silenciosos</td>
+          </tr>
+          <tr>
+            <td><span class="code" style="display:inline;padding:2px 8px;font-size:0.75rem;">R4-BUG-04</span></td>
+            <td><span class="sev-p2">P2</span></td>
+            <td>MdzapGestaoPanel: React key={m.id} com campo id undefined</td>
+            <td style="color:var(--accent5);">Warning React, possível comportamento inesperado</td>
+          </tr>
+          <tr>
+            <td><span class="code" style="display:inline;padding:2px 8px;font-size:0.75rem;">R4-BUG-05</span></td>
+            <td><span class="sev-p2">P2</span></td>
+            <td>lead_awaiting_human não propaga via realtime UPDATE</td>
+            <td style="color:var(--accent5);">Badge de auditoria pendente não atualiza em tempo real</td>
+          </tr>
+          <tr>
+            <td><span class="code" style="display:inline;padding:2px 8px;font-size:0.75rem;">R4-BUG-06</span></td>
+            <td><span class="sev-p2">P2</span></td>
+            <td>MdzapAppPage usa inline styles (deve usar Tailwind)</td>
+            <td style="color:var(--accent5);">Viola P-08 DS é Lei Visual</td>
+          </tr>
+          <tr>
+            <td><span class="code" style="display:inline;padding:2px 8px;font-size:0.75rem;">R4-BUG-07</span></td>
+            <td><span class="sev-p2">P2</span></td>
+            <td>Atalhos: spec diz J/K, código usa ArrowDown/Up</td>
+            <td style="color:var(--accent5);">Navegação de conversas diverge da spec</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 6 — 10 PERGUNTAS ESTRUTURADAS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">❓</span>
+      <h2>Seção 6 — 10 Perguntas Estruturadas para o Desenvolvedor</h2>
+      <span class="section-num">S6</span>
+    </div>
+
+    <div style="background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.25);border-radius:12px;padding:14px 20px;margin-bottom:24px;font-size:0.84rem;color:var(--accent4);">
+      Responda cada pergunta clicando nas opções ou digitando no campo "Outra resposta". Estas respostas definirão a implementação completa do MdZap.
+    </div>
+
+    <!-- P1 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q1')">
+        <div class="q-num">P1</div>
+        <div class="q-title">Criação automática do lead quando CPF chega</div>
+        <span class="q-toggle" id="q1-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q1">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"Júlia já tem que cadastrar o lead automaticamente, no caso, o contato dele. E daí, conforme... conforme eu estava testando ali no MDZAP... vi que as coisas não mostrou porque não tinha lead vinculado à conversa"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item"><span class="ctx-bold">whatsapp_conversas.lead_id</span> é nullable — lead_id null = modais em branco</div>
+          <div class="ctx-item">Webhook <span class="ctx-bold">inbound-upsert-lead</span> existe e funciona (100%) mas não cria lead automaticamente</div>
+          <div class="ctx-item">CPF pode vir junto com o nome na mensagem pré-preenchida pelo Facebook Ads</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">Júlia via n8n cria lead quando CPF chega (instante zero)</div>
+                <div class="q-opt-pros">+ Simples, linear</div>
+                <div class="q-opt-cons">- CPF pode ser inválido ou já existir</div>
+              </div>
+            </div>
+            <div class="q-option rec">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">Sistema cria pré-lead com telefone quando primeira mensagem chega, enriquece com CPF quando confirmado <span class="rec-badge">RECOMENDADO</span></div>
+                <div class="q-opt-pros">+ Robusto: captura lead mesmo sem CPF válido</div>
+                <div class="q-opt-cons">- Requer upsert inteligente com deduplicação</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-c">C</span>
+              <div>
+                <div class="q-opt-text">Fluxo manual permanece, atendente cria lead após Doc Reader</div>
+                <div class="q-opt-pros">+ Zero desenvolvimento</div>
+                <div class="q-opt-cons">- Gargalo humano, modais sem dados até atendente agir</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — O lead deve ser criado QUANDO?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">Ao primeiro contato (tel)</button>
+            <button class="q-ans-btn">Quando CPF chega</button>
+            <button class="q-ans-btn">Após documentos</button>
+            <button class="q-ans-btn">Opção B (recomendado)</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P2 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q2')">
+        <div class="q-num">P2</div>
+        <div class="q-title">Coluna CRM inicial do lead via WhatsApp</div>
+        <span class="q-toggle" id="q2-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q2">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"ele já pode ser cadastrado ou em novos, a coluna novos do CRM, ou no na coluna em atendimento, vamos ver qual delas, veja qual delas você sugere"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item"><span class="ctx-bold">novos:</span> leads sem contato ainda — aparecem no topo do kanban como entrada fria</div>
+          <div class="ctx-item"><span class="ctx-bold">em_atendimento:</span> Júlia já respondeu — lead está sendo atendido ativamente</div>
+          <div class="ctx-item">Coluna é definida por <span class="ctx-bold">leads.status</span> (TEXT CHECK)</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">Coluna "novos" — funil começa aqui, aparece no kanban como entrada</div>
+                <div class="q-opt-pros">+ Visibilidade dos leads entrando</div>
+                <div class="q-opt-cons">- Semanticamente errado: Júlia já atendeu, não é "novo"</div>
+              </div>
+            </div>
+            <div class="q-option rec">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">Coluna "em_atendimento" — Júlia já respondeu, lead está em atendimento <span class="rec-badge">RECOMENDADO</span></div>
+                <div class="q-opt-pros">+ Semanticamente correto: Júlia ativou</div>
+                <div class="q-opt-cons">- Perde visibilidade de "novos via WhatsApp" se quiser rastrear separado</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — Confirma "em_atendimento" direto?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">SIM — em_atendimento</button>
+            <button class="q-ans-btn">NÃO — novos primeiro</button>
+            <button class="q-ans-btn">Criar coluna específica</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P3 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q3')">
+        <div class="q-num">P3</div>
+        <div class="q-title">Arquitetura do subagente de documentos</div>
+        <span class="q-toggle" id="q3-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q3">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"o subagente de documentos vai extrair os dados... vai verificar... vai passar um output para a Júlia"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item">Webhook <span class="ctx-bold">document-received</span> existe no n8n (nunca ativado)</div>
+          <div class="ctx-item">Doc Reader atual é manual — usuário clica em botão no frontend</div>
+          <div class="ctx-item">Claude Vision (claude-3-5-sonnet) consegue extrair dados de documentos via imagem/PDF</div>
+          <div class="ctx-item">Arquivo relevante: <span class="ctx-bold">/src/components/mdzap/lead-panel/doc-reader-helpers.ts</span></div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option rec">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">n8n workflow separado — ativado quando WhatsApp recebe imagem/PDF → Claude Vision → extrai → salva no lead → output para Júlia <span class="rec-badge">RECOMENDADO</span></div>
+                <div class="q-opt-pros">+ Desacoplado, testável, reutilizável para múltiplos tipos de doc</div>
+                <div class="q-opt-cons">- Requer webhook de recebimento de mídia no WhatsApp</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">Tool dentro do workflow da Júlia (Claude tool_use com visão)</div>
+                <div class="q-opt-pros">+ Júlia tem contexto completo da conversa</div>
+                <div class="q-opt-cons">- Acoplamento, Júlia fica mais lenta/complexa</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-c">C</span>
+              <div>
+                <div class="q-opt-text">Edge Function Supabase disparada por trigger de storage</div>
+                <div class="q-opt-pros">+ Serverless, sem dependência do n8n</div>
+                <div class="q-opt-cons">- Difícil de debugar, fora do padrão da arquitetura MdFlow</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — Workflow n8n separado (A) ou tool dentro da Júlia (B)?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">Opção A — n8n separado</button>
+            <button class="q-ans-btn">Opção B — tool Júlia</button>
+            <button class="q-ans-btn">Opção C — Edge Function</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P4 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q4')">
+        <div class="q-num">P4</div>
+        <div class="q-title">Campo profissão nos leads</div>
+        <span class="q-toggle" id="q4-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q4">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"é a Júlia que vai cadastrar a profissão... a única coisa que vai ficar pendente é a profissão"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item">Campo <span class="ctx-bold">profissao</span> NÃO existe em <span class="ctx-bold">leads</span> — só existe em <span class="ctx-bold">clientes</span></div>
+          <div class="ctx-item">Arquivo de referência: <span class="ctx-bold">/supabase/migrations/20260319000001_mdzap_novas_tabelas.sql</span></div>
+          <div class="ctx-item">Subagente extrai da CTPS: salário, contrato (aberto/fechado), cargo</div>
+          <div class="ctx-item">Pergunta: cargo da CTPS = profissão? Ou campos separados?</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option rec">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">Migration simples: <span style="font-family:monospace;color:var(--accent3);font-size:0.78rem;">ALTER TABLE leads ADD COLUMN profissao TEXT</span> <span class="rec-badge">RECOMENDADO</span></div>
+                <div class="q-opt-pros">+ Limpo, consultável, indexável</div>
+                <div class="q-opt-cons">- Requer migration em produção</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">Usar ai_report JSONB como temporário</div>
+                <div class="q-opt-pros">+ Sem migration</div>
+                <div class="q-opt-cons">- Dados não estruturados, difícil filtrar/reportar</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-c">C</span>
+              <div>
+                <div class="q-opt-text">Campo observacoes como workaround</div>
+                <div class="q-opt-pros">+ Imediato</div>
+                <div class="q-opt-cons">- Péssima prática, impossível consultar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — Adiciona profissao em leads? cargo (CTPS) = profissão ou campo separado?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">SIM — profissao TEXT</button>
+            <button class="q-ans-btn">cargo = profissao (mesmo campo)</button>
+            <button class="q-ans-btn">Campos separados</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P5 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q5')">
+        <div class="q-num">P5</div>
+        <div class="q-title">Notificação de auditoria pendente</div>
+        <span class="q-toggle" id="q5-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q5">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"a gente tem que pensar em alguma feature no MD-ZAP que pode notificar que tá pendente a auditoria do lead, alguma coisa assim pra mostrar pros atendentes"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item">Campo <span class="ctx-bold">awaiting_human</span> (boolean genérico) já existe em leads</div>
+          <div class="ctx-item">Bug R4-BUG-05: lead_awaiting_human não propaga via realtime UPDATE</div>
+          <div class="ctx-item">Atendentes precisam saber quais leads aguardam auditoria humana</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">Novo campo: <span style="font-family:monospace;color:var(--accent3);font-size:0.78rem;">auditoria_status TEXT CHECK ('pendente'|'em_andamento'|'concluida')</span> em leads</div>
+                <div class="q-opt-pros">+ Rastreável, filtros, relatórios</div>
+                <div class="q-opt-cons">- Migration + mais complexidade</div>
+              </div>
+            </div>
+            <div class="q-option rec">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">awaiting_human=true + badge visual "Auditoria Pendente" na lista de conversas MdZap <span class="rec-badge">RECOMENDADO curto prazo</span></div>
+                <div class="q-opt-pros">+ Rápido, campo já existe, só UI</div>
+                <div class="q-opt-cons">- Genérico demais para rastrear histórico</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-c">C</span>
+              <div>
+                <div class="q-opt-text">Evento em mdzap_conversas_timeline com tag auditoria_solicitada</div>
+                <div class="q-opt-pros">+ Histórico permanente, audit trail</div>
+                <div class="q-opt-cons">- Mais complexo de implementar e consultar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — Precisa ser rastreado no histórico (log permanente) ou só badge visual?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">Só badge visual (B)</button>
+            <button class="q-ans-btn">Log permanente (A ou C)</button>
+            <button class="q-ans-btn">Ambos</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P6 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q6')">
+        <div class="q-num">P6</div>
+        <div class="q-title">Acesso da Júlia às restrições do lead</div>
+        <span class="q-toggle" id="q6-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q6">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"a Júlia, ela vai ter acesso, ou ela pode ter acesso ao back-end ou acesso a pasta ali de restrições, eu não sei como que a gente vai fazer"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item">Júlia roda via n8n que tem <span class="ctx-bold">service role Supabase</span> (acesso total)</div>
+          <div class="ctx-item">Restrições ficam em <span class="ctx-bold">leads.restricoes</span> (JSONB)</div>
+          <div class="ctx-item">n8n pode fazer SELECT e injetar no system prompt do Claude a cada ativação</div>
+          <div class="ctx-item">Custo: 1 query adicional por mensagem recebida</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option rec">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">n8n consulta leads.restricoes e injeta no system prompt do Claude a cada ativação <span class="rec-badge">RECOMENDADO</span></div>
+                <div class="q-opt-pros">+ Júlia sempre tem dados atualizados</div>
+                <div class="q-opt-cons">- 1 query por mensagem</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">Frontend passa restrições como contexto quando aciona Júlia</div>
+                <div class="q-opt-pros">+ Sem query no n8n</div>
+                <div class="q-opt-cons">- Dados podem estar desatualizados (cache frontend)</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-c">C</span>
+              <div>
+                <div class="q-opt-text">Webhook separado que busca e retorna dados para Júlia sob demanda</div>
+                <div class="q-opt-pros">+ Desacoplado</div>
+                <div class="q-opt-cons">- Latência adicional, mais complexidade</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — Júlia consulta em tempo real (a cada mensagem) ou só quando atendente "ativa" ela?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">Tempo real — toda mensagem (A)</button>
+            <button class="q-ans-btn">Só quando ativada</button>
+            <button class="q-ans-btn">Opção B — frontend injeta</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P7 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q7')">
+        <div class="q-num">P7</div>
+        <div class="q-title">Quem envia o resultado da auditoria ao lead</div>
+        <span class="q-toggle" id="q7-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q7">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"daí vai falar que ou a Júlia ou o atendente, eu ainda não sei o certo, mas quando a gente faz a auditoria e cadastra o lead"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item">Botão "Devolver para Júlia" já existe no frontend MdZap</div>
+          <div class="ctx-item">Atendente executa auditoria externamente (Boa Vista) e registra resultado</div>
+          <div class="ctx-item">Júlia pode ser ativada programaticamente via n8n após registro das restrições</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">Atendente sempre envia (modo humano)</div>
+                <div class="q-opt-pros">+ Controle total</div>
+                <div class="q-opt-cons">- Gargalo humano, inconsistência</div>
+              </div>
+            </div>
+            <div class="q-option rec">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">Atendente registra restrições → clica "Devolver para Júlia" → Júlia envia resultado <span class="rec-badge">RECOMENDADO</span></div>
+                <div class="q-opt-pros">+ Melhor dos dois mundos: controle + automação</div>
+                <div class="q-opt-cons">- Depende de atendente clicar no botão</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-c">C</span>
+              <div>
+                <div class="q-opt-text">Júlia envia automaticamente quando leads.restricoes é preenchido (trigger/realtime)</div>
+                <div class="q-opt-pros">+ Totalmente automático</div>
+                <div class="q-opt-cons">- Sem controle humano, pode enviar antes da hora</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — Devolver manual (B) ou automático quando restricoes é preenchido (C)?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">Opção A — só humano</button>
+            <button class="q-ans-btn">Opção B — manual + Júlia</button>
+            <button class="q-ans-btn">Opção C — automático</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P8 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q8')">
+        <div class="q-num">P8</div>
+        <div class="q-title">PDF de "nome limpo"</div>
+        <span class="q-toggle" id="q8-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q8">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"é pro PDF baixar também, mesmo não aparecendo nada, pra gente conseguir enviar pro lead que na auditoria que deu que o nome dele tá limpo"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item">Tipo <span class="ctx-bold">comprovante_restricao</span> já existe como tipo de documento no sistema</div>
+          <div class="ctx-item">Boa Vista gera PDF do relatório de consulta (mesmo quando limpo)</div>
+          <div class="ctx-item">MdFlow tem infraestrutura de documentos mas não gera PDFs próprios ainda</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option rec">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">Usar o próprio relatório PDF da Boa Vista — atendente faz download e envia via MdZap <span class="rec-badge">RECOMENDADO</span></div>
+                <div class="q-opt-pros">+ Zero desenvolvimento, credibilidade da fonte</div>
+                <div class="q-opt-cons">- Processo manual de download+upload</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">MdFlow gera documento próprio "Comprovante de Auditoria — Nome Limpo"</div>
+                <div class="q-opt-pros">+ Branded, profissional, automático</div>
+                <div class="q-opt-cons">- Requer geração de PDF (nova feature, sem infraestrutura atual)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — PDF da Boa Vista (A) ou documento gerado pelo MdFlow (B)?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">Opção A — PDF Boa Vista</button>
+            <button class="q-ans-btn">Opção B — MdFlow gera</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P9 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q9')">
+        <div class="q-num">P9</div>
+        <div class="q-title">Renda Receita — processo externo ou integração</div>
+        <span class="q-toggle" id="q9-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q9">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"a gente vai fazer nós mesmos a renda receita do LID, que é ver os impostos de renda... com base nas declarações do imposto de renda... já vai ter uma noção de quanto que o lead ganha"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item">NENHUMA integração com Receita Federal existe no sistema atual</div>
+          <div class="ctx-item">Processo: equipe acessa portal RF externamente, faz análise manual da declaração IR</div>
+          <div class="ctx-item">Caso lead não tenha declarado IR: Júlia solicita declaração</div>
+          <div class="ctx-item">Júlia tem contexto sobre o processo mas não executa nada automaticamente</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option rec">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">Processo 100% manual externo — resultado entra no sistema manualmente <span class="rec-badge">ATUAL</span></div>
+                <div class="q-opt-pros">+ Zero desenvolvimento necessário</div>
+                <div class="q-opt-cons">- Gargalo humano, não escalável</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">Integração futura via API com portal da Receita Federal</div>
+                <div class="q-opt-pros">+ Escalável, automático</div>
+                <div class="q-opt-cons">- Complexo, custo, prazo longo, regulatório</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — Renda receita é processo manual externo (A)? Júlia só solicita declaração IR se faltar — confirma?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">SIM — manual externo</button>
+            <button class="q-ans-btn">Planejar integração futura</button>
+            <button class="q-ans-btn">Júlia só solicita doc</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P10 -->
+    <div class="q-card">
+      <div class="q-header" onclick="toggleQ('q10')">
+        <div class="q-num">P10</div>
+        <div class="q-title">Indique Ganho — implementado ou só mencionado</div>
+        <span class="q-toggle" id="q10-toggle">▼</span>
+      </div>
+      <div class="q-body collapsible-body open" id="q10">
+        <div class="q-quote">
+          <div class="q-quote-label">📝 Trecho do Áudio</div>
+          <div class="q-quote-text">"a única coisa que a gente pode oferecer é o Indique Ganho e falar alguma coisa, de parabenizando o lead que ele tá com o nome limpo"</div>
+        </div>
+        <div class="q-context">
+          <div class="q-section-label ql-context">🔍 Contexto Técnico</div>
+          <div class="ctx-item">Rota <span class="ctx-bold">/indicacoes</span> existe no sistema MdFlow</div>
+          <div class="ctx-item">Não se sabe se o programa "Indique Ganho" está implementado na rota</div>
+          <div class="ctx-item">Fluxo de uso: lead com nome limpo → Júlia parabeniza → menciona possibilidade de indicar amigos</div>
+        </div>
+        <div>
+          <div class="q-section-label ql-options">⚡ Opções</div>
+          <div class="q-options">
+            <div class="q-option rec">
+              <span class="q-opt-label opt-a">A</span>
+              <div>
+                <div class="q-opt-text">Júlia apenas menciona verbalmente a possibilidade de indicar amigos (sem link/integração) <span class="rec-badge">MAIS SIMPLES</span></div>
+                <div class="q-opt-pros">+ Zero desenvolvimento, pode ser feito via prompt</div>
+                <div class="q-opt-cons">- Sem conversão mensurável de indicações</div>
+              </div>
+            </div>
+            <div class="q-option">
+              <span class="q-opt-label opt-b">B</span>
+              <div>
+                <div class="q-opt-text">Júlia envia link para página /indicacoes do sistema (portal do lead)</div>
+                <div class="q-opt-pros">+ Rastreável, converte melhor</div>
+                <div class="q-opt-cons">- Precisa confirmar se /indicacoes tem portal para leads externos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="q-answer">
+          <div class="q-answer-label">🔲 Resposta — "Indique Ganho" já está implementado em /indicacoes, ou Júlia apenas menciona verbalmente?</div>
+          <div class="q-answer-options">
+            <button class="q-ans-btn">Já implementado em /indicacoes</button>
+            <button class="q-ans-btn">Júlia só menciona verbalmente</button>
+            <button class="q-ans-btn">Implementar junto</button>
+          </div>
+          <textarea class="q-ans-input" rows="2" placeholder="Outra resposta: ___"></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEÇÃO 7 — O QUE PRECISA SER IMPLEMENTADO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔧</span>
+      <h2>Seção 7 — O Que Precisa ser Implementado</h2>
+      <span class="section-num">S7</span>
+    </div>
+
+    <div style="background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.2);border-radius:10px;padding:12px 18px;margin-bottom:20px;font-size:0.82rem;color:var(--accent4);">
+      Lista preliminar — será confirmada e priorizada após respostas P1-P10
+    </div>
+
+    <div class="impl-item">
+      <div class="impl-num">1</div>
+      <div>
+        <div class="impl-text">Migration: adicionar campo <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">profissao TEXT</span> em leads</div>
+        <div class="impl-tag">Aguarda resposta P4 — Backend / Supabase migration</div>
+      </div>
+      <span class="check-tag ct-back">Backend</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">2</div>
+      <div>
+        <div class="impl-text">Campo <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">auditoria_status</span> em leads ou ajuste de awaiting_human</div>
+        <div class="impl-tag">Aguarda resposta P5 — Backend / migration</div>
+      </div>
+      <span class="check-tag ct-back">Backend</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">3</div>
+      <div>
+        <div class="impl-text">Implementar webhook n8n <span class="code" style="display:inline;padding:1px 6px;font-size:0.75rem;">document-received</span> com Claude Vision para extração automática de RG/CNH/CTPS</div>
+        <div class="impl-tag">Aguarda resposta P3 — n8n workflow + Claude Vision</div>
+      </div>
+      <span class="check-tag ct-n8n">n8n</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">4</div>
+      <div>
+        <div class="impl-text">Implementar fluxo Midas completo (9 etapas) nos prompts e workflow da Júlia</div>
+        <div class="impl-tag">Aguarda respostas P1/P2/P6/P7 — n8n + Prompts</div>
+      </div>
+      <span class="check-tag ct-n8n">n8n</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">5</div>
+      <div>
+        <div class="impl-text">Corrigir tokens expirados ASSUMIR/DEVOLVER (n8n-001 P0)</div>
+        <div class="impl-tag">Bloqueante — n8n webhook credentials</div>
+      </div>
+      <span class="check-tag ct-n8n">n8n P0</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">6</div>
+      <div>
+        <div class="impl-text">Reparar ai-composer (HTTP 500) e julia-prompt-save (33% success)</div>
+        <div class="impl-tag">R4-BUG-01 e R4-BUG-02 — n8n workflows</div>
+      </div>
+      <span class="check-tag ct-n8n">n8n P1</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">7</div>
+      <div>
+        <div class="impl-text">Badge "Auditoria Pendente" na lista de conversas MdZap com realtime UPDATE</div>
+        <div class="impl-tag">Aguarda resposta P5 — Frontend + Fix R4-BUG-05</div>
+      </div>
+      <span class="check-tag ct-front">Frontend</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">8</div>
+      <div>
+        <div class="impl-text">Criação automática de lead quando CPF/telefone chega + vinculação lead_id à conversa</div>
+        <div class="impl-tag">Aguarda resposta P1 — n8n inbound + Frontend</div>
+      </div>
+      <span class="check-tag ct-front">Frontend + n8n</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">9</div>
+      <div>
+        <div class="impl-text">System prompt completo da Júlia para fluxo Midas (9 etapas, regras P0, JG por estado)</div>
+        <div class="impl-tag">Aguarda todas as respostas P1-P10 — Prompts</div>
+      </div>
+      <span class="check-tag ct-prompt">Prompts</span>
+    </div>
+    <div class="impl-item">
+      <div class="impl-num">10</div>
+      <div>
+        <div class="impl-text">System prompt do subagente de documentos (extração RG/CNH/CTPS/comprovante)</div>
+        <div class="impl-tag">Aguarda resposta P3 — Prompts Claude Vision</div>
+      </div>
+      <span class="check-tag ct-prompt">Prompts</span>
+    </div>
+
+  </div>
+
+  <!-- SEÇÃO 8 — ARQUIVOS CRÍTICOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📁</span>
+      <h2>Seção 8 — Arquivos Críticos de Referência</h2>
+      <span class="section-num">S8</span>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Propósito</th>
+            <th>Relevância</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="file-path">/src/pages/mdzap/index.tsx</td>
+            <td>Página principal MdZap (desktop)</td>
+            <td><span class="status-pill sp-crit">P0 — core</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/src/components/mdzap/MdzapJuliaLab.tsx</td>
+            <td>Sandbox Júlia — testes e ajustes de prompt</td>
+            <td><span class="status-pill sp-warn">P1 — prompts</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/src/components/mdzap/MdzapAdminIA.tsx</td>
+            <td>Admin de prompts da Júlia (CRUD)</td>
+            <td><span class="status-pill sp-warn">P1 — prompts</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/src/components/mdzap/lead-panel/LeadDadosTab.tsx</td>
+            <td>Formulário de dados do lead no painel lateral</td>
+            <td><span class="status-pill sp-warn">P1 — lead data</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/src/components/mdzap/lead-panel/doc-reader-helpers.ts</td>
+            <td>OCR atual — processamento manual de documentos</td>
+            <td><span class="status-pill sp-run">P1 — subagente</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/src/types/mdzap.types.ts</td>
+            <td>Interfaces TypeScript WhatsApp/conversas/mensagens</td>
+            <td><span class="status-pill sp-warn">P1 — tipos</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/src/types/lead.types.ts</td>
+            <td>Interface Lead (40+ campos)</td>
+            <td><span class="status-pill sp-warn">P1 — tipos</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/src/hooks/crm/useLeadFollowup.ts</td>
+            <td>Sistema de follow-up automatizado</td>
+            <td><span class="status-pill sp-done">P2 — followup</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/supabase/migrations/20260319000001_mdzap_novas_tabelas.sql</td>
+            <td>Schema MdZap — tabelas conversas, mensagens, Júlia</td>
+            <td><span class="status-pill sp-crit">P0 — schema</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/supabase/migrations/20260319000002_fn_mdzap_conversas.sql</td>
+            <td>RPC fn_mdzap_conversas — vinculação e contexto</td>
+            <td><span class="status-pill sp-crit">P0 — RPC</span></td>
+          </tr>
+          <tr>
+            <td class="file-path">/supabase/migrations/20260402100001_mdzap_db001_005_n8n_webhooks.sql</td>
+            <td>Definição dos webhooks n8n (11 mortos)</td>
+            <td><span class="status-pill sp-crit">P0 — n8n</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 9 — PRÓXIMOS PASSOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">✅</span>
+      <h2>Seção 9 — Próximos Passos</h2>
+      <span class="section-num">S9</span>
+    </div>
+
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Responder P1 a P10</strong> — definir arquitetura e comportamentos do fluxo Midas</div>
+        <span class="check-tag ct-user">Usuário</span>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Gerar HTML de prompts</strong> — system prompts da Júlia e do subagente de documentos (após P1-P10)</div>
+        <span class="check-tag ct-prompt">Prompts</span>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Rodar /project mdzap</strong> com este SPEC como documento de referência</div>
+        <span class="check-tag ct-user">Dev</span>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Implementar migration profissao</strong> em leads (Supabase production)</div>
+        <span class="check-tag ct-back">Backend</span>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Implementar subagente de documentos</strong> — n8n workflow com Claude Vision</div>
+        <span class="check-tag ct-n8n">n8n</span>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Implementar fluxo Midas nos prompts da Júlia</strong> — 9 etapas completas</div>
+        <span class="check-tag ct-prompt">Prompts</span>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Corrigir tokens n8n expirados</strong> — ASSUMIR/DEVOLVER (P0 bloqueante)</div>
+        <span class="check-tag ct-n8n">n8n P0</span>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Reparar webhooks quebrados</strong> — ai-composer (P1) + julia-prompt-save (P1)</div>
+        <span class="check-tag ct-n8n">n8n P1</span>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div class="check-text"><strong>Implementar badge auditoria pendente</strong> + fix realtime lead_awaiting_human</div>
+        <span class="check-tag ct-front">Frontend</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · MdZap SPEC v1.0 · 07/04/2026
+  </div>
+
+</div>
+
+<script>
+function toggleQ(id) {
+  const body = document.getElementById(id);
+  const toggle = document.getElementById(id + '-toggle');
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    toggle.classList.remove('open');
+    toggle.textContent = '▼';
+  } else {
+    body.classList.add('open');
+    toggle.classList.add('open');
+    toggle.textContent = '▲';
+  }
+}
+
+// Botões de resposta — highlight ao clicar
+document.querySelectorAll('.q-ans-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const siblings = this.parentElement.querySelectorAll('.q-ans-btn');
+    siblings.forEach(s => {
+      s.style.borderColor = '';
+      s.style.color = '';
+      s.style.background = '';
+    });
+    this.style.borderColor = 'var(--accent3)';
+    this.style.color = 'var(--accent3)';
+    this.style.background = 'rgba(79,255,176,0.08)';
+  });
+});
+
+// Animate bars on load
+window.addEventListener('load', () => {
+  document.querySelectorAll('.cause-bar-fill').forEach(bar => {
+    const w = bar.style.width;
+    bar.style.width = '0';
+    setTimeout(() => { bar.style.width = w; }, 300);
+  });
+});
+</script>
+</body>
+</html>
