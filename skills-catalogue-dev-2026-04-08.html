@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo de Skills de Dev — MdFlow / JARBAS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e;
+  --surface: #1a1714;
+  --card: #201d1a;
+  --card2: #252118;
+  --border: #2e2b27;
+  --primary: #20c997;
+  --primary-dim: rgba(32,201,151,0.12);
+  --primary-border: rgba(32,201,151,0.3);
+  --warn: #f59e0b;
+  --warn-dim: rgba(245,158,11,0.12);
+  --danger: #ef4444;
+  --danger-dim: rgba(239,68,68,0.12);
+  --success: #22c55e;
+  --success-dim: rgba(34,197,94,0.12);
+  --info: #60a5fa;
+  --info-dim: rgba(96,165,250,0.12);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.12);
+  --orange: #fb923c;
+  --orange-dim: rgba(251,146,60,0.12);
+  --text: #f5f0eb;
+  --muted: #9e9890;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+.layout { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #0d0b09;
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  padding: 24px 0;
+  z-index: 10;
+}
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .brand { font-family: Manrope, sans-serif; font-weight: 800; font-size: 13px; color: var(--primary); letter-spacing: 0.05em; }
+.sidebar-logo .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.sidebar-section { padding: 8px 20px 4px; font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.sidebar a {
+  display: block;
+  padding: 6px 20px;
+  font-size: 12.5px;
+  color: var(--muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+.sidebar a:hover { color: var(--text); background: var(--primary-dim); border-left-color: var(--primary-border); }
+.sidebar a.active { color: var(--primary); border-left-color: var(--primary); }
+.sidebar a .tag { float: right; font-size: 9px; padding: 1px 5px; border-radius: 3px; background: var(--primary-dim); color: var(--primary); margin-top: 1px; }
+.sidebar a .tag.dep { background: var(--danger-dim); color: var(--danger); }
+.sidebar a .tag.new { background: var(--warn-dim); color: var(--warn); }
+
+/* MAIN */
+main {
+  margin-left: 260px;
+  padding: 40px 48px;
+  max-width: calc(1200px + 260px);
+  width: 100%;
+}
+
+/* HEADER */
+.page-header {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header h1 {
+  font-family: Manrope, sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--primary); }
+.page-header .subtitle { font-size: 15px; color: var(--muted); max-width: 680px; line-height: 1.6; }
+.meta-chips { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.chip { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid; font-weight: 500; font-family: var(--mono); }
+.chip-green { border-color: var(--primary-border); color: var(--primary); background: var(--primary-dim); }
+.chip-blue { border-color: rgba(96,165,250,0.3); color: var(--info); background: var(--info-dim); }
+.chip-warn { border-color: rgba(245,158,11,0.3); color: var(--warn); background: var(--warn-dim); }
+.chip-purple { border-color: rgba(167,139,250,0.3); color: var(--purple); background: var(--purple-dim); }
+
+/* SECTIONS */
+.section { margin-bottom: 56px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.section-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.icon-green { background: var(--primary-dim); }
+.icon-blue { background: var(--info-dim); }
+.icon-warn { background: var(--warn-dim); }
+.icon-purple { background: var(--purple-dim); }
+.icon-danger { background: var(--danger-dim); }
+.icon-orange { background: var(--orange-dim); }
+.section-title { font-family: Manrope, sans-serif; font-size: 18px; font-weight: 700; }
+.section-subtitle { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+/* SKILL CARDS */
+.skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.skill-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.skill-card:hover { border-color: var(--primary-border); }
+.skill-card.deprecated { opacity: 0.6; border-style: dashed; }
+.skill-card.featured { border-color: var(--primary-border); background: linear-gradient(135deg, var(--card) 0%, rgba(32,201,151,0.04) 100%); }
+.skill-card.new-idea { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, var(--card) 0%, var(--warn-dim) 100%); }
+
+.skill-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.skill-name { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--primary); }
+.skill-name.deprecated { color: var(--muted); text-decoration: line-through; }
+.skill-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.badge-green { background: var(--success-dim); color: var(--success); }
+.badge-blue { background: var(--info-dim); color: var(--info); }
+.badge-warn { background: var(--warn-dim); color: var(--warn); }
+.badge-red { background: var(--danger-dim); color: var(--danger); }
+.badge-purple { background: var(--purple-dim); color: var(--purple); }
+.badge-orange { background: var(--orange-dim); color: var(--orange); }
+.badge-muted { background: rgba(158,152,144,0.15); color: var(--muted); }
+
+.skill-desc { font-size: 12.5px; color: var(--muted); line-height: 1.55; margin-bottom: 12px; }
+.skill-desc strong { color: var(--text); font-weight: 500; }
+
+.skill-details { font-size: 11.5px; color: #7a7568; }
+.skill-details ul { list-style: none; padding: 0; }
+.skill-details li { padding: 3px 0; padding-left: 14px; position: relative; }
+.skill-details li::before { content: "›"; position: absolute; left: 0; color: var(--primary); font-weight: 600; }
+
+.skill-trigger {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.skill-trigger .label { color: var(--warn); font-weight: 500; }
+.skill-flow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.flow-step {
+  font-size: 10.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--mono);
+}
+.flow-arrow { color: var(--primary); font-size: 12px; font-weight: 600; }
+
+/* ARCHITECTURE DIAGRAM */
+.arch-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.arch-phases { display: flex; gap: 0; }
+.arch-phase {
+  flex: 1;
+  text-align: center;
+  padding: 16px 8px;
+  position: relative;
+}
+.arch-phase::after {
+  content: "→";
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 16px;
+  z-index: 1;
+}
+.arch-phase:last-child::after { display: none; }
+.arch-phase .phase-num {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.arch-phase .phase-name {
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.arch-phase .phase-skill {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--primary);
+  padding: 2px 6px;
+  background: var(--primary-dim);
+  border-radius: 4px;
+  display: inline-block;
+  margin: 2px 1px;
+}
+
+/* GAP CARDS */
+.gap-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  border-left: 3px solid;
+}
+.gap-card.p0 { border-left-color: var(--danger); }
+.gap-card.p1 { border-left-color: var(--warn); }
+.gap-card.p2 { border-left-color: var(--info); }
+.gap-title { font-weight: 600; font-size: 13px; margin-bottom: 6px; }
+.gap-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.gap-example { margin-top: 8px; font-size: 11.5px; font-family: var(--mono); color: var(--info); background: var(--surface); padding: 6px 10px; border-radius: 5px; }
+
+/* NEW SKILL PROPOSAL */
+.proposal-box {
+  background: var(--card);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 14px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.proposal-box::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--warn), var(--primary), var(--purple));
+}
+.proposal-title {
+  font-family: Manrope, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.proposal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+.prop-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.prop-item .prop-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; }
+.prop-item ul { list-style: none; padding: 0; }
+.prop-item li { font-size: 12px; color: var(--text); padding: 3px 0; padding-left: 16px; position: relative; }
+.prop-item li::before { content: "◆"; position: absolute; left: 0; font-size: 7px; color: var(--primary); top: 6px; }
+
+.check-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.check-block .check-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+.check-item { display: flex; gap: 10px; padding: 5px 0; font-size: 12.5px; align-items: flex-start; }
+.check-icon { color: var(--primary); font-weight: 700; font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.check-icon.missing { color: var(--danger); }
+.check-icon.partial { color: var(--warn); }
+.check-text { color: var(--text); line-height: 1.4; }
+.check-text .muted { color: var(--muted); font-size: 11.5px; }
+
+/* COMPARISON TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th { background: var(--surface); color: var(--muted); text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface); }
+.td-skill { font-family: var(--mono); font-size: 11.5px; color: var(--primary); }
+.td-check { text-align: center; font-size: 15px; }
+
+/* CODE BLOCK */
+.code-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  overflow-x: auto;
+  line-height: 1.6;
+}
+.c-key { color: #60a5fa; }
+.c-str { color: #86efac; }
+.c-comment { color: #57534e; font-style: italic; }
+.c-warn { color: var(--warn); }
+.c-green { color: var(--primary); }
+
+/* ALERT BOX */
+.alert {
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 20px;
+  border-left: 3px solid;
+  line-height: 1.5;
+}
+.alert-warn { background: var(--warn-dim); border-color: var(--warn); color: #fde68a; }
+.alert-info { background: var(--info-dim); border-color: var(--info); color: #bfdbfe; }
+.alert-success { background: var(--success-dim); border-color: var(--success); color: #bbf7d0; }
+
+/* SECTION FULL */
+.skill-full-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.skill-full-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--card2);
+}
+.skill-full-title { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--primary); }
+.skill-full-body { padding: 20px; }
+.sub-section { margin-bottom: 16px; }
+.sub-section h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3e3a35; }
+
+/* FOOTER */
+footer {
+  margin-top: 64px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  main { margin-left: 0; padding: 24px 20px; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .arch-phases { flex-direction: column; }
+  .arch-phase::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -12px; }
+  .proposal-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">MDFLOW SKILLS</div>
+    <div class="sub">Catálogo técnico — CC / Beto</div>
+  </div>
+
+  <div class="sidebar-section">Visão Geral</div>
+  <a href="#overview">Arquitetura atual</a>
+  <a href="#pipeline">Pipeline de revisão</a>
+
+  <div class="sidebar-section">Skills de Orquestração</div>
+  <a href="#page-loop">/page-loop <span class="tag">v3</span></a>
+  <a href="#page-review">/page-review</a>
+  <a href="#page-preflight">/page-preflight</a>
+
+  <div class="sidebar-section">Skills de Auditoria</div>
+  <a href="#page-qa-tester">/page-qa-tester <span class="tag">v8</span></a>
+  <a href="#page-backend-tester">/page-backend-tester</a>
+  <a href="#page-deep-front-audit">/page-deep-front-audit</a>
+  <a href="#page-front-tester">/page-front-tester</a>
+  <a href="#page-senior-review">/page-senior-review</a>
+
+  <div class="sidebar-section">Skills de Execução</div>
+  <a href="#page-executor">/page-executor</a>
+  <a href="#page-backend-executor">/page-backend-executor</a>
+  <a href="#page-deep-front-executor">/page-deep-front-executor</a>
+  <a href="#page-senior-executor">/page-senior-executor</a>
+
+  <div class="sidebar-section">Infraestrutura</div>
+  <a href="#page-finalize">/page-finalize</a>
+  <a href="#html-report">/html-report</a>
+
+  <div class="sidebar-section">Deprecated</div>
+  <a href="#deprecated">/page-deep-explorer <span class="tag dep">dep</span></a>
+
+  <div class="sidebar-section">Nova Skill</div>
+  <a href="#gaps">O que falta hoje</a>
+  <a href="#proposal">Proposta: /page-complete <span class="tag new">IDEA</span></a>
+  <a href="#spec">Spec detalhada</a>
+  <a href="#mindflow">O que o CC sente falta</a>
+</aside>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main>
+
+<!-- HEADER -->
+<div class="page-header">
+  <h1>Catálogo de <span>Skills de Dev</span> — MdFlow</h1>
+  <p class="subtitle">
+    Documentação técnica completa de todas as skills de desenvolvimento, auditoria e execução disponíveis no projeto MdFlow.
+    Produzido para briefing de nova skill de revisão completa de página.
+  </p>
+  <div class="meta-chips">
+    <span class="chip chip-green">Claude Code CC</span>
+    <span class="chip chip-blue">MdFlow / JARBAS</span>
+    <span class="chip chip-warn">2026-04-08</span>
+    <span class="chip chip-purple">16 skills de dev</span>
+  </div>
+</div>
+
+<!-- ═══════════ VISÃO GERAL ═══════════ -->
+<div id="overview" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-blue">🗺️</div>
+    <div>
+      <div class="section-title">Arquitetura Atual</div>
+      <div class="section-subtitle">Como as skills se encaixam no ciclo de qualidade</div>
+    </div>
+  </div>
+
+  <div class="arch-box">
+    <div style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:20px; font-weight:600;">Ciclo page-loop v3.0 — fluxo orquestrado</div>
+    <div class="arch-phases">
+      <div class="arch-phase">
+        <div class="phase-num">Fase 0</div>
+        <div class="phase-name">Pre-flight</div>
+        <span class="phase-skill">page-preflight</span>
+      </div>
+      <div class="arch-phase">
+        <div class="phase-num">Fase 1</div>
+        <div class="phase-name">Backend</div>
+        <span class="phase-skill">backend-tester</span><br>
+        <span class="phase-skill">backend-executor</span>
+      </div>
+      <div class="arch-phase">
+        <div class="phase-num">Fase 2 (loop)</div>
+        <div class="phase-name">QA Funcional</div>
+        <span class="phase-skill">qa-tester</span><br>
+        <span class="phase-skill">executor</span>
+      </div>
+      <div class="arch-phase">
+        <div class="phase-num">Fase 3</div>
+        <div class="phase-name">Deep Front</div>
+        <span class="phase-skill">deep-front-audit</span><br>
+        <span class="phase-skill">deep-front-executor</span><br>
+        <span class="phase-skill">front-tester</span>
+      </div>
+      <div class="arch-phase">
+        <div class="phase-num">Fase 4</div>
+        <div class="phase-name">Palavra Final</div>
+        <span class="phase-skill">senior-review</span><br>
+        <span class="phase-skill">senior-executor</span>
+      </div>
+      <div class="arch-phase">
+        <div class="phase-num">Fim</div>
+        <div class="phase-name">Finalize</div>
+        <span class="phase-skill">page-finalize</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Contexto importante:</strong> O projeto MdFlow é um SaaS jurídico multi-tenant para o escritório MP Advocacia. ~5.800 processos de direito do consumidor (negativação indevida).
+    33 rotas, React 18 + TypeScript + Supabase + n8n. Cada página é revisada ciclicamente — as skills abaixo compõem esse ciclo.
+  </div>
+</div>
+
+<!-- ═══════════ PIPELINE ═══════════ -->
+<div id="pipeline" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-green">🔁</div>
+    <div>
+      <div class="section-title">Pipeline de Revisão</div>
+      <div class="section-subtitle">Tempo e profundidade de cada etapa</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Skill</th>
+        <th>Tipo</th>
+        <th>Tempo ~</th>
+        <th>Profundidade</th>
+        <th>Gera HTML?</th>
+        <th>Altera código?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-skill">/page-preflight</td>
+        <td><span class="badge badge-blue">VALIDAÇÃO</span></td>
+        <td>3-5 min</td>
+        <td>7 checks de ambiente</td>
+        <td class="td-check">❌</td>
+        <td class="td-check">❌</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-backend-tester</td>
+        <td><span class="badge badge-purple">AUDITORIA</span></td>
+        <td>15-20 min</td>
+        <td>Schema + RPCs + RLS + Webhooks</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">❌</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-backend-executor</td>
+        <td><span class="badge badge-orange">EXECUÇÃO</span></td>
+        <td>10-30 min</td>
+        <td>Migrations SQL, RPCs, RLS fixes</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">✅</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-qa-tester</td>
+        <td><span class="badge badge-purple">AUDITORIA</span></td>
+        <td>20-40 min</td>
+        <td>17 grupos (A0→Q), browser + banco</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">❌</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-executor</td>
+        <td><span class="badge badge-orange">EXECUÇÃO</span></td>
+        <td>20-40 min</td>
+        <td>Bugs P0→P1→P2, 1 commit por bug</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">✅</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-deep-front-audit</td>
+        <td><span class="badge badge-purple">AUDITORIA</span></td>
+        <td>20-30 min</td>
+        <td>9 categorias UI/UX, 13 greps DS, 5 breakpoints</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">❌</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-deep-front-executor</td>
+        <td><span class="badge badge-orange">EXECUÇÃO</span></td>
+        <td>20-40 min</td>
+        <td>CSS → JSX → Funcional, loop até nota ≥ 9</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">✅</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-front-tester</td>
+        <td><span class="badge badge-purple">AUDITORIA</span></td>
+        <td>15-25 min</td>
+        <td>13 grupos interativos A→M, keyboard, a11y</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">❌</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-senior-review</td>
+        <td><span class="badge badge-warn">SÊNIOR</span></td>
+        <td>30-60 min</td>
+        <td>≥80 checks, contexto máximo, veredicto final</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">❌</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-senior-executor</td>
+        <td><span class="badge badge-orange">EXECUÇÃO</span></td>
+        <td>20-40 min</td>
+        <td>Backend + Frontend + n8n, todos os achados sênior</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">✅</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-finalize</td>
+        <td><span class="badge badge-green">CLOSURE</span></td>
+        <td>10-15 min</td>
+        <td>Coleta reports, atualiza core KB, push</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">⚠️ KB</td>
+      </tr>
+      <tr>
+        <td class="td-skill">/page-loop</td>
+        <td><span class="badge badge-blue">ORQUESTRADOR</span></td>
+        <td>3-4 horas</td>
+        <td>Todas as fases acima em sequência</td>
+        <td class="td-check">✅</td>
+        <td class="td-check">✅</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════ SKILLS EM DETALHE ═══════════ -->
+
+<!-- PAGE-LOOP -->
+<div id="page-loop" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-blue">🔁</div>
+    <div>
+      <div class="section-title">/page-loop — Orquestrador de Qualidade v3.0</div>
+      <div class="section-subtitle">O maestro de todas as skills</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card featured">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-loop {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-blue">ORQUESTRADOR</span>
+        <span class="badge badge-green">v3.0</span>
+        <span class="badge badge-warn">3-4h</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <div class="sub-section">
+        <h4>O que faz</h4>
+        <p style="font-size:13px; color:var(--muted); line-height:1.6;">
+          Orquestrador completo de 5 fases. Garante que <strong>cada fase só inicia se a anterior passou</strong>.
+          P0 bloqueante encontrado → resolve antes de avançar. Máximo 2 loops de QA para evitar diminishing returns.
+          Único HTML aberto no browser é o loop-report final.
+        </p>
+      </div>
+      <div class="sub-section">
+        <h4>Sintaxe</h4>
+        <div class="code-block">
+<span class="c-green">/page-loop clientes</span>                <span class="c-comment"># todas as fases</span>
+<span class="c-green">/page-loop clientes --from fase2</span>    <span class="c-comment"># começa na fase 2</span>
+<span class="c-green">/page-loop clientes --only fase1,fase3</span> <span class="c-comment"># só fases listadas + finalize</span>
+<span class="c-green">/page-loop clientes --skip fase3</span>    <span class="c-comment"># pula fase 3</span></div>
+      </div>
+      <div class="sub-section">
+        <h4>5 Fases</h4>
+        <div class="check-item"><span class="check-icon">0</span><div class="check-text"><strong>Pre-flight</strong> — valida ambiente antes de gastar tokens<br><span class="muted">7 checks: spec, dev server, TypeScript, Supabase, git, reports, carregamento</span></div></div>
+        <div class="check-item"><span class="check-icon">1</span><div class="check-text"><strong>Backend First</strong> — schema-first para evitar falsos positivos no QA<br><span class="muted">backend-tester + backend-executor</span></div></div>
+        <div class="check-item"><span class="check-icon">2</span><div class="check-text"><strong>QA Funcional</strong> — loop máx 2x, 17 grupos de testes<br><span class="muted">qa-tester + executor, parar após P0 = 0</span></div></div>
+        <div class="check-item"><span class="check-icon">3</span><div class="check-text"><strong>Deep Front</strong> — UI/UX profunda, 9 categorias, 5 breakpoints<br><span class="muted">deep-front-audit + deep-front-executor + front-tester</span></div></div>
+        <div class="check-item"><span class="check-icon">4</span><div class="check-text"><strong>Palavra Final</strong> — senior review com contexto máximo, veredicto PRONTA/QUASE/NÃO PRONTA<br><span class="muted">senior-review + senior-executor</span></div></div>
+      </div>
+      <div class="sub-section">
+        <h4>Veredicto final</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+          <div style="background:var(--success-dim); border:1px solid rgba(34,197,94,0.3); padding:10px; border-radius:6px; text-align:center;">
+            <div style="color:var(--success); font-weight:700; font-size:13px;">PRONTA</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:4px;">nota ≥ 8.5, zero P0, ≤2 P1</div>
+          </div>
+          <div style="background:var(--warn-dim); border:1px solid rgba(245,158,11,0.3); padding:10px; border-radius:6px; text-align:center;">
+            <div style="color:var(--warn); font-weight:700; font-size:13px;">QUASE</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:4px;">nota 7.0-8.4, zero P0, P1 docs</div>
+          </div>
+          <div style="background:var(--danger-dim); border:1px solid rgba(239,68,68,0.3); padding:10px; border-radius:6px; text-align:center;">
+            <div style="color:var(--danger); font-weight:700; font-size:13px;">NÃO PRONTA</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:4px;">nota &lt; 7.0 ou P0 não resolvidos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-REVIEW -->
+<div id="page-review" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-green">📋</div>
+    <div>
+      <div class="section-title">/page-review — Entry Point Humano</div>
+      <div class="section-subtitle">Captura observações do Christian antes do QA automático</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-review {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-green">ENTRY POINT</span>
+        <span class="badge badge-muted">v1.0</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <div class="skill-flow">
+        <span class="flow-step">Cria docs/revisoes/{PAGINA}.md</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Template pré-preenchido da spec</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Christian adiciona observações</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Dispara /page-qa-tester</span>
+      </div>
+      <div style="margin-top:14px; font-size:12.5px; color:var(--muted);">
+        Importância: garante que os olhos do Christian (o que ele viu na UI) viram <strong>pendências manuais P0 implícitas</strong> que o CC testa primeiro.
+        O template lista automaticamente componentes, drawers, modais e webhooks extraídos da spec.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-PREFLIGHT -->
+<div id="page-preflight" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-green">✅</div>
+    <div>
+      <div class="section-title">/page-preflight — Validação de Ambiente</div>
+      <div class="section-subtitle">7 checks que bloqueiam desperdício de tokens</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-preflight {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-blue">VALIDAÇÃO</span>
+        <span class="badge badge-muted">~3-5min</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div class="check-item"><span class="check-icon">1</span><div class="check-text"><strong>Spec existe</strong> — BLOQUEANTE<br><span class="muted">e3__ ou _resumido__ na pasta docs/</span></div></div>
+        <div class="check-item"><span class="check-icon">2</span><div class="check-text"><strong>Dev server :8080</strong> — BLOQUEANTE<br><span class="muted">auto-inicia se não estiver rodando</span></div></div>
+        <div class="check-item"><span class="check-icon">3</span><div class="check-text"><strong>TypeScript sem erros</strong> — BLOQUEANTE<br><span class="muted">npx tsc --noEmit filtrado pela página</span></div></div>
+        <div class="check-item"><span class="check-icon">4</span><div class="check-text"><strong>Supabase token válido</strong> — WARNING<br><span class="muted">HTTP 200 na Management API</span></div></div>
+        <div class="check-item"><span class="check-icon">5</span><div class="check-text"><strong>Pasta reports</strong> — AUTO-FIX<br><span class="muted">cria ~/beto-reports/{PAGINA}/ se necessário</span></div></div>
+        <div class="check-item"><span class="check-icon">6</span><div class="check-text"><strong>Git limpo</strong> — WARNING<br><span class="muted">sem changes não commitados</span></div></div>
+        <div class="check-item"><span class="check-icon">7</span><div class="check-text"><strong>Página carrega HTTP 200</strong> — WARNING<br><span class="muted">curl no localhost (SPA pode ser falso positivo)</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-QA-TESTER -->
+<div id="page-qa-tester" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🔍</div>
+    <div>
+      <div class="section-title">/page-qa-tester — QA Profundo v8.0</div>
+      <div class="section-subtitle">17 grupos (A0→Q), browser + banco + n8n + spec-aware</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-qa-tester {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-purple">AUDITORIA</span>
+        <span class="badge badge-green">v8.0</span>
+        <span class="badge badge-muted">20-40min</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <div class="sub-section">
+        <h4>Dois modos</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div style="background:var(--surface); border:1px solid var(--border); padding:12px; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; margin-bottom:6px;">Modo A — QA completo</div>
+            <div style="font-size:11.5px; color:var(--muted);">Revisão total: spec + pendências + código + browser + banco + n8n. Gera qa-report-R{N}.html</div>
+          </div>
+          <div style="background:var(--surface); border:1px solid var(--border); padding:12px; border-radius:8px;">
+            <div style="font-size:12px; font-weight:600; margin-bottom:6px;">Modo B — Reteste pós-fix</div>
+            <div style="font-size:11.5px; color:var(--muted);">Lê execution-log, verifica visualmente cada bug ✅, smoke test geral. Foco em regressões.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <h4>17 grupos de teste</h4>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; font-size:11px;">
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>A0</strong> TypeScript compilation</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>A</strong> Acesso e carregamento</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>B</strong> KPIs / Dashboard cards</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>C</strong> Listagem principal</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>D</strong> Filtros e busca</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>E</strong> Criar novo registro</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>F</strong> Editar registro</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>G</strong> Deletar / Arquivar</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>H</strong> Drawers e Modais</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>I</strong> Ações específicas da página</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>J</strong> Automações n8n</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>K</strong> Real-time e updates</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>L</strong> Backend: tabelas e RPCs</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>M</strong> Design System violations</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>N</strong> Componentes compartilhados</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>O</strong> Cross-Context (ClienteDrawer)</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>P</strong> Documento Tiers</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);"><strong>Q</strong> Silent-Drop Audit (RPCs)</div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <h4>Inovações v8.0 (diferenciais)</h4>
+        <div class="check-item"><span class="check-icon">★</span><div class="check-text"><strong>Silent-Drop Audit (grupo Q)</strong> — verifica se o frontend envia campos que a RPC não aceita (dado nunca salvo, sem erro)</div></div>
+        <div class="check-item"><span class="check-icon">★</span><div class="check-text"><strong>Cross-Context (grupo O)</strong> — ClienteDrawer em /crm vs /clientes vs /distribuicao tem tabs diferentes</div></div>
+        <div class="check-item"><span class="check-icon">★</span><div class="check-text"><strong>Documento Tiers (grupo P)</strong> — 3 tiers de documentos com lógica específica do negócio jurídico</div></div>
+        <div class="check-item"><span class="check-icon">★</span><div class="check-text"><strong>Fluxos assíncronos (J8)</strong> — aguarda polling do n8n para confirmar estado FINAL (não só "Gerando...")</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-BACKEND-TESTER -->
+<div id="page-backend-tester" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🗄️</div>
+    <div>
+      <div class="section-title">/page-backend-tester — Auditoria de Backend v3.0</div>
+      <div class="section-subtitle">Schema + RPCs + RLS + Webhooks. Sincero e brutal.</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-backend-tester {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-purple">AUDITORIA</span>
+        <span class="badge badge-green">v3.0</span>
+        <span class="badge badge-muted">15-20min</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <div class="sub-section">
+        <h4>12 Passos</h4>
+        <div style="column-count:2; column-gap:16px; font-size:12px; color:var(--muted);">
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P0</strong> Contexto (spec + schema)</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P0B</strong> TypeScript compilation</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P1</strong> Inventário real do banco</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P2</strong> Auditoria de schema</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P3</strong> Auditoria de RPCs</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P3D</strong> Silent-Drop Audit</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P4</strong> Testes execução RPCs</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P5</strong> RLS: isolamento multi-tenant</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P5B</strong> Soft-delete enforcement</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P6</strong> Webhooks n8n + envelope</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P7</strong> Spec-to-schema diff</div>
+          <div style="break-inside:avoid; padding:4px 0;"><strong style="color:var(--text);">P8</strong> Performance + índices</div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <h4>8 Regras absolutas</h4>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text"><strong>Multi-tenant obrigatório:</strong> testar com org_id fictício. Se retorna dados = P0 crítico.</div></div>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text"><strong>RLS falho = P0 bloqueante.</strong> Nunca minimizar vazamento de dados entre tenants.</div></div>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text"><strong>Schema drift = bug.</strong> Campo na spec mas não no banco — está faltando, ponto final.</div></div>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text"><strong>Soft-delete enforcement:</strong> toda query deve ter <code style="font-family:var(--mono); color:var(--primary);">.is('deleted_at', null)</code></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-DEEP-FRONT-AUDIT -->
+<div id="page-deep-front-audit" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🎨</div>
+    <div>
+      <div class="section-title">/page-deep-front-audit — UI/UX Unificada v1.0</div>
+      <div class="section-subtitle">9 categorias, 13 greps DS, 5 breakpoints. Código + visual.</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-deep-front-audit {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-purple">AUDITORIA</span>
+        <span class="badge badge-blue">Merge deep-explorer + page-front</span>
+        <span class="badge badge-muted">20-30min</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <div class="sub-section">
+        <h4>13 grep checks automáticos (Design System)</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:11.5px;">
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">Cores hardcoded (<code style="font-family:var(--mono);">bg-[#...</code>)</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">Ícones de outras libs (heroicons, phosphor)</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">Fontes hardcoded no JSX</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">Arquivos acima de 500 linhas</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text"><code style="font-family:var(--mono);">console.log</code> não removidos</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">staleTime undefined em React Query</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">organizacao_id ausente nas queries</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">deleted_at não filtrado</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">Modal dentro de modal</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">navigate() após response.success (Action-Driven)</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">Valores monetários em float (não centavos INT)</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">any implícito no TypeScript</div></div>
+          <div class="check-item"><span class="check-icon partial">⚑</span><div class="check-text">fetch direto para APIs externas (sem n8n)</div></div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <h4>5 breakpoints visuais obrigatórios</h4>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="chip chip-blue">375px mobile</span>
+          <span class="chip chip-blue">640px tablet small</span>
+          <span class="chip chip-blue">768px tablet</span>
+          <span class="chip chip-blue">1024px desktop estreito</span>
+          <span class="chip chip-blue">1280px desktop padrão</span>
+        </div>
+      </div>
+      <div class="sub-section">
+        <h4>9 categorias com nota 0-10</h4>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; font-size:11px;">
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Layout & Grid</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Tokens & Design System</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Tipografia</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Responsividade</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Interatividade</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Estados (loading/empty/error)</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Formulários & Validação</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Acessibilidade (a11y)</div>
+          <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">Performance percebida</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-FRONT-TESTER -->
+<div id="page-front-tester" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🖱️</div>
+    <div>
+      <div class="section-title">/page-front-tester — Cobertura Interativa v2.0</div>
+      <div class="section-subtitle">13 grupos de interação: testa CADA elemento clicável</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-front-tester {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-purple">AUDITORIA</span>
+        <span class="badge badge-green">v2.0</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <p style="font-size:12.5px; color:var(--muted);">
+        Foca em <strong>interação</strong> — não UI/UX visual. Cada botão, cada tab, cada shortcut de teclado, cada modal,
+        cada drag-and-drop. Complementa o deep-front-audit que foca em código e visual.
+      </p>
+      <div style="margin-top:12px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; font-size:11px;">
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">A — Carregamento inicial</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">B — Filtros e search</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">C — Ações da tabela</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">D — Drawer/modal abrir</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">E — Abas internas</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">F — Formulários</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">G — Keyboard shortcuts</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">H — Responsividade</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">I — Edge cases</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">J — Drag and Drop</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">K — Realtime</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">L — Multi-tenant</div>
+        <div style="background:var(--surface); padding:6px 10px; border-radius:5px; border:1px solid var(--border);">M — Acessibilidade</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-SENIOR-REVIEW -->
+<div id="page-senior-review" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-warn">🎯</div>
+    <div>
+      <div class="section-title">/page-senior-review — A Palavra Final v2.0</div>
+      <div class="section-subtitle">≥80 checks, contexto máximo, veredicto formal. Não aceita "já foi testado".</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card featured">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-senior-review {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-warn">SÊNIOR</span>
+        <span class="badge badge-green">v2.0</span>
+        <span class="badge badge-muted">30-60min</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <div class="sub-section">
+        <h4>Contexto carregado (5 fontes)</h4>
+        <div class="check-item"><span class="check-icon">1</span><div class="check-text">Core KB da página (<code style="font-family:var(--mono);">mdflow-core-v4.html</code>)</div></div>
+        <div class="check-item"><span class="check-icon">2</span><div class="check-text">Spec completa (e3__ + _resumido__ + pendências manuais)</div></div>
+        <div class="check-item"><span class="check-icon">3</span><div class="check-text">Documentação técnica do sistema (DS v5 + BACKEND.txt + Frontend Manual)</div></div>
+        <div class="check-item"><span class="check-icon">4</span><div class="check-text">TODOS os relatórios anteriores da página (QA, execution, backend, front)</div></div>
+        <div class="check-item"><span class="check-icon">5</span><div class="check-text">Código-fonte completo + commits do ciclo atual</div></div>
+      </div>
+      <div class="sub-section">
+        <h4>Postura obrigatória (diferencial vs outras skills)</h4>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text">Não aceita "já foi testado" — re-testa os pontos frágeis dos ciclos anteriores</div></div>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text">Verifica o fix, não a intenção — commit diz "corrigido" mas não funciona = P0</div></div>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text">Testa combinações — testes individuais passaram, a combinação pode quebrar</div></div>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text">Sempre verifica multi-tenant: org_id real E org_id fictício</div></div>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text">Não pula n8n — se spec diz que webhook dispara, verifica que disparou</div></div>
+        <div class="check-item"><span class="check-icon">!</span><div class="check-text">Confia na spec, não na implementação — spec diz X, código faz Y = bug</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXECUTORS (resumido) -->
+<div id="page-executor" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-orange">⚡</div>
+    <div>
+      <div class="section-title">Skills de Execução</div>
+      <div class="section-subtitle">Corrigem o que as auditorias encontraram. 1 commit por bug.</div>
+    </div>
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">/page-executor</span>
+        <div class="skill-badges"><span class="badge badge-orange">EXECUÇÃO</span><span class="badge badge-green">v4.0</span></div>
+      </div>
+      <div class="skill-desc">
+        Lê o QA report → corrige <strong>P0→P1→P2</strong> → 1 commit por bug → verifica → log HTML → push.
+        Inclui: silent-drop check, cross-page impact, TypeScript verify após cada fix, spec-aware.
+      </div>
+      <div class="skill-details">
+        <ul>
+          <li>Apresenta lista de bugs antes de executar (confirmação visual)</li>
+          <li>Ordem: P0 → P1 → P2 → dependências antes de dependentes</li>
+          <li>Migrations SQL antes dos componentes que dependem delas</li>
+          <li>Verifica cross-page impact antes de alterar componente compartilhado</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="page-backend-executor" class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">/page-backend-executor</span>
+        <div class="skill-badges"><span class="badge badge-orange">EXECUÇÃO</span></div>
+      </div>
+      <div class="skill-desc">
+        Aplica <strong>migrations SQL, cria RPCs, corrige RLS</strong> via Supabase MCP.
+        Loop até nota ≥ 9 (máx 3 ciclos). Usa Management API para DDL.
+      </div>
+      <div class="skill-details">
+        <ul>
+          <li>Usa mcp__claude_ai_Supabase__apply_migration para DDL</li>
+          <li>RETURNING id em todo INSERT</li>
+          <li>TEXT CHECK em vez de ENUM nativo</li>
+          <li>SECURITY DEFINER em RPCs tenant-aware</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="page-deep-front-executor" class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">/page-deep-front-executor</span>
+        <div class="skill-badges"><span class="badge badge-orange">EXECUÇÃO</span></div>
+      </div>
+      <div class="skill-desc">
+        Corrige achados do deep-front-audit. Ordem: <strong>CSS → JSX → Funcional</strong>.
+        Loop interno até nota ≥ 9 (máx 3 ciclos). Screenshot como evidência após cada fix visual.
+      </div>
+      <div class="skill-details">
+        <ul>
+          <li>Nunca hardcode de cor — sempre tokens CSS var(--token)</li>
+          <li>hex → CSS vars obrigatório</li>
+          <li>Glassmorphism apenas em cards/modais, nunca tabelas/inputs</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="page-senior-executor" class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">/page-senior-executor</span>
+        <div class="skill-badges"><span class="badge badge-orange">EXECUÇÃO</span><span class="badge badge-warn">SÊNIOR</span></div>
+      </div>
+      <div class="skill-desc">
+        Executa TODOS os achados do senior-review — <strong>backend + frontend + n8n</strong> no mesmo ciclo.
+        Commit por fix. Mais poderoso e abrangente que executor padrão.
+      </div>
+      <div class="skill-details">
+        <ul>
+          <li>Corrige banco, código e workflows n8n no mesmo ciclo</li>
+          <li>Usa contexto máximo do senior-review</li>
+          <li>Prioridade: backend → frontend → n8n → documentação</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-FINALIZE -->
+<div id="page-finalize" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-green">🏁</div>
+    <div>
+      <div class="section-title">/page-finalize — Encerramento de Ciclo v4.0</div>
+      <div class="section-subtitle">Coleta reports, atualiza core KB, push em ambos os repos</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/page-finalize {PAGINA}</span>
+      <div class="skill-badges">
+        <span class="badge badge-green">CLOSURE</span>
+        <span class="badge badge-muted">v4.0</span>
+      </div>
+    </div>
+    <div class="skill-full-body">
+      <div class="skill-flow">
+        <span class="flow-step">Coleta todos os 9 reports</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Backup do core HTML</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Atualiza seção da página no core</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Marca pendências resolvidas</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Push ~/beta-mdflow + ~/beto-reports</span>
+      </div>
+      <div style="margin-top:12px; font-size:12px; color:var(--muted);">
+        <strong style="color:var(--text);">Regra R1:</strong> Core HTML é ÚNICO — <code style="font-family:var(--mono); color:var(--primary);">mdflow-core-v4.html</code>. Nunca criar v5 ou v6. Backup automático antes de qualquer update.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HTML-REPORT -->
+<div id="html-report" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-blue">📄</div>
+    <div>
+      <div class="section-title">/html-report — Design System de Relatórios</div>
+      <div class="section-subtitle">Padrão visual obrigatório para todos os HTMLs gerados</div>
+    </div>
+  </div>
+
+  <div class="skill-full-card">
+    <div class="skill-full-header">
+      <span class="skill-full-title">/html-report</span>
+      <div class="skill-badges"><span class="badge badge-blue">INFRAESTRUTURA</span></div>
+    </div>
+    <div class="skill-full-body">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px;">
+        <div><strong>Paleta:</strong><br><code style="font-family:var(--mono); color:var(--primary);">--bg:#12100e --surface:#1a1714 --card:#201d1a</code></div>
+        <div><strong>Accent:</strong><br><code style="font-family:var(--mono); color:var(--primary);">--primary:#20c997 (INALTERÁVEL)</code></div>
+        <div><strong>Fontes:</strong><br>Inter (corpo) • Manrope (headings) • JetBrains Mono (código)</div>
+        <div><strong>Self-contained:</strong><br>Zero dependências externas, CSS + JS inline</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEPRECATED -->
+<div id="deprecated" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-danger">🚫</div>
+    <div>
+      <div class="section-title">Skills Deprecadas</div>
+      <div class="section-subtitle">Não usar — foram substituídas por versões unificadas</div>
+    </div>
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-card deprecated">
+      <div class="skill-header">
+        <span class="skill-name deprecated">/page-deep-explorer</span>
+        <span class="badge badge-red">DEPRECATED</span>
+      </div>
+      <div class="skill-desc">Substituído por <strong>/page-deep-front-audit</strong>. Era a metade "exploração" do que hoje é unificado.</div>
+    </div>
+    <div class="skill-card deprecated">
+      <div class="skill-header">
+        <span class="skill-name deprecated">/page-front</span>
+        <span class="badge badge-red">DEPRECATED</span>
+      </div>
+      <div class="skill-desc">Substituído por <strong>/page-deep-front-audit</strong>. Era a metade "audit visual" separada.</div>
+    </div>
+    <div class="skill-card deprecated">
+      <div class="skill-header">
+        <span class="skill-name deprecated">/page-polisher</span>
+        <span class="badge badge-red">DEPRECATED</span>
+      </div>
+      <div class="skill-desc">Substituído por <strong>/page-deep-front-executor</strong>. Executor de polimento visual.</div>
+    </div>
+    <div class="skill-card deprecated">
+      <div class="skill-header">
+        <span class="skill-name deprecated">/page-front-executor</span>
+        <span class="badge badge-red">DEPRECATED</span>
+      </div>
+      <div class="skill-desc">Substituído por <strong>/page-deep-front-executor</strong>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ GAPS ═══════════ -->
+<div id="gaps" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-danger">🔎</div>
+    <div>
+      <div class="section-title">O que falta no pipeline atual</div>
+      <div class="section-subtitle">Gaps identificados que nenhuma skill atual cobre bem</div>
+    </div>
+  </div>
+
+  <div class="alert alert-warn">
+    Esta análise é baseada no que o CC observa rodando as skills dia a dia no MdFlow.
+    São os pontos onde erros "escapam" mesmo após rodar o page-loop completo.
+  </div>
+
+  <div class="gap-card p0">
+    <div class="gap-title">❌ GAP-01 — Lógica de negócio jurídica não é testada</div>
+    <div class="gap-desc">
+      Nenhuma skill valida se a <strong>lógica do domínio jurídico está correta</strong>.
+      Ex: um processo pode ser distribuído sem ter restrição vinculada? Um acordo pode ser criado sem processo ativo?
+      O campo "valor da causa" pode ficar vazio em distribuição? A skill atual testa "o botão funciona" mas não "faz sentido para o negócio".
+    </div>
+    <div class="gap-example">Exemplo: /acordos aceita criar acordo sem processo_id → dado inválido no banco mas sem erro de UI</div>
+  </div>
+
+  <div class="gap-card p0">
+    <div class="gap-title">❌ GAP-02 — Fluxo Lead-to-Cash não é testado end-to-end</div>
+    <div class="gap-desc">
+      O pipeline /crm → /clientes → /distribuicao → /processos → /controller → /decisoes → /acordos → /financeiro → /execucoes
+      nunca é testado como <strong>fluxo contínuo</strong>. Cada página é testada isoladamente. Quebras no handoff entre páginas
+      (ex: lead convertido no CRM não aparece em /clientes) nunca são detectadas pelas skills atuais.
+    </div>
+    <div class="gap-example">Exemplo: processo criado em /distribuicao não aparece no /controller porque falta campo distribuicao_status</div>
+  </div>
+
+  <div class="gap-card p0">
+    <div class="gap-title">❌ GAP-03 — Cegueira financeira não é sistematicamente testada</div>
+    <div class="gap-desc">
+      O padrão <code style="font-family:var(--mono);">acesso_financeiro=false</code> → R$••••• deve ser respeitado em
+      <strong>6+ páginas</strong> (/financeiro, /acordos, /execucoes, /pagina_processo, /audiencias, /dashboard).
+      Nenhuma skill atual troca o perfil para um usuário sem acesso_financeiro e verifica sistematicamente que os valores foram mascarados.
+    </div>
+    <div class="gap-example">Exemplo: /pagina_processo exibe valor da causa mesmo com acesso_financeiro=false</div>
+  </div>
+
+  <div class="gap-card p0">
+    <div class="gap-title">❌ GAP-04 — Testes de permissão por perfil</div>
+    <div class="gap-desc">
+      Perfis do sistema: juridico, comercial, admin, assinante, partner. Nenhuma skill testa sistematicamente que
+      <strong>perfil X não vê o que é de Y</strong>. Um perfil comercial não deveria ver /controller.
+      Um perfil jurídico não deveria ver /crm. Esses acessos são validados?
+    </div>
+    <div class="gap-example">Exemplo: usuário comercial consegue acessar /processos/uuid diretamente pela URL mesmo sem permissão</div>
+  </div>
+
+  <div class="gap-card p1">
+    <div class="gap-title">⚠️ GAP-05 — n8n: cenários de erro não são simulados</div>
+    <div class="gap-desc">
+      As skills testam o happy path dos webhooks n8n. Mas e quando o n8n retorna <code style="font-family:var(--mono);">success:false</code>?
+      E quando o webhook dá timeout? E quando o n8n retorna action="toast_error"? A UI trata todos esses cenários?
+      Nenhuma skill simula falha intencional para validar o tratamento de erro.
+    </div>
+  </div>
+
+  <div class="gap-card p1">
+    <div class="gap-title">⚠️ GAP-06 — Dados reais de teste nunca são limpos</div>
+    <div class="gap-desc">
+      Cada ciclo de QA cria registros com prefixo [QA] no banco. Após meses de ciclos, o banco de teste
+      tem dezenas de registros espúrios que <strong>poluem os testes seguintes</strong>.
+      Nenhuma skill tem uma fase de cleanup sistemático pós-ciclo.
+    </div>
+  </div>
+
+  <div class="gap-card p1">
+    <div class="gap-title">⚠️ GAP-07 — Cálculos monetários não são validados matematicamente</div>
+    <div class="gap-desc">
+      O banco guarda valores em centavos INT8. O frontend converte para float para exibir.
+      Nenhuma skill verifica que <strong>soma de parcelas = total do acordo</strong>,
+      que o cálculo de honorários está correto, ou que valores não sofrem float imprecision no arredondamento.
+    </div>
+  </div>
+
+  <div class="gap-card p2">
+    <div class="gap-title">🔵 GAP-08 — Componentes compartilhados entre páginas nunca são testados como unidade</div>
+    <div class="gap-desc">
+      ClienteDrawer é usado em /crm, /clientes e /distribuicao com comportamentos diferentes por contexto.
+      ProcessoDrawer em /processos e /pagina_processo. RestricaoPastaCard em /clientes e /distribuicao.
+      Uma mudança em um contexto pode quebrar outro — nunca testado em sequência.
+    </div>
+  </div>
+
+  <div class="gap-card p2">
+    <div class="gap-title">🔵 GAP-09 — Spec vs implementação drift não é rastreado ao longo do tempo</div>
+    <div class="gap-desc">
+      A spec existe nos docs/ mas evolui. A implementação também. Nenhum mecanismo compara
+      <strong>versão atual da spec vs estado atual do código</strong> e gera um diff histórico.
+      O backend-tester faz isso uma vez, mas não de forma contínua.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PROPOSTA NOVA SKILL ═══════════ -->
+<div id="proposal" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-warn">💡</div>
+    <div>
+      <div class="section-title">Proposta: /page-complete-review</div>
+      <div class="section-subtitle">A skill que fecha todos os gaps — sem deixar passar nada</div>
+    </div>
+  </div>
+
+  <div class="proposal-box">
+    <div style="position:absolute; top:20px; right:20px;"><span class="badge badge-warn">NOVA SKILL</span></div>
+    <div class="proposal-title">page-complete-review</div>
+    <p style="font-size:13.5px; color:var(--muted); max-width:680px; line-height:1.65;">
+      Uma skill que vai <strong>além do ciclo técnico</strong> atual. Enquanto o page-loop verifica "o código está correto?",
+      esta skill pergunta "a página faz sentido para o negócio?", "todos os perfis veem o que deveriam?",
+      "o fluxo completo funciona de ponta a ponta?". É a revisão que um <strong>dev sênior com conhecimento jurídico</strong> faria.
+    </p>
+
+    <div class="proposal-grid">
+      <div class="prop-item">
+        <div class="prop-title">Diferencial principal</div>
+        <ul>
+          <li>Valida lógica de negócio jurídica, não só código</li>
+          <li>Testa perfis de permissão sistematicamente</li>
+          <li>Cegueira financeira como test case obrigatório</li>
+          <li>Simula falhas de n8n (success:false, timeout)</li>
+          <li>Valida cálculos monetários matematicamente</li>
+          <li>Testa fluxo upstream/downstream da página</li>
+        </ul>
+      </div>
+      <div class="prop-item">
+        <div class="prop-title">O que NÃO é</div>
+        <ul>
+          <li>Não substitui page-loop — é complementar</li>
+          <li>Não re-audita UI/UX (deep-front-audit já faz)</li>
+          <li>Não re-testa schema (backend-tester já faz)</li>
+          <li>Não é mais lenta que o ciclo atual — é mais inteligente</li>
+          <li>Não executa correções — só audita (tem executor separado)</li>
+        </ul>
+      </div>
+      <div class="prop-item">
+        <div class="prop-title">Quando usar</div>
+        <ul>
+          <li>Após page-loop PRONTA — validação de negócio</li>
+          <li>Antes de liberar feature para produção</li>
+          <li>Após mudança de regra de negócio importante</li>
+          <li>Quando Christian reporta "algo está errado" sem saber o quê</li>
+          <li>Revisão trimestral de páginas críticas (/processos, /acordos)</li>
+        </ul>
+      </div>
+      <div class="prop-item">
+        <div class="prop-title">Inputs necessários</div>
+        <ul>
+          <li>Nome da página</li>
+          <li>Spec da página (já tem)</li>
+          <li>Glossário jurídico (~/.claude/mdflow-glossario.md)</li>
+          <li>Mapa de perfis e permissões (CLAUDE.md)</li>
+          <li>Regras de negócio da página (a descrever)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SPEC DA NOVA SKILL ═══════════ -->
+<div id="spec" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-warn">📐</div>
+    <div>
+      <div class="section-title">Spec Detalhada — /page-complete-review</div>
+      <div class="section-subtitle">O que deve ser implementado em cada bloco da skill</div>
+    </div>
+  </div>
+
+  <div class="check-block">
+    <div class="check-title">BLOCO 1 — Business Logic Validator</div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Regras de pré-condição</strong> — "quais dados precisam existir antes desta ação ser possível?"<br><span class="muted">Ex: /distribuicao → processo precisa ter cliente + restrição + documentos Tier1. Se não tem, deve bloquear ou avisar?</span></div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Regras de status state machine</strong> — "quais transições de status são válidas?"<br><span class="muted">Ex: processo em status "aguardando_documentos" pode ir para "em_analise"? Pode pular para "distribuido"?</span></div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Regras de integridade entre registros</strong> — "um acordo sem processo vinculado é válido?"<br><span class="muted">Verificar FK constraints na prática, não só no schema</span></div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Regras de prazos jurídicos</strong> — "campos de prazo são calculados corretamente?"<br><span class="muted">data_vencimento = data_distribuicao + prazo_legal. Está correto? Conta dias úteis?</span></div></div>
+  </div>
+
+  <div class="check-block">
+    <div class="check-title">BLOCO 2 — Permission Matrix Tester</div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>juridico</strong> — pode ver: processos, controller, decisoes, acordos (mascarado $), distribuicao. Não pode: /crm completo, /financeiro</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>comercial</strong> — pode ver: /crm, /clientes, /indicacoes. Não pode: /controller, /decisoes, /processos (sensitive)</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>admin</strong> — pode ver tudo. Verificar que config de tenant é inacessível para outros perfis.</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>acesso_financeiro=false</strong> — 6 páginas devem mascarar R$: verificar cada uma com screenshots evidência.</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>acesso_gestor=true/false</strong> — KPIs de equipe, relatórios gerenciais — visíveis apenas com flag ativa.</div></div>
+  </div>
+
+  <div class="check-block">
+    <div class="check-title">BLOCO 3 — Flow Integration Test</div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Upstream check</strong> — "de onde vêm os dados desta página?"<br><span class="muted">Ex: /processos recebe dados de /distribuicao. Verificar que distribuicao_lote_id está preenchido corretamente.</span></div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Downstream check</strong> — "o que esta página alimenta?"<br><span class="muted">Ex: /clientes alimenta /distribuicao. Verificar que campos necessários para a distribuição estão presentes.</span></div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Handoff test</strong> — criar registro nesta página → navegar para a próxima → dados chegaram?<br><span class="muted">Lead convertido no CRM → aparece em /clientes com status correto?</span></div></div>
+  </div>
+
+  <div class="check-block">
+    <div class="check-title">BLOCO 4 — Financial Integrity</div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Centavos vs float</strong> — banco guarda INT8 centavos, UI exibe float. Verificar arredondamento nos 4 casos: R$0,01 / R$999,99 / R$1.000,00 / R$99.999,99</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Soma de parcelas</strong> — soma de all parcelas = valor total do acordo? Verificar via query.</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Cegueira financeira completa</strong> — R$••••• em TODOS os contextos para usuário sem acesso_financeiro: listagem, drawer, PDF, export, toast, email</div></div>
+  </div>
+
+  <div class="check-block">
+    <div class="check-title">BLOCO 5 — n8n Failure Scenarios</div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>success:false</strong> — forçar cenário de erro no n8n. Frontend exibe toast_error? Não navega?</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Timeout</strong> — webhook demora 30s. Frontend tem loading state? Não duplica a requisição?</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>action inválido</strong> — n8n retorna action desconhecido. Frontend não quebra (switch default)?</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Duplo clique</strong> — clicar 2x no botão de webhook. Duas requisições? Proteção contra?</div></div>
+  </div>
+
+  <div class="check-block">
+    <div class="check-title">BLOCO 6 — EPROC / Multi-tribunal (páginas jurídicas)</div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>CNJ format</strong> — número CNJ exibido em JetBrains Mono, copiável com click, formato NNNNNNN-DD.AAAA.J.TR.OOOO</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>Tribunal detectado</strong> — TJRS / TJSC / TJSP exibidos corretamente baseado no CNJ</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text"><strong>OAB responsável</strong> — processo TJRS aparece para OAB RS (Christian ou Heloísa), não mistura com SC/SP</div></div>
+  </div>
+
+  <div class="check-block">
+    <div class="check-title">BLOCO 7 — Data Cleanup (pós-ciclo)</div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text">Listar todos os registros criados durante o ciclo com prefixo [QA] ou [TESTE]</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text">Soft-delete ou hard-delete (confirmar com usuário) dos registros de teste</div></div>
+    <div class="check-item"><span class="check-icon">◆</span><div class="check-text">Verificar que o cleanup não deixou orphans (FK violation)</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ O QUE O CC SENTE FALTA ═══════════ -->
+<div id="mindflow" class="section">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🧠</div>
+    <div>
+      <div class="section-title">O que o CC sente falta — sincero</div>
+      <div class="section-subtitle">Observações honestas de quem roda as skills todos os dias</div>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    Esta seção é o briefing mais valioso para o Claude Web planejar a nova skill.
+    São insights que só aparecem com uso real do sistema.
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-header">
+        <span style="font-size:13px; font-weight:600; color:var(--warn);">🎯 Contexto jurídico não está nas skills</span>
+      </div>
+      <div class="skill-desc">
+        O CC sabe que é um sistema jurídico, mas as skills não têm embutido o conhecimento de
+        <strong>quando uma restrição é "válida" para distribuição</strong>,
+        quais são os <strong>documentos obrigatórios por tipo de ação</strong>,
+        ou o que é uma <strong>intimação com prazo penal</strong>.
+        O glossário existe (<code style="font-family:var(--mono);">~/.claude/mdflow-glossario.md</code>) mas não é carregado nas auditorias.
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span style="font-size:13px; font-weight:600; color:var(--warn);">🔗 Cross-page testing é zero</span>
+      </div>
+      <div class="skill-desc">
+        Cada skill abre uma página, testa, fecha. Nenhuma skill abre /crm → cria lead → converte →
+        vai para /clientes → adiciona restrição → vai para /distribuicao → inicia distribuição →
+        verifica em /processos. Esse fluxo quebra silenciosamente e ninguém percebe.
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span style="font-size:13px; font-weight:600; color:var(--warn);">👥 Multi-user testing inexistente</span>
+      </div>
+      <div class="skill-desc">
+        Sempre testamos com um único usuário. Nunca testamos: dois usuários editando o mesmo processo simultâneo.
+        Realtime subscription cancela corretamente quando o user2 salva e o user1 ainda tem o drawer aberto?
+        O dirty-state alerta antes ou depois do realtime update?
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span style="font-size:13px; font-weight:600; color:var(--warn);">📊 Performance nunca medida</span>
+      </div>
+      <div class="skill-desc">
+        Nenhuma skill verifica quanto tempo leva para /processos carregar 5.800 registros.
+        Se a query demora 3 segundos, o usuário vê loading eterno.
+        staleTime está configurado mas nunca verificamos se o cache está realmente sendo usado.
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span style="font-size:13px; font-weight:600; color:var(--warn);">🏷️ Estados de borda não têm spec</span>
+      </div>
+      <div class="skill-desc">
+        O que acontece quando um <strong>processo tem 0 restrições</strong>? Quando um <strong>cliente tem 47 restrições</strong>?
+        Quando um <strong>acordo tem 120 parcelas</strong>? As specs documentam o happy path mas não os extremos.
+        As skills testam com dados "normais" — os extremos quebram silenciosamente.
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span style="font-size:13px; font-weight:600; color:var(--warn);">🔄 Ciclos de lapidação perdem contexto</span>
+      </div>
+      <div class="skill-desc">
+        Cada novo ciclo de page-loop "esquece" o que foi decidido no ciclo anterior.
+        Por exemplo: "não corrija X pois é comportamento intencional do negócio" precisa ser redito toda vez.
+        O arquivo <code style="font-family:var(--mono);">docs/revisoes/{PAGINA}.md</code> existe mas não é um "livro de decisões" —
+        é só uma lista de pendências.
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-success" style="margin-top:24px;">
+    <strong>Sugestão de nome e posicionamento:</strong>
+    A nova skill deve se chamar <strong>/page-complete-review</strong> ou <strong>/page-logic-review</strong>.
+    Ela não substitui o page-loop — ela complementa. Roda APÓS o page-loop estar PRONTA, como uma "auditoria de negócio"
+    antes do deploy em produção. É o que diferencia "código correto" de "produto correto".
+  </div>
+</div>
+
+<!-- ═══════════ SUGESTOES ADICIONAIS ═══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon icon-blue">💬</div>
+    <div>
+      <div class="section-title">Perguntas para o Claude Web ao planejar</div>
+      <div class="section-subtitle">Pontos de decisão que precisam ser definidos no briefing</div>
+    </div>
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div style="font-size:12px; font-weight:600; color:var(--info); margin-bottom:8px;">DECISÃO 1 — Escopo</div>
+      <div class="skill-desc">
+        A skill cobre UMA página ou o FLUXO completo?
+        Se for uma página: precisa saber seu contexto upstream/downstream.
+        Se for o fluxo: precisa mapear quais páginas estão no caminho de cada fluxo.
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div style="font-size:12px; font-weight:600; color:var(--info); margin-bottom:8px;">DECISÃO 2 — Fonte das regras de negócio</div>
+      <div class="skill-desc">
+        As regras jurídicas ficam hardcoded na skill? No glossário? Em arquivo separado por página?
+        Sugestão: criar <code style="font-family:var(--mono);">docs/regras-negocio/{PAGINA}.md</code> como SSOT e a skill carrega esse arquivo.
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div style="font-size:12px; font-weight:600; color:var(--info); margin-bottom:8px;">DECISÃO 3 — Perfis de teste</div>
+      <div class="skill-desc">
+        A skill precisa de usuários de teste pré-criados por perfil no banco?
+        Sugestão: criar 5 usuários fixos (um por perfil) com email padrão <code style="font-family:var(--mono);">qa.juridico@, qa.comercial@</code>, etc.
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div style="font-size:12px; font-weight:600; color:var(--info); margin-bottom:8px;">DECISÃO 4 — Integração com page-loop</div>
+      <div class="skill-desc">
+        Deve ser uma fase extra do page-loop (fase 5)? Ou skill independente?
+        Sugestão: skill independente que pode ser acionada via <code style="font-family:var(--mono);">/page-loop --with-complete</code>
+        ou standalone.
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div style="font-size:12px; font-weight:600; color:var(--info); margin-bottom:8px;">DECISÃO 5 — Modelo de IA</div>
+      <div class="skill-desc">
+        As regras de negócio jurídicas são complexas. Usar Opus 4.6 para a análise de lógica?
+        Ou Sonnet 4.6 com contexto bem estruturado é suficiente?
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div style="font-size:12px; font-weight:600; color:var(--info); margin-bottom:8px;">DECISÃO 6 — Executor separado?</div>
+      <div class="skill-desc">
+        Criar também um <code style="font-family:var(--mono);">/page-complete-executor</code> que corrige os achados?
+        Ou os achados são redirecionados para page-executor / page-backend-executor existentes?
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  Catálogo de Skills MdFlow/JARBAS — Gerado por Claude Code (Sonnet 4.6) em 2026-04-08<br>
+  Para uso no briefing de nova skill com Claude Web. beta-mdflow / MDX LegalTech.
+</footer>
+
+</main>
+</div>
+
+<script>
+// Highlight active sidebar link on scroll
+const sections = document.querySelectorAll('[id]');
+const links = document.querySelectorAll('.sidebar a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (s.offsetTop - 120 <= window.scrollY) current = s.id;
+  });
+  links.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
