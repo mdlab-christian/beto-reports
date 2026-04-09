@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Novo Fluxo de Cadastro de Lead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+  --green: #20c997;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 24px;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+
+/* HERO */
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+
+/* GRID */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+
+/* STATS */
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* SECTIONS */
+.section { margin: 32px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+
+/* STATUS PILLS */
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+
+/* CODE */
+.code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--accent3);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* ===== SEÇÃO 1 — FLUXOGRAMA ===== */
+.flow-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+  overflow-x: auto;
+}
+.flow-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-width: 700px;
+}
+
+/* Node styles */
+.flow-node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  position: relative;
+  line-height: 1.4;
+}
+.fn-start {
+  background: rgba(124,109,255,0.2);
+  border: 2px solid var(--accent);
+  color: var(--text);
+  border-radius: 24px;
+  padding: 10px 28px;
+  min-width: 280px;
+}
+.fn-action {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  min-width: 320px;
+  max-width: 440px;
+}
+.fn-green {
+  background: rgba(32,201,151,0.15);
+  border: 2px solid var(--green);
+  color: #20c997;
+  min-width: 280px;
+  font-weight: 600;
+}
+.fn-purple {
+  background: rgba(124,109,255,0.12);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  min-width: 320px;
+  max-width: 440px;
+}
+.fn-yellow {
+  background: rgba(245,158,11,0.12);
+  border: 1px solid var(--yellow);
+  color: var(--yellow);
+  min-width: 260px;
+}
+.fn-end {
+  background: rgba(32,201,151,0.12);
+  border: 2px solid var(--green);
+  color: var(--green);
+  border-radius: 24px;
+  padding: 10px 28px;
+  min-width: 280px;
+  font-weight: 600;
+}
+
+/* Arrow */
+.flow-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.flow-arrow .line {
+  width: 2px;
+  height: 24px;
+  background: var(--border);
+}
+.flow-arrow .arrowhead {
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid var(--border);
+}
+.flow-arrow-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: -6px 0;
+  padding: 2px 10px;
+  background: var(--surface);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  z-index: 1;
+  position: relative;
+}
+
+/* Branch row */
+.flow-branch-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+  justify-content: center;
+}
+.flow-branch-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  max-width: 340px;
+}
+.flow-branch-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 4px;
+  text-align: center;
+}
+.flow-branch-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+  margin: 4px 0;
+}
+
+/* Side notes */
+.flow-sidenote {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 700px;
+}
+.flow-sidenote .fn-action { flex: 1; }
+.sidenote-bubble {
+  background: rgba(255,209,102,0.08);
+  border: 1px solid rgba(255,209,102,0.25);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  color: var(--accent4);
+  max-width: 180px;
+  text-align: center;
+}
+.sidenote-connector {
+  width: 24px;
+  height: 1px;
+  background: rgba(255,209,102,0.3);
+  flex-shrink: 0;
+}
+
+/* Connector lines for branch */
+.branch-connector {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 560px;
+  position: relative;
+  height: 32px;
+  margin: 0;
+}
+.branch-connector .h-line {
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 1px;
+  background: var(--border);
+}
+.branch-connector .v-left {
+  position: absolute;
+  top: 0;
+  left: 25%;
+  width: 1px;
+  height: 100%;
+  background: var(--border);
+}
+.branch-connector .v-right {
+  position: absolute;
+  top: 0;
+  right: 25%;
+  width: 1px;
+  height: 100%;
+  background: var(--border);
+}
+.branch-connector .v-center {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: var(--border);
+  transform: translateX(-50%);
+}
+
+/* Phase blocks inside flow */
+.flow-phase-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 360px;
+  max-width: 480px;
+}
+.flow-phase-block .phase-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.flow-phase-block .phase-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(42,47,74,0.5);
+  font-size: 0.8rem;
+}
+.flow-phase-block .phase-step:last-child { border-bottom: none; }
+.phase-num {
+  background: rgba(124,109,255,0.2);
+  color: var(--accent);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.phase-step-text { color: var(--text); line-height: 1.5; }
+.phase-step-sub { color: var(--text-muted); font-size: 0.75rem; }
+.phase-step-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent3);
+  background: rgba(0,0,0,0.3);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* Drawer blocks */
+.flow-drawer-block {
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 360px;
+  max-width: 480px;
+}
+.flow-drawer-block .drawer-header {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Tab bar in flow */
+.flow-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+.flow-tab {
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: default;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.flow-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Fuzzy rows */
+.fuzzy-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(42,47,74,0.4);
+  font-size: 0.78rem;
+}
+.fuzzy-row:last-child { border-bottom: none; }
+.fuzzy-score {
+  padding: 1px 7px;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.score-high { background: rgba(32,201,151,0.15); color: var(--green); }
+.score-mid { background: rgba(245,158,11,0.15); color: var(--yellow); }
+.score-low { background: rgba(239,68,68,0.15); color: var(--red); }
+
+/* Tabs empty state bubbles */
+.flow-empty-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  max-width: 680px;
+}
+.flow-empty-node {
+  background: var(--surface2);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  flex: 1;
+}
+.flow-empty-node .en-title { font-weight: 600; color: var(--text); margin-bottom: 4px; font-size: 0.8rem; }
+
+/* ===== SEÇÃO 2 — MOCKUP ===== */
+.mockup-browser {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.browser-bar {
+  background: var(--surface2);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.browser-dots { display: flex; gap: 6px; }
+.browser-dot { width: 10px; height: 10px; border-radius: 50%; }
+.browser-url {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex: 1;
+  max-width: 400px;
+}
+.browser-body {
+  display: grid;
+  grid-template-columns: 220px 1fr 280px;
+  height: 560px;
+}
+@media(max-width: 768px) { .browser-body { grid-template-columns: 1fr; height: auto; } }
+
+/* Col 1 - Conversation list */
+.conv-list {
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  background: rgba(0,0,0,0.15);
+}
+.conv-list-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.conv-item {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(42,47,74,0.4);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.conv-item:hover { background: rgba(124,109,255,0.05); }
+.conv-item.active {
+  background: rgba(124,109,255,0.1);
+  border-left: 3px solid var(--accent);
+}
+.conv-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+.conv-name { font-weight: 600; font-size: 0.82rem; }
+.conv-time { font-size: 0.68rem; color: var(--text-muted); }
+.conv-preview { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
+.conv-badge { background: var(--accent); color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; }
+.conv-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+.conv-item-row { display: flex; gap: 8px; align-items: flex-start; }
+.conv-info { flex: 1; min-width: 0; }
+
+/* Col 2 - Thread */
+.thread-area {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+}
+.thread-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,0,0,0.1);
+}
+.thread-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(124,109,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.9rem; color: var(--accent);
+}
+.thread-name { font-weight: 600; font-size: 0.9rem; }
+.thread-num { font-size: 0.72rem; color: var(--text-muted); }
+.thread-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.msg { max-width: 72%; }
+.msg-in { align-self: flex-start; }
+.msg-out { align-self: flex-end; }
+.msg-bubble {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  position: relative;
+}
+.msg-in .msg-bubble {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+.msg-out .msg-bubble {
+  background: rgba(124,109,255,0.2);
+  border: 1px solid rgba(124,109,255,0.3);
+  border-bottom-right-radius: 4px;
+  color: var(--text);
+}
+.msg-time { font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; padding: 0 4px; }
+.msg-in .msg-time { text-align: left; }
+.msg-out .msg-time { text-align: right; }
+.msg-sender { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 3px; font-weight: 600; }
+.msg-doc {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+.doc-icon { font-size: 1.4rem; }
+.doc-info .doc-name { font-weight: 600; color: var(--text); }
+.doc-info .doc-size { font-size: 0.7rem; color: var(--text-muted); }
+.julia-badge {
+  display: inline-block;
+  background: rgba(79,255,176,0.1);
+  color: var(--accent3);
+  border: 1px solid rgba(79,255,176,0.25);
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.msg-highlight {
+  background: rgba(124,109,255,0.08);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+.msg-highlight strong { color: var(--accent); }
+.thread-input {
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(0,0,0,0.1);
+}
+.thread-input-field {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+}
+.btn-send {
+  background: rgba(124,109,255,0.2);
+  border: 1px solid rgba(124,109,255,0.4);
+  border-radius: 8px;
+  padding: 7px 14px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Col 3 - Lead Panel */
+.lead-panel {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0,0,0,0.1);
+}
+.lead-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lead-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(32,201,151,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: var(--green); font-size: 1rem;
+}
+.lead-name { font-weight: 700; font-size: 0.9rem; }
+.lead-num { font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.lead-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.05);
+}
+.lead-tab {
+  flex: 1;
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  position: relative;
+}
+.lead-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.lead-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--red);
+  color: white;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  margin-left: 2px;
+  vertical-align: middle;
+}
+.lead-body { flex: 1; padding: 14px; overflow-y: auto; }
+
+/* CPF destaque */
+.cpf-field-wrap {
+  background: rgba(124,109,255,0.08);
+  border: 1px solid rgba(124,109,255,0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.cpf-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cpf-badge {
+  background: rgba(79,255,176,0.1);
+  color: var(--accent3);
+  border: 1px solid rgba(79,255,176,0.25);
+  border-radius: 6px;
+  padding: 1px 7px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+.cpf-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+.cpf-valid { color: var(--green); font-size: 0.72rem; margin-top: 4px; }
+
+/* Secondary fields */
+.fields-secondary { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.field-label {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.field-value {
+  font-size: 0.8rem;
+  color: var(--text);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 9px;
+}
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* Botao principal */
+.btn-audit-cadastro {
+  width: 100%;
+  background: var(--green);
+  color: #0d0f18;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.btn-audit-cadastro:hover { background: #1aab82; }
+.btn-sub { font-size: 0.7rem; color: var(--text-muted); text-align: center; }
+
+/* Progress overlay */
+.progress-overlay {
+  background: rgba(13,15,24,0.92);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  margin-top: 12px;
+}
+.progress-title { font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+.progress-sub { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; }
+.progress-bar-wrap {
+  background: rgba(124,109,255,0.1);
+  border-radius: 8px;
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent5));
+  border-radius: 8px;
+  width: 65%;
+  animation: progress-anim 1.5s ease-in-out infinite alternate;
+}
+@keyframes progress-anim { from { width: 40%; } to { width: 90%; } }
+.progress-steps { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; text-align: left; }
+.prog-step { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; }
+.prog-step .done { color: var(--green); }
+.prog-step .run { color: var(--accent); }
+.prog-step .pend { color: var(--text-muted); }
+
+/* ===== DRAWER MOCKUP ===== */
+.drawer-mockup-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+@media(max-width: 768px) { .drawer-mockup-wrap { grid-template-columns: 1fr; } }
+
+.drawer-mockup {
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.drawer-header-mock {
+  background: rgba(124,109,255,0.1);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.drawer-title-mock { font-weight: 700; font-size: 0.95rem; }
+.drawer-steps {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.drawer-step {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700;
+}
+.drawer-step.active { background: var(--accent); color: white; }
+.drawer-step.done { background: var(--green); color: #0d0f18; }
+.drawer-step.inactive { background: var(--surface3); color: var(--text-muted); border: 1px solid var(--border); }
+.drawer-step-connector { width: 20px; height: 2px; background: var(--border); border-radius: 1px; }
+.drawer-step-connector.done { background: var(--green); }
+.drawer-body-mock { padding: 16px 18px; }
+.drawer-footer-mock {
+  border-top: 1px solid var(--border);
+  padding: 12px 18px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; padding: 8px 16px; font-size: 0.8rem; cursor: pointer; }
+.btn-confirm { background: var(--green); color: #0d0f18; border: none; border-radius: 8px; padding: 8px 18px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+.btn-create { background: var(--green); color: #0d0f18; border: none; border-radius: 8px; padding: 8px 18px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+.btn-create:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Drawer fields */
+.drawer-field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.drawer-field { display: flex; flex-direction: column; gap: 3px; }
+.drawer-field label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+.drawer-field input {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  outline: none;
+}
+.drawer-field.full { grid-column: 1 / -1; }
+
+/* Restricoes list */
+.restricao-item {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.restricao-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.restricao-nome { font-weight: 600; font-size: 0.82rem; }
+.restricao-valor { font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; }
+.restricao-empresa {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+.empresa-match { color: var(--green); }
+.empresa-confirm { color: var(--yellow); }
+.empresa-manual { color: var(--red); }
+.empresa-dropdown {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 5px;
+  padding: 3px 8px;
+  color: var(--yellow);
+  font-size: 0.72rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== SEÇÃO 3 — PLANO ===== */
+.gap-critico {
+  background: rgba(239,68,68,0.07);
+  border: 2px solid var(--red);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.gap-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: 14px;
+}
+.gap-body { font-size: 0.85rem; line-height: 1.8; }
+.gap-body strong { color: var(--text); }
+
+/* Etapa cards */
+.etapa-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.etapa-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px 0 0 2px;
+}
+.etapa-card.prereq::before { background: var(--red); }
+.etapa-card.medium::before { background: var(--yellow); }
+.etapa-card.large::before { background: var(--accent2); }
+.etapa-card.small::before { background: var(--accent3); }
+
+.etapa-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
+.etapa-num {
+  background: rgba(124,109,255,0.15);
+  color: var(--accent);
+  border: 1px solid rgba(124,109,255,0.3);
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.etapa-card.prereq .etapa-num { background: rgba(239,68,68,0.15); color: var(--red); border-color: rgba(239,68,68,0.3); }
+.etapa-title { font-weight: 700; font-size: 0.95rem; }
+.complexity-badge {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cx-s { background: rgba(32,201,151,0.12); color: var(--green); border: 1px solid rgba(32,201,151,0.25); }
+.cx-m { background: rgba(245,158,11,0.12); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+.cx-l { background: rgba(255,107,107,0.12); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+
+.etapa-file {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--accent3);
+  margin-bottom: 10px;
+  word-break: break-all;
+}
+.etapa-actions { display: flex; flex-direction: column; gap: 5px; }
+.etapa-action {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.action-bullet {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.etapa-card.prereq .action-bullet { background: var(--red); }
+.etapa-blocker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Reutilizaveis */
+.reuse-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px; }
+@media(max-width: 768px) { .reuse-grid { grid-template-columns: 1fr; } }
+.reuse-card {
+  background: var(--surface2);
+  border: 1px solid rgba(79,255,176,0.2);
+  border-radius: 10px;
+  padding: 14px;
+}
+.reuse-name { font-weight: 700; font-size: 0.85rem; color: var(--accent3); margin-bottom: 4px; }
+.reuse-path { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px; word-break: break-all; }
+.reuse-desc { font-size: 0.78rem; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">💬</span>
+    <h1 class="gradient-text">MdZap — Novo Fluxo de Cadastro de Lead</h1>
+    <p class="hero-sub">Fluxo unificado com drawer de confirmação em 2 fases — sem sair do MdZap</p>
+    <div class="badges">
+      <span class="badge bp">MdZap SDR</span>
+      <span class="badge br">Gap Critico: Doc Reader</span>
+      <span class="badge by">5 Etapas de Implementação</span>
+      <span class="badge bb">Drawer 2 Fases</span>
+      <span class="badge bg">Boa Vista Inline</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--red)">1</div>
+      <div class="stat-label">Gap Critico n8n</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Etapas de Impl.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--green)">2</div>
+      <div class="stat-label">Fases no Drawer</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent3)">4</div>
+      <div class="stat-label">Componentes Reuso</div>
+    </div>
+  </div>
+
+  <!-- ================================================ -->
+  <!-- SEÇÃO 1 — FLUXOGRAMA -->
+  <!-- ================================================ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔄</span>
+      <h2>Fluxograma — Novo Fluxo de Cadastro</h2>
+    </div>
+
+    <div class="flow-container">
+      <div class="flow-wrapper">
+
+        <!-- Estado Inicial -->
+        <div class="flow-node fn-start">Estado Inicial: Conversa chegou — sem lead vinculado</div>
+        <div class="flow-arrow"><div class="line"></div><div class="arrowhead"></div></div>
+
+        <!-- Tab Dados -->
+        <div class="flow-phase-block">
+          <div class="phase-title">📋 Tab "Dados" — Lead Panel (direita)</div>
+          <div class="phase-step">
+            <div class="phase-num">★</div>
+            <div>
+              <div class="phase-step-text">CPF como campo primário — proeminente, destaque visual</div>
+              <div class="phase-step-sub">badge "Doc Reader" se pré-preenchido pela Julia</div>
+            </div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num">•</div>
+            <div>
+              <div class="phase-step-text">Campos secundários: nome, data_nasc, sexo (menores, leitura)</div>
+              <div class="phase-step-sub">pré-preenchidos por pending_lead_data da conversa</div>
+            </div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num">✓</div>
+            <div>
+              <div class="phase-step-text" style="color: var(--green); font-weight: 600;">Botão VERDE "Auditoria + Cadastro" — habilitado quando CPF válido</div>
+              <div class="phase-step-sub">único botão de ação principal. Sem outros botões de cadastro.</div>
+            </div>
+          </div>
+        </div>
+        <div class="flow-arrow"><div class="line"></div><div class="flow-arrow-label">clique em "Auditoria + Cadastro"</div><div class="line"></div><div class="arrowhead"></div></div>
+
+        <!-- Steps 1-3 -->
+        <div class="flow-phase-block">
+          <div class="phase-title">⚡ Execução Sequencial — 3 Operações</div>
+          <div class="phase-step">
+            <div class="phase-num">1</div>
+            <div>
+              <div class="phase-step-text">Criar lead com dados disponíveis</div>
+              <div class="phase-step-sub"><span class="phase-step-code">Supabase INSERT leads</span></div>
+            </div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num">2</div>
+            <div>
+              <div class="phase-step-text">Vincular conversa ao lead</div>
+              <div class="phase-step-sub"><span class="phase-step-code">RPC fn_link_conversa_to_lead</span></div>
+            </div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num">3</div>
+            <div>
+              <div class="phase-step-text">Disparar auditoria Boa Vista</div>
+              <div class="phase-step-sub"><span class="phase-step-code">RPC rpc_disparar_auditoria</span> bureau: apifull_115</div>
+            </div>
+          </div>
+        </div>
+        <div class="flow-arrow"><div class="line"></div><div class="arrowhead"></div></div>
+
+        <!-- Auditoria em progresso -->
+        <div class="flow-node fn-purple" style="text-align:left; padding: 14px 18px;">
+          <div>
+            <div style="font-weight:700; color: var(--accent); margin-bottom:6px;">CrmAuditoriaPanel aparece inline</div>
+            <div style="font-size:0.78rem; color: var(--text-muted);">Barra de progresso + "Consultando Boa Vista..." | realtime + polling 5s</div>
+          </div>
+        </div>
+        <div class="flow-arrow"><div class="line"></div><div class="flow-arrow-label">auditoria conclui</div><div class="line"></div><div class="arrowhead"></div></div>
+
+        <!-- Duas ações simultâneas -->
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px; min-width: 360px; max-width: 500px;">
+          <div style="font-size: 0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color: var(--text-muted); margin-bottom:10px;">Ações Simultâneas ao Concluir</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; font-size:0.82rem;">
+              <span style="color:var(--accent5);">↗</span>
+              <span>PDF abre em nova aba</span>
+              <span class="phase-step-code">window.open(pdf_url, '_blank')</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:0.82rem;">
+              <span style="color:var(--accent);">⟶</span>
+              <span style="color:var(--green); font-weight:600;">Drawer de Confirmação abre automaticamente (Sheet 72vw)</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-arrow"><div class="line"></div><div class="arrowhead"></div></div>
+
+        <!-- Drawer Fase 1 -->
+        <div class="flow-drawer-block">
+          <div class="drawer-header">⬛ Drawer — Fase 1: Dados do Lead</div>
+          <div class="phase-step">
+            <div class="phase-num">📝</div>
+            <div>
+              <div class="phase-step-text">Todos os campos do lead (editáveis)</div>
+              <div class="phase-step-sub">nome, cpf, data_nasc, sexo, email, telefone...</div>
+            </div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num">✓</div>
+            <div>
+              <div class="phase-step-text" style="color: var(--green);">Botão "Confirmar dados" — avança para Fase 2</div>
+              <div class="phase-step-sub">drawer não fecha — navega para próxima fase</div>
+            </div>
+          </div>
+        </div>
+        <div class="flow-arrow"><div class="line"></div><div class="flow-arrow-label">confirmar dados</div><div class="line"></div><div class="arrowhead"></div></div>
+
+        <!-- Drawer Fase 2 -->
+        <div class="flow-drawer-block">
+          <div class="drawer-header">🔍 Drawer — Fase 2: Restrições Encontradas</div>
+          <div class="phase-step">
+            <div class="phase-num">🟢</div>
+            <div>
+              <div class="phase-step-text">Score ≥ 0.75 — empresa identificada automaticamente</div>
+              <div class="phase-step-sub" style="color: var(--green);">match automático, sem ação do operador</div>
+            </div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num">🟡</div>
+            <div>
+              <div class="phase-step-text">Score 0.45-0.74 — dropdown para confirmar empresa</div>
+              <div class="phase-step-sub" style="color: var(--yellow);">operador confirma ou seleciona alternativa</div>
+            </div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num">🔴</div>
+            <div>
+              <div class="phase-step-text">Score &lt; 0.45 — campo manual</div>
+              <div class="phase-step-sub" style="color: var(--red);">operador digita manualmente a empresa</div>
+            </div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num">✓</div>
+            <div>
+              <div class="phase-step-text" style="color: var(--green);">Botão "Criar + Cadastrar" — habilitado após Fase 1</div>
+              <div class="phase-step-sub">salva lead + restrições → webhook drive-pasta-restricao</div>
+            </div>
+          </div>
+        </div>
+        <div class="flow-arrow"><div class="line"></div><div class="flow-arrow-label">clicar "Criar + Cadastrar"</div><div class="line"></div><div class="arrowhead"></div></div>
+
+        <!-- Estado Final -->
+        <div class="flow-phase-block" style="border-color: rgba(32,201,151,0.3);">
+          <div class="phase-title" style="color: var(--green);">Estado Final — Lead Cadastrado</div>
+          <div class="phase-step">
+            <div class="phase-num" style="background: rgba(32,201,151,0.2); color: var(--green);">✓</div>
+            <div><div class="phase-step-text">Drawer fecha</div></div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num" style="background: rgba(32,201,151,0.2); color: var(--green);">✓</div>
+            <div><div class="phase-step-text">Lead Panel volta ao estado normal (com lead_id)</div></div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num" style="background: rgba(32,201,151,0.2); color: var(--green);">✓</div>
+            <div><div class="phase-step-text">Tab Restrições: CrmAuditoriaPanel com resultado</div></div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-num" style="background: rgba(32,201,151,0.2); color: var(--green);">✓</div>
+            <div><div class="phase-step-text">Tab Dados: formulário de edição normal</div></div>
+          </div>
+        </div>
+
+        <!-- Separator -->
+        <div style="width:100%; max-width:700px; height:1px; background: var(--border); margin: 28px 0 20px;"></div>
+
+        <!-- Empty states -->
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:12px;">Empty States — Tabs sem Lead Vinculado</div>
+        <div class="flow-empty-row">
+          <div class="flow-empty-node">
+            <div class="en-title">Tab "Restrições" sem lead</div>
+            <div>"Cadastre o lead na aba Dados"</div>
+            <div style="margin-top:5px;"><span class="status-pill sp-pend">botão muda para Tab Dados</span></div>
+          </div>
+          <div class="flow-empty-node">
+            <div class="en-title">Tab "Docs" sem lead</div>
+            <div>"Pastas criadas após cadastro e restrições"</div>
+            <div style="margin-top:5px;"><span class="status-pill sp-pend">informativo, sem ação</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================ -->
+  <!-- SEÇÃO 2 — MOCKUP VISUAL FRONTEND -->
+  <!-- ================================================ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🖥️</span>
+      <h2>Mockup Visual — MdZap com Novo Lead Panel</h2>
+    </div>
+
+    <!-- Browser Mockup -->
+    <div class="mockup-browser">
+      <div class="browser-bar">
+        <div class="browser-dots">
+          <div class="browser-dot" style="background:#ef4444;"></div>
+          <div class="browser-dot" style="background:#f59e0b;"></div>
+          <div class="browser-dot" style="background:#20c997;"></div>
+        </div>
+        <div class="browser-url">app.mdflow.com.br/mdzap</div>
+        <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+          <span class="badge bg">MdZap SDR</span>
+          <span style="font-size:0.72rem; color:var(--text-muted);">Julia IA ativa</span>
+        </div>
+      </div>
+      <div class="browser-body">
+
+        <!-- COL 1: Lista de conversas -->
+        <div class="conv-list">
+          <div class="conv-list-header">
+            Conversas
+            <span class="conv-badge">4</span>
+          </div>
+
+          <div class="conv-item active">
+            <div class="conv-item-row">
+              <div class="conv-avatar" style="background:rgba(124,109,255,0.2); color:var(--accent);">J</div>
+              <div class="conv-info">
+                <div class="conv-item-top">
+                  <span class="conv-name">João Silva</span>
+                  <span class="conv-time">14:23</span>
+                </div>
+                <div class="conv-preview">Aqui está meu RG, pode analisar?</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="conv-item">
+            <div class="conv-item-row">
+              <div class="conv-avatar" style="background:rgba(32,201,151,0.15); color:var(--green);">M</div>
+              <div class="conv-info">
+                <div class="conv-item-top">
+                  <span class="conv-name">Maria Santos</span>
+                  <span class="conv-time">13:41</span>
+                </div>
+                <div class="conv-preview">Quero saber sobre a negativação</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="conv-item">
+            <div class="conv-item-row">
+              <div class="conv-avatar" style="background:rgba(245,158,11,0.15); color:var(--yellow);">C</div>
+              <div class="conv-info">
+                <div class="conv-item-top">
+                  <span class="conv-name">Carlos Pereira</span>
+                  <span class="conv-time">12:15</span>
+                </div>
+                <div class="conv-preview">Tenho restrição no Serasa</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="conv-item">
+            <div class="conv-item-row">
+              <div class="conv-avatar" style="background:rgba(255,107,107,0.15); color:var(--accent2);">A</div>
+              <div class="conv-info">
+                <div class="conv-item-top">
+                  <span class="conv-name">Ana Lima</span>
+                  <span class="conv-time">11:02</span>
+                </div>
+                <div class="conv-preview">Boa tarde! Fui indicada pela...</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COL 2: Thread -->
+        <div class="thread-area">
+          <div class="thread-header">
+            <div class="thread-avatar">J</div>
+            <div>
+              <div class="thread-name">João Silva</div>
+              <div class="thread-num">+55 51 9 9999-9999 · WhatsApp</div>
+            </div>
+            <div style="margin-left:auto; display:flex; gap:6px;">
+              <span class="badge bb">SDR Ativo</span>
+              <span class="badge by">sem lead</span>
+            </div>
+          </div>
+          <div class="thread-messages">
+
+            <div class="msg msg-in">
+              <div class="msg-sender">João Silva</div>
+              <div class="msg-bubble">Boa tarde! Gostaria de saber como funciona o processo de retirada de restrições.</div>
+              <div class="msg-time">14:17</div>
+            </div>
+
+            <div class="msg msg-out">
+              <div class="msg-sender" style="text-align:right;">Julia (IA) 🤖</div>
+              <div class="msg-bubble">Olá João! Sou a Julia, assistente da MP Advocacia. Para analisarmos seu caso, pode me enviar uma foto do seu RG ou CNH?</div>
+              <div class="msg-time">14:18</div>
+            </div>
+
+            <div class="msg msg-in">
+              <div class="msg-sender">João Silva</div>
+              <div class="msg-doc">
+                <div class="doc-icon">🪪</div>
+                <div class="doc-info">
+                  <div class="doc-name">RG_frente.jpg</div>
+                  <div class="doc-size">284 KB · imagem</div>
+                </div>
+              </div>
+              <div class="msg-time">14:19</div>
+            </div>
+
+            <div class="msg msg-out">
+              <div class="msg-sender" style="text-align:right;">Julia (IA) 🤖</div>
+              <div class="msg-bubble">
+                <span class="julia-badge">Doc Reader</span>
+                <div>Recebi seu documento! Extraí as seguintes informações:</div>
+                <div class="msg-highlight">
+                  <strong>CPF:</strong> 123.456.789-01<br>
+                  <strong>Nome:</strong> João da Silva<br>
+                  <strong>Nasc.:</strong> 15/03/1985 · Masc.
+                </div>
+              </div>
+              <div class="msg-time">14:20</div>
+            </div>
+
+            <div class="msg msg-out">
+              <div class="msg-sender" style="text-align:right;">Julia (IA) 🤖</div>
+              <div class="msg-bubble">Nosso advogado vai continuar o atendimento. Um momento!</div>
+              <div class="msg-time">14:21</div>
+            </div>
+
+            <div class="msg msg-in">
+              <div class="msg-sender">João Silva</div>
+              <div class="msg-bubble">Ok! Aguardo.</div>
+              <div class="msg-time">14:22</div>
+            </div>
+
+          </div>
+          <div class="thread-input">
+            <input class="thread-input-field" placeholder="Mensagem como operador..." readonly>
+            <button class="btn-send">Enviar</button>
+          </div>
+        </div>
+
+        <!-- COL 3: Lead Panel -->
+        <div class="lead-panel">
+          <div class="lead-header">
+            <div class="lead-avatar">J</div>
+            <div style="flex:1;">
+              <div class="lead-name">João Silva</div>
+              <div class="lead-num">51 9 9999-9999</div>
+            </div>
+            <span class="status-pill sp-pend" style="font-size:0.68rem;">sem lead</span>
+          </div>
+          <div class="lead-tabs">
+            <div class="lead-tab active">Dados</div>
+            <div class="lead-tab">Restr.<span class="lead-tab-badge">2</span></div>
+            <div class="lead-tab">Docs</div>
+            <div class="lead-tab">Notas</div>
+            <div class="lead-tab">Mem.</div>
+          </div>
+          <div class="lead-body">
+
+            <!-- CPF destaque -->
+            <div class="cpf-field-wrap">
+              <div class="cpf-label">
+                CPF
+                <span class="cpf-badge">Doc Reader</span>
+              </div>
+              <div class="cpf-value">123.456.789-01</div>
+              <div class="cpf-valid">✓ CPF válido — pronto para consulta</div>
+            </div>
+
+            <!-- Campos secundários -->
+            <div class="fields-secondary">
+              <div class="field-row">
+                <div class="field-label">Nome completo</div>
+                <div class="field-value">João da Silva</div>
+              </div>
+              <div class="field-grid">
+                <div class="field-row">
+                  <div class="field-label">Data Nasc.</div>
+                  <div class="field-value" style="font-family:'JetBrains Mono',monospace; font-size:0.76rem;">15/03/1985</div>
+                </div>
+                <div class="field-row">
+                  <div class="field-label">Sexo</div>
+                  <div class="field-value">Masculino</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botão principal -->
+            <button class="btn-audit-cadastro">
+              ✦ Auditoria + Cadastro
+            </button>
+            <div class="btn-sub">Cria o lead e consulta Boa Vista automaticamente</div>
+
+            <!-- Progresso (mostra durante auditoria) -->
+            <div class="progress-overlay" style="margin-top: 14px;">
+              <div class="progress-title">Consultando Boa Vista...</div>
+              <div class="progress-sub">Aguarde, buscando restrições de crédito</div>
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill"></div>
+              </div>
+              <div class="progress-steps">
+                <div class="prog-step"><span class="done">✓</span> <span>Lead criado</span></div>
+                <div class="prog-step"><span class="done">✓</span> <span>Conversa vinculada</span></div>
+                <div class="prog-step"><span class="run">⟳</span> <span>Auditoria Boa Vista...</span></div>
+                <div class="prog-step"><span class="pend">○</span> <span style="color:var(--text-muted);">Abrir drawer</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Drawer mockup abaixo do browser -->
+    <div style="margin-top: 24px;">
+      <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="color: var(--accent);">Sheet lateral (72vw) — Abre automaticamente após auditoria concluir</span>
+      </div>
+      <div class="drawer-mockup-wrap">
+
+        <!-- Drawer Fase 1 -->
+        <div class="drawer-mockup">
+          <div class="drawer-header-mock">
+            <div class="drawer-title-mock">Cadastrar Lead</div>
+            <div class="drawer-steps">
+              <div class="drawer-step active">1</div>
+              <div class="drawer-step-connector"></div>
+              <div class="drawer-step inactive">2</div>
+            </div>
+          </div>
+          <div class="drawer-body-mock">
+            <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">Fase 1 — Dados do Lead</div>
+            <div class="drawer-field-group">
+              <div class="drawer-field full">
+                <label>CPF</label>
+                <input value="123.456.789-01" readonly style="font-family:'JetBrains Mono',monospace; color:var(--accent3);">
+              </div>
+              <div class="drawer-field full">
+                <label>Nome completo</label>
+                <input value="João da Silva">
+              </div>
+              <div class="drawer-field">
+                <label>Data Nasc.</label>
+                <input value="15/03/1985">
+              </div>
+              <div class="drawer-field">
+                <label>Sexo</label>
+                <input value="Masculino">
+              </div>
+              <div class="drawer-field full">
+                <label>Email</label>
+                <input placeholder="email@exemplo.com">
+              </div>
+              <div class="drawer-field full">
+                <label>Telefone</label>
+                <input value="(51) 9 9999-9999">
+              </div>
+            </div>
+          </div>
+          <div class="drawer-footer-mock">
+            <button class="btn-cancel">Cancelar</button>
+            <button class="btn-confirm">Confirmar dados →</button>
+          </div>
+        </div>
+
+        <!-- Drawer Fase 2 -->
+        <div class="drawer-mockup">
+          <div class="drawer-header-mock">
+            <div class="drawer-title-mock">Cadastrar Lead</div>
+            <div class="drawer-steps">
+              <div class="drawer-step done">✓</div>
+              <div class="drawer-step-connector done"></div>
+              <div class="drawer-step active">2</div>
+            </div>
+          </div>
+          <div class="drawer-body-mock">
+            <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">Fase 2 — Restrições Encontradas (3)</div>
+
+            <div class="restricao-item">
+              <div class="restricao-header">
+                <span class="restricao-nome">BRADESCO S/A</span>
+                <span class="restricao-valor" style="color:var(--accent2);">R$ 4.820,00</span>
+              </div>
+              <div class="restricao-empresa empresa-match">
+                <span class="fuzzy-score score-high">0.92</span>
+                <span>Banco Bradesco S.A. — identificado automaticamente</span>
+              </div>
+            </div>
+
+            <div class="restricao-item">
+              <div class="restricao-header">
+                <span class="restricao-nome">CLARO S/A</span>
+                <span class="restricao-valor" style="color:var(--accent2);">R$ 312,50</span>
+              </div>
+              <div class="restricao-empresa empresa-confirm">
+                <span class="fuzzy-score score-mid">0.61</span>
+                <select class="empresa-dropdown">
+                  <option>Claro Brasil S.A. ▾</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="restricao-item">
+              <div class="restricao-header">
+                <span class="restricao-nome">FJBK FINANC</span>
+                <span class="restricao-valor" style="color:var(--accent2);">R$ 1.150,00</span>
+              </div>
+              <div class="restricao-empresa empresa-manual">
+                <span class="fuzzy-score score-low">0.28</span>
+                <input style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:5px; padding:3px 8px; color:var(--text); font-size:0.72rem; font-family:'Inter',sans-serif; outline:none;" placeholder="Identificar empresa manualmente...">
+              </div>
+            </div>
+
+            <div style="font-size:0.72rem; color:var(--text-muted); padding:6px 0; border-top:1px solid var(--border); margin-top:8px;">
+              Total em restrições: <span style="color:var(--accent2); font-weight:700; font-family:'JetBrains Mono',monospace;">R$ 6.282,50</span>
+            </div>
+          </div>
+          <div class="drawer-footer-mock">
+            <button class="btn-cancel">Voltar</button>
+            <button class="btn-create">Criar + Cadastrar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================ -->
+  <!-- SEÇÃO 3 — PLANO DE IMPLEMENTAÇÃO -->
+  <!-- ================================================ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🗺️</span>
+      <h2>Plano de Implementação — 5 Etapas em Ordem Obrigatória</h2>
+    </div>
+
+    <!-- Gap Critico -->
+    <div class="gap-critico">
+      <div class="gap-title">
+        ⛔ GAP CRITICO — Pré-requisito Bloqueante
+      </div>
+      <div class="gap-body">
+        <strong>Problema:</strong> o workflow n8n Doc Reader (<code style="font-family:'JetBrains Mono',monospace; font-size:0.82rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px;">eVgkSfkq2Clrlzuq</code>) extrai os dados do documento e escreve em
+        <code style="font-family:'JetBrains Mono',monospace; font-size:0.82rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px;">whatsapp_mensagens.metadata.doc_reader_result</code>
+        — mas <strong>nunca propaga</strong> esse dado para
+        <code style="font-family:'JetBrains Mono',monospace; font-size:0.82rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px;">whatsapp_conversas.metadata.pending_lead_data</code>.
+        <br><br>
+        <strong>Consequência:</strong> o Lead Panel não tem de onde ler os dados pré-preenchidos pela Julia. O botão "Auditoria + Cadastro" aparece com campos vazios.
+        <br><br>
+        <strong>Fix:</strong> adicionar 1 nó Supabase PATCH ao final do Doc Reader, após extração bem-sucedida, escrevendo o resultado em <code style="font-family:'JetBrains Mono',monospace; font-size:0.82rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:4px;">whatsapp_conversas.metadata</code> via jsonb_set.
+      </div>
+    </div>
+
+    <!-- Etapas -->
+    <div class="grid g2">
+
+      <!-- Etapa 1 -->
+      <div class="etapa-card prereq">
+        <div class="etapa-header">
+          <div>
+            <div class="etapa-num">ETAPA 1 — PREREQ</div>
+            <div class="etapa-title">Fix n8n Doc Reader</div>
+          </div>
+          <span class="complexity-badge cx-s">Complexidade S</span>
+        </div>
+        <div class="etapa-file">n8n workflow: eVgkSfkq2Clrlzuq</div>
+        <div class="etapa-actions">
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Adicionar nó Supabase após extração bem-sucedida</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>PATCH whatsapp_conversas SET metadata = <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">jsonb_set(metadata, '{pending_lead_data}', extracted_data)</code> WHERE id = conversa_id</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Executar apenas quando doc_reader_result.status = 'success'</div>
+          </div>
+        </div>
+        <div class="etapa-blocker">
+          <span class="status-pill sp-done">Nenhum bloqueador — pode executar agora</span>
+        </div>
+      </div>
+
+      <!-- Etapa 2 -->
+      <div class="etapa-card medium">
+        <div class="etapa-header">
+          <div>
+            <div class="etapa-num">ETAPA 2</div>
+            <div class="etapa-title">Adaptar LeadDadosTab</div>
+          </div>
+          <span class="complexity-badge cx-m">Complexidade M</span>
+        </div>
+        <div class="etapa-file">src/components/mdzap/lead-panel/LeadDadosTab.tsx</div>
+        <div class="etapa-actions">
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Quando <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">!lead_id</code>: exibir CPF proeminente + botão "Auditoria + Cadastro"</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Quando <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">lead_id</code> presente: comportamento atual (formulário de edição normal)</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Ler <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">conversa.metadata.pending_lead_data</code> para pré-preencher campos</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Callback <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">onAuditarECadastrar(dadosIniciais)</code> para o pai</div>
+          </div>
+        </div>
+        <div class="etapa-blocker">
+          <span class="status-pill sp-pend">Etapa 1 para auto-preenchimento funcionar</span>
+        </div>
+      </div>
+
+      <!-- Etapa 3 -->
+      <div class="etapa-card large">
+        <div class="etapa-header">
+          <div>
+            <div class="etapa-num">ETAPA 3</div>
+            <div class="etapa-title">Novo MdzapLeadCadastroDrawer</div>
+          </div>
+          <span class="complexity-badge cx-l">Complexidade L</span>
+        </div>
+        <div class="etapa-file">src/components/mdzap/MdzapLeadCadastroDrawer.tsx (NOVO)</div>
+        <div class="etapa-actions">
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Baseado no padrão visual de <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">cadastrar_restricoes_drawer.tsx</code></div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>State machine: Fase 1 (dados) → Fase 2 (restrições)</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Integrar CrmAuditoriaPanel inline (progresso + realtime)</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Fase 2: fuzzy matching + score badges coloridos por threshold</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Ao salvar: <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">fn_restricao_salvar</code> + PDF auto-download + webhook drive-pasta-restricao</div>
+          </div>
+        </div>
+        <div class="etapa-blocker">
+          <span class="status-pill sp-pend">Etapas 1 e 2 devem estar concluídas</span>
+        </div>
+      </div>
+
+      <!-- Etapa 4 -->
+      <div class="etapa-card small">
+        <div class="etapa-header">
+          <div>
+            <div class="etapa-num">ETAPA 4</div>
+            <div class="etapa-title">Integração no MdzapLeadPanel</div>
+          </div>
+          <span class="complexity-badge cx-s">Complexidade S</span>
+        </div>
+        <div class="etapa-file">src/components/mdzap/MdzapLeadPanel.tsx</div>
+        <div class="etapa-actions">
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Passar callback <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">onAuditarECadastrar</code> para LeadDadosTab</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Controlar estado de abertura do MdzapLeadCadastroDrawer</div>
+          </div>
+          <div class="etapa-action">
+            <div class="action-bullet"></div>
+            <div>Invocar <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">criarLeadEAuditarInline</code> de useLeadMutations.ts</div>
+          </div>
+        </div>
+        <div class="etapa-blocker">
+          <span class="status-pill sp-pend">Etapa 3 (drawer) deve existir</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Etapa 5 — full width -->
+    <div style="margin-top: 16px;">
+      <div class="etapa-card small">
+        <div class="etapa-header">
+          <div>
+            <div class="etapa-num">ETAPA 5</div>
+            <div class="etapa-title">Empty States — Tabs Restrições e Docs</div>
+          </div>
+          <span class="complexity-badge cx-s">Complexidade S</span>
+        </div>
+        <div class="grid g2" style="gap: 12px; margin-bottom: 12px;">
+          <div>
+            <div class="etapa-file">LeadRestricoesMdzapTab.tsx</div>
+            <div class="etapa-actions">
+              <div class="etapa-action">
+                <div class="action-bullet"></div>
+                <div>Quando <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">!leadId</code>: exibir "Cadastre o lead na aba Dados" + botão que muda tab ativa para "Dados"</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="etapa-file">LeadDocumentosTab.tsx</div>
+            <div class="etapa-actions">
+              <div class="etapa-action">
+                <div class="action-bullet"></div>
+                <div>Quando <code style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--accent3); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:3px;">!leadId</code>: exibir "Pastas criadas após cadastro e restrições" (informativo, sem ação)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="etapa-blocker">
+          <span class="status-pill sp-pend">Pode ser feita em paralelo com Etapas 2-4</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reutilizaveis -->
+    <div style="margin-top: 28px;">
+      <div class="section-header" style="margin-top:0;">
+        <span class="section-icon">♻️</span>
+        <h2>Componentes Reutilizaveis — Nao Criar do Zero</h2>
+      </div>
+      <div class="reuse-grid">
+        <div class="reuse-card">
+          <div class="reuse-name">CrmAuditoriaPanel</div>
+          <div class="reuse-path">src/components/crm/CrmAuditoriaPanel.tsx</div>
+          <div class="reuse-desc">Progresso + realtime polling + PDF download. Usar inline no drawer e na Tab Restrições.</div>
+        </div>
+        <div class="reuse-card">
+          <div class="reuse-name">CadastrarRestricoesDrawer</div>
+          <div class="reuse-path">src/pages/auditorias/components/cadastrar_restricoes_drawer.tsx</div>
+          <div class="reuse-desc">Padrão visual e lógica de fuzzy matching das empresas. Base para o novo drawer MdZap.</div>
+        </div>
+        <div class="reuse-card">
+          <div class="reuse-name">useRestricoes</div>
+          <div class="reuse-path">src/hooks/shared/useRestricoes.ts (ou similar)</div>
+          <div class="reuse-desc">Hook de dados para restrições — reusar para buscar resultado da auditoria no drawer Fase 2.</div>
+        </div>
+        <div class="reuse-card">
+          <div class="reuse-name">criarLeadEAuditarInline</div>
+          <div class="reuse-path">src/hooks/useLeadMutations.ts</div>
+          <div class="reuse-desc">Lógica de criação de lead + disparo de auditoria já implementada. Apenas invocar via callback.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline summary -->
+    <div style="margin-top: 28px;">
+      <div class="section-header" style="margin-top:0;">
+        <span class="section-icon">⏱️</span>
+        <h2>Resumo de Dependencias e Ordem de Execucao</h2>
+      </div>
+      <div class="card">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 12px; font-size: 0.85rem;">
+            <span style="background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:3px 10px; font-size:0.72rem; font-weight:700; white-space:nowrap;">1. n8n Fix</span>
+            <span style="color:var(--border);">────→</span>
+            <span style="background:rgba(245,158,11,0.12); color:var(--yellow); border:1px solid rgba(245,158,11,0.25); border-radius:8px; padding:3px 10px; font-size:0.72rem; font-weight:700; white-space:nowrap;">2. LeadDadosTab</span>
+            <span style="color:var(--border);">────→</span>
+            <span style="background:rgba(255,107,107,0.12); color:var(--accent2); border:1px solid rgba(255,107,107,0.25); border-radius:8px; padding:3px 10px; font-size:0.72rem; font-weight:700; white-space:nowrap;">3. Drawer (L)</span>
+            <span style="color:var(--border);">────→</span>
+            <span style="background:rgba(124,109,255,0.12); color:var(--accent); border:1px solid rgba(124,109,255,0.25); border-radius:8px; padding:3px 10px; font-size:0.72rem; font-weight:700; white-space:nowrap;">4. Panel</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; font-size: 0.85rem;">
+            <span style="color: var(--text-muted); font-size:0.78rem;">Em paralelo com 2-4:</span>
+            <span style="background:rgba(79,255,176,0.1); color:var(--accent3); border:1px solid rgba(79,255,176,0.25); border-radius:8px; padding:3px 10px; font-size:0.72rem; font-weight:700;">5. Empty States</span>
+            <span style="color:var(--text-muted); font-size:0.72rem;">(pode ser feita a qualquer momento)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    🐙 Jarbas 2.0 — MdLab LegalTech · 2026-04-09 · MdZap — Novo Fluxo Cadastro de Lead
+  </div>
+
+</div>
+</body>
+</html>
