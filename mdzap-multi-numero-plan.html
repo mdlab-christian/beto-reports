@@ -3,131 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MdZap — Multi-Numero + Prompt Julia — Plano Tecnico v3</title>
+<title>MdZap — Arquitetura Multi-Agente v4</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#12100e;--surface:#1a1714;--card:#201d1a;--card2:#282420;--border:#2e2b27;--border2:#3a3530;--primary:#20c997;--primary-dim:#20c99720;--primary-border:#20c99740;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--info:#60a5fa;--purple:#7c6dff;--text:#f5f0eb;--muted:#9e9890;--mono:'JetBrains Mono','Fira Code',monospace}
+:root{--bg:#12100e;--surface:#1a1714;--card:#201d1a;--card2:#282420;--border:#2e2b27;--border2:#3a3530;--primary:#20c997;--primary-dim:#20c99720;--primary-border:#20c99740;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--info:#60a5fa;--purple:#7c6dff;--orange:#f97316;--text:#f5f0eb;--muted:#9e9890;--mono:'JetBrains Mono','Fira Code',monospace}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.6;padding:2rem;max-width:1280px;margin:0 auto}
 .layout{display:flex;gap:2rem}
 .sidebar{width:220px;position:sticky;top:24px;height:fit-content;flex-shrink:0}
-.sidebar a{display:block;color:var(--muted);text-decoration:none;padding:4px 12px;font-size:13px;border-left:2px solid transparent;transition:all .15s}
+.sidebar a{display:block;color:var(--muted);text-decoration:none;padding:4px 12px;font-size:12px;border-left:2px solid transparent;transition:all .15s}
 .sidebar a:hover{color:var(--primary);border-left-color:var(--primary)}
-.sidebar .sg{margin-bottom:16px}
-.sidebar .sl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:4px 12px;font-weight:600}
+.sg{margin-bottom:16px}
+.sl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:4px 12px;font-weight:600}
 main{flex:1;max-width:960px}
 @media(max-width:768px){.sidebar{display:none}body{padding:1rem}}
 
 header{margin-bottom:2.5rem}
-h1{font-family:Manrope,sans-serif;font-weight:800;font-size:28px;color:var(--text);margin-bottom:4px}
+h1{font-family:Manrope,sans-serif;font-weight:800;font-size:28px;margin-bottom:4px}
 .subtitle{color:var(--muted);font-size:15px;margin-bottom:12px}
 .meta-row{display:flex;gap:8px;flex-wrap:wrap}
-.meta-chip{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--muted);font-family:var(--mono)}
-.mc-green{color:var(--primary);border-color:var(--primary-border)}
-.mc-warn{color:var(--warn);border-color:#f59e0b40}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+.mc-g{color:var(--primary);border-color:var(--primary-border)}
+.mc-w{color:var(--warn);border-color:#f59e0b40}
+.mc-r{color:var(--danger);border-color:#ef444440}
 
 .section{margin-bottom:2.5rem}
-.section-header{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.section-icon{font-size:18px}
-.section-title{font-family:Manrope,sans-serif;font-weight:700;font-size:18px}
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.si{font-size:18px}
+.st{font-family:Manrope,sans-serif;font-weight:700;font-size:18px}
 
 .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
-.card-title{font-weight:600;font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ct{font-weight:600;font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
-.b-pri{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)}
-.b-warn{background:#f59e0b20;color:var(--warn);border:1px solid #f59e0b40}
-.b-danger{background:#ef444420;color:var(--danger);border:1px solid #ef444440}
-.b-ok{background:#22c55e20;color:var(--success);border:1px solid #22c55e40}
-.b-info{background:#60a5fa20;color:var(--info);border:1px solid #60a5fa40}
-.b-purple{background:#7c6dff20;color:var(--purple);border:1px solid #7c6dff40}
-.b-muted{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
-.b-new{background:#20c99715;color:var(--primary);border:1px solid var(--primary-border);font-size:10px;padding:1px 6px}
+.b{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.bp{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)}
+.bw{background:#f59e0b20;color:var(--warn);border:1px solid #f59e0b40}
+.bd{background:#ef444420;color:var(--danger);border:1px solid #ef444440}
+.bg{background:#22c55e20;color:var(--success);border:1px solid #22c55e40}
+.bi{background:#60a5fa20;color:var(--info);border:1px solid #60a5fa40}
+.bv{background:#7c6dff20;color:var(--purple);border:1px solid #7c6dff40}
+.bo{background:#f9731620;color:var(--orange);border:1px solid #f9731640}
+.bm{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
 
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:8px 12px;background:var(--surface);color:var(--muted);font-weight:600;border-bottom:1px solid var(--border)}
 td{padding:8px 12px;border-bottom:1px solid var(--border)}
 tr:hover td{background:var(--surface)}
-.strike{text-decoration:line-through;opacity:.35}
-
 code{font-family:var(--mono);font-size:12px;color:var(--primary)}
-.code-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:var(--mono);font-size:12px;overflow-x:auto;margin:12px 0;line-height:1.7;white-space:pre-wrap;color:var(--primary)}
-.cc{color:#6a6560}.ck{color:var(--info)}.cv{color:var(--primary)}.cs{color:var(--warn)}.cw{color:#c084fc}
 
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-@media(max-width:768px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+.cb{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:var(--mono);font-size:12px;overflow-x:auto;margin:12px 0;line-height:1.7;white-space:pre-wrap;color:var(--primary)}
+.arch{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;font-family:var(--mono);font-size:12px;color:var(--primary);line-height:1.9;overflow-x:auto;white-space:pre}
 
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
-.stat-value{font-family:Manrope,sans-serif;font-size:2rem;font-weight:800}
-.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:768px){.g2,.g3,.g4{grid-template-columns:1fr}}
 
-/* Decision cards */
-.dec{border-radius:10px;padding:16px;margin-bottom:12px;background:var(--card2)}
-.dec.ok{border:1px solid #22c55e30}
-.dec.pend{border:1px solid #f59e0b30}
-.dec-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.dec-q{font-weight:600;font-size:14px;margin-bottom:8px}
-.dec-answer{background:#22c55e08;border:1px solid #22c55e20;border-radius:8px;padding:12px}
-.dec-answer .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--success);margin-bottom:4px}
-.dec-answer.partial{background:#f59e0b08;border-color:#f59e0b20}
-.dec-answer.partial .lbl{color:var(--warn)}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.sv{font-family:Manrope,sans-serif;font-size:2rem;font-weight:800}
+.slb{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
 
-/* Cred box */
-.cred-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;margin:8px 0}
-.cred-label{color:var(--muted);font-size:11px}
-.cred-value{color:var(--info);font-weight:600}
-
-/* Phases */
-.phase-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
-.phase-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.phase-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
-.pn1{background:#7c6dff25;color:var(--purple);border:2px solid var(--purple)}
-.pn2{background:#60a5fa25;color:var(--info);border:2px solid var(--info)}
-.pn3{background:#20c99725;color:var(--primary);border:2px solid var(--primary)}
-.pn4{background:#f59e0b25;color:var(--warn);border:2px solid var(--warn)}
-.task-list{list-style:none}
-.task-list li{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
-.task-list li:last-child{border-bottom:none}
-.ti{color:var(--muted);font-size:12px;font-family:var(--mono);min-width:24px;padding-top:2px}
-.tc{flex:1}
-.tc strong{font-size:13px}
-.tc p{color:var(--muted);font-size:12px;margin-top:2px}
-.tm{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-
-/* Flow steps */
-.flow-steps{display:flex;flex-direction:column}
-.flow-step{display:flex;align-items:flex-start;gap:16px;position:relative;padding-bottom:24px}
-.flow-step:last-child{padding-bottom:0}
-.flow-step::before{content:'';position:absolute;left:15px;top:34px;bottom:0;width:2px;background:var(--border)}
-.flow-step:last-child::before{display:none}
-.step-num{width:32px;height:32px;border-radius:50%;background:var(--primary-dim);border:2px solid var(--primary);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;z-index:1}
-.step-content{flex:1;padding-top:4px}
-.step-content strong{font-size:14px}
-.step-content p{font-size:12px;color:var(--muted);margin-top:2px}
-
-/* Pending items */
-.pend-item{display:flex;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:8px;border:1px solid var(--border)}
-.pend-item.p1{border-left:3px solid var(--warn);background:#f59e0b08}
-.pend-item.p2{border-left:3px solid var(--info);background:#60a5fa08}
-.pend-icon{font-size:16px;flex-shrink:0;margin-top:2px}
-.pend-content{flex:1}
-.pend-content strong{font-size:13px}
-.pend-content p{font-size:12px;color:var(--muted);margin-top:2px}
+/* Agent cards */
+.agent-card{background:var(--card);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ac-leads::before{background:var(--primary)}
+.ac-leads{border:1px solid var(--primary-border)}
+.ac-docs::before{background:var(--orange)}
+.ac-docs{border:1px solid #f9731640}
+.ac-cp::before{background:var(--purple)}
+.ac-cp{border:1px solid #7c6dff40}
+.ac-hm::before{background:var(--info)}
+.ac-hm{border:1px solid #60a5fa40}
+.agent-icon{font-size:2rem;margin-bottom:8px}
+.agent-name{font-family:Manrope,sans-serif;font-weight:700;font-size:16px;margin-bottom:4px}
+.agent-slug{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:10px}
+.agent-desc{font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5}
+.agent-features{list-style:none;font-size:12px}
+.agent-features li{padding:4px 0;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.agent-features li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ac-leads .agent-features li::before{background:var(--primary)}
+.ac-docs .agent-features li::before{background:var(--orange)}
+.ac-cp .agent-features li::before{background:var(--purple)}
+.ac-hm .agent-features li::before{background:var(--info)}
 
 /* Highlight boxes */
 .hl{border-radius:10px;padding:16px;margin:12px 0}
-.hl.success{background:#22c55e08;border:1px solid #22c55e25}
-.hl.warn{background:#f59e0b08;border:1px solid #f59e0b25}
-.hl.info{background:#60a5fa08;border:1px solid #60a5fa25}
-.hl-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.hl.success .hl-title{color:var(--success)}
-.hl.warn .hl-title{color:var(--warn)}
-.hl.info .hl-title{color:var(--info)}
+.hl.ok{background:#22c55e08;border:1px solid #22c55e25}
+.hl.w{background:#f59e0b08;border:1px solid #f59e0b25}
+.hl.i{background:#60a5fa08;border:1px solid #60a5fa25}
+.hl.d{background:#ef444408;border:1px solid #ef444425}
+.hlt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.hl.ok .hlt{color:var(--success)}.hl.w .hlt{color:var(--warn)}.hl.i .hlt{color:var(--info)}.hl.d .hlt{color:var(--danger)}
 
-/* Arch diagram */
-.arch{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;font-family:var(--mono);font-size:12px;color:var(--primary);line-height:1.9;overflow-x:auto;white-space:pre}
+/* Decision cards */
+.dec{border-radius:10px;padding:16px;margin-bottom:12px;background:var(--card2)}
+.dec.resolved{border:1px solid #22c55e30}
+.dec.open{border:1px solid #f59e0b30}
+.dh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dq{font-weight:600;font-size:14px;margin-bottom:8px}
+.da{border-radius:8px;padding:12px}
+.da.ok{background:#22c55e08;border:1px solid #22c55e20}
+.da.pend{background:#f59e0b08;border:1px solid #f59e0b20}
+.da .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.da.ok .lbl{color:var(--success)}
+.da.pend .lbl{color:var(--warn)}
+.opt{background:rgba(0,0,0,.2);border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:13px}
+.opt-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.opt-a .opt-label{color:var(--primary)}
+.opt-b .opt-label{color:var(--info)}
+.opt-c .opt-label{color:var(--purple)}
+.opt-text{color:var(--muted);font-size:12px}
+.opt-pros{color:var(--muted);font-size:11px;margin-top:4px}
+
+/* Cred box */
+.cred{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;margin:8px 0}
+.cl{color:var(--muted);font-size:11px}
+.cv{color:var(--info);font-weight:600}
+
+/* Flow steps */
+.fs{display:flex;flex-direction:column}
+.f{display:flex;align-items:flex-start;gap:16px;position:relative;padding-bottom:24px}
+.f:last-child{padding-bottom:0}
+.f::before{content:'';position:absolute;left:15px;top:34px;bottom:0;width:2px;background:var(--border)}
+.f:last-child::before{display:none}
+.fn{width:32px;height:32px;border-radius:50%;background:var(--primary-dim);border:2px solid var(--primary);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;z-index:1}
+.fc{flex:1;padding-top:4px}
+.fc strong{font-size:14px}
+.fc p{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* Pending */
+.pi{display:flex;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:8px;border:1px solid var(--border)}
+.pi.p1{border-left:3px solid var(--warn);background:#f59e0b08}
+.pi.p2{border-left:3px solid var(--info);background:#60a5fa08}
+.pk{font-size:16px;flex-shrink:0;margin-top:2px}
+.pc{flex:1}
+.pc strong{font-size:13px}
+.pc p{font-size:12px;color:var(--muted);margin-top:2px}
 
 .checklist{list-style:none}
 .checklist li{padding:6px 0;font-size:13px;display:flex;align-items:center;gap:8px}
@@ -144,29 +155,36 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);text-
   <div class="sg">
     <div class="sl">Visao Geral</div>
     <a href="#stats">Stats</a>
-    <a href="#decisoes">Decisoes CTO</a>
+    <a href="#principio">Principio Arquitetural</a>
+    <a href="#agentes">4 Agentes SDR</a>
+    <a href="#decisoes">Decisoes Arquiteturais</a>
+  </div>
+  <div class="sg">
+    <div class="sl">Agente 1 — Julia Leads</div>
+    <a href="#leads-visao">Visao Geral</a>
+    <a href="#leads-fluxo">Fluxo 9 Steps</a>
+    <a href="#leads-painel">Painel Lead</a>
+    <a href="#leads-pendencias">Pendencias Prompt</a>
+  </div>
+  <div class="sg">
+    <div class="sl">Agente 2 — Docs Pendentes</div>
+    <a href="#docs-visao">Visao Geral</a>
+    <a href="#docs-painel">Painel Cliente</a>
+  </div>
+  <div class="sg">
+    <div class="sl">Agentes 3-4 — Acordos</div>
+    <a href="#acordos-visao">Visao Geral</a>
+    <a href="#acordos-painel">Painel Processo</a>
     <a href="#credenciais">Credenciais Meta</a>
   </div>
   <div class="sg">
-    <div class="sl">Missao 1 — Multi-Numero</div>
-    <a href="#estado">Estado Atual</a>
-    <a href="#arquitetura">Arquitetura Alvo</a>
-    <a href="#sdrs">SDRs Novos</a>
-    <a href="#fase1">Fase 1: Backend</a>
-    <a href="#fase2">Fase 2: n8n</a>
-    <a href="#fase3">Fase 3: Frontend</a>
-    <a href="#painel">Painel Acordos vs Leads</a>
-    <a href="#checklist">Checklist</a>
-  </div>
-  <div class="sg">
-    <div class="sl">Missao 2 — Prompt Julia</div>
-    <a href="#fluxo">Fluxo Julia (9 Steps)</a>
-    <a href="#pendencias-julia">Pendencias</a>
-  </div>
-  <div class="sg">
-    <div class="sl">Tecnico</div>
+    <div class="sl">Infra</div>
+    <a href="#routing">Rota vs Aba</a>
+    <a href="#n8n">n8n Routing</a>
+    <a href="#permissoes">Permissoes</a>
+    <a href="#componentes">Componentes Reutilizaveis</a>
+    <a href="#prioridade">Prioridade de Execucao</a>
     <a href="#build">Build Errors</a>
-    <a href="#proximos">Proximos Passos</a>
   </div>
 </aside>
 
@@ -174,714 +192,556 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);text-
 <main>
 
 <header>
-  <h1>MdZap — Multi-Numero + Prompt Julia</h1>
-  <div class="subtitle">Plano tecnico v3 — decisoes CTO resolvidas, credenciais Meta fornecidas, pronto para Fase 1</div>
+  <h1>MdZap — Arquitetura Multi-Agente</h1>
+  <div class="subtitle">Plano v4 — 4 agentes SDR, cada um com dashboard/chat/painel/permissoes proprios. Hoje so planejamento.</div>
   <div class="meta-row">
-    <span class="meta-chip mc-green">4/5 decisoes resolvidas</span>
-    <span class="meta-chip">2026-04-10</span>
-    <span class="meta-chip">MdZap v2</span>
-    <span class="meta-chip mc-warn">DEC-04 em estudo</span>
+    <span class="mc mc-r">SOMENTE PLANEJAMENTO</span>
+    <span class="mc">2026-04-10</span>
+    <span class="mc mc-g">4 agentes SDR</span>
+    <span class="mc mc-w">Prioridade: Julia Leads 100% primeiro</span>
   </div>
 </header>
 
 <!-- STATS -->
 <section class="section" id="stats">
-  <div class="grid4">
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--primary)">1</div>
-      <div class="stat-label">Numero Ativo</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--success)">+1</div>
-      <div class="stat-label">Numero Novo (Fase 1)</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--info)">+2</div>
-      <div class="stat-label">Novos SDR Slugs</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--warn)">4</div>
-      <div class="stat-label">Fases Implementacao</div>
+  <div class="g4">
+    <div class="sc"><div class="sv" style="color:var(--primary)">4</div><div class="slb">Agentes SDR</div></div>
+    <div class="sc"><div class="sv" style="color:var(--success)">4</div><div class="slb">Numeros WhatsApp</div></div>
+    <div class="sc"><div class="sv" style="color:var(--warn)">1</div><div class="slb">Quase Pronto</div></div>
+    <div class="sc"><div class="sv" style="color:var(--info)">3</div><div class="slb">A Construir</div></div>
+  </div>
+</section>
+
+<!-- PRINCIPIO ARQUITETURAL -->
+<section class="section" id="principio">
+  <div class="sh">
+    <span class="si">🏛️</span>
+    <span class="st">Principio Arquitetural</span>
+  </div>
+
+  <div class="hl d">
+    <div class="hlt">Regra de ouro — definida pelo CTO</div>
+    Cada agente SDR e um "mundo" separado: dashboard proprio, chat proprio, painel lateral proprio, permissoes proprias, numero WhatsApp proprio, prompt proprio. Nenhum agente se sobrepoe a outro. Comercial nao ve acordos. Juridico nao ve leads. Tudo dentro do MdZap, com componentes reutilizaveis mas adaptados por agente.
+  </div>
+
+  <div class="card">
+    <div class="ct">Cada agente tem:</div>
+    <div class="g2">
+      <div>
+        <ul style="list-style:disc;padding-left:20px;font-size:13px;color:var(--muted);line-height:2">
+          <li>Numero WhatsApp exclusivo</li>
+          <li>Dashboard com KPIs proprios</li>
+          <li>Chat/bate-papo dedicado</li>
+          <li>Painel lateral especifico (lead vs cliente vs processo)</li>
+        </ul>
+      </div>
+      <div>
+        <ul style="list-style:disc;padding-left:20px;font-size:13px;color:var(--muted);line-height:2">
+          <li>Prompt/treinamento juridico proprio</li>
+          <li>Permissoes de acesso por perfil</li>
+          <li>Quick-actions especificas</li>
+          <li>Conexoes com paginas diferentes do MdFlow</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════ DECISOES CTO ═══════════════ -->
+<!-- 4 AGENTES SDR -->
+<section class="section" id="agentes">
+  <div class="sh">
+    <span class="si">🤖</span>
+    <span class="st">4 Agentes SDR — Visao Completa</span>
+  </div>
 
+  <div class="g2">
+    <!-- AGENTE 1 -->
+    <div class="agent-card ac-leads">
+      <div class="agent-icon">👩‍💼</div>
+      <div class="agent-name">Julia — Atendimento Leads</div>
+      <div class="agent-slug">sdr_leads · Midas Atendimento · +5551816855848</div>
+      <span class="b bg" style="margin-bottom:10px;display:inline-flex">QUASE PRONTO — Prioridade #1</span>
+      <div class="agent-desc">Qualificacao de leads ate cadastro + assinatura de procuracao. Primeiro contato com o cliente. Depois do cadastro, a funcao dele acaba.</div>
+      <ul class="agent-features">
+        <li>Painel: informacoes do LEAD (CPF, restricoes, docs, score)</li>
+        <li>Conecta: /crm, /indicacoes, /clientes</li>
+        <li>Prompt: qualificacao + coleta docs + auditoria</li>
+        <li>Perfil: comercial</li>
+        <li>Quick-actions: auditar CPF, pedir docs, gerar procuracao</li>
+      </ul>
+    </div>
+
+    <!-- AGENTE 2 -->
+    <div class="agent-card ac-docs">
+      <div class="agent-icon">📄</div>
+      <div class="agent-name">Agente Docs Pendentes</div>
+      <div class="agent-slug">sdr_docs_pendentes · numero a definir</div>
+      <span class="b bo" style="margin-bottom:10px;display:inline-flex">MAIS USADO — pos-venda continuo</span>
+      <div class="agent-desc">Pos-venda: cobra documentos pendentes, tira duvidas do cliente sobre andamento processual. Opera sobre CLIENTES (nao leads). Contato constante — processos demoram meses/anos.</div>
+      <ul class="agent-features">
+        <li>Painel: informacoes do CLIENTE + processos + docs pendentes</li>
+        <li>Conecta: /clientes, /processos, /documentos_pendentes</li>
+        <li>Badges: liminares, decisoes, mudancas de status</li>
+        <li>Prompt: pos-venda + status processual + cobranca docs</li>
+        <li>Perfil: juridico + comercial</li>
+        <li>Multi-processo por cliente</li>
+      </ul>
+    </div>
+
+    <!-- AGENTE 3 -->
+    <div class="agent-card ac-cp">
+      <div class="agent-icon">⚖️</div>
+      <div class="agent-name">Acordos — Christian Pass</div>
+      <div class="agent-slug">sdr_acordos_cp · +5551814749234</div>
+      <span class="b bv" style="margin-bottom:10px;display:inline-flex">NOVO — credenciais ok</span>
+      <div class="agent-desc">Negociacao de acordos com escritorios de advocacia adversos. Fala com ADVOGADOS, nao leads/clientes. Especialista juridico em propostas de acordo por processo especifico. Cobre RS/SC/SP.</div>
+      <ul class="agent-features">
+        <li>Painel: PROCESSO especifico + empresa + escritorio adverso</li>
+        <li>Conecta: /processos, /acordos, /empresas</li>
+        <li>Prompt: especialista em negociacao de acordos</li>
+        <li>Perfil: juridico (advogados apenas)</li>
+        <li>Se for de outro advogado → transfere</li>
+      </ul>
+    </div>
+
+    <!-- AGENTE 4 -->
+    <div class="agent-card ac-hm" style="opacity:.6">
+      <div class="agent-icon">⚖️</div>
+      <div class="agent-name">Acordos — Heloisa Miglioranza</div>
+      <div class="agent-slug">sdr_acordos_hm · numero pendente</div>
+      <span class="b bw" style="margin-bottom:10px;display:inline-flex">FUTURO — credenciais pendentes</span>
+      <div class="agent-desc">Mesmo modelo do Christian. Numero e credenciais a fornecer. Conectados entre si: se processo e de outro advogado, transfere.</div>
+      <ul class="agent-features">
+        <li>Mesmo layout e funcionalidades do Christian</li>
+        <li>Numero e prompt proprios</li>
+        <li>Cobre OABs da Heloisa</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TABELA COMPARATIVA -->
+  <div class="card" style="margin-top:16px">
+    <div class="ct">Comparativo por Agente</div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th style="color:var(--primary)">Julia Leads</th>
+          <th style="color:var(--orange)">Docs Pendentes</th>
+          <th style="color:var(--purple)">Acordos CP</th>
+          <th style="color:var(--info)">Acordos HM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="color:var(--muted)">Fala com</td><td>Leads (prospects)</td><td>Clientes (pos-venda)</td><td>Advogados adversos</td><td>Advogados adversos</td></tr>
+        <tr><td style="color:var(--muted)">Painel lateral</td><td>Lead info</td><td>Cliente + processos</td><td>Processo especifico</td><td>Processo especifico</td></tr>
+        <tr><td style="color:var(--muted)">Paginas conectadas</td><td>/crm /clientes</td><td>/clientes /processos /docs_pendentes</td><td>/processos /acordos /empresas</td><td>/processos /acordos /empresas</td></tr>
+        <tr><td style="color:var(--muted)">Volume esperado</td><td>Alto (campanhas)</td><td>Muito alto (continuo)</td><td>Medio</td><td>Medio</td></tr>
+        <tr><td style="color:var(--muted)">Complexidade</td><td>Alta (9 steps)</td><td>Media-alta</td><td>Media</td><td>Media</td></tr>
+        <tr><td style="color:var(--muted)">Numero WhatsApp</td><td>+5551816855848</td><td>A definir</td><td>+5551814749234</td><td>Pendente</td></tr>
+        <tr><td style="color:var(--muted)">Status</td><td><span class="b bg">quase pronto</span></td><td><span class="b bo">a construir</span></td><td><span class="b bv">credenciais ok</span></td><td><span class="b bw">pendente</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- DECISOES ARQUITETURAIS -->
 <section class="section" id="decisoes">
-  <div class="section-header">
-    <span class="section-icon">✅</span>
-    <span class="section-title">Decisoes CTO — 4 Resolvidas, 1 em Estudo</span>
+  <div class="sh">
+    <span class="si">🔀</span>
+    <span class="st">Decisoes Arquiteturais</span>
   </div>
 
-  <div class="dec ok">
-    <div class="dec-header"><span class="badge b-ok">RESOLVIDA</span> <code style="color:var(--success)">DEC-01</code></div>
-    <div class="dec-q">Como diferenciar os SDRs de acordos?</div>
-    <div class="dec-answer">
-      <div class="lbl">Opcao A — Slugs separados</div>
-      <div>Criar <code>sdr_acordos_cp</code> (Christian Pass) e <code>sdr_acordos_hm</code> (Heloisa Miglioranza). Cada numero tem slug proprio. Permite prompts diferentes por advogado.</div>
+  <!-- ROTA VS ABA -->
+  <div class="dec open" id="routing">
+    <div class="dh"><span class="b bw">DECISAO ABERTA</span> <code style="color:var(--warn)">ARQ-01</code></div>
+    <div class="dq">Rotas separadas ou abas dentro do MdZap?</div>
+
+    <div class="opt opt-a">
+      <div class="opt-label">Opcao A — Rotas separadas (/mdzap/leads, /mdzap/docs, /mdzap/acordos-cp)</div>
+      <div class="opt-text">Cada agente e uma rota independente. Uma rota /mdzap geral serve de hub com acesso a todas.</div>
+      <div class="opt-pros">+ Permissoes naturais por rota (comercial so ve /mdzap/leads) · + Cada rota carrega so seus dados · + URL compartilhavel · + Dashboard/painel totalmente independentes · + Sidebar do MdFlow ja mostra sub-rotas</div>
+    </div>
+
+    <div class="opt opt-b">
+      <div class="opt-label">Opcao B — Abas dentro de /mdzap</div>
+      <div class="opt-text">Uma unica rota /mdzap com tabs no topo: [ Leads | Docs | Acordos CP | Acordos HM ]</div>
+      <div class="opt-pros">+ Transicao rapida entre agentes · - Carrega tudo junto (pesado) · - Permissoes por aba = logica extra · - Dashboard/painel compartilhados = complexidade · - Mobile: tabs demais</div>
+    </div>
+
+    <div class="opt opt-c">
+      <div class="opt-label">Opcao C — Hibrido (RECOMENDADA CC)</div>
+      <div class="opt-text">Rotas separadas (/mdzap/leads, /mdzap/docs, etc.) mas compartilhando componentes reutilizaveis (MdzapMsgThread, MdzapMsgInput, etc.). Rota /mdzap como hub de navegacao.</div>
+      <div class="opt-pros">+ Melhor dos dois mundos · + Permissoes nativas · + Componentes DRY · + Cada rota leve · + Hub central para gestores</div>
+    </div>
+
+    <div class="hl w" style="margin-top:12px">
+      <div class="hlt">Impacto da decisao</div>
+      Define a estrutura de pastas, routing, lazy loading, permissoes e sidebar do MdFlow inteiro. Deve ser decidida ANTES de qualquer codigo.
     </div>
   </div>
 
-  <div class="dec ok">
-    <div class="dec-header"><span class="badge b-ok">RESOLVIDA</span> <code style="color:var(--success)">DEC-02</code></div>
-    <div class="dec-q">Numeros registrados na Meta Business API?</div>
-    <div class="dec-answer">
-      <div class="lbl">Sim — 1 de 2 fornecido</div>
-      <div>Phone Number ID <code>1038640892669654</code> | WABA <code>1267750791577634</code> | +55 51 8147-4923. Segundo (Heloisa) pendente.</div>
-    </div>
+  <!-- DECISOES ANTERIORES RESOLVIDAS -->
+  <div class="dec resolved">
+    <div class="dh"><span class="b bg">RESOLVIDA</span> <code style="color:var(--success)">DEC-01</code></div>
+    <div class="dq">Slugs separados por advogado?</div>
+    <div class="da ok"><div class="lbl">Sim — sdr_acordos_cp e sdr_acordos_hm</div></div>
+  </div>
+  <div class="dec resolved">
+    <div class="dh"><span class="b bg">RESOLVIDA</span> <code style="color:var(--success)">DEC-03</code></div>
+    <div class="dq">Vinculo numero → advogado?</div>
+    <div class="da ok"><div class="lbl">Via agente_slug — sem campo extra</div></div>
+  </div>
+  <div class="dec resolved">
+    <div class="dh"><span class="b bg">RESOLVIDA</span> <code style="color:var(--success)">DEC-05</code></div>
+    <div class="dq">OAB no frontend?</div>
+    <div class="da ok"><div class="lbl">Nao — nome do advogado apenas. Um numero cobre todas OABs.</div></div>
+  </div>
+  <div class="dec open">
+    <div class="dh"><span class="b bw">EM ESTUDO</span> <code style="color:var(--warn)">DEC-04</code></div>
+    <div class="dq">Campos do painel de acordos?</div>
+    <div class="da pend"><div class="lbl">Processos do sistema (nao leads). Campos exatos a definir.</div></div>
   </div>
 
-  <div class="dec ok">
-    <div class="dec-header"><span class="badge b-ok">RESOLVIDA</span> <code style="color:var(--success)">DEC-03</code></div>
-    <div class="dec-q">Como vincular numero ao advogado?</div>
-    <div class="dec-answer">
-      <div class="lbl">Opcao C — via agente_slug</div>
-      <div>O slug <code>sdr_acordos_cp</code> / <code>sdr_acordos_hm</code> ja identifica o advogado. Sem campo extra no banco.</div>
+  <!-- NOVA DECISAO -->
+  <div class="dec open">
+    <div class="dh"><span class="b bw">DECISAO ABERTA</span> <code style="color:var(--warn)">ARQ-02</code></div>
+    <div class="dq">Acordos: 1 conversa por processo ou 1 conversa por escritorio adverso?</div>
+    <div class="opt opt-a">
+      <div class="opt-label">Opcao A — 1 conversa por processo</div>
+      <div class="opt-text">Cada processo gera uma conversa separada com o escritorio adverso. Painel mostra dados daquele processo especifico.</div>
+      <div class="opt-pros">+ Contexto isolado por processo · + Historico claro · - Muitas conversas se o cliente tem N processos</div>
     </div>
-  </div>
-
-  <div class="dec pend">
-    <div class="dec-header"><span class="badge b-warn">EM ESTUDO</span> <code style="color:var(--warn)">DEC-04</code></div>
-    <div class="dec-q">Painel lateral de acordos — quais campos?</div>
-    <div class="dec-answer partial">
-      <div class="lbl">Direcao confirmada — campos exatos pendentes</div>
-      <div><strong>Clientes para acordo sao do SISTEMA, nao leads.</strong> Ja tem processos cadastrados. Painel puxa de <code>processos</code>, <code>clientes</code>, <code>empresas</code>. Vinculo: conversa ↔ <code>cliente_id</code> ↔ processos. Lista exata a fornecer.</div>
+    <div class="opt opt-b">
+      <div class="opt-label">Opcao B — 1 conversa por escritorio/contato</div>
+      <div class="opt-text">Uma conversa por escritorio adverso, onde se negocia multiplos processos do mesmo cliente.</div>
+      <div class="opt-pros">+ Menos conversas · + Mais natural (telefone real) · - Contexto misturado · - Painel precisa listar N processos</div>
     </div>
-  </div>
-
-  <div class="dec ok">
-    <div class="dec-header"><span class="badge b-ok">RESOLVIDA</span> <code style="color:var(--success)">DEC-05</code></div>
-    <div class="dec-q">OAB no frontend?</div>
-    <div class="dec-answer">
-      <div class="lbl">Sem OAB no frontend</div>
-      <div>Cada advogado tem multiplas OABs (ex: Christian = RS/SC/SP). Um numero cobre todas. Frontend mostra nome do advogado, nao OAB.</div>
-    </div>
+    <div class="hl w" style="margin-top:8px"><div class="hlt">CTO mencionou "processo especifico" — pende para A</div></div>
   </div>
 </section>
 
-<!-- CREDENCIAIS -->
-<section class="section" id="credenciais">
-  <div class="section-header">
-    <span class="section-icon">📱</span>
-    <span class="section-title">Credenciais Meta — Novo Numero</span>
+<!-- ════════════ AGENTE 1: JULIA LEADS ════════════ -->
+
+<section class="section" id="leads-visao">
+  <div class="sh">
+    <span class="si" style="color:var(--primary)">●</span>
+    <span class="st">Agente 1 — Julia Leads (Detalhe)</span>
   </div>
 
-  <div class="grid2">
-    <div class="card">
-      <div class="card-title">Christian Pass <span class="badge b-ok">credenciais ok</span></div>
-      <div class="cred-box">
-        <div><span class="cred-label">Phone Number ID:</span> <span class="cred-value">1038640892669654</span></div>
-        <div><span class="cred-label">WABA ID:</span> <span class="cred-value">1267750791577634</span></div>
-        <div><span class="cred-label">Numero:</span> <span class="cred-value">+55 51 8147-4923</span></div>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:8px">Cobre todas OABs: RS116571, SC074025, SP535101</p>
-    </div>
-    <div class="card" style="opacity:.55">
-      <div class="card-title">Heloisa Miglioranza <span class="badge b-warn">pendente</span></div>
-      <div class="cred-box" style="border-style:dashed">
-        <div><span class="cred-label">Phone Number ID:</span> <span class="cred-value">???</span></div>
-        <div><span class="cred-label">WABA ID:</span> <span class="cred-value">???</span></div>
-        <div><span class="cred-label">Numero:</span> <span class="cred-value">???</span></div>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:8px">Aguardando CTO fornecer. Implementacao do 1o serve de template.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════ MISSAO 1 ═══════════════ -->
-
-<!-- ESTADO ATUAL -->
-<section class="section" id="estado">
-  <div class="section-header">
-    <span class="section-icon">📊</span>
-    <span class="section-title">Estado Atual — Banco</span>
+  <div class="hl ok">
+    <div class="hlt">Status: Quase pronto — prioridade absoluta</div>
+    A pagina MdZap atual JA e o SDR de Leads. Chat, dashboard, LeadPanel, CRM, smart replies — tudo funcional. Falta: prompt definitivo e fluxo de 9 steps no n8n.
   </div>
 
-  <div class="grid2">
-    <div class="card">
-      <div class="card-title">whatsapp_numeros</div>
-      <table>
-        <thead><tr><th>Nome</th><th>Tipo</th><th>Status</th><th>SDR</th></tr></thead>
-        <tbody>
-          <tr class="strike"><td>Midas SDR</td><td>z-api</td><td>removido</td><td>—</td></tr>
-          <tr><td>Midas Atendimento</td><td><code>cloud_api</code></td><td><span class="badge b-ok">connected</span></td><td>sdr_leads</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:12px;color:var(--muted);margin-top:8px">Z-API descontinuado. Somente Cloud API Meta.</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title">mdzap_ai_modules</div>
-      <table>
-        <thead><tr><th>Slug</th><th>Nome</th><th></th></tr></thead>
-        <tbody>
-          <tr><td><code>sdr_leads</code></td><td>Julia SDR Leads</td><td><span class="badge b-muted">ativo</span></td></tr>
-          <tr><td><code>sdr_docs</code></td><td>Julia SDR Docs</td><td><span class="badge b-muted">ativo</span></td></tr>
-          <tr><td><code>sdr_acordos</code></td><td>Julia SDR Acordos</td><td><span class="badge b-muted">ativo</span></td></tr>
-          <tr style="background:#20c99708"><td><code style="color:var(--success)">sdr_acordos_cp</code></td><td>Christian Pass — Acordos</td><td><span class="b-new badge">novo</span></td></tr>
-          <tr style="background:#20c99708"><td><code style="color:var(--success)">sdr_acordos_hm</code></td><td>Heloisa — Acordos</td><td><span class="b-new badge">novo</span></td></tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="card" id="leads-painel">
+    <div class="ct">Painel Lateral — Lead Info (atual)</div>
+    <table>
+      <thead><tr><th>Tab</th><th>Conteudo</th></tr></thead>
+      <tbody>
+        <tr><td>Dados</td><td>Nome, CPF, telefone, email, coluna CRM, score</td></tr>
+        <tr><td>Restricoes</td><td>Serasa/CNIS — lista de restricoes ativas</td></tr>
+        <tr><td>Documentos</td><td>Docs enviados pelo lead (RG, CTPS, comprovante)</td></tr>
+        <tr><td>Notas</td><td>Notas internas do atendente</td></tr>
+        <tr><td>Memoria</td><td>Memoria persistente do lead (IA)</td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
-<!-- ARQUITETURA ALVO -->
-<section class="section" id="arquitetura">
-  <div class="section-header">
-    <span class="section-icon">🏗️</span>
-    <span class="section-title">Arquitetura Alvo</span>
+<!-- FLUXO 9 STEPS -->
+<section class="section" id="leads-fluxo">
+  <div class="sh">
+    <span class="si">🔄</span>
+    <span class="st">Fluxo Julia — 9 Steps (Lead ate Assinatura)</span>
+  </div>
+
+  <div class="hl w">
+    <div class="hlt">A detalhar — Christian vai gravar audios especificos por etapa</div>
+    Fluxo positivo transcrito. Cada step precisa: mensagens exatas, cenarios negativos, handoff humano/agente.
   </div>
 
   <div class="card">
-    <div class="arch">Meta Cloud API
-    |
-    +-- phone_number_id: (existente)       --> Midas Atendimento +5551816855848
-    |     +-- sdr_leads / sdr_docs / sdr_acordos
-    |
-    +-- phone_number_id: 1038640892669654  --> Christian Pass +5551814749234
-    |     +-- sdr_acordos_cp  (cobre RS/SC/SP)
-    |
-    +-- [futuro: phone_number_id Heloisa]  --> sdr_acordos_hm
-          |
-          v
-    Edge Function: mdzap-webhook
-    --> extrai phone_number_id do payload Meta
-    --> resolve numero_id via whatsapp_numeros.config->>'phone_number_id'
-    --> insere whatsapp_conversas + whatsapp_mensagens com numero_id
-          |
-          v
-    n8n orchestrator
-    --> Switch por agente_slug:
-        |-- sdr_leads       --> Julia Leads (existente)
-        |-- sdr_docs        --> Julia Docs (existente)
-        |-- sdr_acordos_cp  --> Julia Acordos Christian (novo)
-        +-- sdr_acordos_hm  --> Julia Acordos Heloisa (futuro)
-          |
-          v
-    Frontend MdZap
-    --> Toggle: [ Leads | Triagem | Christian | Heloisa ]
-    --> Painel lateral: MdzapProcessoPanel (dados processo/cliente/empresa)
-    --> Sem OAB -- nome do advogado apenas</div>
-  </div>
-</section>
-
-<!-- SDRs -->
-<section class="section" id="sdrs">
-  <div class="section-header">
-    <span class="section-icon">🤖</span>
-    <span class="section-title">SDRs — Existentes + Novos</span>
-  </div>
-
-  <div class="grid3">
-    <div class="card">
-      <div class="card-title"><span style="font-size:1.3rem">👩‍💼</span> Julia SDR Leads</div>
-      <div style="margin-bottom:6px"><code>sdr_leads</code> <span class="badge b-muted">existente</span></div>
-      <p style="font-size:12px;color:var(--muted)">Qualificacao de leads. Numero: Midas Atendimento. Prompt a detalhar (Missao 2).</p>
-    </div>
-
-    <div class="card" style="border-color:var(--primary-border)">
-      <div class="card-title"><span style="font-size:1.3rem">⚖️</span> Christian Pass</div>
-      <div style="margin-bottom:6px"><code>sdr_acordos_cp</code> <span class="badge b-ok">novo — fase 1</span></div>
-      <p style="font-size:12px;color:var(--muted)">Acordos. +55 51 8147-4923. Clientes do sistema (processos). RS/SC/SP.</p>
-      <div class="cred-box" style="font-size:11px;margin-top:8px;padding:8px">Phone ID: 1038640892669654</div>
-    </div>
-
-    <div class="card" style="opacity:.5">
-      <div class="card-title"><span style="font-size:1.3rem">⚖️</span> Heloisa Miglioranza</div>
-      <div style="margin-bottom:6px"><code>sdr_acordos_hm</code> <span class="badge b-warn">futuro</span></div>
-      <p style="font-size:12px;color:var(--muted)">Mesmo modelo do Christian. Credenciais pendentes.</p>
-    </div>
-  </div>
-</section>
-
-<!-- FASE 1 -->
-<section class="section" id="fase1">
-  <div class="section-header">
-    <span class="section-icon">🗄️</span>
-    <span class="section-title">Fase 1 — Backend (Supabase)</span>
-  </div>
-
-  <div class="phase-card">
-    <div class="phase-header">
-      <div class="phase-num pn1">1</div>
-      <div><strong>Supabase — Registros + Schema</strong><br><span style="font-size:12px;color:var(--muted)">DEC-01/02/03 resolvidas — pode executar</span></div>
-      <div style="margin-left:auto"><span class="badge b-ok">Pronto</span></div>
-    </div>
-
-    <ul class="task-list">
-      <li>
-        <span class="ti">1.1</span>
-        <div class="tc">
-          <strong>Soft-delete numero z-api</strong>
-          <div class="code-block"><span class="cc">-- Marcar z-api como removido</span>
-UPDATE whatsapp_numeros SET deleted_at = now()
-WHERE id = 'a1000000-0000-0000-0000-000000000001';</div>
-        </div>
-      </li>
-      <li>
-        <span class="ti">1.2</span>
-        <div class="tc">
-          <strong>INSERT numero Christian em whatsapp_numeros</strong>
-          <div class="code-block">INSERT INTO whatsapp_numeros (
-  organizacao_id, numero, numero_e164, nome, nome_display,
-  proposito, api_type, status, ai_enabled, agente_slug, config
-) VALUES (
-  '55a0c7ba-1a23-4ae1-b69b-a13811324735',
-  '5551814749234', '+5551814749234',
-  'Christian Pass — Acordos', 'Christian Pass',
-  'comercial', 'cloud_api', 'connected', true, 'sdr_acordos_cp',
-  '{"phone_number_id":"1038640892669654","waba_id":"1267750791577634"}'::jsonb
-) RETURNING id;</div>
-        </div>
-      </li>
-      <li>
-        <span class="ti">1.3</span>
-        <div class="tc">
-          <strong>INSERT novos slugs em mdzap_ai_modules</strong>
-          <div class="code-block">INSERT INTO mdzap_ai_modules (organizacao_id, slug, nome, ativo) VALUES
-  ('55a0c7ba-1a23-4ae1-b69b-a13811324735', 'sdr_acordos_cp', 'Christian Pass — Acordos', true),
-  ('55a0c7ba-1a23-4ae1-b69b-a13811324735', 'sdr_acordos_hm', 'Heloisa Miglioranza — Acordos', false)
-RETURNING id, slug;</div>
-        </div>
-      </li>
-      <li>
-        <span class="ti">1.4</span>
-        <div class="tc">
-          <strong>Verificar fn_mdzap_conversas — suporte array de slugs</strong>
-          <p>Para vista unificada "Acordos" (CP + HM). Se so aceita 1 slug, adicionar p_agente_slugs TEXT[].</p>
-        </div>
-      </li>
-      <li>
-        <span class="ti">1.5</span>
-        <div class="tc">
-          <strong>Verificar campo cliente_id em whatsapp_conversas</strong>
-          <p>Para acordos, conversa vincula a cliente (nao lead). Verificar se campo existe e e utilizado para montar o painel de processo.</p>
-        </div>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<!-- FASE 2 -->
-<section class="section" id="fase2">
-  <div class="section-header">
-    <span class="section-icon">⚡</span>
-    <span class="section-title">Fase 2 — n8n (Automacoes)</span>
-  </div>
-
-  <div class="phase-card">
-    <div class="phase-header">
-      <div class="phase-num pn2">2</div>
-      <div><strong>n8n — Routing Multi-Numero</strong><br><span style="font-size:12px;color:var(--muted)">Adaptar cenarios existentes + routing inbound</span></div>
-      <div style="margin-left:auto"><span class="badge b-warn">Depende Fase 1</span></div>
-    </div>
-
-    <ul class="task-list">
-      <li>
-        <span class="ti">2.1</span>
-        <div class="tc">
-          <strong>Auditar Edge Function mdzap-webhook</strong>
-          <p>Verificar se extrai <code>phone_number_id</code> do payload Meta e resolve numero_id.</p>
-          <div class="code-block"><span class="cc">// Payload Meta — phone_number_id em:</span>
-entry[0].changes[0].value.metadata.phone_number_id
-
-<span class="cc">// Edge Function deve resolver:</span>
-SELECT id, agente_slug FROM whatsapp_numeros
-WHERE config->>'phone_number_id' = $1 AND deleted_at IS NULL;</div>
-          <div class="tm"><span class="badge b-danger">Critico — sem isso multi-numero nao funciona</span></div>
-        </div>
-      </li>
-      <li>
-        <span class="ti">2.2</span>
-        <div class="tc">
-          <strong>Roteamento inbound — Switch por agente_slug</strong>
-          <div class="code-block"><span class="cc">// n8n Switch node:</span>
-<span class="ck">sdr_leads</span>       --> Pipeline Julia Leads (existente)
-<span class="ck">sdr_docs</span>        --> Pipeline Julia Docs (existente)
-<span class="ck">sdr_acordos</span>     --> Pipeline Julia Acordos (existente)
-<span class="ck">sdr_acordos_cp</span>  --> Acordos Christian (novo ou reutiliza sdr_acordos)
-<span class="ck">sdr_acordos_hm</span>  --> Acordos Heloisa (futuro)</div>
-        </div>
-      </li>
-      <li>
-        <span class="ti">2.3</span>
-        <div class="tc">
-          <strong>Cenario de envio — phone_number_id correto</strong>
-          <p>Ao enviar mensagem, n8n consulta phone_number_id do numero da conversa para chamar Meta API com sender correto.</p>
-        </div>
-      </li>
-      <li>
-        <span class="ti">2.4</span>
-        <div class="tc">
-          <strong>Auditar webhooks que enviam mensagem</strong>
-          <p>Workflows que precisam de adaptacao:</p>
-          <table style="margin-top:8px">
-            <thead><tr><th>Workflow</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>enviar-mensagem</td><td><span class="badge b-ok">OK</span> ja recebe numero_id</td></tr>
-              <tr><td>ai-composer</td><td><span class="badge b-warn">Ajustar</span> switch por proposito</td></tr>
-              <tr><td>inbound-upsert-lead</td><td><span class="badge b-warn">Ajustar</span> ignorar msgs de numeros "acordos"</td></tr>
-              <tr><td>enviar-template</td><td><span class="badge b-warn">Verificar</span> phone_number_id no sender</td></tr>
-              <tr><td>enviar-audio</td><td><span class="badge b-warn">Verificar</span> phone_number_id no sender</td></tr>
-              <tr><td>bulk-negociacoes</td><td><span class="badge b-warn">Verificar</span></td></tr>
-              <tr><td>bulk-documentos</td><td><span class="badge b-warn">Verificar</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<!-- FASE 3 -->
-<section class="section" id="fase3">
-  <div class="section-header">
-    <span class="section-icon">🖥️</span>
-    <span class="section-title">Fase 3 — Frontend</span>
-  </div>
-
-  <div class="phase-card">
-    <div class="phase-header">
-      <div class="phase-num pn3">3</div>
-      <div><strong>React — SDR Toggle + Painel Processo</strong><br><span style="font-size:12px;color:var(--muted)">Sem OAB no frontend. Nome do advogado apenas.</span></div>
-      <div style="margin-left:auto"><span class="badge b-warn">Depende Fases 1-2</span></div>
-    </div>
-
-    <ul class="task-list">
-      <li>
-        <span class="ti">3.1</span>
-        <div class="tc">
-          <strong>Ampliar SdrModeToggle.tsx</strong>
-          <p>Hoje: 3 modos (sdr_leads, sdr_docs, sdr_acordos). Expandir para incluir sdr_acordos_cp e sdr_acordos_hm.</p>
-          <div class="code-block"><span class="cc">// Opcao: sub-filtro no tab Acordos</span>
-[ Leads ] [ Triagem ] [ Acordos v ]
-                         |-- Todos
-                         |-- Christian
-                         +-- Heloisa
-
-<span class="cc">// Alternativa: tabs separados (pode ficar apertado mobile)</span>
-[ Leads ] [ Triagem ] [ Christian ] [ Heloisa ]</div>
-        </div>
-      </li>
-      <li>
-        <span class="ti">3.2</span>
-        <div class="tc">
-          <strong>Novo MdzapProcessoPanel (substitui LeadPanel para acordos)</strong>
-          <p>Renderiza condicionalmente: se agente_slug comeca com <code>sdr_acordos_</code>, exibir MdzapProcessoPanel. Dados de <code>processos</code> + <code>clientes</code> + <code>empresas</code>. Campos exatos aguardando DEC-04.</p>
-          <div class="tm"><span class="badge b-warn">Aguarda DEC-04</span></div>
-        </div>
-      </li>
-      <li>
-        <span class="ti">3.3</span>
-        <div class="tc">
-          <strong>Hook useMdzapConversas — suporte array slugs</strong>
-          <p>Para vista unificada "Acordos" (CP + HM juntos).</p>
-        </div>
-      </li>
-      <li>
-        <span class="ti">3.4</span>
-        <div class="tc">
-          <strong>Badge advogado na lista + thread header</strong>
-          <p>Chip com nome do advogado (Christian / Heloisa). Sem OAB.</p>
-        </div>
-      </li>
-      <li>
-        <span class="ti">3.5</span>
-        <div class="tc">
-          <strong>Envio de mensagem — incluir numero_id</strong>
-          <p>Frontend envia numero_id da conversa em todos webhooks de envio.</p>
-        </div>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<!-- PAINEL COMPARATIVO -->
-<section class="section" id="painel">
-  <div class="section-header">
-    <span class="section-icon">📋</span>
-    <span class="section-title">Painel Lateral — Acordos vs Leads</span>
-  </div>
-
-  <div class="card">
-    <div class="grid2">
-      <div>
-        <p style="font-weight:600;margin-bottom:8px;color:var(--primary)">SDR Leads (MdzapLeadPanel — atual)</p>
-        <ul style="list-style:disc;padding-left:20px;font-size:13px;color:var(--muted)">
-          <li>Nome / CPF do lead</li>
-          <li>Score / Sentimento</li>
-          <li>Restricoes (Serasa/CNIS)</li>
-          <li>Documentos enviados</li>
-          <li>Status CRM (coluna)</li>
-          <li>Notas internas</li>
-          <li>Memoria do lead</li>
-        </ul>
-      </div>
-      <div>
-        <p style="font-weight:600;margin-bottom:8px;color:var(--info)">SDR Acordos (MdzapProcessoPanel — novo)</p>
-        <ul style="list-style:disc;padding-left:20px;font-size:13px;color:var(--muted)">
-          <li>Empresa reclamada</li>
-          <li>Vara / Comarca / Tribunal</li>
-          <li>CNJ do processo (JetBrains Mono)</li>
-          <li>Escritorio da parte contraria</li>
-          <li>Valor proposta / contraproposta</li>
-          <li>Status da negociacao</li>
-          <li>Dados do cliente (nao lead)</li>
-        </ul>
-        <p style="font-size:12px;color:var(--warn);margin-top:8px">Campos exatos pendentes (DEC-04)</p>
-      </div>
-    </div>
-    <p style="margin-top:16px;font-size:13px">O <code>MdzapAppPage</code> renderiza condicionalmente: se <code>agente_slug.startsWith('sdr_acordos_')</code>, mostra <code>MdzapProcessoPanel</code>. Dados vem de <code>processos</code> + <code>clientes</code> + <code>empresas</code> via <code>cliente_id</code> da conversa.</p>
-  </div>
-
-  <!-- Layout visual -->
-  <div class="card">
-    <div class="card-title">Layout Alvo — 3 Colunas SDR Acordos</div>
-    <div class="arch">+------------------+------------------------------+--------------------+
-|  LISTA           |  THREAD                      |  PAINEL PROCESSO   |
-|  CONVERSAS       |                              |                    |
-|                  |  +-- Header --------------+  |  [Processo]        |
-|  * Joao Silva    |  | Joao Silva             |  |  CNJ: 0001234-... |
-|    Christian     |  | Christian Pass         |  |  Status: ativo     |
-|                  |  +------------------------+  |                    |
-|  * Maria Souza   |                              |  [Empresa]         |
-|    Christian     |  [mensagens da thread]       |  Banco XYZ         |
-|                  |                              |                    |
-|  * Pedro Costa   |                              |  [Vara]            |
-|    Christian     |                              |  2a Vara Civel RS  |
-|                  |  +-- Input ---------------+  |                    |
-|                  |  | Digite mensagem...     |  |  [Acordo]          |
-|                  |  +------------------------+  |  R$ 15.000,00      |
-+------------------+------------------------------+--------------------+
-
-Toggle: [ Leads | Triagem | Christian | Heloisa ]</div>
-  </div>
-</section>
-
-<!-- CHECKLIST -->
-<section class="section" id="checklist">
-  <div class="section-header">
-    <span class="section-icon">✅</span>
-    <span class="section-title">Checklist de Implementacao — Multi-Numero</span>
-  </div>
-  <div class="card">
-    <ul class="checklist">
-      <li>Soft-delete numero z-api em <code>whatsapp_numeros</code></li>
-      <li>INSERT numero Christian com phone_number_id + waba_id no campo <code>config</code></li>
-      <li>INSERT slugs <code>sdr_acordos_cp</code> e <code>sdr_acordos_hm</code> em <code>mdzap_ai_modules</code></li>
-      <li>Auditar Edge Function mdzap-webhook (phone_number_id routing)</li>
-      <li>n8n: Switch node no inbound por agente_slug do numero</li>
-      <li>n8n: ai-composer — prompt diferente para acordos vs leads</li>
-      <li>n8n: envio de mensagem com phone_number_id correto</li>
-      <li>SdrModeToggle — adicionar tabs Christian / Heloisa</li>
-      <li>Criar MdzapProcessoPanel (dados processo/cliente/empresa)</li>
-      <li>Badge advogado na lista de conversas e thread header</li>
-      <li>useMdzapConversas — suporte array de slugs</li>
-      <li>Templates WhatsApp: criar templates de proposta de acordo</li>
-      <li>Testar envio/recebimento isolado por numero</li>
-      <li>Validar Realtime com 2+ numeros simultaneos</li>
-    </ul>
-  </div>
-</section>
-
-<!-- ═══════════════ MISSAO 2 ═══════════════ -->
-
-<section class="section" id="fluxo">
-  <div class="section-header">
-    <span class="section-icon">🤖</span>
-    <span class="section-title">Missao 2 — Fluxo Julia SDR Leads (9 Steps)</span>
-  </div>
-
-  <div class="hl warn">
-    <div class="hl-title">Status: A detalhar — Christian vai gravar audios especificos</div>
-    Fluxo positivo transcrito do audio. Cada etapa precisa de detalhamento: documentos, mensagens exatas, cenarios negativos, hierarquia humano/agente.
-  </div>
-
-  <div class="card">
-    <div class="card-title">Fluxo Positivo — Lead ate Assinatura</div>
-    <div class="flow-steps">
-      <div class="flow-step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <strong>Lead Entra (Inbound)</strong>
-          <p>Mensagem chega pelo WhatsApp via criativo externo. Julia identifica novo contato ou lead existente.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <strong>Coleta CPF + Nome Completo</strong>
-          <p>Julia pede CPF e nome. Valida formato CPF. Busca se ja existe no CRM.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <strong>Auditoria Automatica (Serasa/CNIS)</strong>
-          <p>Com CPF valido, dispara auditoria. Verifica restricoes de credito. Julia comunica: "realizando auditoria, aguarde um momento".</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">4</div>
-        <div class="step-content">
-          <strong>Analise de Viabilidade</strong>
-          <p>Julia/humano analisa restricoes retornadas. Se viavel, prossegue e apresenta resultado ao lead. Se inviavel, explica educadamente.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">5</div>
-        <div class="step-content">
-          <strong>Solicitacao de 2 Documentos</strong>
-          <p>Julia solicita os 2 documentos iniciais + explica o servico de remocao de restricoes. Quais 2 documentos exatamente: a detalhar.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">6</div>
-        <div class="step-content">
-          <strong>Doc Reader (Sub-agente Extrator)</strong>
-          <p>Cada documento recebido e processado pelo sub-agente Doc Reader. Extrai dados estruturados (nome, endereco, datas, valores). Julia coordena a espera.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">7</div>
-        <div class="step-content">
-          <strong>CTPS (Carteira de Trabalho)</strong>
-          <p>Humano ou Julia pede CTPS. <strong>Critico:</strong> Julia precisa saber se humano ja pediu (memoria compartilhada). Extrai empresa, cargo, periodo, salario. Cruza com CNIS.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">8</div>
-        <div class="step-content">
-          <strong>Procuracao + Contrato</strong>
-          <p>Julia: "cadastro quase pronto, falta assinar procuracoes". Humano gera procuracoes (ZapSign?). Envia link para assinatura digital. Julia da suporte passo a passo.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">9</div>
-        <div class="step-content">
-          <strong>Assinatura + Finalizacao</strong>
-          <p>Lead assina digitalmente. Status CRM atualizado. Cliente cadastrado no sistema. Processo pode ser distribuido. Fim do atendimento.</p>
-        </div>
-      </div>
+    <div class="fs">
+      <div class="f"><div class="fn">1</div><div class="fc"><strong>Lead Entra (Inbound via criativo)</strong><p>Manda nome + CPF. Julia identifica novo contato ou existente.</p></div></div>
+      <div class="f"><div class="fn">2</div><div class="fc"><strong>Coleta CPF + Nome Completo</strong><p>Julia valida CPF, busca no CRM. Se ja existe, retoma contexto.</p></div></div>
+      <div class="f"><div class="fn">3</div><div class="fc"><strong>Auditoria Automatica</strong><p>Dispara auditoria Serasa/CNIS. Julia: "realizando auditoria, aguarde".</p></div></div>
+      <div class="f"><div class="fn">4</div><div class="fc"><strong>Analise de Viabilidade</strong><p>Resultado da auditoria → Julia/humano analisa. Viavel: prossegue. Inviavel: explica.</p></div></div>
+      <div class="f"><div class="fn">5</div><div class="fc"><strong>Solicita 2 Documentos + Explica Servico</strong><p>Julia pede docs iniciais e explica remocao de restricoes. Quais 2: a detalhar.</p></div></div>
+      <div class="f"><div class="fn">6</div><div class="fc"><strong>Doc Reader (Sub-agente Extrator)</strong><p>Processa cada doc recebido. Extrai dados estruturados. Julia coordena espera.</p></div></div>
+      <div class="f"><div class="fn">7</div><div class="fc"><strong>CTPS (Carteira de Trabalho)</strong><p>Humano ou Julia pede. <strong>Critico:</strong> Julia sabe se humano ja pediu (memoria compartilhada).</p></div></div>
+      <div class="f"><div class="fn">8</div><div class="fc"><strong>Procuracao + Contrato</strong><p>"Cadastro quase pronto, falta assinar." Humano gera procuracoes → envia link.</p></div></div>
+      <div class="f"><div class="fn">9</div><div class="fc"><strong>Assinatura + Finalizacao</strong><p>Lead assina. CRM atualizado. Cliente cadastrado. Processo distribuido. Fim.</p></div></div>
     </div>
   </div>
 </section>
 
 <!-- PENDENCIAS JULIA -->
-<section class="section" id="pendencias-julia">
-  <div class="section-header">
-    <span class="section-icon">📝</span>
-    <span class="section-title">Pendencias — Prompt Julia (Aprofundamento Futuro)</span>
+<section class="section" id="leads-pendencias">
+  <div class="sh">
+    <span class="si">📝</span>
+    <span class="st">Pendencias — Prompt Julia</span>
+  </div>
+  <div class="pi p1"><div class="pk">📄</div><div class="pc"><strong>Quais documentos pedir em cada cenario</strong><p>Consumidor vs trabalhista. Validacao por tipo. Documento ilegivel.</p></div></div>
+  <div class="pi p1"><div class="pk">💬</div><div class="pc"><strong>Comportamento: tom, quebra de mensagens, emojis, horario</strong><p>1 msg longa ou varias? Formal/informal? Timeout?</p></div></div>
+  <div class="pi p1"><div class="pk">🤝</div><div class="pc"><strong>Handoff humano ↔ Julia</strong><p>Quando assume? Pausa automatica? Contexto compartilhado? Prioridade?</p></div></div>
+  <div class="pi p1"><div class="pk">🔍</div><div class="pc"><strong>Sub-agente Doc Reader</strong><p>Como aciona? Dados extraidos? Doc errado? Ja existe?</p></div></div>
+  <div class="pi p2"><div class="pk">❌</div><div class="pc"><strong>Cenarios negativos</strong><p>Doc invalido, lead sumiu, CPF nao encontrado, restricao impeditiva.</p></div></div>
+  <div class="pi p2"><div class="pk">📝</div><div class="pc"><strong>Templates de mensagem por step + follow-up</strong><p>Modelos de resposta. Variantes. Follow-up apos inatividade.</p></div></div>
+</section>
+
+<!-- ════════════ AGENTE 2: DOCS PENDENTES ════════════ -->
+
+<section class="section" id="docs-visao">
+  <div class="sh">
+    <span class="si" style="color:var(--orange)">●</span>
+    <span class="st">Agente 2 — Docs Pendentes (Detalhe)</span>
   </div>
 
-  <div class="pend-item p1">
-    <div class="pend-icon">📄</div>
-    <div class="pend-content">
-      <strong>Detalhes de cada documento</strong>
-      <p>Quais documentos pedir em cada cenario. Regras de validacao por tipo (RG frente/verso, CTPS paginas especificas). O que fazer com documento ilegivel.</p>
-    </div>
+  <div class="hl i">
+    <div class="hlt">Agente mais usado — pos-venda continuo</div>
+    Opera sobre CLIENTES (nao leads). Processos demoram meses/anos. Cliente tem multiplos processos. Cobranca de docs, duvidas de andamento, notificacao de liminares/decisoes. Contato constante.
   </div>
 
-  <div class="pend-item p1">
-    <div class="pend-icon">💬</div>
-    <div class="pend-content">
-      <strong>Comportamento da Julia (tom + quebra de mensagens)</strong>
-      <p>1 mensagem longa ou varias curtas? Tom formal vs informal? Emojis? Horario de atendimento? Timeout de inatividade?</p>
-    </div>
+  <div class="card" id="docs-painel">
+    <div class="ct">Painel Lateral — Cliente + Processos (novo)</div>
+    <table>
+      <thead><tr><th>Bloco</th><th>Conteudo</th><th>Origem</th></tr></thead>
+      <tbody>
+        <tr><td>Cliente</td><td>Nome, CPF, telefone, email, data cadastro</td><td><code>clientes</code></td></tr>
+        <tr><td>Processos</td><td>Lista de processos (CNJ, status, vara). Badges: liminar, decisao nova</td><td><code>processos</code></td></tr>
+        <tr><td>Docs Pendentes</td><td>Lista de documentos faltantes por processo</td><td><code>documentos_pendentes</code></td></tr>
+        <tr><td>Historico</td><td>Timeline de contatos anteriores, docs recebidos</td><td><code>whatsapp_mensagens</code> + <code>atividades</code></td></tr>
+        <tr><td>Status Geral</td><td>Resumo: X processos ativos, Y docs pendentes, Z decisoes recentes</td><td>Agregado</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px"><strong>Vinculo:</strong> conversa ↔ <code>cliente_id</code> (ja existe em whatsapp_conversas) ↔ processos do cliente</p>
+  </div>
+</section>
+
+<!-- ════════════ AGENTES 3-4: ACORDOS ════════════ -->
+
+<section class="section" id="acordos-visao">
+  <div class="sh">
+    <span class="si" style="color:var(--purple)">●</span>
+    <span class="st">Agentes 3-4 — Acordos (Detalhe)</span>
   </div>
 
-  <div class="pend-item p1">
-    <div class="pend-icon">🤝</div>
-    <div class="pend-content">
-      <strong>Relacao Humano vs Julia (handoff)</strong>
-      <p>Quando humano assume? Julia pausa automaticamente? Como funciona contexto compartilhado? Quem tem prioridade? Como Julia sabe que humano ja interveio?</p>
-    </div>
+  <div class="hl i">
+    <div class="hlt">Fala com advogados, nao clientes</div>
+    O agente de acordos e um especialista juridico em negociacao. Conversa com escritorios de advocacia adversos sobre processos especificos. Se o processo nao e do advogado daquele numero, transfere para o outro.
   </div>
 
-  <div class="pend-item p1">
-    <div class="pend-icon">🔍</div>
-    <div class="pend-content">
-      <strong>Sub-agente Doc Reader — hierarquia e triggers</strong>
-      <p>Como e acionado (webhook? evento?). Quais dados extrai de cada tipo. Como lida com documento errado. Ja existe ou precisa ser criado?</p>
-    </div>
+  <div class="card" id="acordos-painel">
+    <div class="ct">Painel Lateral — Processo Especifico (novo)</div>
+    <table>
+      <thead><tr><th>Bloco</th><th>Conteudo</th><th>Origem</th></tr></thead>
+      <tbody>
+        <tr><td>Processo</td><td>CNJ, status, data distribuicao, advogado responsavel</td><td><code>processos</code></td></tr>
+        <tr><td>Empresa</td><td>Empresa reclamada, CNPJ</td><td><code>empresas</code></td></tr>
+        <tr><td>Escritorio Adverso</td><td>Nome, advogados, contato</td><td>A definir</td></tr>
+        <tr><td>Vara/Comarca</td><td>Vara, comarca, tribunal (TJRS/SC/SP)</td><td><code>processos</code></td></tr>
+        <tr><td>Acordo</td><td>Proposta, contraproposta, status negociacao</td><td><code>acordos</code></td></tr>
+        <tr><td>Cliente</td><td>Nome do nosso cliente (parte autora)</td><td><code>clientes</code></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--warn);margin-top:12px">Campos exatos pendentes (DEC-04). Vinculo: conversa ↔ processo_id (a implementar).</p>
   </div>
 
-  <div class="pend-item p2">
-    <div class="pend-icon">❌</div>
-    <div class="pend-content">
-      <strong>Cenarios negativos</strong>
-      <p>Documento invalido, lead sumiu (timeout), CPF nao encontrado, restricao impeditiva. Roteiros de resposta para cada caso.</p>
+  <div class="card" id="credenciais">
+    <div class="ct">Credenciais Meta</div>
+    <div class="g2">
+      <div>
+        <strong style="font-size:13px">Christian Pass</strong> <span class="b bg">ok</span>
+        <div class="cred">
+          <div><span class="cl">Phone Number ID:</span> <span class="cv">1038640892669654</span></div>
+          <div><span class="cl">WABA ID:</span> <span class="cv">1267750791577634</span></div>
+          <div><span class="cl">Numero:</span> <span class="cv">+55 51 8147-4923</span></div>
+        </div>
+      </div>
+      <div style="opacity:.5">
+        <strong style="font-size:13px">Heloisa Miglioranza</strong> <span class="b bw">pendente</span>
+        <div class="cred" style="border-style:dashed">
+          <div><span class="cl">Phone Number ID:</span> <span class="cv">???</span></div>
+          <div><span class="cl">WABA ID:</span> <span class="cv">???</span></div>
+          <div><span class="cl">Numero:</span> <span class="cv">???</span></div>
+        </div>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="pend-item p2">
-    <div class="pend-icon">📝</div>
-    <div class="pend-content">
-      <strong>Roteiro por etapa com modelos de resposta</strong>
-      <p>Templates de mensagem para cada step. Variantes por cenario. Modelos de follow-up apos inatividade.</p>
+<!-- ════════════ INFRA ════════════ -->
+
+<!-- PERMISSOES -->
+<section class="section" id="permissoes">
+  <div class="sh">
+    <span class="si">🔒</span>
+    <span class="st">Permissoes por Perfil</span>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Perfil</th><th>Julia Leads</th><th>Docs Pendentes</th><th>Acordos CP</th><th>Acordos HM</th></tr></thead>
+      <tbody>
+        <tr><td><strong>comercial</strong></td><td style="color:var(--success)">✓ acesso total</td><td style="color:var(--danger)">✗ sem acesso</td><td style="color:var(--danger)">✗ sem acesso</td><td style="color:var(--danger)">✗ sem acesso</td></tr>
+        <tr><td><strong>juridico</strong></td><td style="color:var(--muted)">~ somente leitura</td><td style="color:var(--success)">✓ acesso total</td><td style="color:var(--success)">✓ acesso total</td><td style="color:var(--success)">✓ acesso total</td></tr>
+        <tr><td><strong>admin</strong></td><td style="color:var(--success)">✓ acesso total</td><td style="color:var(--success)">✓ acesso total</td><td style="color:var(--success)">✓ acesso total</td><td style="color:var(--success)">✓ acesso total</td></tr>
+        <tr><td><strong>gestor</strong></td><td style="color:var(--success)">✓ + dashboard</td><td style="color:var(--success)">✓ + dashboard</td><td style="color:var(--success)">✓ + dashboard</td><td style="color:var(--success)">✓ + dashboard</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px">Se rotas separadas (ARQ-01 A/C): permissao por rota no React Router. Se abas: permissao por tab (mais complexo).</p>
+  </div>
+</section>
+
+<!-- n8n -->
+<section class="section" id="n8n">
+  <div class="sh">
+    <span class="si">⚡</span>
+    <span class="st">n8n — Routing Multi-Agente</span>
+  </div>
+  <div class="card">
+    <div class="ct">Fluxo Inbound</div>
+    <div class="cb"><span style="color:var(--muted)">// Mensagem chega do WhatsApp (Meta Cloud API)</span>
+1. Edge Function extrai phone_number_id
+2. Resolve numero_id via whatsapp_numeros.config->>'phone_number_id'
+3. Resolve agente_slug do numero
+4. Upsert whatsapp_conversas com numero_id + agente_slug
+5. Insert whatsapp_mensagens
+6. Switch por agente_slug:
+   ├─ sdr_leads           → Pipeline Julia Leads
+   ├─ sdr_docs_pendentes  → Pipeline Docs Pendentes
+   ├─ sdr_acordos_cp      → Pipeline Acordos Christian
+   └─ sdr_acordos_hm      → Pipeline Acordos Heloisa
+7. Cada pipeline tem: prompt proprio, quick-actions, regras especificas</div>
+  </div>
+  <div class="card">
+    <div class="ct">Workflows a adaptar</div>
+    <table>
+      <thead><tr><th>Workflow</th><th>Status</th><th>Acao</th></tr></thead>
+      <tbody>
+        <tr><td>Edge Function mdzap-webhook</td><td><span class="b bd">Critico</span></td><td>Verificar routing por phone_number_id</td></tr>
+        <tr><td>enviar-mensagem</td><td><span class="b bg">OK</span></td><td>Ja recebe numero_id</td></tr>
+        <tr><td>ai-composer</td><td><span class="b bw">Ajustar</span></td><td>Prompt diferente por agente_slug</td></tr>
+        <tr><td>inbound-upsert-lead</td><td><span class="b bw">Ajustar</span></td><td>Ignorar msgs de numeros nao-leads</td></tr>
+        <tr><td>enviar-template</td><td><span class="b bw">Verificar</span></td><td>phone_number_id no sender</td></tr>
+        <tr><td>enviar-audio</td><td><span class="b bw">Verificar</span></td><td>phone_number_id no sender</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- COMPONENTES REUTILIZAVEIS -->
+<section class="section" id="componentes">
+  <div class="sh">
+    <span class="si">🧩</span>
+    <span class="st">Componentes Reutilizaveis vs Especificos</span>
+  </div>
+  <div class="card">
+    <div class="g2">
+      <div>
+        <p style="font-weight:600;margin-bottom:8px;color:var(--primary)">Reutilizaveis (compartilhados)</p>
+        <ul style="list-style:disc;padding-left:20px;font-size:12px;color:var(--muted);line-height:2">
+          <li>MdzapMsgThread (chat/thread)</li>
+          <li>MdzapMsgInput (input area)</li>
+          <li>MdzapMsgBubble (bolha de msg)</li>
+          <li>MdzapAudioRecorder</li>
+          <li>MdzapAttachmentMenu</li>
+          <li>MdzapSearchBar</li>
+          <li>MdzapConnectionIndicator</li>
+          <li>MdzapTransferModal</li>
+          <li>MdzapConversaList (com filtro por slug)</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-weight:600;margin-bottom:8px;color:var(--warn)">Especificos por agente</p>
+        <ul style="list-style:disc;padding-left:20px;font-size:12px;color:var(--muted);line-height:2">
+          <li>Painel lateral (Lead vs Cliente vs Processo)</li>
+          <li>Dashboard/KPIs (metricas diferentes)</li>
+          <li>Quick-actions (botoes especificos)</li>
+          <li>ThreadHeader (badges/info diferentes)</li>
+          <li>Smart Replies (contexto diferente)</li>
+          <li>AI Composer (prompt diferente)</li>
+          <li>Gestao Panel (config por agente)</li>
+          <li>Telemetria (metricas por agente)</li>
+        </ul>
+      </div>
     </div>
+  </div>
+</section>
+
+<!-- PRIORIDADE -->
+<section class="section" id="prioridade">
+  <div class="sh">
+    <span class="si">🎯</span>
+    <span class="st">Prioridade de Execucao</span>
+  </div>
+
+  <div class="hl w">
+    <div class="hlt">Regra do CTO: Julia Leads 100% ANTES de qualquer outro agente</div>
+    Se o primeiro atendimento nao funcionar, nao tem o que fazer nos outros. Confirmar fluxo, estudar, fazer tudo o possivel no SDR Leads primeiro.
+  </div>
+
+  <div class="card">
+    <table>
+      <thead><tr><th>Fase</th><th>O que</th><th>Pre-requisito</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>0</strong></td><td>Decidir ARQ-01 (rotas vs abas) e ARQ-02 (conversa por processo?)</td><td>—</td><td><span class="b bw">Hoje</span></td></tr>
+        <tr><td><strong>1</strong></td><td>Julia Leads 100%: prompt definitivo + n8n 9 steps + testes</td><td>ARQ-01</td><td><span class="b bp">Proxima</span></td></tr>
+        <tr><td><strong>2</strong></td><td>Infra multi-agente: refatorar MdZap para rotas/abas, componentes reutilizaveis</td><td>Fase 1 ok</td><td><span class="b bm">Futura</span></td></tr>
+        <tr><td><strong>3</strong></td><td>Docs Pendentes: painel cliente, prompt, n8n</td><td>Fase 2</td><td><span class="b bm">Futura</span></td></tr>
+        <tr><td><strong>4</strong></td><td>Acordos CP: registrar numero, painel processo, prompt</td><td>Fase 2</td><td><span class="b bm">Futura</span></td></tr>
+        <tr><td><strong>5</strong></td><td>Acordos HM: credenciais + copiar CP</td><td>Fase 4</td><td><span class="b bm">Futura</span></td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
 <!-- BUILD ERRORS -->
 <section class="section" id="build">
-  <div class="section-header">
-    <span class="section-icon">🔧</span>
-    <span class="section-title">Build Errors — Pendencia Tecnica</span>
+  <div class="sh">
+    <span class="si">🔧</span>
+    <span class="st">Build Errors (Lovable)</span>
   </div>
   <div class="card">
-    <div class="card-title"><span class="badge b-danger">P0</span> types.ts corrompido (Lovable)</div>
-    <p style="font-size:13px">O arquivo <code>src/integrations/supabase/types.ts</code> foi editado incorretamente no Lovable, causando ~30 erros de build:</p>
+    <div class="ct"><span class="b bd">P0</span> types.ts corrompido</div>
+    <p style="font-size:13px"><code>src/integrations/supabase/types.ts</code> editado incorretamente no Lovable. ~30 erros de build. Solucao: regenerar via <code>supabase gen types typescript</code>.</p>
     <table style="margin-top:12px">
       <thead><tr><th>Arquivo</th><th>Erro</th></tr></thead>
       <tbody>
         <tr><td><code style="font-size:11px">ForumTab.tsx</code></td><td>'map' does not exist on RPC result</td></tr>
         <tr><td><code style="font-size:11px">ModalFeatureFlag.tsx</code></td><td>'organizacao_id' not in Insert type</td></tr>
-        <tr><td><code style="font-size:11px">ModalIntegracao.tsx</code></td><td>Record not assignable to Update</td></tr>
         <tr><td><code style="font-size:11px">EditarRestricaoModal.tsx</code></td><td>Record not assignable to Update</td></tr>
-        <tr><td><code style="font-size:11px">NovaRestricaoModal.tsx</code></td><td>'organizacao_id' not in Insert type</td></tr>
         <tr><td><code style="font-size:11px">ClienteTabDadosVinculos.tsx</code></td><td>string not assignable to filter</td></tr>
-        <tr><td><code style="font-size:11px">ClienteTabFinanceiro.tsx</code></td><td>string not assignable to filter</td></tr>
-        <tr><td><code style="font-size:11px">ClienteTabHistorico.tsx</code></td><td>'organizacao_id' not in Insert type</td></tr>
         <tr><td><code style="font-size:11px">CrmAuditoriaPanel.tsx</code></td><td>'id' does not exist</td></tr>
       </tbody>
     </table>
-    <p style="margin-top:12px;font-size:13px"><strong>Solucao:</strong> Regenerar <code>types.ts</code> via Supabase CLI (<code>supabase gen types typescript</code>). O arquivo e auto-gerado e read-only.</p>
   </div>
 </section>
 
-<!-- PROXIMOS PASSOS -->
-<section class="section" id="proximos">
-  <div class="section-header">
-    <span class="section-icon">🚀</span>
-    <span class="section-title">Proximos Passos Imediatos</span>
+<!-- CHECKLIST HOJE -->
+<section class="section">
+  <div class="sh">
+    <span class="si">📋</span>
+    <span class="st">Checklist de Hoje (somente planejamento)</span>
   </div>
-
   <div class="card">
-    <table>
-      <thead><tr><th>#</th><th>Acao</th><th>Quem</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td>Soft-delete z-api + INSERT numero + INSERT slugs</td><td>CC (Beto)</td><td><span class="badge b-ok">Pronto</span></td></tr>
-        <tr><td>2</td><td>Auditar Edge Function mdzap-webhook</td><td>CC (Beto)</td><td><span class="badge b-ok">Pronto</span></td></tr>
-        <tr><td>3</td><td>Fornecer credenciais Meta — numero Heloisa</td><td>Christian</td><td><span class="badge b-warn">Pendente</span></td></tr>
-        <tr><td>4</td><td>Definir campos painel de processo (DEC-04)</td><td>Christian</td><td><span class="badge b-warn">Pendente</span></td></tr>
-        <tr><td>5</td><td>Adaptar n8n para routing multi-numero</td><td>CC (Beto)</td><td><span class="badge b-info">Depende #1 #2</span></td></tr>
-        <tr><td>6</td><td>Frontend: SdrModeToggle + ProcessoPanel</td><td>CC (Beto)</td><td><span class="badge b-info">Depende #4 #5</span></td></tr>
-        <tr><td>7</td><td>Regenerar types.ts (fix build errors Lovable)</td><td>CC (Beto)</td><td><span class="badge b-ok">Pronto</span></td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="hl success">
-    <div class="hl-title">Desbloqueado</div>
-    Com DEC-01/02/03/05 resolvidas, as tarefas 1.1–1.3, 2.1 e o fix de types.ts podem ser executados AGORA. Unico bloqueio restante para frontend completo: DEC-04 (campos do painel) e credenciais Heloisa.
+    <ul class="checklist">
+      <li>Decidir ARQ-01: rotas separadas vs abas vs hibrido</li>
+      <li>Decidir ARQ-02: conversa por processo ou por escritorio</li>
+      <li>Confirmar campos do painel Docs Pendentes (DEC-04 expandida)</li>
+      <li>Confirmar campos do painel Acordos</li>
+      <li>Definir numero WhatsApp para Docs Pendentes</li>
+      <li>Fornecer credenciais Meta da Heloisa</li>
+      <li>Validar tabela de permissoes por perfil</li>
+      <li>Definir estrutura de pastas se rotas (ARQ-01 A/C)</li>
+    </ul>
   </div>
 </section>
 
 <footer>
-  Jarbas 2.0 / MdFlow — MdLab LegalTech · 2026-04-10 · v3 (merge CC + Lovable)
+  Jarbas 2.0 / MdFlow — MdLab LegalTech · 2026-04-10 · v4 (arquitetura multi-agente)
 </footer>
 
 </main>
