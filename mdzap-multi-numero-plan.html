@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MdZap Multi-Numero + SDRs Acordos — Plano Tecnico</title>
+<title>MdZap Multi-Numero — Plano Tecnico v2</title>
 <style>
 :root {
   --bg: #0d0f18;
@@ -66,8 +66,6 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .ph2 { background: rgba(91,196,245,0.2); color: var(--accent5); border: 2px solid var(--accent5); }
 .ph3 { background: rgba(79,255,176,0.2); color: var(--accent3); border: 2px solid var(--accent3); }
 .ph4 { background: rgba(255,209,102,0.2); color: var(--accent4); border: 2px solid var(--accent4); }
-.phase-title { font-size: 1rem; font-weight: 600; }
-.phase-subtitle { font-size: 0.8rem; color: var(--text-muted); }
 .task-list { list-style: none; }
 .task-list li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(42,47,74,0.5); }
 .task-list li:last-child { border-bottom: none; }
@@ -76,17 +74,23 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .task-title { font-weight: 500; margin-bottom: 4px; }
 .task-desc { color: var(--text-muted); font-size: 0.82rem; }
 .task-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
-.decision-card { background: var(--surface2); border: 1px solid rgba(255,209,102,0.3); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.decision-card { background: var(--surface2); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.decision-card.resolved { border: 1px solid rgba(79,255,176,0.3); }
+.decision-card.pending { border: 1px solid rgba(255,209,102,0.3); }
 .decision-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.decision-id { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent4); font-weight: 600; }
+.decision-id { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 600; }
+.decision-id.done { color: var(--accent3); }
+.decision-id.pend { color: var(--accent4); }
 .decision-q { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; }
+.decision-answer { background: rgba(79,255,176,0.08); border: 1px solid rgba(79,255,176,0.2); border-radius: 8px; padding: 12px 14px; margin-top: 8px; }
+.decision-answer .label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent3); margin-bottom: 4px; }
+.decision-answer .text { font-size: 0.85rem; }
 .option { background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
 .option-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
 .opt-a { color: var(--accent); }
 .opt-b { color: var(--accent5); }
 .opt-rec { color: var(--accent3); }
 .option-text { font-size: 0.85rem; color: var(--text-muted); }
-.option-pros { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; }
 .arch-diagram { background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 10px; padding: 20px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.78rem; color: var(--accent3); line-height: 1.8; overflow-x: auto; white-space: pre; }
 .flow-step { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(42,47,74,0.5); }
 .flow-step:last-child { border-bottom: none; }
@@ -113,7 +117,10 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .tag-new { background: rgba(79,255,176,0.15); color: var(--accent3); }
 .tag-exist { background: rgba(124,109,255,0.1); color: var(--accent); }
 .tag-pending { background: rgba(255,209,102,0.1); color: var(--accent4); }
-.divider { height: 1px; background: var(--border); margin: 24px 0; }
+.cred-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin: 8px 0; }
+.cred-label { color: var(--text-muted); font-size: 0.7rem; }
+.cred-value { color: var(--accent5); font-weight: 600; }
+.strikethrough { text-decoration: line-through; opacity: 0.4; }
 </style>
 </head>
 <body>
@@ -122,34 +129,33 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   <!-- HERO -->
   <div class="hero">
     <span class="hero-emoji">💬</span>
-    <h1 class="gradient-text">MdZap Multi-Numero + SDRs Acordos</h1>
-    <p class="hero-sub">Plano tecnico detalhado — Missao 1 (implementar) + Missao 2 (planejamento futuro)</p>
+    <h1 class="gradient-text">MdZap Multi-Numero — Plano v2</h1>
+    <p class="hero-sub">Decisoes CTO respondidas — pronto para implementar Fase 1</p>
     <div class="badges">
-      <span class="badge bp">Missao 1: Multi-Numero</span>
-      <span class="badge by">Missao 2: Prompt Julia</span>
-      <span class="badge bg">4 Fases</span>
-      <span class="badge bb">MdFlow SaaS</span>
-      <span class="badge br">5 Decisoes CTO Pendentes</span>
+      <span class="badge bg">4/5 Decisoes Resolvidas</span>
+      <span class="badge bp">1 Numero Novo (fase 1)</span>
+      <span class="badge bb">Cloud API Meta</span>
+      <span class="badge by">Missao 2: Prompt Julia (futuro)</span>
     </div>
   </div>
 
   <!-- STATS -->
   <div class="grid g4">
     <div class="stat-card">
-      <div class="stat-value">2</div>
-      <div class="stat-label">Novos Numeros WhatsApp</div>
+      <div class="stat-value">1</div>
+      <div class="stat-label">Numero Existente</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" style="color: var(--accent5)">2</div>
-      <div class="stat-label">Novos SDRs Acordos</div>
+      <div class="stat-value" style="color: var(--accent3)">+1</div>
+      <div class="stat-label">Numero Novo (Fase 1)</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" style="color: var(--accent3)">4</div>
-      <div class="stat-label">Fases de Implementacao</div>
+      <div class="stat-value" style="color: var(--accent5)">+2</div>
+      <div class="stat-label">Novos SDR Slugs</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" style="color: var(--accent4)">5</div>
-      <div class="stat-label">Decisoes Pendentes CTO</div>
+      <div class="stat-value" style="color: var(--accent4)">4</div>
+      <div class="stat-label">Fases Implementacao</div>
     </div>
   </div>
 
@@ -162,22 +168,17 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
     <div class="two-col">
       <div class="card">
-        <div class="card-title">whatsapp_numeros (2 registros)</div>
+        <div class="card-title">whatsapp_numeros (1 ativo)</div>
         <table>
           <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Tipo</th>
-              <th>Status</th>
-              <th>SDR</th>
-            </tr>
+            <tr><th>Nome</th><th>Tipo</th><th>Status</th><th>SDR</th></tr>
           </thead>
           <tbody>
-            <tr>
+            <tr class="strikethrough">
               <td>Midas SDR</td>
-              <td><span class="code" style="padding: 2px 6px; display: inline">z-api</span></td>
-              <td><span class="status-pill sp-block">disconnected</span></td>
-              <td>sdr_leads</td>
+              <td>z-api</td>
+              <td><span class="status-pill sp-block">removido</span></td>
+              <td>—</td>
             </tr>
             <tr>
               <td>Midas Atendimento</td>
@@ -187,17 +188,16 @@ tr:hover td { background: rgba(255,255,255,0.02); }
             </tr>
           </tbody>
         </table>
+        <div style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted)">
+          Z-API descontinuado. Somente Cloud API Meta daqui pra frente.
+        </div>
       </div>
 
       <div class="card">
-        <div class="card-title">mdzap_ai_modules (3 registros)</div>
+        <div class="card-title">mdzap_ai_modules (3 existentes + 2 novos)</div>
         <table>
           <thead>
-            <tr>
-              <th>Slug</th>
-              <th>Nome</th>
-              <th>Status</th>
-            </tr>
+            <tr><th>Slug</th><th>Nome</th><th>Status</th></tr>
           </thead>
           <tbody>
             <tr>
@@ -215,31 +215,119 @@ tr:hover td { background: rgba(255,255,255,0.02); }
               <td>Julia SDR Acordos</td>
               <td><span class="status-pill sp-done">ativo</span></td>
             </tr>
+            <tr style="background: rgba(79,255,176,0.05)">
+              <td><span class="code" style="padding: 2px 6px; display: inline; color: var(--accent3)">sdr_acordos_cp</span></td>
+              <td>Christian Pass — Acordos</td>
+              <td><span class="tag tag-new">novo</span></td>
+            </tr>
+            <tr style="background: rgba(79,255,176,0.05)">
+              <td><span class="code" style="padding: 2px 6px; display: inline; color: var(--accent3)">sdr_acordos_hm</span></td>
+              <td>Heloisa Miglioranza — Acordos</td>
+              <td><span class="tag tag-new">novo</span></td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
+  </div>
 
-    <div class="two-col" style="margin-top: 16px">
-      <div class="card">
-        <div class="card-title">Frontend atual — SdrModeToggle</div>
-        <div class="arch-diagram">[ Leads ] [ Triagem ] [ Acordos ]
-    ↓          ↓           ↓
-sdr_leads  sdr_docs   sdr_acordos
-          (mesmo numero para todos)</div>
-        <div style="margin-top: 12px; color: var(--text-muted); font-size: 0.82rem;">
-          Todos os SDRs rodam no mesmo numero (Midas Atendimento). O toggle filtra por agente_slug da conversa.
+  <!-- CREDENCIAIS NOVO NUMERO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📱</span>
+      <h2>Novo Numero — Credenciais Meta (fornecidas pelo CTO)</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Numero 1 — primeiro a registrar</div>
+      <div class="cred-box">
+        <div><span class="cred-label">Phone Number ID:</span> <span class="cred-value">1038640892669654</span></div>
+        <div><span class="cred-label">WABA ID:</span> <span class="cred-value">1267750791577634</span></div>
+        <div><span class="cred-label">Numero:</span> <span class="cred-value">+55 51 8147-4923</span></div>
+      </div>
+      <div class="highlight-box info" style="margin-top: 12px">
+        <div class="hl-title">Nota</div>
+        Mesmo WABA ID do numero existente (Midas Atendimento) ou WABA diferente? A verificar. O Edge Function e o n8n usam o phone_number_id para diferenciar — nao importa se e o mesmo WABA.
+      </div>
+      <div style="margin-top: 12px; color: var(--text-muted); font-size: 0.82rem">
+        <strong>Segundo numero (Heloisa):</strong> credenciais a fornecer pelo CTO. A implementacao do primeiro serve de template para o segundo.
+      </div>
+    </div>
+  </div>
+
+  <!-- DECISOES RESOLVIDAS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">✅</span>
+      <h2>Decisoes CTO — 4 Resolvidas, 1 em Estudo</h2>
+    </div>
+
+    <!-- DEC-01 RESOLVIDA -->
+    <div class="decision-card resolved">
+      <div class="decision-header">
+        <span class="status-pill sp-done">RESOLVIDA</span>
+        <span class="decision-id done">DEC-01</span>
+      </div>
+      <div class="decision-q">Como diferenciar os SDRs de acordos?</div>
+      <div class="decision-answer">
+        <div class="label">Resposta: Opcao A — Slugs separados</div>
+        <div class="text">Criar <code>sdr_acordos_cp</code> (Christian Pass) e <code>sdr_acordos_hm</code> (Heloisa Miglioranza) em mdzap_ai_modules. Cada numero tem seu slug proprio. Permite prompts diferentes por advogado.</div>
+      </div>
+    </div>
+
+    <!-- DEC-02 RESOLVIDA -->
+    <div class="decision-card resolved">
+      <div class="decision-header">
+        <span class="status-pill sp-done">RESOLVIDA</span>
+        <span class="decision-id done">DEC-02</span>
+      </div>
+      <div class="decision-q">Numeros registrados na Meta Business API?</div>
+      <div class="decision-answer">
+        <div class="label">Resposta: Sim — credenciais fornecidas (1 de 2)</div>
+        <div class="text">Phone Number ID <code>1038640892669654</code> | WABA <code>1267750791577634</code> | Numero <code>+5551814749234</code>. Segundo numero (Heloisa) a fornecer.</div>
+      </div>
+    </div>
+
+    <!-- DEC-03 RESOLVIDA -->
+    <div class="decision-card resolved">
+      <div class="decision-header">
+        <span class="status-pill sp-done">RESOLVIDA</span>
+        <span class="decision-id done">DEC-03</span>
+      </div>
+      <div class="decision-q">Como vincular numero ao advogado no banco?</div>
+      <div class="decision-answer">
+        <div class="label">Resposta: Opcao C — via agente_slug</div>
+        <div class="text">O slug <code>sdr_acordos_cp</code> / <code>sdr_acordos_hm</code> ja identifica o advogado. Sem campo extra no banco. Consistente com DEC-01.</div>
+      </div>
+    </div>
+
+    <!-- DEC-04 PARCIAL -->
+    <div class="decision-card pending">
+      <div class="decision-header">
+        <span class="status-pill sp-pend">EM ESTUDO</span>
+        <span class="decision-id pend">DEC-04</span>
+      </div>
+      <div class="decision-q">Painel lateral de acordos — quais campos?</div>
+      <div class="decision-answer" style="background: rgba(255,209,102,0.08); border-color: rgba(255,209,102,0.2)">
+        <div class="label" style="color: var(--accent4)">Direcao confirmada pelo CTO</div>
+        <div class="text">
+          <strong>Clientes para acordo sao do SISTEMA, nao leads.</strong> Ja vao ter processos cadastrados. O painel deve puxar dados de <code>processos</code>, <code>clientes</code>, <code>empresas</code> — nao de <code>leads</code>.<br><br>
+          <strong>Vinculo:</strong> conversa ↔ cliente (via <code>cliente_id</code> em <code>whatsapp_conversas</code>) ↔ processos do cliente.<br><br>
+          <strong>Campos exatos:</strong> a definir. Christian vai passar a lista especifica.
         </div>
       </div>
+    </div>
 
-      <div class="card">
-        <div class="card-title">Arquitetura de resolucao de agente</div>
-        <div class="code">conversa.metadata.agente_slug
-  → numero.agente_slug
-    → 'sdr_leads' (fallback)</div>
-        <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.82rem;">
-          A fn_mdzap_conversas ja aceita p_numero_id para filtrar. A infra multi-numero ja existe no backend.
-        </div>
+    <!-- DEC-05 RESOLVIDA -->
+    <div class="decision-card resolved">
+      <div class="decision-header">
+        <span class="status-pill sp-done">RESOLVIDA</span>
+        <span class="decision-id done">DEC-05</span>
+      </div>
+      <div class="decision-q">Frontend: OAB no painel do advogado?</div>
+      <div class="decision-answer">
+        <div class="label">Resposta: Sem OAB no frontend</div>
+        <div class="text">Cada advogado tem multiplas OABs em estados diferentes (ex: Christian tem RS/SC/SP). Um numero cobre TODAS as OABs do advogado. O frontend mostra o nome do advogado, nao a OAB. A diferenciacao e pelo slug/numero, nao pela OAB.</div>
       </div>
     </div>
   </div>
@@ -252,49 +340,50 @@ sdr_leads  sdr_docs   sdr_acordos
     </div>
 
     <div class="card">
-      <div class="arch-diagram">Meta Cloud API
+      <div class="arch-diagram">Meta Cloud API (mesmo WABA ou WABAs separados — a verificar)
     │
-    ├── phone_number_id: XXXXXXXX  (Midas Atendimento — existente)
-    │     └── agente_slug: sdr_leads / sdr_docs
+    ├── phone_number_id: (existente)       → "Midas Atendimento" +5551816855848
+    │     └── agente_slug: sdr_leads / sdr_docs / sdr_acordos
     │
-    ├── phone_number_id: AAAAAAAA  (Christian Pass — NOVO)
-    │     └── agente_slug: sdr_acordos_cp
-    │
-    └── phone_number_id: BBBBBBBB  (Heloisa Miglioranza — NOVO)
-          └── agente_slug: sdr_acordos_hm
+    └── phone_number_id: 1038640892669654  → NOVO +5551814749234
+          └── agente_slug: sdr_acordos_cp (Christian Pass)
+              (cobre RS/SC/SP — todas OABs)
+
+    [futuro: +1 numero Heloisa → sdr_acordos_hm]
 
               │
               ▼
     Edge Function: mdzap-webhook
-    → identifica phone_number_id
-    → resolve numero_id (whatsapp_numeros)
-    → insere whatsapp_mensagens com numero_id correto
+    → extrai phone_number_id do payload Meta
+    → resolve numero_id via whatsapp_numeros
+    → insere whatsapp_mensagens + whatsapp_conversas com numero_id
               │
               ▼
     n8n orchestrator
-    → filtra por numero_id
-    → aciona agente correto (sdr_acordos_cp ou sdr_acordos_hm)
+    → le agente_slug da conversa
+    → aciona cenario correto (sdr_leads | sdr_acordos_cp | ...)
               │
               ▼
     Frontend MdZap
-    → SdrModeToggle ampliado OU filtro por advogado
-    → Painel lateral: info processo ao inves de lead panel</div>
+    → SdrModeToggle: [ Leads | Triagem | Acordos CP | Acordos HM ]
+    → Painel lateral: MdzapProcessoPanel (dados processo/cliente/empresa)
+    → Sem OAB — nome do advogado apenas</div>
     </div>
   </div>
 
-  <!-- SDRs NOVOS -->
+  <!-- SDRs -->
   <div class="section">
     <div class="section-header">
       <span class="section-icon">🤖</span>
-      <h2>SDRs a Criar</h2>
+      <h2>SDRs — Existentes + Novos</h2>
     </div>
 
     <div class="grid g3">
       <div class="sdr-card">
-        <div class="sdr-icon">👩‍⚖️</div>
+        <div class="sdr-icon">👩‍💼</div>
         <div class="sdr-name">Julia SDR Leads</div>
         <div class="sdr-slug">sdr_leads</div>
-        <span class="tag tag-exist">ja existe</span>
+        <span class="tag tag-exist">existente</span>
         <div class="sdr-desc" style="margin-top: 8px">Qualificacao de leads. Numero: Midas Atendimento. Prompt a detalhar (Missao 2).</div>
       </div>
 
@@ -302,120 +391,19 @@ sdr_leads  sdr_docs   sdr_acordos
         <div class="sdr-icon">⚖️</div>
         <div class="sdr-name">Christian Pass — Acordos</div>
         <div class="sdr-slug">sdr_acordos_cp</div>
-        <span class="tag tag-new">novo</span>
-        <div class="sdr-desc" style="margin-top: 8px">Negociacao de acordos. Numero exclusivo Christian. Painel: info processo, empresa, vara, CNJ.</div>
+        <span class="tag tag-new">novo — fase 1</span>
+        <div class="sdr-desc" style="margin-top: 8px">Negociacao de acordos. Numero: +55 51 8147-4923. Clientes ja cadastrados no sistema (processos). Cobre todas OABs (RS/SC/SP).</div>
+        <div class="cred-box" style="margin-top: 10px; font-size: 0.72rem">
+          Phone ID: 1038640892669654<br>WABA: 1267750791577634
+        </div>
       </div>
 
-      <div class="sdr-card" style="border-color: rgba(91,196,245,0.4)">
+      <div class="sdr-card" style="border-color: rgba(91,196,245,0.4); opacity: 0.6">
         <div class="sdr-icon">⚖️</div>
         <div class="sdr-name">Heloisa Miglioranza — Acordos</div>
         <div class="sdr-slug">sdr_acordos_hm</div>
-        <span class="tag tag-new">novo</span>
-        <div class="sdr-desc" style="margin-top: 8px">Negociacao de acordos. Numero exclusivo Heloisa. Painel: info processo, empresa, vara, CNJ.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DECISOES CTO -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-icon">🔴</span>
-      <h2>Decisoes Pendentes — CTO Christian</h2>
-    </div>
-
-    <div class="highlight-box warn">
-      <div class="hl-title">Bloqueantes para iniciar implementacao</div>
-      Todas as decisoes abaixo precisam de resposta do Christian antes de rodar DDL ou criar nos n8n. Nenhuma e tecnicamente incorreta — e uma escolha de design.
-    </div>
-
-    <!-- DEC-01 -->
-    <div class="decision-card">
-      <div class="decision-header">
-        <span class="status-pill sp-cto">PENDENTE CTO</span>
-        <span class="decision-id">DEC-01</span>
-      </div>
-      <div class="decision-q">Como diferenciar os SDRs de acordos — por agente_slug ou por numero_id?</div>
-      <div class="option">
-        <div class="option-label opt-a">Opcao A — agente_slugs separados (RECOMENDADA)</div>
-        <div class="option-text">Criar <code>sdr_acordos_cp</code> e <code>sdr_acordos_hm</code> em mdzap_ai_modules. Cada numero tem seu proprio slug.</div>
-        <div class="option-pros">+ Mais granular, permite prompts diferentes por advogado. + Consistente com arquitetura atual. + Nao precisa alterar logica de resolucao de agente.</div>
-      </div>
-      <div class="option">
-        <div class="option-label opt-b">Opcao B — manter sdr_acordos unico + filtrar por numero_id</div>
-        <div class="option-text">Um unico slug sdr_acordos, o frontend diferencia pela conversa.numero_id.</div>
-        <div class="option-pros">+ Mais simples no banco. - Complica o frontend e o n8n (precisa de logica adicional). - Prompt unico para dois advogados diferentes.</div>
-      </div>
-    </div>
-
-    <!-- DEC-02 -->
-    <div class="decision-card">
-      <div class="decision-header">
-        <span class="status-pill sp-cto">PENDENTE CTO</span>
-        <span class="decision-id">DEC-02</span>
-      </div>
-      <div class="decision-q">Os dois novos numeros ja estao registrados na Meta Business API?</div>
-      <div class="option">
-        <div class="option-label" style="color: var(--text-muted)">Impacto</div>
-        <div class="option-text">Sem o phone_number_id real da Meta, nao e possivel registrar em whatsapp_numeros nem configurar o n8n. Se nao estiverem registrados, Christian precisa criar os numeros no Meta Business Manager antes da implementacao tecnica.</div>
-      </div>
-    </div>
-
-    <!-- DEC-03 -->
-    <div class="decision-card">
-      <div class="decision-header">
-        <span class="status-pill sp-cto">PENDENTE CTO</span>
-        <span class="decision-id">DEC-03</span>
-      </div>
-      <div class="decision-q">Como vincular numero → advogado no banco?</div>
-      <div class="option">
-        <div class="option-label opt-a">Opcao A — campo advogado_oab em whatsapp_numeros</div>
-        <div class="option-text">Adicionar coluna <code>advogado_oab TEXT</code> na tabela whatsapp_numeros.</div>
-        <div class="option-pros">+ Simples, consultavel. + JOIN direto com tabela de processos para filtrar por advogado.</div>
-      </div>
-      <div class="option">
-        <div class="option-label opt-b">Opcao B — metadata JSONB</div>
-        <div class="option-text">Usar campo metadata JSONB existente: <code>{"advogado_oab": "RS116571"}</code></div>
-        <div class="option-pros">+ Zero DDL. - Menos performatico para queries. - Nao tipado.</div>
-      </div>
-      <div class="option">
-        <div class="option-label opt-rec">Opcao C — vincular via agente_slug (RECOMENDADA se DEC-01=A)</div>
-        <div class="option-text">O proprio agente_slug (sdr_acordos_cp / sdr_acordos_hm) ja identifica o advogado. Nao precisa de campo extra.</div>
-      </div>
-    </div>
-
-    <!-- DEC-04 -->
-    <div class="decision-card">
-      <div class="decision-header">
-        <span class="status-pill sp-cto">PENDENTE CTO</span>
-        <span class="decision-id">DEC-04</span>
-      </div>
-      <div class="decision-q">Painel lateral de acordos — quais campos exatamente?</div>
-      <div class="option">
-        <div class="option-label" style="color: var(--text-muted)">Campos levantados pelo Christian</div>
-        <div class="option-text">Empresa credora | Escritorio (vara) | CNJ do processo | Status do processo | Valor do acordo em negociacao | Outros campos necessarios?</div>
-      </div>
-      <div class="option">
-        <div class="option-label" style="color: var(--text-muted)">Origem dos dados</div>
-        <div class="option-text">De onde vem a vinculacao conversa ↔ processo? O lead da conversa ja e o cliente no MdFlow? Ou precisa de vinculo manual?</div>
-      </div>
-    </div>
-
-    <!-- DEC-05 -->
-    <div class="decision-card">
-      <div class="decision-header">
-        <span class="status-pill sp-cto">PENDENTE CTO</span>
-        <span class="decision-id">DEC-05</span>
-      </div>
-      <div class="decision-q">Frontend: ampliar SdrModeToggle ou criar novo filtro por advogado?</div>
-      <div class="option">
-        <div class="option-label opt-a">Opcao A — Ampliar SdrModeToggle com sub-filtro</div>
-        <div class="option-text">[ Leads ] [ Triagem ] [ Acordos ▾ ] → dropdown: Todos / Christian / Heloisa</div>
-        <div class="option-pros">+ Nao muda o layout existente. + Consistente com UX atual.</div>
-      </div>
-      <div class="option">
-        <div class="option-label opt-b">Opcao B — Tab separado por advogado</div>
-        <div class="option-text">[ Leads ] [ Triagem ] [ Acordos CP ] [ Acordos HM ]</div>
-        <div class="option-pros">+ Mais explicito. - Pode ficar apertado no mobile com 4+ tabs.</div>
+        <span class="tag tag-pending">futuro — credenciais pendentes</span>
+        <div class="sdr-desc" style="margin-top: 8px">Mesmo modelo do Christian. Aguardando numero e credenciais Meta da Heloisa.</div>
       </div>
     </div>
   </div>
@@ -431,63 +419,75 @@ sdr_leads  sdr_docs   sdr_acordos
       <div class="phase-header">
         <div class="phase-number ph1">1</div>
         <div>
-          <div class="phase-title">Supabase — DDL + Registros</div>
-          <div class="phase-subtitle">Depende de DEC-01, DEC-02, DEC-03</div>
+          <div class="phase-title">Supabase — Registros + Schema</div>
+          <div class="phase-subtitle">DEC-01 (A), DEC-02 (credenciais), DEC-03 (C) resolvidas — pode executar</div>
         </div>
-        <div style="margin-left: auto"><span class="status-pill sp-pend">A implementar</span></div>
+        <div style="margin-left: auto"><span class="status-pill sp-run">Pronto para executar</span></div>
       </div>
 
       <ul class="task-list">
         <li>
           <span class="task-index">1.1</span>
           <div class="task-content">
-            <div class="task-title">Registrar novos numeros em whatsapp_numeros</div>
-            <div class="task-desc">INSERT com phone_number_id real da Meta, tipo cloud_api, agente_slug conforme DEC-01, status connected.</div>
+            <div class="task-title">Soft-delete o numero z-api (Midas SDR)</div>
+            <div class="task-desc">Marcar deleted_at no registro z-api desconectado. Manter historico.</div>
+            <div class="code" style="margin-top: 8px">UPDATE whatsapp_numeros
+SET deleted_at = now()
+WHERE id = 'a1000000-0000-0000-0000-000000000001';</div>
             <div class="task-meta">
-              <span class="status-pill sp-block">Bloqueia: DEC-02</span>
-              <span class="badge by">Backend</span>
+              <span class="status-pill sp-run">Executar</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">1.2</span>
           <div class="task-content">
-            <div class="task-title">Criar novos registros em mdzap_ai_modules (se DEC-01 = A)</div>
-            <div class="task-desc">INSERT sdr_acordos_cp e sdr_acordos_hm com nome, descricao e campos de configuracao do agente.</div>
-            <div class="code" style="margin-top: 8px">INSERT INTO mdzap_ai_modules (organizacao_id, slug, nome, ativo)
-VALUES
-  ($orgId, 'sdr_acordos_cp', 'Christian Pass — Acordos', true),
-  ($orgId, 'sdr_acordos_hm', 'Heloisa Miglioranza — Acordos', true);</div>
+            <div class="task-title">INSERT novo numero Christian em whatsapp_numeros</div>
+            <div class="task-desc">Registrar com phone_number_id real, cloud_api, agente_slug sdr_acordos_cp.</div>
+            <div class="code" style="margin-top: 8px">INSERT INTO whatsapp_numeros (
+  organizacao_id, numero, numero_e164, nome, nome_display,
+  proposito, api_type, status, ai_enabled, agente_slug,
+  config
+) VALUES (
+  '55a0c7ba-1a23-4ae1-b69b-a13811324735',
+  '5551814749234',
+  '+5551814749234',
+  'Christian Pass — Acordos',
+  'Christian Pass',
+  'comercial',
+  'cloud_api',
+  'connected',
+  true,
+  'sdr_acordos_cp',
+  '{"phone_number_id": "1038640892669654", "waba_id": "1267750791577634"}'::jsonb
+) RETURNING id;</div>
             <div class="task-meta">
-              <span class="status-pill sp-pend">Aguarda DEC-01</span>
+              <span class="status-pill sp-run">Executar</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">1.3</span>
           <div class="task-content">
-            <div class="task-title">Verificar schema whatsapp_numeros — adicionar coluna se necessario</div>
-            <div class="task-desc">Confirmar se existe campo para advogado_oab. Se DEC-03 = A, executar DDL.</div>
-            <div class="code" style="margin-top: 8px">-- Verificar primeiro:
-SELECT column_name, data_type
-FROM information_schema.columns
-WHERE table_name = 'whatsapp_numeros';
-
--- DDL se DEC-03 = A:
-ALTER TABLE whatsapp_numeros
-  ADD COLUMN IF NOT EXISTS advogado_oab TEXT;</div>
+            <div class="task-title">INSERT novos slugs em mdzap_ai_modules</div>
+            <div class="task-desc">Criar sdr_acordos_cp e sdr_acordos_hm (hm fica inativo ate ter numero).</div>
+            <div class="code" style="margin-top: 8px">INSERT INTO mdzap_ai_modules (organizacao_id, slug, nome, ativo)
+VALUES
+  ('55a0c7ba-1a23-4ae1-b69b-a13811324735', 'sdr_acordos_cp', 'Christian Pass — Acordos', true),
+  ('55a0c7ba-1a23-4ae1-b69b-a13811324735', 'sdr_acordos_hm', 'Heloisa Miglioranza — Acordos', false)
+RETURNING id, slug;</div>
             <div class="task-meta">
-              <span class="status-pill sp-pend">Aguarda DEC-03</span>
+              <span class="status-pill sp-run">Executar</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">1.4</span>
           <div class="task-content">
-            <div class="task-title">Verificar fn_mdzap_conversas — suporte a filtro multi-agente_slug</div>
-            <div class="task-desc">A funcao ja aceita p_numero_id. Confirmar se aceita array de slugs ou se precisa de ajuste para filtrar por sdr_acordos_cp E sdr_acordos_hm simultaneamente (vista "Acordos" unificada).</div>
+            <div class="task-title">Verificar fn_mdzap_conversas — suporte array de slugs</div>
+            <div class="task-desc">Precisa filtrar por array de agente_slugs para vista unificada "Acordos". Se so aceita 1 slug, adicionar parametro p_agente_slugs TEXT[].</div>
             <div class="task-meta">
-              <span class="status-pill sp-run">Verificar</span>
+              <span class="status-pill sp-run">Verificar + adaptar se necessario</span>
               <span class="badge bb">RPC</span>
             </div>
           </div>
@@ -495,11 +495,10 @@ ALTER TABLE whatsapp_numeros
         <li>
           <span class="task-index">1.5</span>
           <div class="task-content">
-            <div class="task-title">Tabela acordos_negociacao ou vinculo conversa ↔ processo</div>
-            <div class="task-desc">Para o painel lateral de acordos exibir info do processo, precisa de vinculo entre whatsapp_conversas e processos. Verificar se existe campo processo_id em whatsapp_conversas. Se nao, avaliar adicionar ou usar metadata JSONB.</div>
+            <div class="task-title">Verificar campo cliente_id em whatsapp_conversas</div>
+            <div class="task-desc">Para acordos, a conversa vincula a um cliente (nao lead). Verificar se campo existe e se e usado. Se nao, e o vinculo principal para o painel de processo.</div>
             <div class="task-meta">
-              <span class="status-pill sp-block">Bloqueia: DEC-04</span>
-              <span class="badge br">Avaliar schema</span>
+              <span class="status-pill sp-run">Verificar schema</span>
             </div>
           </div>
         </li>
@@ -518,102 +517,63 @@ ALTER TABLE whatsapp_numeros
       <div class="phase-header">
         <div class="phase-number ph2">2</div>
         <div>
-          <div class="phase-title">n8n — Cenarios de Recebimento e Envio</div>
-          <div class="phase-subtitle">19 webhooks existentes — adaptar + novos filtros</div>
+          <div class="phase-title">n8n — Routing Multi-Numero</div>
+          <div class="phase-subtitle">Adaptar cenarios existentes para diferenciar por phone_number_id</div>
         </div>
-        <div style="margin-left: auto"><span class="status-pill sp-pend">A implementar</span></div>
+        <div style="margin-left: auto"><span class="status-pill sp-pend">Depende Fase 1</span></div>
       </div>
 
       <ul class="task-list">
         <li>
           <span class="task-index">2.1</span>
           <div class="task-content">
-            <div class="task-title">Auditar Edge Function mdzap-webhook — suporte a multiplos phone_number_id</div>
-            <div class="task-desc">Verificar se a Edge Function ja extrai o phone_number_id do payload Meta e o passa para o n8n. Se nao, adicionar extracao e insercao de numero_id em whatsapp_mensagens.</div>
-            <div class="code" style="margin-top: 8px">// Payload Meta Cloud API:
-{
-  "entry": [{
-    "changes": [{
-      "value": {
-        "metadata": {
-          "phone_number_id": "XXXXXXXX"  // <- identificador do numero
-        }
-      }
-    }]
-  }]
-}
+            <div class="task-title">Auditar Edge Function mdzap-webhook</div>
+            <div class="task-desc">Verificar se extrai phone_number_id do payload Meta e resolve o numero_id correto. Se nao, adaptar.</div>
+            <div class="code" style="margin-top: 8px">// Payload Meta Cloud API — o phone_number_id vem em:
+entry[0].changes[0].value.metadata.phone_number_id
 
-// Edge Function deve resolver:
-const phoneNumberId = payload.entry[0].changes[0].value.metadata.phone_number_id;
-const { data: numero } = await supabase
-  .from('whatsapp_numeros')
-  .select('id, agente_slug')
-  .eq('phone_number_id', phoneNumberId)
-  .single();</div>
+// Edge Function deve:
+// 1. Extrair phone_number_id
+// 2. SELECT id FROM whatsapp_numeros WHERE config->>'phone_number_id' = $1
+// 3. Usar esse numero_id ao inserir em whatsapp_conversas/mensagens</div>
             <div class="task-meta">
-              <span class="status-pill sp-run">Verificar codigo</span>
-              <span class="badge bb">Edge Function</span>
+              <span class="status-pill sp-block">Critico — se nao funcionar, multi-numero nao funciona</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">2.2</span>
           <div class="task-content">
-            <div class="task-title">Cenario principal de recebimento — adicionar filtro phone_number_id → numero_id</div>
-            <div class="task-desc">No n8n orchestrator de entrada, apos receber mensagem, usar o numero_id para determinar qual agente acionar. Adicionar no nos de decisao (Switch ou IF) baseado em agente_slug resolvido.</div>
-            <div class="code" style="margin-top: 8px">// No Switch node do orchestrator:
-// Case 1: agente_slug === 'sdr_leads'    → rota atual Julia leads
-// Case 2: agente_slug === 'sdr_docs'     → rota atual Julia docs
-// Case 3: agente_slug === 'sdr_acordos_cp' → rota nova Christian
-// Case 4: agente_slug === 'sdr_acordos_hm' → rota nova Heloisa</div>
+            <div class="task-title">Cenario de recebimento — Switch por agente_slug</div>
+            <div class="task-desc">No orchestrator n8n, apos identificar a conversa, rotear por agente_slug para acionar o cenario correto.</div>
+            <div class="code" style="margin-top: 8px">// Switch node:
+// sdr_leads       → fluxo Julia Leads (existente)
+// sdr_docs        → fluxo Julia Docs (existente)
+// sdr_acordos     → fluxo Julia Acordos (existente)
+// sdr_acordos_cp  → fluxo Acordos Christian (novo — ou reutiliza sdr_acordos)
+// sdr_acordos_hm  → fluxo Acordos Heloisa (novo — ou reutiliza sdr_acordos)</div>
             <div class="task-meta">
-              <span class="status-pill sp-pend">Aguarda DEC-01</span>
-              <span class="badge bp">n8n</span>
+              <span class="status-pill sp-pend">A implementar</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">2.3</span>
           <div class="task-content">
-            <div class="task-title">Cenario de envio — selecionar numero de saida correto</div>
-            <div class="task-desc">Ao enviar mensagem (mdzap/enviar-mensagem), o payload deve incluir o numero_id da conversa para o n8n usar o phone_number_id correto na chamada Meta API. O frontend ja deve enviar o numero_id no request.</div>
-            <div class="code" style="margin-top: 8px">// REQUEST frontend → n8n (padrao canônico MdFlow):
-{
-  "request_id": "uuid",
-  "contexto": "mdzap.enviar_mensagem",
-  "organizacao_id": "uuid",
-  "data": {
-    "conversa_id": "uuid",
-    "numero_id": "uuid",   // <- incluir sempre
-    "mensagem": "texto"
-  }
-}
-// n8n usa numero_id para buscar phone_number_id e chamar Meta API</div>
+            <div class="task-title">Cenario de envio — usar phone_number_id correto</div>
+            <div class="task-desc">Ao enviar mensagem, o n8n deve consultar o phone_number_id do numero da conversa para chamar a Meta API com o sender correto.</div>
             <div class="task-meta">
               <span class="status-pill sp-pend">A implementar</span>
-              <span class="badge bp">n8n</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">2.4</span>
           <div class="task-content">
-            <div class="task-title">Criar cenarios SDR Acordos CP e HM (ou adaptar sdr_acordos existente)</div>
-            <div class="task-desc">Se DEC-01 = A (slugs separados), avaliar se os cenarios de acordos precisam de logica diferente por advogado ou se o mesmo fluxo serve para ambos com parametrizacao por agente_slug.</div>
+            <div class="task-title">Auditar 19 webhooks — quais precisam de numero_id</div>
+            <div class="task-desc">enviar-mensagem, enviar-template, enviar-audio, bulk-negociacoes, bulk-documentos — todos que enviam mensagem precisam do phone_number_id correto.</div>
             <div class="task-meta">
-              <span class="status-pill sp-pend">Aguarda DEC-01</span>
-              <span class="badge bp">n8n</span>
-            </div>
-          </div>
-        </li>
-        <li>
-          <span class="task-index">2.5</span>
-          <div class="task-content">
-            <div class="task-title">Verificar cenarios de templates — suporte multi-numero</div>
-            <div class="task-desc">O webhook mdzap/enviar-template tambem precisa receber o numero_id para selecionar o sender correto na Meta API. Auditar os 19 webhooks existentes para identificar quais enviam mensagens e precisam de adaptacao.</div>
-            <div class="task-meta">
-              <span class="status-pill sp-run">Auditar</span>
-              <span class="badge bb">19 webhooks</span>
+              <span class="status-pill sp-pend">Auditar</span>
             </div>
           </div>
         </li>
@@ -632,27 +592,24 @@ const { data: numero } = await supabase
       <div class="phase-header">
         <div class="phase-number ph3">3</div>
         <div>
-          <div class="phase-title">React — Componentes e Roteamento</div>
-          <div class="phase-subtitle">Baseado no layout Julia SDR Leads, sem MdzapLeadPanel, com MdzapProcessoPanel novo</div>
+          <div class="phase-title">React — SDR Toggle + Painel Processo</div>
+          <div class="phase-subtitle">Sem OAB no frontend. Nome do advogado apenas.</div>
         </div>
-        <div style="margin-left: auto"><span class="status-pill sp-pend">A implementar</span></div>
+        <div style="margin-left: auto"><span class="status-pill sp-pend">Depende Fases 1-2</span></div>
       </div>
 
       <ul class="task-list">
         <li>
           <span class="task-index">3.1</span>
           <div class="task-content">
-            <div class="task-title">Ampliar SdrModeToggle — filtro por numero/advogado</div>
-            <div class="task-desc">Conforme DEC-05: adicionar sub-filtro de advogado no toggle de acordos, ou criar tabs separados. O toggle atual filtra por agente_slug — precisa passar array de slugs no modo "Acordos unificado".</div>
-            <div class="code" style="margin-top: 8px">// Opcao A: dropdown no tab Acordos
-const MODES = [
-  { slug: 'sdr_leads',      label: 'Leads' },
-  { slug: 'sdr_docs',       label: 'Triagem' },
-  { slug: ['sdr_acordos_cp','sdr_acordos_hm'], label: 'Acordos', hasSubmenu: true }
-];</div>
+            <div class="task-title">Ampliar SdrModeToggle com novos slugs</div>
+            <div class="task-desc">Adicionar tabs para sdr_acordos_cp ("Christian") e sdr_acordos_hm ("Heloisa"). Sem OAB — so nome. O sdr_acordos generico pode ser mantido ou removido (a decidir).</div>
+            <div class="code" style="margin-top: 8px">// Proposta de toggle:
+[ Leads ] [ Triagem ] [ Acordos ] [ Christian ] [ Heloisa ]
+// ou agrupado:
+[ Leads ] [ Triagem ] [ Acordos ▾ ] → { Todos | Christian | Heloisa }</div>
             <div class="task-meta">
-              <span class="status-pill sp-block">Bloqueia: DEC-05</span>
-              <span class="badge bg">Frontend</span>
+              <span class="status-pill sp-pend">A implementar</span>
             </div>
           </div>
         </li>
@@ -660,78 +617,51 @@ const MODES = [
           <span class="task-index">3.2</span>
           <div class="task-content">
             <div class="task-title">Novo componente MdzapProcessoPanel</div>
-            <div class="task-desc">Substituir MdzapLeadPanel (5 tabs focados em lead/prospect) por painel especifico para acordos. Layout 3 colunas mantido.</div>
-            <div style="margin-top: 10px">
-              <div class="highlight-box info">
-                <div class="hl-title">Campos do painel (aguardando DEC-04 para confirmacao)</div>
-                <table style="margin-top: 8px">
-                  <thead>
-                    <tr><th>Bloco</th><th>Campos</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>Processo</td><td>CNJ (JetBrains Mono), status, data distribuicao</td></tr>
-                    <tr><td>Empresa</td><td>Nome empresa credora, CNPJ</td></tr>
-                    <tr><td>Vara</td><td>Escritorio, vara, tribunal</td></tr>
-                    <tr><td>Acordo</td><td>Valor negociado, status acordo, historico</td></tr>
-                    <tr><td>Advogado</td><td>Nome, OAB (resolve via numero_id)</td></tr>
-                  </tbody>
-                </table>
-              </div>
+            <div class="task-desc">Substitui MdzapLeadPanel quando SDR e de acordos. Puxa dados de processos/clientes/empresas vinculados ao cliente_id da conversa. Campos exatos a definir (DEC-04 em estudo).</div>
+            <div class="highlight-box info" style="margin-top: 8px">
+              <div class="hl-title">Campos iniciais (baseado no audio do Christian)</div>
+              <table>
+                <tbody>
+                  <tr><td>Empresa</td><td>Nome empresa credora (de onde vem a divida)</td></tr>
+                  <tr><td>Escritorio/Vara</td><td>Vara onde tramita o processo</td></tr>
+                  <tr><td>Processo</td><td>CNJ, status, informacoes basicas</td></tr>
+                  <tr><td>Acordo</td><td>Valor, status da negociacao</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top: 8px; font-size: 0.8rem; color: var(--accent4)">Christian vai confirmar campos exatos. Implementar estrutura basica primeiro.</div>
             </div>
             <div class="task-meta">
-              <span class="status-pill sp-block">Bloqueia: DEC-04</span>
-              <span class="badge bg">Frontend</span>
-              <span class="badge bp">Novo componente</span>
+              <span class="status-pill sp-pend">Aguarda DEC-04 completa</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">3.3</span>
           <div class="task-content">
-            <div class="task-title">Hook useMdzapConversas — suporte a array de agente_slugs</div>
-            <div class="task-desc">O hook que busca conversas precisa aceitar multiplos slugs para a visao unificada de acordos. Tambem deve incluir numero_id no retorno para exibir indicador visual do numero na lista.</div>
-            <div class="code" style="margin-top: 8px">// hooks/useMdzapConversas.ts
-const { data } = useMdzapConversas({
-  slugs: ['sdr_acordos_cp', 'sdr_acordos_hm'], // array aceito
-  filtroAdvogado: 'sdr_acordos_cp',             // sub-filtro opcional
-  page, search
-});</div>
+            <div class="task-title">Hook useMdzapConversas — suporte array slugs</div>
+            <div class="task-desc">Aceitar array de agente_slugs para vista "Acordos" unificada (CP + HM).</div>
             <div class="task-meta">
               <span class="status-pill sp-pend">A implementar</span>
-              <span class="badge bg">Hook</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">3.4</span>
           <div class="task-content">
-            <div class="task-title">MdzapThreadHeader — indicador de numero na conversa</div>
-            <div class="task-desc">Adicionar badge ou chip indicando qual numero recebeu a conversa. Ex: "Christian Pass" ou "Heloisa Miglioranza" junto ao nome do contato no header da thread.</div>
+            <div class="task-title">Badge advogado na lista de conversas e thread header</div>
+            <div class="task-desc">Mostrar nome do advogado (Christian / Heloisa) como badge na conversa. Sem OAB.</div>
             <div class="task-meta">
               <span class="status-pill sp-pend">A implementar</span>
-              <span class="badge bg">Componente</span>
             </div>
           </div>
         </li>
         <li>
           <span class="task-index">3.5</span>
           <div class="task-content">
-            <div class="task-title">Lista de conversas — indicador visual do numero</div>
-            <div class="task-desc">Na lista esquerda (3 colunas), adicionar indicador de qual numero recebeu cada conversa. Pode ser um ponto colorido ou avatar miniatura do advogado.</div>
+            <div class="task-title">Envio de mensagem — incluir numero_id no payload</div>
+            <div class="task-desc">O frontend deve enviar o numero_id da conversa em todos os webhooks de envio (mensagem, template, audio) para o n8n usar o sender correto.</div>
             <div class="task-meta">
               <span class="status-pill sp-pend">A implementar</span>
-              <span class="badge bg">UI</span>
-            </div>
-          </div>
-        </li>
-        <li>
-          <span class="task-index">3.6</span>
-          <div class="task-content">
-            <div class="task-title">Envio de mensagem — incluir numero_id no request</div>
-            <div class="task-desc">Ao enviar mensagem na thread, o frontend deve incluir o numero_id da conversa no payload para o n8n usar o sender correto.</div>
-            <div class="task-meta">
-              <span class="status-pill sp-pend">A implementar</span>
-              <span class="badge bg">Frontend</span>
             </div>
           </div>
         </li>
@@ -749,29 +679,30 @@ const { data } = useMdzapConversas({
 │    Christian ▸   │  │ 🟢 Christian Pass      │  │  Status: ativo     │
 │                  │  └────────────────────────┘  │                    │
 │  ● Maria Souza   │                              │  [Empresa]         │
-│    Heloisa ▸     │  [mensagens da thread]       │  Banco XYZ         │
-│                  │                              │  CNPJ: 00.000.../  │
-│  ● Pedro Costa   │                              │                    │
-│    Christian ▸   │                              │  [Vara]            │
-│                  │  ┌── Input ───────────────┐  │  2a Vara Civel RS  │
-│                  │  │ Digite mensagem...     │  │                    │
-│                  │  └────────────────────────┘  │  [Acordo]          │
-│                  │                              │  R$ ••••• (ou val) │
+│    Christian ▸   │  [mensagens da thread]       │  Banco XYZ         │
+│                  │                              │                    │
+│  ● Pedro Costa   │                              │  [Vara]            │
+│    Christian ▸   │                              │  2a Vara Civel RS  │
+│                  │  ┌── Input ───────────────┐  │                    │
+│                  │  │ Digite mensagem...     │  │  [Acordo]          │
+│                  │  └────────────────────────┘  │  R$ 15.000,00      │
 └──────────────────┴──────────────────────────────┴────────────────────┘
-  (SdrModeToggle: Leads | Triagem | Acordos [CP/HM])</div>
+
+Toggle: [ Leads ] [ Triagem ] [ Christian ] [ Heloisa ]
+                                 ↑ ativo       ↑ futuro (cinza)</div>
     </div>
   </div>
 
-  <!-- FASE 4 — MISSAO 2 (PLANEJAMENTO FUTURO) -->
+  <!-- FASE 4 — MISSAO 2 -->
   <div class="section">
     <div class="section-header">
       <span class="section-icon">📋</span>
-      <h2>Fase 4 — Missao 2: Prompt Julia SDR Leads (Planejamento Futuro)</h2>
+      <h2>Fase 4 — Missao 2: Prompt Julia SDR Leads (Futuro)</h2>
     </div>
 
     <div class="highlight-box warn">
       <div class="hl-title">Status: A detalhar — Christian vai gravar audios especificos</div>
-      As 7 etapas abaixo foram transcritas do audio do Christian. Cada etapa precisa de detalhamento: documentos esperados, mensagens exatas da Julia, comportamento em caso de falha, hierarquia humano/agente.
+      Fluxo transcrito do audio. Cada etapa precisa de detalhamento: documentos, mensagens exatas, comportamento em falha, hierarquia humano/agente.
     </div>
 
     <div class="phase-card">
@@ -779,242 +710,123 @@ const { data } = useMdzapConversas({
         <div class="phase-number ph4">4</div>
         <div>
           <div class="phase-title">Fluxo Julia SDR Leads — 7 Etapas</div>
-          <div class="phase-subtitle">Transcrito do audio — aguardando detalhamento</div>
+          <div class="phase-subtitle">Aguardando detalhamento</div>
         </div>
-        <div style="margin-left: auto"><span class="status-pill sp-pend">Planejamento futuro</span></div>
       </div>
 
       <div class="flow-step">
         <div class="flow-num">1</div>
         <div class="flow-content">
-          <div class="flow-title">Lead entra via criativo</div>
-          <div class="flow-detail">Lead manda nome + CPF. Julia recebe, identifica a entrada e inicia o atendimento.</div>
-          <div class="task-meta" style="margin-top: 6px">
-            <span class="status-pill sp-pend">A detalhar: mensagem exata de boas-vindas, validacao CPF</span>
-          </div>
+          <div class="flow-title">Lead entra via criativo → manda nome + CPF</div>
+          <div class="flow-detail">Julia recebe e inicia atendimento.</div>
         </div>
       </div>
-
       <div class="flow-step">
         <div class="flow-num">2</div>
         <div class="flow-content">
-          <div class="flow-title">Julia pede 2 documentos + explica o servico</div>
-          <div class="flow-detail">Julia solicita os documentos necessarios e explica brevemente o que e o servico de remocao de restricoes.</div>
-          <div class="task-meta" style="margin-top: 6px">
-            <span class="status-pill sp-pend">A detalhar: quais 2 documentos, texto da explicacao, timeout</span>
-          </div>
+          <div class="flow-title">Julia pede 2 documentos + explica servico</div>
+          <div class="flow-detail">Quais 2 documentos? Texto da explicacao?</div>
         </div>
       </div>
-
       <div class="flow-step">
         <div class="flow-num">3</div>
         <div class="flow-content">
           <div class="flow-title">Lead envia docs → Agente Extrator processa</div>
-          <div class="flow-detail">Lead manda os documentos. Subagente extrator recebe, processa e extrai dados. Julia coordena a espera.</div>
-          <div class="task-meta" style="margin-top: 6px">
-            <span class="status-pill sp-pend">A detalhar: subagente extrator (existe? novo?), campos extraidos, timeout</span>
-          </div>
+          <div class="flow-detail">Subagente extrator recebe e extrai dados.</div>
         </div>
       </div>
-
       <div class="flow-step">
         <div class="flow-num">4</div>
         <div class="flow-content">
-          <div class="flow-title">Julia diz "realizando auditoria" → Humano/agente faz auditoria → Resultado ao lead</div>
-          <div class="flow-detail">Julia comunica que a auditoria esta em andamento. Humano ou agente executa a auditoria (EPROC? BoaVista?). Julia repassa o resultado ao lead.</div>
-          <div class="task-meta" style="margin-top: 6px">
-            <span class="status-pill sp-pend">A detalhar: quem faz auditoria (humano/JARBAS/agente), tempo esperado, formato resultado</span>
-          </div>
+          <div class="flow-title">Julia: "realizando auditoria" → Humano/agente faz → resultado ao lead</div>
+          <div class="flow-detail">Quem faz auditoria? Tempo esperado?</div>
         </div>
       </div>
-
       <div class="flow-step">
         <div class="flow-num">5</div>
         <div class="flow-content">
-          <div class="flow-title">Humano ou Julia pede carteira de trabalho (Julia precisa saber se humano ja pediu)</div>
-          <div class="flow-detail">Etapa critica de coordenacao: Julia verifica o estado da conversa para nao pedir documento que humano ja solicitou. Precisa de estado compartilhado humano ↔ agente.</div>
-          <div class="task-meta" style="margin-top: 6px">
-            <span class="status-pill sp-block">Complexidade alta: memoria compartilhada humano/agente</span>
-            <span class="status-pill sp-pend">A detalhar: mecanismo de "humano ja pediu"</span>
-          </div>
+          <div class="flow-title">Humano ou Julia pede carteira de trabalho</div>
+          <div class="flow-detail">Julia precisa saber se humano ja pediu (memoria compartilhada).</div>
         </div>
       </div>
-
       <div class="flow-step">
         <div class="flow-num">6</div>
         <div class="flow-content">
-          <div class="flow-title">Lead manda carteira → Julia diz "cadastro quase pronto, falta assinar procuracoes"</div>
-          <div class="flow-detail">Julia processa a carteira de trabalho, confirma recebimento e informa o proximo passo: assinar procuracoes.</div>
-          <div class="task-meta" style="margin-top: 6px">
-            <span class="status-pill sp-pend">A detalhar: o que fazer com a carteira, texto exato da mensagem</span>
-          </div>
+          <div class="flow-title">Lead manda carteira → "cadastro quase pronto, falta assinar"</div>
+          <div class="flow-detail">Processamento da carteira. Mensagem de transicao.</div>
         </div>
       </div>
-
       <div class="flow-step">
         <div class="flow-num">7</div>
         <div class="flow-content">
-          <div class="flow-title">Humano gera procuracoes → manda link → lead assina → fim do atendimento</div>
-          <div class="flow-detail">Humano gera procuracoes (ZapSign?), envia link ao lead via Julia ou diretamente. Lead assina. Julia/sistema confirma assinatura e encerra o fluxo.</div>
-          <div class="task-meta" style="margin-top: 6px">
-            <span class="status-pill sp-pend">A detalhar: ZapSign? Link gerado manualmente? Callback assinatura</span>
-            <span class="status-pill sp-run">Referencia: mdzap_followup_zapsign_validation</span>
-          </div>
+          <div class="flow-title">Humano gera procuracoes → link → lead assina → fim</div>
+          <div class="flow-detail">ZapSign? Callback de assinatura?</div>
         </div>
-      </div>
-    </div>
-
-    <div class="two-col" style="margin-top: 16px">
-      <div class="card">
-        <div class="card-title">Itens a detalhar com Christian</div>
-        <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
-          <li style="display: flex; gap: 8px; align-items: flex-start"><span>📄</span><span>Quais sao os 2 documentos iniciais solicitados?</span></li>
-          <li style="display: flex; gap: 8px; align-items: flex-start"><span>🤖</span><span>O subagente extrator ja existe ou precisa ser criado?</span></li>
-          <li style="display: flex; gap: 8px; align-items: flex-start"><span>👤</span><span>Quem faz a auditoria — JARBAS/EPROC ou humano?</span></li>
-          <li style="display: flex; gap: 8px; align-items: flex-start"><span>🔄</span><span>Como Julia sabe que o humano ja interveio?</span></li>
-          <li style="display: flex; gap: 8px; align-items: flex-start"><span>✍️</span><span>Procuracoes via ZapSign ou outro sistema?</span></li>
-          <li style="display: flex; gap: 8px; align-items: flex-start"><span>📝</span><span>Textos exatos das mensagens da Julia (ou Julia improvisa com prompt?)</span></li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Componentes tecnicos envolvidos</div>
-        <table>
-          <tbody>
-            <tr><td>Memoria de estado</td><td><span class="code" style="padding: 2px 6px; display: inline">mdzap_ai_modules.memoria</span></td></tr>
-            <tr><td>Subagentes</td><td>extrator, auditoria, procuracao</td></tr>
-            <tr><td>Integracao</td><td>ZapSign (assinatura)</td></tr>
-            <tr><td>Coordenacao</td><td>MdzapThreadHeader "Assumir/Devolver"</td></tr>
-            <tr><td>Trigger</td><td>Webhook ZapSign → n8n callback</td></tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
 
-  <!-- CRONOGRAMA -->
+  <!-- PROXIMOS PASSOS -->
   <div class="section">
     <div class="section-header">
-      <span class="section-icon">📅</span>
-      <h2>Cronograma de Implementacao — Missao 1</h2>
+      <span class="section-icon">🚀</span>
+      <h2>Proximos Passos Imediatos</h2>
     </div>
 
     <div class="card">
       <table>
         <thead>
-          <tr>
-            <th>Fase</th>
-            <th>Tarefa</th>
-            <th>Pre-requisito</th>
-            <th>Estimativa</th>
-            <th>Status</th>
-          </tr>
+          <tr><th>#</th><th>Acao</th><th>Quem</th><th>Status</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td>0</td>
-            <td>Decisoes CTO (DEC-01 a DEC-05)</td>
-            <td>—</td>
-            <td>1 reuniao</td>
-            <td><span class="status-pill sp-cto">Pendente CTO</span></td>
+            <td>1</td>
+            <td>Soft-delete z-api + INSERT numero Christian + INSERT slugs</td>
+            <td>CC (Beto)</td>
+            <td><span class="status-pill sp-run">Pronto pra executar</span></td>
           </tr>
           <tr>
-            <td>0</td>
-            <td>Christian registrar numeros na Meta Business API</td>
-            <td>—</td>
-            <td>30 min</td>
-            <td><span class="status-pill sp-cto">Pendente CTO</span></td>
+            <td>2</td>
+            <td>Auditar Edge Function mdzap-webhook (phone_number_id)</td>
+            <td>CC (Beto)</td>
+            <td><span class="status-pill sp-run">Pronto pra executar</span></td>
           </tr>
           <tr>
-            <td>1.1</td>
-            <td>INSERT whatsapp_numeros (2 novos)</td>
-            <td>DEC-02</td>
-            <td>15 min</td>
-            <td><span class="status-pill sp-pend">A implementar</span></td>
+            <td>3</td>
+            <td>Fornecer credenciais Meta do numero Heloisa</td>
+            <td>Christian</td>
+            <td><span class="status-pill sp-pend">Pendente CTO</span></td>
           </tr>
           <tr>
-            <td>1.2</td>
-            <td>INSERT mdzap_ai_modules (2 novos slugs)</td>
-            <td>DEC-01</td>
-            <td>15 min</td>
-            <td><span class="status-pill sp-pend">A implementar</span></td>
+            <td>4</td>
+            <td>Definir campos exatos do painel de processo (DEC-04)</td>
+            <td>Christian</td>
+            <td><span class="status-pill sp-pend">Pendente CTO</span></td>
           </tr>
           <tr>
-            <td>1.3-1.5</td>
-            <td>DDL + verificacoes de schema</td>
-            <td>DEC-03, DEC-04</td>
-            <td>1h</td>
-            <td><span class="status-pill sp-pend">A implementar</span></td>
+            <td>5</td>
+            <td>Adaptar n8n para routing multi-numero</td>
+            <td>CC (Beto)</td>
+            <td><span class="status-pill sp-pend">Depende #1 e #2</span></td>
           </tr>
           <tr>
-            <td>2.1</td>
-            <td>Auditar + adaptar Edge Function</td>
-            <td>Fase 1 concluida</td>
-            <td>2h</td>
-            <td><span class="status-pill sp-pend">A implementar</span></td>
-          </tr>
-          <tr>
-            <td>2.2-2.5</td>
-            <td>n8n: filtros, cenarios, envio multi-numero</td>
-            <td>Fase 1 + DEC-01</td>
-            <td>3-4h</td>
-            <td><span class="status-pill sp-pend">A implementar</span></td>
-          </tr>
-          <tr>
-            <td>3.1-3.2</td>
-            <td>SdrModeToggle + MdzapProcessoPanel</td>
-            <td>DEC-04, DEC-05</td>
-            <td>4-6h</td>
-            <td><span class="status-pill sp-pend">A implementar</span></td>
-          </tr>
-          <tr>
-            <td>3.3-3.6</td>
-            <td>Hooks, indicadores, envio numero_id</td>
-            <td>Fase 2 concluida</td>
-            <td>3-4h</td>
-            <td><span class="status-pill sp-pend">A implementar</span></td>
-          </tr>
-          <tr>
-            <td>QA</td>
-            <td>Teste e2e multi-numero (envio + recebimento)</td>
-            <td>Fases 1-3</td>
-            <td>2h</td>
-            <td><span class="status-pill sp-pend">A implementar</span></td>
+            <td>6</td>
+            <td>Frontend: SdrModeToggle + MdzapProcessoPanel</td>
+            <td>CC (Beto)</td>
+            <td><span class="status-pill sp-pend">Depende #4 e #5</span></td>
           </tr>
         </tbody>
       </table>
     </div>
-  </div>
 
-  <!-- DEPENDENCIAS CRITICAS -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-icon">🔗</span>
-      <h2>Dependencias Criticas e Riscos</h2>
-    </div>
-
-    <div class="grid g2">
-      <div class="highlight-box warn">
-        <div class="hl-title">Risco 1 — Edge Function nao extrai phone_number_id</div>
-        Se a Edge Function mdzap-webhook nao armazena o phone_number_id ao inserir em whatsapp_mensagens, toda a arquitetura multi-numero falha. Precisa ser auditada ANTES de qualquer outro desenvolvimento.
-      </div>
-      <div class="highlight-box warn">
-        <div class="hl-title">Risco 2 — fn_mdzap_conversas nao filtra por array de slugs</div>
-        Se a RPC so aceita um slug por vez, a visao unificada "Acordos" (mostrando CP + HM juntos) nao funciona. Precisaria de adaptacao na funcao ou chamadas paralelas no frontend.
-      </div>
-      <div class="highlight-box info">
-        <div class="hl-title">Ponto positivo — Arquitetura multi-numero ja existe</div>
-        whatsapp_numeros suporta N numeros. fn_mdzap_conversas aceita p_numero_id. A base esta pronta; o trabalho e configurar e conectar os novos numeros.
-      </div>
-      <div class="highlight-box info">
-        <div class="hl-title">Ponto positivo — SdrModeToggle ja filtra por slug</div>
-        O componente de toggle ja funciona com agente_slug. Ampliar para aceitar array de slugs ou sub-filtro e uma mudanca incremental, nao uma reescrita.
-      </div>
+    <div class="highlight-box success" style="margin-top: 16px">
+      <div class="hl-title">Desbloqueado</div>
+      Com DEC-01 (A), DEC-02 (credenciais), DEC-03 (C) e DEC-05 (sem OAB) resolvidas, as tarefas 1.1 a 1.3 e 2.1 podem ser executadas AGORA. Unico bloqueio restante e DEC-04 (campos do painel) para a Fase 3.
     </div>
   </div>
 
   <div class="footer">
-    🐙 Jarbas 2.0 — MdLab LegalTech · 2026-04-10
+    🐙 Jarbas 2.0 — MdLab LegalTech · 2026-04-10 · v2 (decisoes resolvidas)
   </div>
 
 </div>
