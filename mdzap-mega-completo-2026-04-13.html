@@ -1672,7 +1672,7 @@ remetente_tipo TEXT CHECK (remetente_tipo IN ('lead','atendente','bot','sistema'
           <li>Sync types.ts com DB</li>
           <li>Cadastrar numero ativo</li>
           <li>Fix fn_mdzap_stats</li>
-          <li>Fix build errors olivia/*</li>
+          <li>Sync types.ts (supabase gen types)</li>
           <li>Desligar 11 workflows mortos</li>
           <li>Fix realtime cleanup</li>
           <li>Fix ProcessoSelectorV3</li>
@@ -1748,21 +1748,14 @@ remetente_tipo TEXT CHECK (remetente_tipo IN ('lead','atendente','bot','sistema'
     </div>
     <div class="card">
       <div class="card-title">Causa Raiz: types.ts dessincronizado</div>
-      <div class="code">// Erros em olivia/*
-src/pages/olivia/components/OliviaAnalise.tsx  — Property 'restricoes' does not exist
-src/pages/olivia/components/OliviaPeticao.tsx  — Property 'modelo_id' does not exist
-src/pages/olivia/hooks/useOliviaAnalise.ts     — Type 'string' not assignable to 'Restricao[]'
-src/pages/olivia/hooks/useOliviaPeticao.ts     — Missing property 'titulo'
-src/pages/olivia/hooks/useOliviaJuris.ts       — Property 'tribunal' does not exist
-src/pages/olivia/components/OliviaVibelaw.tsx   — Module not found: '@/types/vibelaw'
-
-// Erro compartilhado
-src/components/shared/ProcessoSelectorV3.tsx    — Property 'numero_cnj' does not exist on type 'Processo'
-src/components/shared/ProcessoSelectorV3.tsx    — Cannot find name 'ProcessoBase'
-
-// MdZap relacionados
+      <div class="code">// MdZap relacionados (impacto direto)
 src/pages/mdzap/types.ts                        — Interface 'Mensagem' incompatible with DB schema
-src/pages/mdzap/hooks/useMdzapConversas.ts      — Property 'agente_slug' missing in type</div>
+src/pages/mdzap/hooks/useMdzapConversas.ts      — Property 'agente_slug' missing in type
+src/types/mdzap.types.ts                        — WhatsappNumero sem agente_slug, sem deleted_at
+src/types/mdzap.types.ts                        — WhatsappMensagem com campo fantasma 'mensagem?'
+
+// Nota: ha erros em outras paginas (olivia/*, shared/*) que tambem derivam do types.ts
+// dessincronizado, mas NAO sao escopo do MdZap.</div>
       <p style="font-size:0.78rem;color:var(--text-muted);margin-top:12px;">Todos os erros derivam de um unico problema: o types.ts central nao reflete o schema atual do Supabase. A solucao e regenerar os tipos via <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">supabase gen types typescript</code> e ajustar as interfaces locais.</p>
     </div>
   </div>
