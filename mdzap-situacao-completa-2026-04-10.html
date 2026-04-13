@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Situacao Completa v5 (2026-04-10)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12100e;--surface:#1a1714;--card:#201d1a;--card2:#282420;--border:#2e2b27;--border2:#3a3530;--primary:#20c997;--primary-dim:#20c99720;--primary-border:#20c99740;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--info:#60a5fa;--purple:#7c6dff;--orange:#f97316;--text:#f5f0eb;--muted:#9e9890;--mono:'JetBrains Mono','Fira Code',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.6;padding:2rem;max-width:1320px;margin:0 auto}
+.layout{display:flex;gap:2rem}
+.sidebar{width:230px;position:sticky;top:24px;height:fit-content;flex-shrink:0}
+.sidebar a{display:block;color:var(--muted);text-decoration:none;padding:4px 12px;font-size:11px;border-left:2px solid transparent;transition:all .15s}
+.sidebar a:hover{color:var(--primary);border-left-color:var(--primary)}
+.sg{margin-bottom:14px}
+.sl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:4px 12px;font-weight:600}
+main{flex:1;max-width:980px}
+@media(max-width:768px){.sidebar{display:none}body{padding:1rem}}
+
+header{margin-bottom:2.5rem}
+h1{font-family:Manrope,sans-serif;font-weight:800;font-size:28px;margin-bottom:4px}
+.subtitle{color:var(--muted);font-size:14px;margin-bottom:12px}
+.meta-row{display:flex;gap:8px;flex-wrap:wrap}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--muted);font-family:var(--mono)}
+.mc-g{color:var(--primary);border-color:var(--primary-border)}
+.mc-w{color:var(--warn);border-color:#f59e0b40}
+.mc-r{color:var(--danger);border-color:#ef444440}
+
+.section{margin-bottom:2.5rem}
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.si{font-size:18px}
+.st{font-family:Manrope,sans-serif;font-weight:700;font-size:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
+.ct{font-weight:600;font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.b{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.bp{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)}
+.bw{background:#f59e0b20;color:var(--warn);border:1px solid #f59e0b40}
+.bd{background:#ef444420;color:var(--danger);border:1px solid #ef444440}
+.bg{background:#22c55e20;color:var(--success);border:1px solid #22c55e40}
+.bi{background:#60a5fa20;color:var(--info);border:1px solid #60a5fa40}
+.bv{background:#7c6dff20;color:var(--purple);border:1px solid #7c6dff40}
+.bo{background:#f9731620;color:var(--orange);border:1px solid #f9731640}
+.bm{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;background:var(--surface);color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);font-size:11px}
+td{padding:8px 10px;border-bottom:1px solid var(--border)}
+tr:hover td{background:var(--surface)}
+code{font-family:var(--mono);font-size:11px;color:var(--primary)}
+
+.cb{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:var(--mono);font-size:11px;overflow-x:auto;margin:12px 0;line-height:1.7;white-space:pre-wrap;color:var(--primary)}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:768px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.sv{font-family:Manrope,sans-serif;font-size:2rem;font-weight:800}
+.slb{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+.hl{border-radius:10px;padding:16px;margin:12px 0}
+.hl.ok{background:#22c55e08;border:1px solid #22c55e25}
+.hl.w{background:#f59e0b08;border:1px solid #f59e0b25}
+.hl.i{background:#60a5fa08;border:1px solid #60a5fa25}
+.hl.d{background:#ef444408;border:1px solid #ef444425}
+.hlt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.hl.ok .hlt{color:var(--success)}.hl.w .hlt{color:var(--warn)}.hl.i .hlt{color:var(--info)}.hl.d .hlt{color:var(--danger)}
+
+.agent-card{background:var(--card);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ac-leads::before{background:var(--primary)}.ac-leads{border:1px solid var(--primary-border)}
+.ac-docs::before{background:var(--orange)}.ac-docs{border:1px solid #f9731640}
+.ac-cp::before{background:var(--purple)}.ac-cp{border:1px solid #7c6dff40}
+.ac-hm::before{background:var(--info)}.ac-hm{border:1px solid #60a5fa40}
+.agent-name{font-family:Manrope,sans-serif;font-weight:700;font-size:15px;margin-bottom:4px}
+.agent-slug{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px}
+.agent-features{list-style:none;font-size:12px}
+.agent-features li{padding:3px 0;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.agent-features li::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.ac-leads .agent-features li::before{background:var(--primary)}
+.ac-docs .agent-features li::before{background:var(--orange)}
+.ac-cp .agent-features li::before{background:var(--purple)}
+.ac-hm .agent-features li::before{background:var(--info)}
+
+.dec{border-radius:10px;padding:16px;margin-bottom:12px;background:var(--card2)}
+.dec.resolved{border:1px solid #22c55e30}
+.dec.open{border:1px solid #f59e0b30}
+.dh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dq{font-weight:600;font-size:13px;margin-bottom:6px}
+.da{border-radius:8px;padding:10px 14px}
+.da.ok{background:#22c55e08;border:1px solid #22c55e20}
+.da.pend{background:#f59e0b08;border:1px solid #f59e0b20}
+.da .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.da.ok .lbl{color:var(--success)}.da.pend .lbl{color:var(--warn)}
+
+.pi{display:flex;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:8px;border:1px solid var(--border)}
+.pi.p0{border-left:3px solid var(--danger);background:#ef444408}
+.pi.p1{border-left:3px solid var(--warn);background:#f59e0b08}
+.pi.p2{border-left:3px solid var(--info);background:#60a5fa08}
+.pk{font-size:14px;flex-shrink:0;margin-top:2px}
+.pc{flex:1}
+.pc strong{font-size:12px}
+.pc p{font-size:11px;color:var(--muted);margin-top:2px}
+
+.prompt-box{background:var(--surface);border:2px solid var(--primary-border);border-radius:12px;padding:24px;margin:16px 0;font-size:13px;line-height:1.8;white-space:pre-wrap;color:var(--text);max-height:none;overflow-y:visible}
+.prompt-title{font-family:Manrope,sans-serif;font-weight:800;font-size:20px;color:var(--primary);margin-bottom:16px}
+
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sg">
+    <div class="sl">Overview</div>
+    <a href="#stats">Stats</a>
+    <a href="#audits">Notas Audit</a>
+    <a href="#agentes">4 Agentes SDR</a>
+    <a href="#decisoes">Decisoes</a>
+  </div>
+  <div class="sg">
+    <div class="sl">Julia Leads (SDR 1)</div>
+    <a href="#julia">Status Atual</a>
+    <a href="#fluxo9">Fluxo 9 Steps</a>
+    <a href="#docrdr">Doc Reader</a>
+  </div>
+  <div class="sg">
+    <div class="sl">Backend</div>
+    <a href="#tabelas">20 Tabelas</a>
+    <a href="#rpcs">RPCs</a>
+    <a href="#migrations">35 Migrations</a>
+    <a href="#gaps-backend">Gaps</a>
+  </div>
+  <div class="sg">
+    <div class="sl">Frontend</div>
+    <a href="#componentes">72+ Componentes</a>
+    <a href="#hooks">20 Hooks</a>
+    <a href="#reuso">Reuso CRM</a>
+  </div>
+  <div class="sg">
+    <div class="sl">n8n</div>
+    <a href="#n8n-status">38 Workflows</a>
+    <a href="#webhooks">21 Webhooks</a>
+  </div>
+  <div class="sg">
+    <div class="sl">Pendencias</div>
+    <a href="#pendencias">53 Pendencias</a>
+    <a href="#bugs">Bugs</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+  <div class="sg">
+    <div class="sl">Documentacao</div>
+    <a href="#htmls">23 HTMLs</a>
+    <a href="#lovable">Prompt Lovable</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+<header>
+  <h1>MdZap — Situacao Completa v5</h1>
+  <div class="subtitle">Estado real do modulo em 2026-04-10 — tudo que existe, tudo que falta, tudo que foi planejado</div>
+  <div class="meta-row">
+    <span class="mc mc-r">4 Agentes SDR Planejados</span>
+    <span class="mc mc-w">Julia Leads = Prioridade #1</span>
+    <span class="mc">2026-04-10</span>
+    <span class="mc mc-g">MDZAP.md v5 atualizado</span>
+  </div>
+</header>
+
+<!-- ════════════ STATS ════════════ -->
+<section class="section" id="stats">
+  <div class="g4">
+    <div class="sc"><div class="sv" style="color:var(--primary)">4</div><div class="slb">Agentes SDR</div></div>
+    <div class="sc"><div class="sv" style="color:var(--warn)">4.9</div><div class="slb">Nota Audit /10</div></div>
+    <div class="sc"><div class="sv" style="color:var(--danger)">53</div><div class="slb">Pendencias</div></div>
+    <div class="sc"><div class="sv" style="color:var(--success)">8.6</div><div class="slb">Nota Page-Loop</div></div>
+  </div>
+  <div class="g4" style="margin-top:16px">
+    <div class="sc"><div class="sv" style="color:var(--info)">72</div><div class="slb">Componentes</div></div>
+    <div class="sc"><div class="sv" style="color:var(--purple)">20</div><div class="slb">Hooks</div></div>
+    <div class="sc"><div class="sv" style="color:var(--orange)">38</div><div class="slb">Workflows n8n</div></div>
+    <div class="sc"><div class="sv">35</div><div class="slb">Migrations</div></div>
+  </div>
+</section>
+
+<!-- ════════════ AUDITS ════════════ -->
+<section class="section" id="audits">
+  <div class="sh"><span class="si">&#x1F4CA;</span><span class="st">Notas de Auditoria (2026-04-08)</span></div>
+  <div class="g4">
+    <div class="sc" style="border-color:#ef444440"><div class="sv" style="color:var(--danger)">3.5</div><div class="slb">n8n</div></div>
+    <div class="sc" style="border-color:#f59e0b40"><div class="sv" style="color:var(--warn)">4.8</div><div class="slb">Code</div></div>
+    <div class="sc" style="border-color:#f59e0b40"><div class="sv" style="color:var(--warn)">5.2</div><div class="slb">Backend</div></div>
+    <div class="sc" style="border-color:#22c55e40"><div class="sv" style="color:var(--success)">6.2</div><div class="slb">Frontend</div></div>
+  </div>
+  <div class="hl d" style="margin-top:16px">
+    <div class="hlt">n8n e o ponto mais critico</div>
+    10+ service_role keys hardcoded, 4 stubs vazios, 2 workflows duplicados, assumir-conversa NAO EXISTE, julia-prompt-save sem auth. Score real: 6.25% de workflows verdadeiramente confiaveis.
+  </div>
+</section>
+
+<!-- ════════════ 4 AGENTES ════════════ -->
+<section class="section" id="agentes">
+  <div class="sh"><span class="si">&#x1F916;</span><span class="st">4 Agentes SDR — Arquitetura Multi-Agente</span></div>
+
+  <div class="hl d">
+    <div class="hlt">Regra de ouro CTO (2026-04-10)</div>
+    Cada agente SDR e um "mundo" separado: dashboard proprio, chat proprio, painel lateral proprio, permissoes proprias, numero WhatsApp proprio, prompt proprio.
+  </div>
+
+  <div class="g2">
+    <div class="agent-card ac-leads">
+      <div class="agent-name">Julia — Atendimento Leads</div>
+      <div class="agent-slug">sdr_leads · +5551816855848</div>
+      <span class="b bg" style="margin-bottom:8px;display:inline-flex">QUASE PRONTO #1</span>
+      <ul class="agent-features">
+        <li>Fala com: Leads (prospects)</li>
+        <li>Painel: Lead info (CPF, restricoes, docs)</li>
+        <li>Conecta: /crm, /indicacoes, /clientes</li>
+        <li>Perfil: comercial</li>
+        <li>Fluxo: 9 steps ate assinatura</li>
+      </ul>
+    </div>
+    <div class="agent-card ac-docs">
+      <div class="agent-name">Docs Pendentes</div>
+      <div class="agent-slug">sdr_docs_pendentes · numero a definir</div>
+      <span class="b bo" style="margin-bottom:8px;display:inline-flex">MAIS USADO pos-venda</span>
+      <ul class="agent-features">
+        <li>Fala com: Clientes (pos-venda)</li>
+        <li>Painel: Cliente + processos + docs</li>
+        <li>Conecta: /clientes, /processos, /docs_pendentes</li>
+        <li>Perfil: juridico + comercial</li>
+        <li>Multi-processo por cliente</li>
+      </ul>
+    </div>
+    <div class="agent-card ac-cp">
+      <div class="agent-name">Acordos — Christian Pass</div>
+      <div class="agent-slug">sdr_acordos_cp · +5551814749234</div>
+      <span class="b bv" style="margin-bottom:8px;display:inline-flex">CREDENCIAIS OK</span>
+      <ul class="agent-features">
+        <li>Fala com: Advogados adversos</li>
+        <li>Painel: Processo especifico</li>
+        <li>Conecta: /processos, /acordos, /empresas</li>
+        <li>Perfil: juridico</li>
+        <li>Transfere se processo nao e dele</li>
+      </ul>
+    </div>
+    <div class="agent-card ac-hm" style="opacity:.5">
+      <div class="agent-name">Acordos — Heloisa</div>
+      <div class="agent-slug">sdr_acordos_hm · pendente</div>
+      <span class="b bw" style="margin-bottom:8px;display:inline-flex">FUTURO</span>
+      <ul class="agent-features">
+        <li>Mesmo modelo Christian</li>
+        <li>Credenciais e numero pendentes</li>
+        <li>OABs da Heloisa</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Tabela comparativa -->
+  <div class="card" style="margin-top:16px">
+    <div class="ct">Comparativo por Agente</div>
+    <table>
+      <thead><tr><th></th><th style="color:var(--primary)">Julia Leads</th><th style="color:var(--orange)">Docs Pendentes</th><th style="color:var(--purple)">Acordos CP</th><th style="color:var(--info)">Acordos HM</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--muted)">Fala com</td><td>Leads</td><td>Clientes</td><td>Advogados</td><td>Advogados</td></tr>
+        <tr><td style="color:var(--muted)">Painel</td><td>Lead info</td><td>Cliente+proc</td><td>Processo</td><td>Processo</td></tr>
+        <tr><td style="color:var(--muted)">Volume</td><td>Alto</td><td>Muito alto</td><td>Medio</td><td>Medio</td></tr>
+        <tr><td style="color:var(--muted)">Numero</td><td>+5551816855848</td><td>A definir</td><td>+5551814749234</td><td>Pendente</td></tr>
+        <tr><td style="color:var(--muted)">Status</td><td><span class="b bg">quase pronto</span></td><td><span class="b bo">a construir</span></td><td><span class="b bv">cred ok</span></td><td><span class="b bw">pendente</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Permissoes -->
+  <div class="card">
+    <div class="ct">Permissoes por Perfil</div>
+    <table>
+      <thead><tr><th>Perfil</th><th>Leads</th><th>Docs</th><th>Acordos CP</th><th>Acordos HM</th></tr></thead>
+      <tbody>
+        <tr><td><strong>comercial</strong></td><td style="color:var(--success)">total</td><td style="color:var(--danger)">bloq</td><td style="color:var(--danger)">bloq</td><td style="color:var(--danger)">bloq</td></tr>
+        <tr><td><strong>juridico</strong></td><td style="color:var(--muted)">leitura</td><td style="color:var(--success)">total</td><td style="color:var(--success)">total</td><td style="color:var(--success)">total</td></tr>
+        <tr><td><strong>admin</strong></td><td style="color:var(--success)">total</td><td style="color:var(--success)">total</td><td style="color:var(--success)">total</td><td style="color:var(--success)">total</td></tr>
+        <tr><td><strong>gestor</strong></td><td style="color:var(--success)">total+dash</td><td style="color:var(--success)">total+dash</td><td style="color:var(--success)">total+dash</td><td style="color:var(--success)">total+dash</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════ DECISOES ════════════ -->
+<section class="section" id="decisoes">
+  <div class="sh"><span class="si">&#x1F500;</span><span class="st">Decisoes Arquiteturais</span></div>
+
+  <div class="dec resolved"><div class="dh"><span class="b bg">RESOLVIDA</span> <code>DEC-01</code></div><div class="dq">Slugs separados por advogado?</div><div class="da ok"><div class="lbl">Sim — sdr_acordos_cp e sdr_acordos_hm</div></div></div>
+  <div class="dec resolved"><div class="dh"><span class="b bg">RESOLVIDA</span> <code>DEC-02</code></div><div class="dq">Numero WhatsApp para acordos?</div><div class="da ok"><div class="lbl">1 numero por advogado (Cloud API Meta)</div></div></div>
+  <div class="dec resolved"><div class="dh"><span class="b bg">RESOLVIDA</span> <code>DEC-03</code></div><div class="dq">Vinculo numero-advogado?</div><div class="da ok"><div class="lbl">Via agente_slug — sem campo extra</div></div></div>
+  <div class="dec resolved"><div class="dh"><span class="b bg">RESOLVIDA</span> <code>DEC-05</code></div><div class="dq">OAB no frontend?</div><div class="da ok"><div class="lbl">Nao — so nome advogado. Um numero cobre todas OABs</div></div></div>
+
+  <div class="dec open"><div class="dh"><span class="b bw">ABERTA</span> <code style="color:var(--warn)">ARQ-01</code></div>
+    <div class="dq">Rotas separadas ou abas dentro do MdZap?</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:8px">A: Rotas (/mdzap/leads, /mdzap/docs) — permissoes naturais | B: Abas — transicao rapida | C: Hibrido (recomendada CC) — melhor dos 2</p>
+    <div class="hl w"><div class="hlt">IMPACTO: define estrutura de pastas, routing, permissoes do MdFlow inteiro</div></div>
+  </div>
+
+  <div class="dec open"><div class="dh"><span class="b bw">ABERTA</span> <code style="color:var(--warn)">ARQ-02</code></div>
+    <div class="dq">Acordos: 1 conversa por processo ou por escritorio adverso?</div>
+    <p style="font-size:12px;color:var(--muted)">CTO pende para A (por processo). Contexto isolado vs menos conversas.</p>
+  </div>
+
+  <div class="dec open"><div class="dh"><span class="b bw">EM ESTUDO</span> <code style="color:var(--warn)">DEC-04</code></div>
+    <div class="dq">Campos do painel de acordos?</div>
+    <p style="font-size:12px;color:var(--muted)">Processos do sistema (nao leads). Campos exatos a definir.</p>
+  </div>
+</section>
+
+<!-- ════════════ JULIA LEADS ════════════ -->
+<section class="section" id="julia">
+  <div class="sh"><span class="si" style="color:var(--primary)">&#x25CF;</span><span class="st">Julia Leads — Estado Atual</span></div>
+
+  <div class="hl ok">
+    <div class="hlt">A pagina MdZap atual JA e o SDR de Leads</div>
+    Chat, dashboard, LeadPanel, CRM badges, smart replies — tudo funcional. Ciclo page-loop completo nota 8.6/10. Falta: prompt definitivo + 9 steps no n8n + Doc Reader funcional + gaps criticos.
+  </div>
+
+  <div class="card">
+    <div class="ct">Painel Lateral — Tabs</div>
+    <table>
+      <thead><tr><th>Tab</th><th>Conteudo</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Dados</td><td>Nome, CPF, telefone, data nasc, profissao, endereco, advogado</td><td><span class="b bg">ok</span></td></tr>
+        <tr><td>Restricoes</td><td>Auditoria + lista restricoes + badge count</td><td><span class="b bg">ok</span></td></tr>
+        <tr><td>Documentos</td><td>3 tiers: gerais, restricoes, cliente</td><td><span class="b bw">reimpl</span></td></tr>
+        <tr><td>Notas</td><td>Wrapper CRM (20 linhas)</td><td><span class="b bg">ok</span></td></tr>
+        <tr><td>Memoria</td><td>Wrapper CRM (10 linhas)</td><td><span class="b bd">0 dados</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="fluxo9">
+  <div class="sh"><span class="si">&#x1F504;</span><span class="st">Fluxo 9 Steps (Lead ate Assinatura)</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>#</th><th>Step</th><th>Julia</th><th>Humano</th><th>n8n</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Lead entra (inbound via criativo)</td><td>Identifica</td><td>-</td><td>upsert-lead</td></tr>
+        <tr><td>2</td><td>Coleta CPF + nome</td><td>Valida</td><td>-</td><td>-</td></tr>
+        <tr><td>3</td><td>Auditoria automatica</td><td>"Aguarde"</td><td>-</td><td>bureau API</td></tr>
+        <tr><td>4</td><td>Analise viabilidade</td><td>Informa</td><td>Analisa</td><td>-</td></tr>
+        <tr><td>5</td><td>Pede 2 docs + explica servico</td><td>Solicita</td><td>-</td><td>-</td></tr>
+        <tr><td>6</td><td>Doc Reader</td><td>Coordena</td><td>-</td><td>doc-reader</td></tr>
+        <tr><td>7</td><td>CTPS</td><td>Pede/extrai</td><td>Pode pedir</td><td>doc-reader</td></tr>
+        <tr><td>8</td><td>Procuracao + contrato</td><td>"Falta assinar"</td><td>Gera</td><td>zapsign</td></tr>
+        <tr><td>9</td><td>Assinatura + finalizacao</td><td>Confirma</td><td>-</td><td>CRM update</td></tr>
+      </tbody>
+    </table>
+    <div class="hl w" style="margin-top:12px"><div class="hlt">Pendencia: Christian vai gravar audios por etapa com cenarios negativos</div></div>
+  </div>
+</section>
+
+<section class="section" id="docrdr">
+  <div class="sh"><span class="si">&#x1F4C4;</span><span class="st">Doc Reader — Gap Critico</span></div>
+  <div class="hl d">
+    <div class="hlt">GAP CRITICO: Doc Reader escreve em mensagens.metadata mas NUNCA propaga para conversas.metadata.pending_lead_data</div>
+    Em producao: pending_lead_data = 0 registros. Nenhuma conversa usa este campo. O frontend espera dados em conversas.metadata mas o Doc Reader escreve em mensagens.metadata.doc_reader_result. Pipeline quebrado.
+  </div>
+  <div class="card">
+    <div class="ct">Pipeline 3 etapas</div>
+    <table>
+      <thead><tr><th>Etapa</th><th>O que faz</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>1. Validar</td><td>Legivel? Doc valido?</td><td><span class="b bd">n8n NAO EXISTE</span></td></tr>
+        <tr><td>2. Extrair</td><td>Sonnet Vision: CNH/RG/CTPS/comp.</td><td><span class="b bd">n8n NAO EXISTE</span></td></tr>
+        <tr><td>3. Salvar</td><td>pending_lead_data ou UPDATE leads</td><td><span class="b bd">PROPAGACAO QUEBRADA</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════ BACKEND ════════════ -->
+<section class="section" id="tabelas">
+  <div class="sh"><span class="si">&#x1F5C3;</span><span class="st">Backend — 20 Tabelas MdZap/WhatsApp</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Tabela</th><th>Registros</th><th>Soft Del</th><th>RLS</th><th>updated_at</th></tr></thead>
+      <tbody>
+        <tr><td><code>whatsapp_conversas</code></td><td>8</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td></tr>
+        <tr><td><code>whatsapp_mensagens</code></td><td>123</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td></tr>
+        <tr><td><code>whatsapp_numeros</code></td><td>2</td><td style="color:var(--danger)">nao</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td></tr>
+        <tr><td><code>whatsapp_templates</code></td><td>4</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td></tr>
+        <tr><td><code>whatsapp_contatos</code></td><td>?</td><td style="color:var(--danger)">nao</td><td style="color:var(--success)">ok</td><td style="color:var(--danger)">nao</td></tr>
+        <tr><td><code>whatsapp_followups</code></td><td style="color:var(--danger)">0</td><td style="color:var(--danger)">nao</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td></tr>
+        <tr><td><code>mdzap_ai_modules</code></td><td>3</td><td style="color:var(--danger)">nao</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td></tr>
+        <tr><td><code>mdzap_lead_memory</code></td><td style="color:var(--danger)">0</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td></tr>
+        <tr><td><code>mdzap_icp_analises</code></td><td>3</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td><td style="color:var(--success)">ok</td></tr>
+        <tr><td><code>mdzap_julia_prompts</code></td><td>?</td><td style="color:var(--danger)">nao</td><td style="color:var(--success)">ok</td><td style="color:var(--danger)">nao</td></tr>
+        <tr><td><code>mdzap_message_queue</code></td><td>20</td><td style="color:var(--danger)">nao</td><td style="color:var(--success)">ok</td><td style="color:var(--danger)">nao</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px">+ 9 tabelas auxiliares (msg_feedback, notas_internas, numeros_usuarios, numeros_autorizados, conversas_timeline, audio_messages, stage_map, user_map, julia_lab_sessoes)</p>
+  </div>
+</section>
+
+<section class="section" id="rpcs">
+  <div class="sh"><span class="si">&#x26A1;</span><span class="st">RPCs + Edge Function</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>RPC</th><th>Params</th><th>Returns</th></tr></thead>
+      <tbody>
+        <tr><td><code>fn_mdzap_conversas</code></td><td>org, page, per_page, numero_id?, status?, search?</td><td>JSONB paginado</td></tr>
+        <tr><td><code>fn_mdzap_stats</code></td><td>org</td><td>KPIs dashboard</td></tr>
+        <tr><td><code>fn_mdzap_listar_membros</code></td><td>org</td><td>TABLE(id,nome,perfil)</td></tr>
+        <tr><td><code>fn_mdzap_smart_replies</code></td><td>org, conversa_id, msg?</td><td>JSONB sugestoes</td></tr>
+        <tr><td><code>fn_link_conversa_to_lead</code></td><td>lead_id, conversa_id</td><td>JSON success</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px"><strong>Edge Function:</strong> mdzap-webhook (525 linhas) — GET challenge + POST recebe msg + retry media. Nota 7.0/10 (melhor codigo do modulo).</p>
+    <div class="hl w" style="margin-top:8px"><div class="hlt">fn_mdzap_conversas NAO suporta array de slugs — so numero_id unico</div></div>
+  </div>
+</section>
+
+<section class="section" id="migrations">
+  <div class="sh"><span class="si">&#x1F4E6;</span><span class="st">35 Migrations (6 waves)</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Wave</th><th>Data</th><th>Qtd</th><th>Conteudo</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>2026-03-19</td><td>5</td><td>Tabelas iniciais mdzap</td></tr>
+        <tr><td>2</td><td>2026-03-27</td><td>2</td><td>Julia fixes</td></tr>
+        <tr><td>3</td><td>2026-04-01</td><td>13</td><td>DB-006 a DB-011 + SR-001 a SR-010</td></tr>
+        <tr><td>4</td><td>2026-04-02</td><td>2</td><td>Drop overload + webhooks doc</td></tr>
+        <tr><td>5</td><td>2026-04-07</td><td>12</td><td>fn fix + RLS + P0 backend + ICP + AUD-01 a AUD-04</td></tr>
+        <tr><td>6</td><td>2026-04-08/09</td><td>1</td><td>fn_link_conversa_to_lead + RLS standardize</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="gaps-backend">
+  <div class="sh"><span class="si">&#x26A0;</span><span class="st">Gaps Backend Criticos</span></div>
+  <div class="pi p0"><div class="pk">&#x1F534;</div><div class="pc"><strong>pending_lead_data = 0 registros</strong><p>Nenhuma conversa usa. Doc Reader nao propaga.</p></div></div>
+  <div class="pi p0"><div class="pk">&#x1F534;</div><div class="pc"><strong>mdzap_lead_memory = 0 registros</strong><p>Webhook de memoria nunca rodou.</p></div></div>
+  <div class="pi p0"><div class="pk">&#x1F534;</div><div class="pc"><strong>whatsapp_followups = 0 registros</strong><p>Follow-up nao implementado.</p></div></div>
+  <div class="pi p0"><div class="pk">&#x1F534;</div><div class="pc"><strong>5/8 conversas SEM lead vinculado</strong><p>63% sem vinculo CRM.</p></div></div>
+  <div class="pi p0"><div class="pk">&#x1F534;</div><div class="pc"><strong>CHECK constraints limitam slugs atuais</strong><p>mdzap_ai_modules e julia_prompts precisam ALTER para novos slugs multi-agente.</p></div></div>
+</section>
+
+<!-- ════════════ FRONTEND ════════════ -->
+<section class="section" id="componentes">
+  <div class="sh"><span class="si">&#x1F9E9;</span><span class="st">Frontend — 72+ Componentes (~7.677 linhas)</span></div>
+  <div class="card">
+    <div class="ct">Top 10 maiores componentes</div>
+    <table>
+      <thead><tr><th>Componente</th><th>Linhas</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><code>MdzapJuliaLab.tsx</code></td><td>497</td><td><span class="b bw">proximo limite 500</span></td></tr>
+        <tr><td><code>MdzapMsgBubble.tsx</code></td><td>494</td><td><span class="b bw">proximo limite 500</span></td></tr>
+        <tr><td><code>MdzapMsgThread.tsx</code></td><td>458</td><td><span class="b bp">ok</span></td></tr>
+        <tr><td><code>MdzapConversaList.tsx</code></td><td>410</td><td><span class="b bp">ok</span></td></tr>
+        <tr><td><code>useLeadPanelActions.ts</code></td><td>404</td><td><span class="b bd">8 bugs</span></td></tr>
+        <tr><td><code>MdzapDashboard.tsx</code></td><td>399</td><td><span class="b bp">ok</span></td></tr>
+        <tr><td><code>TemplatesManagerDialog.tsx</code></td><td>328</td><td><span class="b bp">ok</span></td></tr>
+        <tr><td><code>LeadDocumentosTab.tsx</code></td><td>301</td><td><span class="b bd">reimpl CRM</span></td></tr>
+        <tr><td><code>MdzapSwipeableCard.tsx</code></td><td>290</td><td><span class="b bp">ok</span></td></tr>
+        <tr><td><code>useMdzapSendMessage.ts</code></td><td>284</td><td><span class="b bp">ok</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="hooks">
+  <div class="sh"><span class="si">&#x1F3A3;</span><span class="st">20 Hooks (~1.580 linhas)</span></div>
+  <div class="card">
+    <div class="cb">src/hooks/mdzap/ (15):
+  useMdzapSendMessage(284), useMdzapThreadActions(149), useMdzapMensagens(148),
+  useMdzapTelemetria(147), useMdzapTyping(107), useMdzapIcp(98),
+  useMdzapSmartReplies(88), useMdzapTemplates(82), useMdzapDragDrop(78),
+  useMdzapNewMessageToast(66), useMdzapKeyboardShortcuts(42),
+  useMdzapNotificationSound(38), useMdzapJuliaPrompts(31),
+  useMdzapMembros(23), useMdzapFaviconBadge(17)
+
+src/hooks/ (5):
+  useMdzapConversas(193), useMdzapSend(159), useMdzapStatus(94),
+  useMdzapStats(24), shared/useWhatsappMask(16)</div>
+  </div>
+</section>
+
+<section class="section" id="reuso">
+  <div class="sh"><span class="si">&#x267B;</span><span class="st">Reuso CRM</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Tab MdZap</th><th>Componente CRM</th><th>Reutiliza?</th></tr></thead>
+      <tbody>
+        <tr><td>Restricoes</td><td>CrmAuditoriaPanel + ClienteDrawerTabRestricoes</td><td style="color:var(--success)">SIM</td></tr>
+        <tr><td>Notas</td><td>CrmLeadNotas (167 linhas)</td><td style="color:var(--success)">SIM (20L wrapper)</td></tr>
+        <tr><td>Memoria</td><td>MdzapLeadMemoryPanel</td><td style="color:var(--success)">SIM (10L wrapper)</td></tr>
+        <tr><td>Documentos</td><td>ClienteDrawerTabDocumentos (360L)</td><td style="color:var(--danger)">NAO — reimplementado (301L, sem Drive sync, sem realtime)</td></tr>
+      </tbody>
+    </table>
+    <div class="hl d" style="margin-top:8px"><div class="hlt">Bureau mismatch P0: MdZap usa 'boavista', CRM usa 'apifull_115'</div></div>
+  </div>
+</section>
+
+<!-- ════════════ N8N ════════════ -->
+<section class="section" id="n8n-status">
+  <div class="sh"><span class="si">&#x26A1;</span><span class="st">n8n — 38 Workflows (17 ativos, 21 inativos)</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Workflow</th><th>Path</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Inbound Upsert Lead</td><td><code>mdzap/inbound-upsert-lead</code></td><td><span class="b bg">ok</span> key hardcoded</td></tr>
+        <tr><td>Enviar Mensagem</td><td><code>mdzap/enviar-mensagem</code></td><td><span class="b bg">ok</span> key hardcoded 2x</td></tr>
+        <tr><td>Message Grouper</td><td><code>mdzap/message-grouper</code></td><td><span class="b bg">ok</span> sem auth</td></tr>
+        <tr><td>Arquivar Conversa</td><td><code>mdzap/arquivar-conversa</code></td><td><span class="b bg">ok</span></td></tr>
+        <tr><td>AI Composer</td><td><code>mdzap/ai-composer</code></td><td><span class="b bg">ok</span></td></tr>
+        <tr><td>Julia Lab Refine</td><td><code>mdzap/julia-lab-refine</code></td><td><span class="b bw">race</span></td></tr>
+        <tr><td>Julia Prompt Save</td><td><code>mdzap/julia-prompt-save</code></td><td><span class="b bd">SEM AUTH</span></td></tr>
+        <tr><td>Devolver Julia</td><td><code>mdzap/devolver-julia</code></td><td><span class="b bd">2 WFs conflito</span></td></tr>
+        <tr><td>FOLLOWUP-ZAPSIGN</td><td>Cron 1h</td><td><span class="b bg">melhor WF</span></td></tr>
+        <tr><td>Enviar Audio</td><td><code>mdzap/enviar-audio</code></td><td><span class="b bw">STUB</span></td></tr>
+        <tr><td>Bulk Docs/Negs/Template</td><td><code>mdzap/bulk-*</code></td><td><span class="b bw">STUBS VAZIOS</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="webhooks">
+  <div class="sh"><span class="si">&#x1F517;</span><span class="st">21 Webhooks — Gap Analysis</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Webhook</th><th>Frontend</th><th>n8n</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><code>mdzap/assumir-conversa</code></td><td style="color:var(--success)">chama</td><td style="color:var(--danger)">NAO EXISTE</td><td><span class="b bd">P0 quebrado</span></td></tr>
+        <tr><td><code>mdzap/devolver-julia</code></td><td style="color:var(--success)">chama</td><td style="color:var(--warn)">2 WFs</td><td><span class="b bd">P0 conflito</span></td></tr>
+        <tr><td><code>mdzap/doc-reader</code></td><td style="color:var(--danger)">nao chama</td><td style="color:var(--danger)">NAO EXISTE</td><td><span class="b bd">P0</span></td></tr>
+        <tr><td><code>mdzap/memoria</code></td><td style="color:var(--danger)">nao chama</td><td style="color:var(--danger)">NAO EXISTE</td><td><span class="b bd">P0</span></td></tr>
+        <tr><td><code>mdzap/enviar-mensagem</code></td><td style="color:var(--success)">chama</td><td style="color:var(--success)">ativo</td><td><span class="b bg">OK</span></td></tr>
+        <tr><td><code>mdzap/enviar-audio</code></td><td style="color:var(--success)">chama</td><td style="color:var(--warn)">stub</td><td><span class="b bw">P1</span></td></tr>
+        <tr><td><code>mdzap/enviar-template</code></td><td style="color:var(--success)">chama</td><td style="color:var(--warn)">stub</td><td><span class="b bw">P1</span></td></tr>
+        <tr><td><code>mdzap/julia-prompt-save</code></td><td style="color:var(--success)">chama</td><td style="color:var(--warn)">sem auth</td><td><span class="b bd">P0</span></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px">+13 webhooks funcionais: arquivar, transferir, bulk, icp, feedback, julia-lab, ai-composer, reconectar, etc.</p>
+  </div>
+</section>
+
+<!-- ════════════ PENDENCIAS ════════════ -->
+<section class="section" id="pendencias">
+  <div class="sh"><span class="si">&#x1F4CB;</span><span class="st">53 Pendencias (23 P0 + 18 P1 + 12 P2)</span></div>
+
+  <div class="card">
+    <div class="ct"><span class="b bd">P0 — 23 Bloqueantes</span></div>
+    <table>
+      <thead><tr><th>ID</th><th>Descricao</th></tr></thead>
+      <tbody>
+        <tr><td>P0-01</td><td>service_role hardcoded Edge Function</td></tr>
+        <tr><td>P0-02</td><td>Fire-and-forget sem retry orquestrador</td></tr>
+        <tr><td>P0-03</td><td>criarLead() verificar organizacao_id JWT</td></tr>
+        <tr><td>P0-04</td><td><strong>Doc Reader NAO IMPLEMENTADO</strong></td></tr>
+        <tr><td>P0-05</td><td>Google Drive sync nao funciona</td></tr>
+        <tr><td>P0-06</td><td><strong>assumir-conversa NAO EXISTE n8n</strong></td></tr>
+        <tr><td>P0-07</td><td><strong>devolver-julia 2 WFs conflitantes</strong></td></tr>
+        <tr><td>P0-08</td><td>Duplicacao logica assumir/devolver</td></tr>
+        <tr><td>P0-09</td><td><strong>10+ service_role keys n8n</strong></td></tr>
+        <tr><td>P0-10</td><td>Enviar audio = STUB</td></tr>
+        <tr><td>P0-11</td><td>julia-prompt-save sem auth</td></tr>
+        <tr><td>P0-12</td><td>21 workflows inativos sem cleanup</td></tr>
+        <tr><td>P0-13</td><td>Envelope canonico nao seguido 60% WFs</td></tr>
+        <tr><td>P0-14</td><td>Sem sticky notes workflows</td></tr>
+        <tr><td>P0-15</td><td>webhook_requests nao registrado</td></tr>
+        <tr><td>P0-16</td><td>Navegacao confusa 6 tabs</td></tr>
+        <tr><td>P0-17</td><td>z_api_token sem encrypt-at-rest</td></tr>
+        <tr><td>CODE-01</td><td>Bureau mismatch: MdZap=boavista, CRM=apifull_115</td></tr>
+        <tr><td>CODE-02</td><td>docMensagens unwrapped (useEffect)</td></tr>
+        <tr><td>GAP-01</td><td><strong>pending_lead_data = 0 registros</strong></td></tr>
+        <tr><td>GAP-02</td><td>mdzap_lead_memory = 0 registros</td></tr>
+        <tr><td>GAP-03</td><td>whatsapp_followups = 0 registros</td></tr>
+        <tr><td>GAP-04</td><td>CHECK constraints bloqueiam novos slugs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="ct"><span class="b bw">P1 — 18 Importantes</span> | <span class="b bi">P2 — 12 Refinamentos</span></div>
+    <p style="font-size:12px;color:var(--muted)">Detalhes completos em MDZAP.md secao 20 (53 pendencias por fase). Inclui: responsividade mobile, validacao CPF, Doc Reader integracao, progress indicator auditoria, timeline CRM, bulk actions, conversao lead-cliente, campos Z-API residuais, React Query namespace, split componentes grandes.</p>
+  </div>
+</section>
+
+<section class="section" id="bugs">
+  <div class="sh"><span class="si">&#x1F41B;</span><span class="st">Bugs Conhecidos (QA R4 + Code Audit)</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Bug</th><th>Prio</th><th>Descricao</th></tr></thead>
+      <tbody>
+        <tr><td>R4-BUG-01</td><td><span class="b bw">P1</span></td><td>ai-composer HTTP 500</td></tr>
+        <tr><td>R4-BUG-02</td><td><span class="b bw">P1</span></td><td>julia-prompt-save HTTP 500</td></tr>
+        <tr><td>R4-BUG-03</td><td><span class="b bw">P1</span></td><td>julia_lab_sessoes/prompts nao tipadas</td></tr>
+        <tr><td>R4-BUG-04</td><td><span class="b bi">P2</span></td><td>React key undefined GestaoPanel</td></tr>
+        <tr><td>R4-BUG-05</td><td><span class="b bi">P2</span></td><td>lead_awaiting_human nao propaga realtime</td></tr>
+        <tr><td>BUG-01</td><td><span class="b bw">P1</span></td><td>CPF com pontinhos (mascara)</td></tr>
+        <tr><td>BUG-02</td><td><span class="b bw">P1</span></td><td>Badge CRM dropdown nao abre</td></tr>
+        <tr><td>BUG-03</td><td><span class="b bw">P1</span></td><td>Restricoes nao funciona igual CRM (3 sub-bugs)</td></tr>
+        <tr><td>BUG-04</td><td><span class="b bw">P1</span></td><td>Docs nao gera pastas restricoes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="roadmap">
+  <div class="sh"><span class="si">&#x1F3AF;</span><span class="st">Roadmap — Prioridade de Execucao</span></div>
+  <div class="hl d"><div class="hlt">Regra CTO: Julia Leads 100% ANTES de qualquer outro agente</div></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Fase</th><th>O que</th><th>Pre-req</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>0</strong></td><td>Decidir ARQ-01 + ARQ-02</td><td>-</td><td><span class="b bw">Hoje</span></td></tr>
+        <tr><td><strong>1</strong></td><td>Julia Leads 100%: prompt + n8n 9 steps + testes</td><td>ARQ-01</td><td><span class="b bp">Proxima</span></td></tr>
+        <tr><td><strong>S1</strong></td><td>Sprint Seguranca: 10 P0 (keys, auth, conflitos)</td><td>-</td><td><span class="b bd">Urgente</span></td></tr>
+        <tr><td><strong>S2</strong></td><td>Sprint Features: Doc Reader + audio + cleanup</td><td>S1</td><td><span class="b bw">Planejada</span></td></tr>
+        <tr><td><strong>2</strong></td><td>Infra multi-agente: refatorar rotas/componentes</td><td>F1</td><td><span class="b bm">Futura</span></td></tr>
+        <tr><td><strong>3</strong></td><td>Docs Pendentes: painel cliente + prompt</td><td>F2</td><td><span class="b bm">Futura</span></td></tr>
+        <tr><td><strong>4</strong></td><td>Acordos CP: numero + painel processo + prompt</td><td>F2</td><td><span class="b bm">Futura</span></td></tr>
+        <tr><td><strong>5</strong></td><td>Acordos HM: credenciais + copiar CP</td><td>F4</td><td><span class="b bm">Futura</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════ HTMLS ════════════ -->
+<section class="section" id="htmls">
+  <div class="sh"><span class="si">&#x1F4C1;</span><span class="st">23 HTMLs de Referencia (~1.3MB total)</span></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>HTML</th><th>Data</th><th>KB</th><th>Conteudo</th></tr></thead>
+      <tbody>
+        <tr><td><code>mdzap-multi-numero-plan</code></td><td>04-10</td><td>41</td><td>Plano v4 multi-agente</td></tr>
+        <tr><td><code>mdzap-novo-fluxo-cadastro</code></td><td>04-09</td><td>69</td><td>GAP critico Doc Reader, 5 stages</td></tr>
+        <tr><td><code>mdzap-fluxo-v2</code></td><td>04-09</td><td>61</td><td>Fluxo v2 cadastro</td></tr>
+        <tr><td><code>mdzap-fluxograma-completo</code></td><td>04-08</td><td>94</td><td><strong>DEFINITIVO</strong>: 11 fases, 53 pendencias</td></tr>
+        <tr><td><code>mdzap-spec-definitivo</code></td><td>04-08</td><td>75</td><td>Spec pos-audit</td></tr>
+        <tr><td><code>mdzap-spec-completo</code></td><td>04-07</td><td>133</td><td><strong>MAIOR</strong>: spec Q&A completo</td></tr>
+        <tr><td><code>mdzap-spec-julia</code></td><td>04-07</td><td>90</td><td>Spec Julia detalhado</td></tr>
+        <tr><td><code>mdzap-prompts-julia</code></td><td>04-07</td><td>78</td><td>Briefing prompts</td></tr>
+        <tr><td><code>mdzap-backend-audit</code></td><td>04-08</td><td>28</td><td>Backend 5.2/10</td></tr>
+        <tr><td><code>mdzap-code-audit</code></td><td>04-08</td><td>40</td><td>Code 4.8/10</td></tr>
+        <tr><td><code>mdzap-n8n-audit</code></td><td>04-08</td><td>45</td><td>n8n 3.5/10</td></tr>
+        <tr><td><code>mdzap-frontend-audit</code></td><td>04-08</td><td>35</td><td>Frontend 6.2/10</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px">+11 HTMLs adicionais (guias Matheus obsoletos, deep research, reviews, v3 break, spec-final, spec-v2). Todos em ~/beto-reports/ e publicados em mdlab-christian.github.io/beto-reports/</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- PROMPT LOVABLE -->
+<!-- ════════════════════════════════════════════════════════ -->
+
+<section class="section" id="lovable">
+  <div class="sh"><span class="si" style="color:var(--primary)">&#x1F680;</span><span class="st">Prompt para o Lovable — Gerar HTML Investigacao Completa MdZap</span></div>
+
+  <div class="hl i">
+    <div class="hlt">Copie o prompt abaixo e cole no Lovable para gerar um HTML de investigacao completa</div>
+  </div>
+
+  <div class="prompt-box">
+<div class="prompt-title">PROMPT PARA LOVABLE — MDZAP INVESTIGACAO COMPLETA</div>
+
+Gere um HTML self-contained, dark mode, com sidebar de navegacao, responsivo, ABSOLUTAMENTE COMPLETO sobre o modulo MdZap do MdFlow.
+
+## IDENTIDADE
+- MdFlow: SaaS Legal Ops multi-tenant. Empresa: Midas Restricoes (~5.800 processos). Direito do consumidor — remocao de restricoes indevidas de credito.
+- MdZap: modulo de atendimento WhatsApp. SDR automatizado via agente Julia (Claude Sonnet).
+- Stack: React 18/TS, shadcn-ui, Tailwind, Supabase (qdivfairxhdihaqqypgb), n8n Railway.
+- Design System v5 Warm Charcoal: bg #12100e, primary #20c997, Inter/Manrope/JetBrains Mono.
+
+## ARQUITETURA MULTI-AGENTE (PLANEJAMENTO 2026-04-10)
+
+4 agentes SDR, cada um e um "mundo" separado:
+
+### Agente 1 — Julia Leads (sdr_leads)
+- Status: QUASE PRONTO — prioridade #1
+- Numero: +5551816855848 (Midas Atendimento)
+- Fala com: Leads (prospects) via Facebook Ads
+- Painel lateral: Lead info (CPF sem mascara, restricoes, docs, score, profissao)
+- Conecta: /crm, /indicacoes, /clientes
+- Perfil: comercial
+- 9 steps: Lead Entra → CPF → Auditoria → Viabilidade → 2 Docs → Doc Reader → CTPS → Procuracao → Assinatura
+- Sub-agentes: Doc Reader (Sonnet Vision, extrai CNH/RG/CTPS/Comprovante), Memoria (on-demand), ICP/Telemetria (cron 19h)
+
+### Agente 2 — Docs Pendentes (sdr_docs_pendentes)
+- Status: A CONSTRUIR — mais usado pos-venda
+- Numero: A definir
+- Fala com: Clientes (pos-venda continuo, processos demoram meses/anos)
+- Painel lateral: Cliente + processos (CNJ, status, vara, badges liminar/decisao) + docs pendentes + historico
+- Conecta: /clientes, /processos, /documentos_pendentes
+- Perfil: juridico + comercial
+- Multi-processo por cliente
+
+### Agente 3 — Acordos Christian Pass (sdr_acordos_cp)
+- Status: CREDENCIAIS OK
+- Numero: +5551814749234 | Phone Number ID: 1038640892669654 | WABA: 1267750791577634
+- Fala com: Advogados adversos (NAO clientes)
+- Painel lateral: Processo especifico (CNJ, empresa reclamada, escritorio adverso, vara, acordo, cliente)
+- Conecta: /processos, /acordos, /empresas
+- Perfil: juridico
+- Se processo nao e dele → transfere para Heloisa
+
+### Agente 4 — Acordos Heloisa (sdr_acordos_hm)
+- Status: FUTURO — credenciais pendentes
+- Mesmo modelo do Christian, OABs da Heloisa
+
+### Permissoes por perfil
+- comercial: acesso total Leads, bloqueado nos demais
+- juridico: somente leitura Leads, acesso total Docs/Acordos
+- admin: tudo
+- gestor: tudo + dashboards
+
+## DECISOES CTO
+- DEC-01 RESOLVIDA: Slugs separados (sdr_acordos_cp + sdr_acordos_hm)
+- DEC-02 RESOLVIDA: 1 numero por advogado (Cloud API Meta)
+- DEC-03 RESOLVIDA: Vinculo via agente_slug, sem campo extra
+- DEC-05 RESOLVIDA: Sem OAB no frontend, so nome advogado
+- DEC-04 EM ESTUDO: Campos painel acordos — processos do sistema, a definir
+- ARQ-01 ABERTA: Rotas separadas vs abas vs hibrido (CC recomenda C: hibrido)
+- ARQ-02 ABERTA: 1 conversa por processo vs por escritorio adverso (CTO pende A)
+
+## NOTAS DE AUDITORIA (2026-04-08)
+- Backend: 5.2/10 | Code: 4.8/10 | n8n: 3.5/10 | Frontend: 6.2/10 | Consolidada: 4.9/10
+- Page-loop ciclo completo: 8.6/10 (2026-04-02)
+
+## BACKEND — 20 TABELAS
+Tabelas principais: whatsapp_conversas (8 reg), whatsapp_mensagens (123 reg), whatsapp_numeros (2 reg), whatsapp_templates (4 reg), mdzap_ai_modules (3 reg), mdzap_icp_analises (3 reg), mdzap_message_queue (20 reg), whatsapp_contatos, whatsapp_followups (0 reg!), whatsapp_msg_feedback, whatsapp_notas_internas, whatsapp_numeros_usuarios, whatsapp_numeros_autorizados, mdzap_lead_memory (0 reg!), mdzap_julia_prompts, mdzap_julia_lab_sessoes, mdzap_conversas_timeline, mdzap_audio_messages, mdzap_stage_map, mdzap_user_map.
+
+Schema whatsapp_conversas: id UUID PK, organizacao_id FK, numero_id FK, contato_numero TEXT, contato_nome TEXT, cliente_id FK, lead_id FK, ultimo_msg_at, nao_lidas INT, status TEXT CHECK (ativa/encerrada/arquivada), metadata JSONB, deleted_at.
+
+Schema whatsapp_numeros: id UUID PK, organizacao_id FK, numero TEXT, nome TEXT, proposito TEXT, status TEXT, config JSONB, ai_enabled BOOLEAN, api_type TEXT, agente_slug TEXT DEFAULT 'sdr_leads'.
+
+5 RPCs: fn_mdzap_conversas (paginada JSONB), fn_mdzap_stats, fn_mdzap_listar_membros, fn_mdzap_smart_replies, fn_link_conversa_to_lead.
+LIMITACAO: fn_mdzap_conversas NAO suporta array de slugs, so numero_id unico.
+
+Edge Function mdzap-webhook (525 linhas): GET challenge + POST recebe msg WhatsApp (Meta/Z-API), normaliza, download midia, salva, encaminha n8n.
+
+CHECK constraints que precisam ALTER para novos slugs:
+- mdzap_ai_modules: sdr_leads, sdr_acordos, sdr_docs (falta sdr_docs_pendentes, sdr_acordos_cp, sdr_acordos_hm)
+- mdzap_julia_prompts: sdr_principal, sdr_acordos, sdr_docs (mesma limitacao)
+
+35 migrations em 6 waves (2026-03-19 a 2026-04-09).
+
+## FRONTEND — 72+ COMPONENTES (~7.677 LINHAS)
+Maiores: MdzapJuliaLab (497L), MdzapMsgBubble (494L), MdzapMsgThread (458L), MdzapConversaList (410L), useLeadPanelActions (404L, 8 bugs).
+20 hooks (~1.580 linhas). Types: mdzap.types.ts (339L, 50+ tipos) + mdzap-metadata.ts.
+SdrModeToggle.tsx: atualmente so 3 modos (sdr_leads, sdr_docs, sdr_acordos) — precisa expandir.
+useMdzapConversas.ts: NAO suporta array de slugs.
+Painel Lead: 5 tabs (Dados, Restricoes, Docs, Notas, Memoria) com NavFooter prev/next.
+
+## N8N — 38 WORKFLOWS
+17 ativos, 21 inativos. Nota 3.5/10.
+CRITICOS QUEBRADOS: assumir-conversa NAO EXISTE, devolver-julia 2 WFs conflitantes, julia-prompt-save sem auth, 10+ service_role keys hardcoded, 4 stubs vazios.
+21 webhooks mapeados no frontend, 4 NAO EXISTEM no n8n (assumir, doc-reader, memoria, devolver conflitante).
+Score real confiabilidade: 6.25% (1/16 workflows verdadeiramente confiaveis segundo n8n-validator).
+
+## 53 PENDENCIAS (23 P0 + 18 P1 + 12 P2)
+P0 criticos: Doc Reader NAO implementado, assumir-conversa NAO existe, devolver-julia conflito, 10+ keys hardcoded, pending_lead_data=0, mdzap_lead_memory=0, followups=0, bureau mismatch, docMensagens unwrapped, julia-prompt-save sem auth, envelope canonico nao seguido 60%, z_api_token sem encrypt, fire-and-forget sem retry, navegacao confusa.
+
+## GAPS CRITICOS CONFIRMADOS
+1. Doc Reader escreve em mensagens.metadata.doc_reader_result mas NUNCA propaga para conversas.metadata.pending_lead_data
+2. pending_lead_data = 0 registros em producao
+3. mdzap_lead_memory = 0 registros — memoria nunca rodou
+4. whatsapp_followups = 0 registros — follow-up nao implementado
+5. 5/8 conversas SEM lead vinculado (63%)
+6. Bureau mismatch: MdZap usa 'boavista', CRM usa 'apifull_115'
+
+## FLUXO DO LEAD (6 FASES DETALHADAS)
+Fase 1 — Entrada: Facebook Ads → WhatsApp → Julia boas-vindas → "Midas Restricoes, auditoria gratuita"
+Fase 2 — Coleta docs: CNH/RG + Comprovante residencia. Doc Reader (Sonnet Vision) extrai. Se ilegivel: Julia pede outro. Se comprovante de terceiro: declaracao obrigatoria.
+Fase 3 — Pre-cadastro: pending_lead_data (QUEBRADO), formulario pre-preenchido, auditoria Boa Vista, PDF abre em nova guia ANTES do cadastro. Resultado: nome limpo → parabens. Nome sujo → "39 restricoes da RGE, somos especialistas".
+Fase 4 — CTPS: comprovante AJG. RS=5 salarios, SC/SP=3. Contrato aberto → cargo. Fechado → pergunta se trabalha.
+Fase 5 — Renda Receita: humano faz (nao Julia). IR, declaracoes.
+Fase 6 — Procuracao ZapSign: humano gera, Julia follow-up. 1h sem resposta → follow-up. Assinou → "encaminhado para escritorio parceiro". NUNCA citar nome advogado/escritorio.
+
+## REGRAS JULIA (CRITICAS)
+- NUNCA citar nome escritorio/advogado
+- NUNCA dar garantia — maximo "90 dias para primeiro resultado"
+- NUNCA mascarar CPF
+- SEMPRE Claude Sonnet
+- Janela de contexto ampla
+- Follow-up persistente
+- Tom profissional, nunca amador
+- AJG (nao JG)
+
+## PROMPT JULIA — RESPONSABILIDADE CHRISTIAN
+Matheus saiu do projeto (2026-04). Prompt agora e responsabilidade do Christian (CTO). Pendencias do prompt: quais docs pedir por cenario, tom/quebra de mensagens/emojis/horario, handoff humano-Julia, sub-agente Doc Reader, cenarios negativos, templates por step.
+
+## O QUE NAO IMPLEMENTAR AGORA
+Integracao Serasa, Indique Ganho, ZapSign, Julia acesso direto backend, cadastro automatico massa, agentes 2-3-4 (Julia primeiro).
+
+## PRIORIDADE
+Fase 0 = Decidir ARQ-01 + ARQ-02 (HOJE)
+Fase 1 = Julia Leads 100%
+Sprint S1 = Seguranca (10 P0: keys, auth)
+Sprint S2 = Features (Doc Reader, audio, cleanup)
+Fase 2-5 = Multi-agente (futuro)
+
+## COMPONENTES REUTILIZAVEIS VS ESPECIFICOS
+Reutilizaveis: MdzapMsgThread, MsgInput, MsgBubble, AudioRecorder, AttachmentMenu, SearchBar, ConnectionIndicator, TransferModal, ConversaList.
+Especificos por agente: Painel lateral, Dashboard, Quick-actions, ThreadHeader, Smart Replies, AI Composer, Gestao Panel.
+
+## N8N ROUTING MULTI-AGENTE (FUTURO)
+Edge Function extrai phone_number_id → resolve numero_id → resolve agente_slug → switch pipeline por agente.
+
+## 23 HTMLs DE REFERENCIA (~/beto-reports/)
+mdzap-multi-numero-plan (41KB, plano v4), mdzap-novo-fluxo-cadastro (69KB, gap Doc Reader), mdzap-fluxograma-completo (94KB, DEFINITIVO 11 fases), mdzap-spec-completo (133KB, MAIOR), mdzap-spec-julia (90KB), mdzap-prompts-julia (78KB), mdzap-spec-definitivo (75KB), mdzap-backend-audit (28KB, 5.2/10), mdzap-code-audit (40KB, 4.8/10), mdzap-n8n-audit (45KB, 3.5/10), mdzap-frontend-audit (35KB, 6.2/10), +12 adicionais.
+
+## INSTRUCOES PARA O HTML
+1. Use tema Warm Charcoal: bg #12100e, surface #1a1714, card #201d1a, primary #20c997, border #2e2b27
+2. Sidebar de navegacao fixa com todas as secoes
+3. Inclua TODAS as informacoes acima — cada tabela, cada gap, cada decisao, cada agente
+4. Cards visuais para os 4 agentes com cores distintas (primary=leads, orange=docs, purple=acordos-cp, blue=acordos-hm)
+5. Badges coloridos para status (ok=verde, warning=amarelo, danger=vermelho, info=azul)
+6. Secao de decisoes com resolved vs open
+7. Tabela de 53 pendencias organizadas por fase
+8. Fluxo visual 9 steps com numeracao
+9. Comparativo de audit scores (4 cards: n8n 3.5, code 4.8, backend 5.2, frontend 6.2)
+10. Tabela de permissoes por perfil
+11. Tabela de 20 tabelas com status soft delete/RLS
+12. Tabela de 21 webhooks com gap analysis
+13. Lista de 23 HTMLs de referencia
+14. Secao de gaps criticos com destaque visual vermelho
+15. Secao de credenciais Meta (Christian ok, Heloisa pendente)
+16. Roadmap/timeline de execucao com fases numeradas
+17. Mapa de componentes reutilizaveis vs especificos
+18. Fontes: Inter (corpo), Manrope (titulos), JetBrains Mono (codigo)
+19. Responsivo, self-contained (zero deps externas alem de Google Fonts)
+20. NO MINIMO 800 linhas de HTML — este e o documento mais completo que existe sobre o MdZap
+</div>
+</section>
+
+<footer>
+  Jarbas 2.0 / MdFlow — MdLab LegalTech · 2026-04-10 · Situacao Completa v5
+</footer>
+
+</main>
+</div>
+</body>
+</html>
