@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap — Mega Documento Completo v6</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e;
+  --surface: #1a1714;
+  --card: #201d1a;
+  --card-hover: #282420;
+  --border: #2e2a25;
+  --border-light: #3a3530;
+  --primary: #20c997;
+  --primary-dim: rgba(32, 201, 151, 0.12);
+  --primary-border: rgba(32, 201, 151, 0.25);
+  --orange: #f97316;
+  --orange-dim: rgba(249, 115, 22, 0.12);
+  --orange-border: rgba(249, 115, 22, 0.25);
+  --purple: #7c6dff;
+  --purple-dim: rgba(124, 109, 255, 0.12);
+  --purple-border: rgba(124, 109, 255, 0.25);
+  --info: #60a5fa;
+  --info-dim: rgba(96, 165, 250, 0.12);
+  --info-border: rgba(96, 165, 250, 0.25);
+  --red: #ef4444;
+  --red-dim: rgba(239, 68, 68, 0.12);
+  --red-border: rgba(239, 68, 68, 0.25);
+  --yellow: #eab308;
+  --yellow-dim: rgba(234, 179, 8, 0.12);
+  --yellow-border: rgba(234, 179, 8, 0.25);
+  --green: #22c55e;
+  --green-dim: rgba(34, 197, 94, 0.12);
+  --green-border: rgba(34, 197, 94, 0.25);
+  --text: #e8e0d6;
+  --text-muted: #8a7e72;
+  --text-dim: #5e5549;
+  --sidebar-w: 260px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 30;
+  padding: 20px 0;
+}
+.sidebar-logo {
+  padding: 0 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.sidebar-logo h3 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.sidebar-logo span {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+}
+.sidebar-section {
+  padding: 8px 16px 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-dim);
+}
+.sidebar a {
+  display: block;
+  padding: 6px 20px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.78rem;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+.sidebar a:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+  border-left-color: var(--primary);
+}
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  padding: 32px 40px 60px;
+  max-width: 1100px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 48px 24px 36px;
+}
+.hero-emoji { font-size: 3.2rem; display: block; margin-bottom: 12px; }
+.gradient-text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--info));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 20px; max-width: 700px; margin-left: auto; margin-right: auto; }
+.meta-chips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.chip {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.chip-primary { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary-border); }
+.chip-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow-border); }
+.chip-red { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
+.chip-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid var(--purple-border); }
+.chip-info { background: var(--info-dim); color: var(--info); border: 1px solid var(--info-border); }
+.chip-orange { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange-border); }
+
+/* GRIDS */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.g6 { grid-template-columns: repeat(3, 1fr); }
+@media(max-width:1024px) { .g4 { grid-template-columns: 1fr 1fr; } .g6 { grid-template-columns: 1fr 1fr; } }
+@media(max-width:768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 20px 16px 40px; }
+  .g2, .g3, .g4, .g6 { grid-template-columns: 1fr; }
+  .hero { padding: 32px 12px 24px; }
+  .gradient-text { font-size: 1.6rem; }
+  table { font-size: 0.75rem; }
+}
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--border-light); }
+.card-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* STAT CARDS */
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Manrope', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.stat-value.yellow { color: var(--yellow); }
+.stat-value.red { color: var(--red); }
+.stat-value.orange { color: var(--orange); }
+.stat-value.purple { color: var(--purple); }
+.stat-value.info { color: var(--info); }
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* SECTIONS */
+.section { margin: 36px 0; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+.section-icon { font-size: 1.2rem; }
+.section-header h2 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+tr:hover td { background: rgba(255,255,255,0.015); }
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* PILLS */
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+.pill-ok { background: var(--green-dim); color: var(--green); }
+.pill-warn { background: var(--yellow-dim); color: var(--yellow); }
+.pill-err { background: var(--red-dim); color: var(--red); }
+.pill-info { background: var(--info-dim); color: var(--info); }
+.pill-pend { background: var(--orange-dim); color: var(--orange); }
+.pill-purple { background: var(--purple-dim); color: var(--purple); }
+
+/* CODE */
+.code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--primary);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* CALLOUT */
+.callout {
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  border-left: 4px solid;
+}
+.callout-red { background: var(--red-dim); border-color: var(--red); }
+.callout-yellow { background: var(--yellow-dim); border-color: var(--yellow); }
+.callout-green { background: var(--green-dim); border-color: var(--primary); }
+.callout-info { background: var(--info-dim); border-color: var(--info); }
+.callout strong { display: block; margin-bottom: 4px; }
+
+/* AGENT CARD */
+.agent-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  border-top: 3px solid;
+}
+.agent-card.agent-primary { border-top-color: var(--primary); }
+.agent-card.agent-orange { border-top-color: var(--orange); }
+.agent-card.agent-purple { border-top-color: var(--purple); }
+.agent-card.agent-info { border-top-color: var(--info); opacity: 0.65; }
+.agent-name {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.agent-slug {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.agent-meta { font-size: 0.8rem; margin-bottom: 6px; }
+.agent-meta span { color: var(--text-muted); }
+
+/* SCORE BAR */
+.score-bar-container { margin-top: 8px; }
+.score-bar {
+  height: 6px;
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.score-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s;
+}
+
+/* STEPS FLOW */
+.steps-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--primary-dim);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+.step-label { font-size: 0.78rem; white-space: nowrap; }
+.step-arrow {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 0 6px;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+/* PROGRESS */
+.mini-bar {
+  display: inline-block;
+  width: 60px;
+  height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+.mini-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* PROMPT BOX */
+.prompt-box {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-height: 600px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* SCROLL */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h3>MdZap v6</h3>
+    <span>Mega Documento Completo</span>
+  </div>
+  <div class="sidebar-section">Visao Geral</div>
+  <a href="#scores">01. Scores</a>
+  <a href="#oque">02. O que e o MdZap</a>
+  <a href="#agentes">03. Arquitetura Multi-Agente</a>
+  <a href="#permissoes">04. Permissoes</a>
+  <a href="#decisoes">05. Decisoes CTO</a>
+  <div class="sidebar-section">Dados & Schema</div>
+  <a href="#zero-numeros">06. 0 Numeros Ativos</a>
+  <a href="#schema-drift">07. Schema Drift</a>
+  <a href="#rpcs">08. RPCs Audit</a>
+  <a href="#rls">09. RLS & Seguranca</a>
+  <a href="#tabelas">10. 22 Tabelas</a>
+  <a href="#constraints">11. Constraints</a>
+  <div class="sidebar-section">Frontend</div>
+  <a href="#componentes">12. 72+ Componentes</a>
+  <a href="#hooks">13. Hooks Audit</a>
+  <a href="#duplicacoes">14. Duplicacoes</a>
+  <a href="#reuso-crm">15. Reuso CRM</a>
+  <div class="sidebar-section">Backend & n8n</div>
+  <a href="#n8n">16. 38 Workflows n8n</a>
+  <a href="#webhooks">17. 21 Webhooks Gap</a>
+  <a href="#steps">18. Fluxo 9 Steps</a>
+  <a href="#doc-reader">19. Doc Reader Gap</a>
+  <div class="sidebar-section">Operacional</div>
+  <a href="#regras-julia">20. Regras Julia</a>
+  <a href="#breaks">21. Erros Futuros</a>
+  <a href="#pendencias">22. 53+ Pendencias</a>
+  <a href="#build-errors">23. Build Errors</a>
+  <a href="#roadmap">24. Roadmap 9/10</a>
+  <div class="sidebar-section">Referencia</div>
+  <a href="#reusaveis">25. Reutilizaveis</a>
+  <a href="#routing">26. Routing</a>
+  <a href="#n8n-routing">27. n8n Routing</a>
+  <a href="#credenciais">28. Credenciais Meta</a>
+  <a href="#htmls-ref">29. 23+ HTMLs Ref</a>
+  <a href="#prompt">30. Prompt Lovable</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero" id="top">
+    <span class="hero-emoji">📱</span>
+    <h1 class="gradient-text">MdZap — Mega Documento Completo v6</h1>
+    <p class="hero-sub">Absolutamente tudo sobre o modulo MdZap — estado real, arquitetura, gaps, decisoes, roadmap</p>
+    <div class="meta-chips">
+      <span class="chip chip-primary">2026-04-13</span>
+      <span class="chip chip-yellow">6.5/10 nota geral</span>
+      <span class="chip chip-info">4 agentes SDR</span>
+      <span class="chip chip-red">53+ pendencias</span>
+      <span class="chip chip-purple">72+ componentes</span>
+      <span class="chip chip-orange">20 hooks</span>
+      <span class="chip chip-primary">38 workflows</span>
+      <span class="chip chip-info">35 migrations</span>
+      <span class="chip chip-yellow">22 tabelas</span>
+    </div>
+  </div>
+
+  <!-- S1: SCORES -->
+  <div class="section" id="scores">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <h2>01. Scores de Qualidade</h2>
+    </div>
+
+    <div class="stat-card" style="margin-bottom:20px; text-align:center;">
+      <div class="stat-value yellow" style="font-size:3rem;">6.5/10</div>
+      <div class="stat-label">Nota Geral MdZap — Deep Investigation v2</div>
+      <div style="margin-top:8px;font-size:0.78rem;color:var(--text-muted);">
+        Audit anterior (2026-04-08): Backend 5.2 | Code 4.8 | n8n 3.5 | Frontend 6.2 = <strong style="color:var(--red);">4.9/10</strong>
+        &nbsp;&mdash;&nbsp; Page-loop nota: <strong style="color:var(--primary);">8.6/10</strong>
+      </div>
+    </div>
+
+    <div class="grid g6">
+      <div class="card">
+        <div class="card-title">Schema & DB</div>
+        <div style="font-family:'Manrope',sans-serif;font-size:1.8rem;font-weight:700;color:var(--primary);">7/10</div>
+        <div class="score-bar-container">
+          <div class="score-bar"><div class="score-fill" style="width:70%;background:var(--primary);"></div></div>
+        </div>
+        <p style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">RLS completo em todas tabelas. TEXT CHECK correto (zero ENUM nativo). fn_mdzap_stats retorna 0s hardcoded para tempo_medio e taxa_handoff.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Frontend</div>
+        <div style="font-family:'Manrope',sans-serif;font-size:1.8rem;font-weight:700;color:var(--primary);">7/10</div>
+        <div class="score-bar-container">
+          <div class="score-bar"><div class="score-fill" style="width:70%;background:var(--primary);"></div></div>
+        </div>
+        <p style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">52 componentes renderizando, realtime 3 channels, boa UX. Duplicacao AppPage vs ChatPanel. 87 "as any" em types.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">n8n / Webhooks</div>
+        <div style="font-family:'Manrope',sans-serif;font-size:1.8rem;font-weight:700;color:var(--red);">3/10</div>
+        <div class="score-bar-container">
+          <div class="score-bar"><div class="score-fill" style="width:30%;background:var(--red);"></div></div>
+        </div>
+        <p style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">11 de 16 workflows mortos. julia-lab-refine quebrado. Frontend chama 15+ webhooks que nao existem no n8n.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Multi-Agente</div>
+        <div style="font-family:'Manrope',sans-serif;font-size:1.8rem;font-weight:700;color:var(--red);">2/10</div>
+        <div class="score-bar-container">
+          <div class="score-bar"><div class="score-fill" style="width:20%;background:var(--red);"></div></div>
+        </div>
+        <p style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">primaryNumero global (nao filtra por agente). Dashboard sem filtro agente. Permissoes por perfil ausentes.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Type Safety</div>
+        <div style="font-family:'Manrope',sans-serif;font-size:1.8rem;font-weight:700;color:var(--orange);">4/10</div>
+        <div class="score-bar-container">
+          <div class="score-bar"><div class="score-fill" style="width:40%;background:var(--orange);"></div></div>
+        </div>
+        <p style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">types.ts dessincronizado do DB. 87+ "as any". Campo fantasma "mensagem?". metadata duplicada em 2 niveis.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Dados (Producao)</div>
+        <div style="font-family:'Manrope',sans-serif;font-size:1.8rem;font-weight:700;color:var(--yellow);">6/10</div>
+        <div class="score-bar-container">
+          <div class="score-bar"><div class="score-fill" style="width:60%;background:var(--yellow);"></div></div>
+        </div>
+        <p style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">0 numeros vivos (unico soft-deleted). 9 conversas, 197 msgs. 12 tabelas completamente vazias em producao.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2: O QUE E -->
+  <div class="section" id="oque">
+    <div class="section-header">
+      <span class="section-icon">💬</span>
+      <h2>02. O que e o MdZap</h2>
+    </div>
+    <div class="card">
+      <p style="margin-bottom:12px;">O <strong>MdZap</strong> e o modulo de atendimento WhatsApp do MdFlow. E a ponte entre o lead que chega via indicacao e o escritorio que precisa converter, qualificar e coletar documentos.</p>
+      <p style="margin-bottom:12px;">O cerne e a <strong>Julia</strong> — uma SDR automatizada rodando Claude Sonnet — que conduz leads pelo funil completo: desde a primeira mensagem ate a assinatura digital da procuracao via ZapSign.</p>
+      <p style="margin-bottom:12px;">Contexto da empresa: <strong>Midas Restricoes</strong> (~5.800 processos ativos). Area: Direito do Consumidor, especificamente remocao de restricoes indevidas (Serasa, SPC, SCPC, etc).</p>
+      <div class="callout callout-red">
+        <strong>REGRA ABSOLUTA</strong>
+        A Julia NUNCA pode citar o nome do escritorio ou dos advogados. Isso e uma regra de compliance inviolavel definida pelo CTO.
+      </div>
+      <p>Integracao principal: MdZap conecta com <strong>/crm</strong> (leads), <strong>/clientes</strong> (pos-venda), <strong>/processos</strong> (juridico), <strong>/indicacoes</strong> (origem dos leads) e <strong>/financeiro</strong> (acordos).</p>
+    </div>
+  </div>
+
+  <!-- S3: MULTI-AGENTE -->
+  <div class="section" id="agentes">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <h2>03. Arquitetura Multi-Agente (4 SDRs)</h2>
+    </div>
+
+    <div class="callout callout-info" style="margin-bottom:20px;">
+      <strong>Principio CTO:</strong> Cada agente e um "mundo" separado. Numero proprio, painel proprio, permissoes proprias, pipeline n8n proprio.
+    </div>
+
+    <div class="grid g2">
+      <!-- JULIA LEADS -->
+      <div class="agent-card agent-primary">
+        <div class="agent-name" style="color:var(--primary);">Julia Leads</div>
+        <div class="agent-slug">sdr_leads</div>
+        <span class="pill pill-ok" style="margin-bottom:12px;">QUASE PRONTO #1</span>
+        <div class="agent-meta"><span>Numero:</span> +55 51 8168-55848</div>
+        <div class="agent-meta"><span>Fala com:</span> Leads (prospects)</div>
+        <div class="agent-meta"><span>Painel:</span> Lead info (CRM)</div>
+        <div class="agent-meta"><span>Conecta:</span> /crm, /indicacoes, /clientes</div>
+        <div class="agent-meta"><span>Perfil:</span> comercial</div>
+        <div style="margin-top:12px;font-size:0.78rem;color:var(--text-muted);">
+          <strong style="color:var(--text);">9 Steps:</strong> Lead → CPF → Auditoria → Viabilidade → Docs → DocReader → CTPS → Procuracao → Assinatura
+        </div>
+        <div style="margin-top:8px;font-size:0.78rem;color:var(--text-muted);">
+          <strong style="color:var(--text);">Sub-agentes:</strong> Doc Reader, Memoria, ICP/Telemetria
+        </div>
+      </div>
+
+      <!-- DOCS PENDENTES -->
+      <div class="agent-card agent-orange">
+        <div class="agent-name" style="color:var(--orange);">Docs Pendentes</div>
+        <div class="agent-slug">sdr_docs_pendentes</div>
+        <span class="pill pill-pend" style="margin-bottom:12px;">A CONSTRUIR</span>
+        <div class="agent-meta"><span>Numero:</span> A definir</div>
+        <div class="agent-meta"><span>Fala com:</span> Clientes (pos-venda continuo)</div>
+        <div class="agent-meta"><span>Painel:</span> Cliente + processos + docs pendentes</div>
+        <div class="agent-meta"><span>Conecta:</span> /clientes, /processos, /documentos_pendentes</div>
+        <div class="agent-meta"><span>Perfil:</span> juridico</div>
+        <div style="margin-top:12px;font-size:0.78rem;color:var(--text-muted);">
+          Multi-processo por cliente. O agente mais usado no pos-venda diario. Cobra documentos, atualiza status, envia lembretes.
+        </div>
+      </div>
+
+      <!-- ACORDOS CP -->
+      <div class="agent-card agent-purple">
+        <div class="agent-name" style="color:var(--purple);">Acordos CP</div>
+        <div class="agent-slug">sdr_acordos_cp</div>
+        <span class="pill pill-ok" style="margin-bottom:12px;">CREDENCIAIS OK</span>
+        <div class="agent-meta"><span>Numero:</span> +55 51 8147-49234</div>
+        <div class="agent-meta"><span>Phone ID:</span> <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">1038640892669654</code></div>
+        <div class="agent-meta"><span>WABA:</span> <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">1267750791577634</code></div>
+        <div class="agent-meta"><span>Fala com:</span> Advogados adversos</div>
+        <div class="agent-meta"><span>Painel:</span> Processo especifico</div>
+        <div class="agent-meta"><span>Perfil:</span> juridico</div>
+        <div style="margin-top:12px;font-size:0.78rem;color:var(--text-muted);">
+          Transfere automaticamente se o processo nao e dele. Vinculado ao advogado Christian.
+        </div>
+      </div>
+
+      <!-- ACORDOS HM -->
+      <div class="agent-card agent-info">
+        <div class="agent-name" style="color:var(--info);">Acordos HM</div>
+        <div class="agent-slug">sdr_acordos_hm</div>
+        <span class="pill pill-info" style="margin-bottom:12px;">FUTURO</span>
+        <div class="agent-meta"><span>Numero:</span> Credenciais pendentes</div>
+        <div class="agent-meta"><span>Fala com:</span> Advogados adversos</div>
+        <div class="agent-meta"><span>Painel:</span> Processo especifico</div>
+        <div class="agent-meta"><span>Perfil:</span> juridico</div>
+        <div style="margin-top:12px;font-size:0.78rem;color:var(--text-muted);">
+          Mesmo modelo de Christian, para Heloisa. Credenciais Meta pendentes. Opacity 50% indica estado futuro.
+        </div>
+      </div>
+    </div>
+
+    <!-- TABELA COMPARATIVA -->
+    <div class="table-wrap" style="margin-top:20px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Agente</th>
+            <th>Fala com</th>
+            <th>Painel</th>
+            <th>Volume est.</th>
+            <th>Numero</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--primary);font-weight:600;">Julia Leads</span></td>
+            <td>Leads (prospects)</td>
+            <td>Lead info</td>
+            <td>~50/dia</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">+5551816855848</td>
+            <td><span class="pill pill-ok">Quase pronto</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--orange);font-weight:600;">Docs Pendentes</span></td>
+            <td>Clientes (pos-venda)</td>
+            <td>Cliente + procs</td>
+            <td>~30/dia</td>
+            <td style="color:var(--text-dim);">A definir</td>
+            <td><span class="pill pill-pend">A construir</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--purple);font-weight:600;">Acordos CP</span></td>
+            <td>Advogados adversos</td>
+            <td>Processo</td>
+            <td>~10/dia</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">+5551814749234</td>
+            <td><span class="pill pill-ok">Cred. OK</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--info);font-weight:600;">Acordos HM</span></td>
+            <td>Advogados adversos</td>
+            <td>Processo</td>
+            <td>~10/dia</td>
+            <td style="color:var(--text-dim);">Pendente</td>
+            <td><span class="pill pill-info">Futuro</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S4: PERMISSOES -->
+  <div class="section" id="permissoes">
+    <div class="section-header">
+      <span class="section-icon">🔐</span>
+      <h2>04. Permissoes por Perfil</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Perfil</th><th>Julia Leads</th><th>Docs Pendentes</th><th>Acordos CP/HM</th><th>Dashboard</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>comercial</strong></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td><span class="pill pill-err">Bloqueado</span></td>
+            <td><span class="pill pill-err">Bloqueado</span></td>
+            <td>Apenas Leads</td>
+          </tr>
+          <tr>
+            <td><strong>juridico</strong></td>
+            <td><span class="pill pill-info">Leitura</span></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td>Docs + Acordos</td>
+          </tr>
+          <tr>
+            <td><strong>admin</strong></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td>Tudo</td>
+          </tr>
+          <tr>
+            <td><strong>gestor</strong></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td><span class="pill pill-ok">Total</span></td>
+            <td>Tudo + KPIs equipe</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-yellow" style="margin-top:12px;">
+      <strong>Estado atual:</strong> Permissoes NAO implementadas. Qualquer usuario ve todos os agentes. P0 para multi-agente.
+    </div>
+  </div>
+
+  <!-- S5: DECISOES CTO -->
+  <div class="section" id="decisoes">
+    <div class="section-header">
+      <span class="section-icon">⚖️</span>
+      <h2>05. Decisoes CTO</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card" style="border-left:3px solid var(--primary);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-ok">RESOLVIDA</span>
+          <strong>DEC-01</strong>
+        </div>
+        <p style="font-size:0.82rem;">Slugs separados: <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">sdr_acordos_cp</code> + <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">sdr_acordos_hm</code>. Nunca um slug generico.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--primary);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-ok">RESOLVIDA</span>
+          <strong>DEC-02</strong>
+        </div>
+        <p style="font-size:0.82rem;">1 numero WhatsApp por advogado. Cada advogado tem seu proprio numero Meta Business.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--primary);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-ok">RESOLVIDA</span>
+          <strong>DEC-03</strong>
+        </div>
+        <p style="font-size:0.82rem;">Vinculo conversa-agente via campo <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">agente_slug</code> na tabela whatsapp_conversas.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--primary);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-ok">RESOLVIDA</span>
+          <strong>DEC-05</strong>
+        </div>
+        <p style="font-size:0.82rem;">Sem OAB no frontend. Advogados adversos nao veem OAB do escritorio na interface.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--yellow);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-warn">EM ESTUDO</span>
+          <strong>DEC-04</strong>
+        </div>
+        <p style="font-size:0.82rem;">Campos do painel de acordos. Quais dados do processo/acordo mostrar no lado direito do chat. Ainda em definicao.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--red);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-err">BLOQUEANTE</span>
+          <strong>ARQ-01</strong>
+        </div>
+        <p style="font-size:0.82rem;">Rotas vs abas vs hibrido? CC recomenda opcao C (hibrida). <strong>Define TUDO</strong> — frontend, sidebar, routing, permissoes.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--red);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-err">BLOQUEANTE</span>
+          <strong>ARQ-02</strong>
+        </div>
+        <p style="font-size:0.82rem;">1 conversa por processo vs por escritorio? CTO pende opcao A (por processo). Impacta schema e UX do agente de acordos.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: ZERO NUMEROS -->
+  <div class="section" id="zero-numeros">
+    <div class="section-header">
+      <span class="section-icon">🚨</span>
+      <h2>06. ALERTA: 0 Numeros WhatsApp Ativos</h2>
+    </div>
+    <div class="callout callout-red">
+      <strong>CRITICO: MdZap esta DESCONECTADO</strong>
+      O unico numero existente na tabela whatsapp_numeros foi soft-deleted (deleted_at IS NOT NULL). Resultado: zero numeros ativos. Nenhuma mensagem pode ser enviada ou recebida. O modulo inteiro esta offline.
+    </div>
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <thead>
+          <tr><th>Tabela</th><th>Registros</th><th>Registros unicos</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>whatsapp_mensagens</td><td>197</td><td>~70 unicos</td><td><span class="pill pill-ok">Dados historicos</span></td></tr>
+          <tr><td>message_queue</td><td>24</td><td>48 tentativas</td><td><span class="pill pill-warn">Filas paradas</span></td></tr>
+          <tr><td>whatsapp_conversas</td><td>9</td><td>9</td><td><span class="pill pill-ok">OK</span></td></tr>
+          <tr><td>julia_prompts</td><td>5</td><td>6 versoes</td><td><span class="pill pill-ok">OK</span></td></tr>
+          <tr><td style="color:var(--red);font-weight:600;">whatsapp_numeros</td><td style="color:var(--red);font-weight:600;">0 ativos</td><td>1 (deleted)</td><td><span class="pill pill-err">MORTO</span></td></tr>
+          <tr><td>whatsapp_templates</td><td>0</td><td>0</td><td><span class="pill pill-err">Vazio</span></td></tr>
+          <tr><td>whatsapp_contatos</td><td>0</td><td>0</td><td><span class="pill pill-err">Vazio</span></td></tr>
+          <tr><td>whatsapp_followups</td><td>0</td><td>0</td><td><span class="pill pill-err">Vazio</span></td></tr>
+          <tr><td>audio_messages</td><td>0</td><td>0</td><td><span class="pill pill-err">Vazio</span></td></tr>
+          <tr><td>lead_memory</td><td>0</td><td>0</td><td><span class="pill pill-err">Vazio</span></td></tr>
+          <tr><td>stage_map</td><td>0</td><td>0</td><td><span class="pill pill-err">Vazio</span></td></tr>
+          <tr><td>user_map</td><td>0</td><td>0</td><td><span class="pill pill-err">Vazio</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S7: SCHEMA DRIFT -->
+  <div class="section" id="schema-drift">
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <h2>07. Schema Drift — TypeScript vs Database</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Campo</th><th>Prioridade</th><th>TS (types.ts)</th><th>DB (Supabase)</th><th>Impacto</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">agente_slug</td>
+            <td><span class="pill pill-err">P0</span></td>
+            <td>Nao existe no tipo</td>
+            <td>TEXT CHECK na tabela</td>
+            <td>Frontend ignora agente — tudo misturado</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">mensagem?</td>
+            <td><span class="pill pill-warn">P1</span></td>
+            <td>Campo opcional no tipo</td>
+            <td>NAO EXISTE na tabela</td>
+            <td>Leitura silenciosa de undefined — bug fantasma</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">metadata</td>
+            <td><span class="pill pill-warn">P1</span></td>
+            <td>Tipado como any</td>
+            <td>JSONB em conversas E mensagens</td>
+            <td>Duplicacao — qual e o source of truth?</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">deleted_at</td>
+            <td><span class="pill pill-info">P2</span></td>
+            <td>Nao tipado</td>
+            <td>TIMESTAMPTZ nullable</td>
+            <td>Queries sem .is('deleted_at', null)</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">updated_at</td>
+            <td><span class="pill pill-info">P2</span></td>
+            <td>Nao tipado</td>
+            <td>TIMESTAMPTZ com trigger</td>
+            <td>Sem optimistic updates corretos</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">api_key_id</td>
+            <td><span class="pill pill-info">P2</span></td>
+            <td>Nao tipado</td>
+            <td>UUID nullable em numeros</td>
+            <td>Gerenciamento de API keys invisivel</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">enviado_por</td>
+            <td><span class="pill pill-info">P2</span></td>
+            <td>Nao tipado</td>
+            <td>UUID nullable em mensagens</td>
+            <td>Sem atribuicao de quem enviou manualmente</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S8: RPCs -->
+  <div class="section" id="rpcs">
+    <div class="section-header">
+      <span class="section-icon">🔧</span>
+      <h2>08. RPCs Audit (5 funcoes)</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">fn_mdzap_conversas</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <span class="pill pill-ok">SECURITY DEFINER</span>
+          <span class="pill pill-ok">Paginacao</span>
+          <span class="pill pill-ok">Busca unaccent</span>
+        </div>
+        <div class="callout callout-red" style="margin:8px 0;padding:10px 14px;">
+          <strong>P0:</strong> Falta parametro p_agente_slug — retorna TODAS as conversas misturadas de todos agentes.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">fn_mdzap_stats</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+          <span class="pill pill-err">P0 HARDCODED</span>
+          <span class="pill pill-warn">P1 sem agente</span>
+          <span class="pill pill-warn">P1 ignora deleted</span>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-muted);">tempo_medio e taxa_handoff retornam LITERALMENTE 0. Hardcoded na funcao. Dashboard exibe dados falsos.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">fn_mdzap_smart_replies</div>
+        <span class="pill pill-ok">OK</span>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Funciona corretamente. Gera sugestoes de resposta rapida baseadas no contexto da conversa.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">fn_mdzap_listar_membros</div>
+        <span class="pill pill-ok">OK</span>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Lista membros da organizacao para atribuicao de conversas. Funciona.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">fn_link_conversa_to_lead + Edge Function mdzap-webhook</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <span class="pill pill-ok">fn_link OK</span>
+        <span class="pill pill-warn">Edge 525 linhas</span>
+        <span class="pill pill-ok">Nota 7.0/10</span>
+      </div>
+      <p style="font-size:0.78rem;color:var(--text-muted);">A edge function mdzap-webhook tem 525 linhas. Recebe webhooks da Meta, valida, persiste mensagens, e despacha para n8n. Funcional mas monolitica.</p>
+    </div>
+  </div>
+
+  <!-- S9: RLS -->
+  <div class="section" id="rls">
+    <div class="section-header">
+      <span class="section-icon">🛡️</span>
+      <h2>09. RLS & Seguranca</h2>
+    </div>
+    <div class="callout callout-green" style="margin-bottom:16px;">
+      <strong>Solido:</strong> Todas tabelas core tem RLS habilitado + policy usando get_org_id(). Isolamento multi-tenant funciona.
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Tabela</th><th>RLS</th><th>SELECT</th><th>INSERT</th><th>UPDATE</th><th>DELETE</th><th>Issue</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>whatsapp_conversas</td><td><span class="pill pill-ok">ON</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-warn">Sem WITH CHECK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-warn">P1</span></td></tr>
+          <tr><td>whatsapp_mensagens</td><td><span class="pill pill-ok">ON</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-warn">Sem WITH CHECK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-warn">P1</span></td></tr>
+          <tr><td>whatsapp_numeros</td><td><span class="pill pill-ok">ON</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-warn">Sem WITH CHECK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-warn">P1</span></td></tr>
+          <tr><td>whatsapp_templates</td><td><span class="pill pill-ok">ON</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td>-</td></tr>
+          <tr><td>whatsapp_contatos</td><td><span class="pill pill-ok">ON</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td>-</td></tr>
+          <tr><td>julia_prompts</td><td><span class="pill pill-ok">ON</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td>-</td></tr>
+          <tr><td>message_queue</td><td><span class="pill pill-ok">ON</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td><span class="pill pill-ok">OK</span></td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S10: 22 TABELAS -->
+  <div class="section" id="tabelas">
+    <div class="section-header">
+      <span class="section-icon">🗄️</span>
+      <h2>10. 22 Tabelas MdZap</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Tabela</th><th>Registros</th><th>Soft Delete</th><th>RLS</th><th>updated_at</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>whatsapp_conversas</td><td>9</td><td>deleted_at</td><td><span class="pill pill-ok">OK</span></td><td>trigger</td><td><span class="pill pill-ok">Funcional</span></td></tr>
+          <tr><td>whatsapp_mensagens</td><td>197</td><td>deleted_at</td><td><span class="pill pill-ok">OK</span></td><td>trigger</td><td><span class="pill pill-ok">Funcional</span></td></tr>
+          <tr><td>whatsapp_numeros</td><td style="color:var(--red);font-weight:600;">0 ativos</td><td>deleted_at</td><td><span class="pill pill-ok">OK</span></td><td>trigger</td><td><span class="pill pill-err">MORTO</span></td></tr>
+          <tr><td>whatsapp_templates</td><td>0</td><td>deleted_at</td><td><span class="pill pill-ok">OK</span></td><td>trigger</td><td><span class="pill pill-warn">Vazio</span></td></tr>
+          <tr><td>whatsapp_contatos</td><td>0</td><td>deleted_at</td><td><span class="pill pill-ok">OK</span></td><td>trigger</td><td><span class="pill pill-warn">Vazio</span></td></tr>
+          <tr><td>whatsapp_followups</td><td>0</td><td>deleted_at</td><td><span class="pill pill-ok">OK</span></td><td>trigger</td><td><span class="pill pill-warn">Vazio</span></td></tr>
+          <tr><td>whatsapp_msg_feedback</td><td>?</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-info">Sem dados</span></td></tr>
+          <tr><td>whatsapp_notas_internas</td><td>?</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-info">Sem dados</span></td></tr>
+          <tr><td>whatsapp_numeros_usuarios</td><td>?</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-info">Sem dados</span></td></tr>
+          <tr><td>whatsapp_numeros_autorizados</td><td>?</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-info">Sem dados</span></td></tr>
+          <tr><td>mdzap_ai_modules</td><td>3</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-ok">Funcional</span></td></tr>
+          <tr><td>lead_memory</td><td>0</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-warn">Vazio</span></td></tr>
+          <tr><td>icp_analises</td><td>3</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-ok">Funcional</span></td></tr>
+          <tr><td>julia_prompts</td><td>5</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-ok">Funcional</span></td></tr>
+          <tr><td>julia_lab_sessoes</td><td>?</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-info">Sem dados</span></td></tr>
+          <tr><td>conversas_timeline</td><td>15</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-ok">Funcional</span></td></tr>
+          <tr><td>audio_messages</td><td>0</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-warn">Vazio</span></td></tr>
+          <tr><td>stage_map</td><td>0</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-warn">Vazio</span></td></tr>
+          <tr><td>user_map</td><td>0</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-warn">Vazio</span></td></tr>
+          <tr><td>message_queue</td><td>24</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-warn">Filas paradas</span></td></tr>
+          <tr><td>webhook_requests (mdzap)</td><td>~200+</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-ok">Logging</span></td></tr>
+          <tr><td>mdzap_zapsign_docs</td><td>0</td><td>-</td><td><span class="pill pill-ok">OK</span></td><td>-</td><td><span class="pill pill-warn">Vazio</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S11: CONSTRAINTS -->
+  <div class="section" id="constraints">
+    <div class="section-header">
+      <span class="section-icon">🔗</span>
+      <h2>11. Constraints & Indices</h2>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">TEXT CHECK (Zero ENUM Nativo)</div>
+      <div class="code">-- whatsapp_numeros
+proposito TEXT CHECK (proposito IN ('leads','atendimento','notificacao','acordos'))
+status TEXT CHECK (status IN ('conectado','desconectado','pendente','erro'))
+
+-- whatsapp_conversas
+status TEXT CHECK (status IN ('aberta','fechada','arquivada','pendente','handoff'))
+
+-- whatsapp_mensagens
+direcao TEXT CHECK (direcao IN ('inbound','outbound'))
+tipo TEXT CHECK (tipo IN ('text','image','audio','video','document','template','interactive','location','sticker','reaction'))
+status TEXT CHECK (status IN ('pending','sent','delivered','read','failed'))
+remetente_tipo TEXT CHECK (remetente_tipo IN ('lead','atendente','bot','sistema'))</div>
+    </div>
+    <div class="card">
+      <div class="card-title">21 Indices (distribuicao)</div>
+      <div class="grid g3" style="margin-top:8px;">
+        <div>
+          <strong style="font-size:0.8rem;">whatsapp_conversas (8)</strong>
+          <ul style="font-size:0.75rem;color:var(--text-muted);padding-left:16px;margin-top:4px;">
+            <li>organizacao_id WHERE deleted_at IS NULL</li>
+            <li>numero_id</li>
+            <li>lead_id</li>
+            <li>cliente_id</li>
+            <li>status</li>
+            <li>atribuido_para</li>
+            <li>agente_slug</li>
+            <li>created_at DESC</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:0.8rem;">whatsapp_mensagens (7)</strong>
+          <ul style="font-size:0.75rem;color:var(--text-muted);padding-left:16px;margin-top:4px;">
+            <li>conversa_id, created_at DESC</li>
+            <li>organizacao_id WHERE deleted_at IS NULL</li>
+            <li>wamid (UNIQUE)</li>
+            <li>direcao</li>
+            <li>tipo</li>
+            <li>status</li>
+            <li>remetente_tipo</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:0.8rem;">whatsapp_numeros (5)</strong>
+          <ul style="font-size:0.75rem;color:var(--text-muted);padding-left:16px;margin-top:4px;">
+            <li>organizacao_id WHERE deleted_at IS NULL</li>
+            <li>phone_number_id (UNIQUE)</li>
+            <li>proposito</li>
+            <li>status</li>
+            <li style="color:var(--red);">FALTANDO: agente_slug (P2)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S12: COMPONENTES -->
+  <div class="section" id="componentes">
+    <div class="section-header">
+      <span class="section-icon">🧩</span>
+      <h2>12. Frontend: 72+ Componentes</h2>
+    </div>
+    <div class="card-title" style="margin-bottom:12px;">TOP 10 POR LINHAS DE CODIGO</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Componente</th><th>Linhas</th><th>Issues</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">MdzapJuliaLab</td><td>497</td><td><span class="pill pill-warn">Proximo do limite 500L</span></td></tr>
+          <tr><td>2</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">MsgBubble</td><td>494</td><td><span class="pill pill-warn">Proximo do limite 500L</span></td></tr>
+          <tr><td>3</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">MsgThread</td><td>479</td><td><span class="pill pill-err">P1 quase estoura</span></td></tr>
+          <tr><td>4</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">ConversaList</td><td>410</td><td><span class="pill pill-warn">Lenta com 100+ itens</span></td></tr>
+          <tr><td>5</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">useLeadPanelActions</td><td>404</td><td><span class="pill pill-err">8 bugs conhecidos</span></td></tr>
+          <tr><td>6</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">Dashboard</td><td>399</td><td><span class="pill pill-warn">Stats globais (sem agente)</span></td></tr>
+          <tr><td>7</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">TemplatesManager</td><td>328</td><td><span class="pill pill-ok">OK</span></td></tr>
+          <tr><td>8</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">LeadDocumentosTab</td><td>301</td><td><span class="pill pill-warn">Reimplementado (nao reusa CRM)</span></td></tr>
+          <tr><td>9</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">SwipeableCard</td><td>290</td><td><span class="pill pill-ok">OK</span></td></tr>
+          <tr><td>10</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">SendMessage</td><td>284</td><td><span class="pill pill-warn">primaryNumero global</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid g3" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-title">lead-panel/ (8 sub)</div>
+        <ul style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+          <li>LeadInfoTab</li>
+          <li>LeadDocumentosTab</li>
+          <li>LeadRestricaoTab</li>
+          <li>LeadHistoricoTab</li>
+          <li>LeadNotasTab</li>
+          <li>LeadMemoriaTab</li>
+          <li>LeadAuditoriaPanel</li>
+          <li>LeadICPPanel</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">gestao-panel/ (4 sub)</div>
+        <ul style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+          <li>GestaoConversas</li>
+          <li>GestaoEquipe</li>
+          <li>GestaoTemplates</li>
+          <li>GestaoConfig</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Utilitarios (15+)</div>
+        <ul style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+          <li>ConnectionIndicator</li>
+          <li>SdrModeToggle</li>
+          <li>SearchBar</li>
+          <li>SmartReplies</li>
+          <li>QuickActions</li>
+          <li>AudioPlayer</li>
+          <li>MediaViewer</li>
+          <li>EmojiPicker</li>
+          <li>TypingIndicator</li>
+          <li>ReadReceipts</li>
+          <li>+5 mais</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- S13: HOOKS -->
+  <div class="section" id="hooks">
+    <div class="section-header">
+      <span class="section-icon">🪝</span>
+      <h2>13. Hooks Audit (16 hooks)</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Hook</th><th>staleTime</th><th>Realtime</th><th>Cleanup</th><th>Issues</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapConversas</td>
+            <td>30s</td>
+            <td><span class="pill pill-ok">3 channels</span></td>
+            <td><span class="pill pill-ok">removeChannel</span></td>
+            <td>Sem filtro agente_slug</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapMensagens</td>
+            <td>30s</td>
+            <td><span class="pill pill-ok">1 channel</span></td>
+            <td><span class="pill pill-ok">removeChannel</span></td>
+            <td>OK</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapStatus</td>
+            <td>60s</td>
+            <td>-</td>
+            <td>-</td>
+            <td><span class="pill pill-err">P0 primaryNumero global</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapSendMessage</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td><span class="pill pill-err">P0 primaryNumero global</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapStats</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td><span class="pill pill-err">P0 stats falsas (hardcoded 0)</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapNumeros</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Retorna array vazio (0 ativos)</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapTemplates</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>OK (tabela vazia)</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapSmartReplies</td>
+            <td>15s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>OK</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapTimeline</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>OK</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapHandoff</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Webhook nao existe no n8n</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapJuliaLab</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>julia-lab-refine quebrado</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapFollowups</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Tabela vazia</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapAudioMessages</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Tabela vazia</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useLeadPanelData</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>OK</td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useLeadPanelActions</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td><span class="pill pill-err">8 bugs conhecidos</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">useMdzapMemory</td>
+            <td>30s</td>
+            <td>-</td>
+            <td>-</td>
+            <td>lead_memory vazio</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S14: DUPLICACOES -->
+  <div class="section" id="duplicacoes">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <h2>14. Duplicacoes Identificadas</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card" style="border-left:3px solid var(--red);">
+        <div class="card-title">DUP-01</div>
+        <p style="font-size:0.82rem;"><strong>MdzapAppPage</strong> (278L) vs <strong>MdzapChatPanel</strong> (258L)</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Mesma logica de layout 3-colunas, sidebar conversas, chat central, painel direito. Diferem apenas no wrapper e em qual componente esta em cima.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--orange);">
+        <div class="card-title">DUP-02</div>
+        <p style="font-size:0.82rem;"><strong>SdrMode filter</strong> duplicado</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Filtragem client-side de conversas por sdrMode em 2 lugares diferentes. Deveria ser parametro da RPC.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--yellow);">
+        <div class="card-title">DUP-03</div>
+        <p style="font-size:0.82rem;"><strong>Dashboard</strong> dados parciais</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Carrega max 30 conversas para calcular stats client-side. Com 100+ conversas, estatisticas serao incorretas. Deveria usar RPC server-side.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S15: REUSO CRM -->
+  <div class="section" id="reuso-crm">
+    <div class="section-header">
+      <span class="section-icon">♻️</span>
+      <h2>15. Reuso de Componentes CRM</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>Reusa CRM?</th><th>Componente</th><th>Linhas</th><th>Observacao</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Restricoes (Auditoria)</td>
+            <td><span class="pill pill-ok">SIM</span></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">CrmAuditoriaPanel</td>
+            <td>wrapper</td>
+            <td>Reutiliza painel completo do CRM</td>
+          </tr>
+          <tr>
+            <td>Notas Internas</td>
+            <td><span class="pill pill-ok">SIM</span></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">NotasInternasList</td>
+            <td>~20</td>
+            <td>Wrapper fino, componente compartilhado</td>
+          </tr>
+          <tr>
+            <td>Memoria IA</td>
+            <td><span class="pill pill-ok">SIM</span></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">LeadMemoriaTab</td>
+            <td>~10</td>
+            <td>Wrapper, dados da tabela lead_memory</td>
+          </tr>
+          <tr>
+            <td>Documentos</td>
+            <td><span class="pill pill-err">NAO</span></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">LeadDocumentosTab</td>
+            <td>301</td>
+            <td>Reimplementado do zero. Deveria reusar CRM docs</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-red" style="margin-top:12px;">
+      <strong>P0 Bureau Mismatch:</strong> MdZap usa bureau <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">'boavista'</code> mas CRM usa <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">'apifull_115'</code>. Auditoria roda com bureau errado no contexto MdZap.
+    </div>
+  </div>
+
+  <!-- S16: N8N WORKFLOWS -->
+  <div class="section" id="n8n">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <h2>16. n8n: 38 Workflows</h2>
+    </div>
+
+    <div class="grid g4" style="margin-bottom:20px;">
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--primary);">38</div>
+        <div class="stat-label">Total Workflows</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--primary);">17</div>
+        <div class="stat-label">Ativos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--red);">21</div>
+        <div class="stat-label">Inativos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value red" style="font-size:1.6rem;">3/10</div>
+        <div class="stat-label">Nota n8n</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Funcionais (5)</div>
+      <div class="table-wrap" style="border:none;border-radius:0;">
+        <table>
+          <thead><tr><th>Workflow</th><th>Funcional</th><th>Nota</th></tr></thead>
+          <tbody>
+            <tr><td>enviar-mensagem</td><td><span class="pill pill-ok">100%</span></td><td>Envia msgs via Meta API. Core pipeline.</td></tr>
+            <tr><td>inbound (mdzap-webhook)</td><td><span class="pill pill-ok">100%</span></td><td>Recebe msgs via edge function. Core pipeline.</td></tr>
+            <tr><td>ai-composer</td><td><span class="pill pill-warn">70%</span></td><td>Julia gera respostas. Funciona mas sem agente_slug.</td></tr>
+            <tr><td>prompt-save</td><td><span class="pill pill-warn">33%</span></td><td>Salva prompts Julia. Parcialmente funcional.</td></tr>
+            <tr><td>lab-refine</td><td><span class="pill pill-err">0%</span></td><td>Quebrado. Frontend chama mas n8n retorna erro.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Mortos (11)</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="pill pill-err">lead-sync</span>
+        <span class="pill pill-err">encerrar</span>
+        <span class="pill pill-err">transferir</span>
+        <span class="pill pill-err">template</span>
+        <span class="pill pill-err">stage-changed</span>
+        <span class="pill pill-err">document-received</span>
+        <span class="pill pill-err">julia-lab v1</span>
+        <span class="pill pill-err">triagem</span>
+        <span class="pill pill-err">test-webhook-1</span>
+        <span class="pill pill-err">test-webhook-2</span>
+        <span class="pill pill-err">test-webhook-3</span>
+      </div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Workflows criados durante prototipagem que nunca foram finalizados ou foram substituidos. Devem ser desativados/removidos.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Stubs Vazios (4)</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="pill pill-pend">enviar-audio</span>
+        <span class="pill pill-pend">bulk-docs</span>
+        <span class="pill pill-pend">bulk-negs</span>
+        <span class="pill pill-pend">enviar-template</span>
+      </div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Workflows com trigger configurado mas sem logica interna. Placeholder para features futuras.</p>
+    </div>
+  </div>
+
+  <!-- S17: WEBHOOKS GAP -->
+  <div class="section" id="webhooks">
+    <div class="section-header">
+      <span class="section-icon">🔌</span>
+      <h2>17. 21 Webhooks Gap Analysis</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Webhook Path</th><th>Frontend chama?</th><th>n8n existe?</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/enviar-mensagem</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-ok">OK</span></td></tr>
+          <tr><td>2</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/ai-composer</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-ok">OK</span></td></tr>
+          <tr><td>3</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/prompt-save</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-warn">Parcial</span></td><td><span class="pill pill-warn">P1</span></td></tr>
+          <tr><td>4</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/lab-refine</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">Quebrado</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>5</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/assumir-conversa</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">NAO EXISTE</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>6</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/devolver-julia</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">Conflito</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>7</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/doc-reader</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">NAO EXISTE</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>8</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/memoria</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">NAO EXISTE</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>9</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/encerrar-conversa</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">Morto</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>10</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/transferir</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">Morto</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>11</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/enviar-template</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-pend">Stub</span></td><td><span class="pill pill-warn">P1</span></td></tr>
+          <tr><td>12</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/lead-sync</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">Morto</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>13</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/stage-changed</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">Morto</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>14</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/document-received</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">Morto</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>15</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/enviar-audio</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-pend">Stub</span></td><td><span class="pill pill-warn">P1</span></td></tr>
+          <tr><td>16</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/bulk-docs</td><td><span class="pill pill-info">Nao</span></td><td><span class="pill pill-pend">Stub</span></td><td><span class="pill pill-info">Futuro</span></td></tr>
+          <tr><td>17</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/bulk-negs</td><td><span class="pill pill-info">Nao</span></td><td><span class="pill pill-pend">Stub</span></td><td><span class="pill pill-info">Futuro</span></td></tr>
+          <tr><td>18</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/followup-create</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">NAO EXISTE</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>19</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/followup-cancel</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">NAO EXISTE</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>20</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/icp-analyze</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">NAO EXISTE</span></td><td><span class="pill pill-err">P0</span></td></tr>
+          <tr><td>21</td><td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/zapsign-create</td><td><span class="pill pill-ok">Sim</span></td><td><span class="pill pill-err">NAO EXISTE</span></td><td><span class="pill pill-err">P0</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
+      <span class="chip chip-red">12 P0 (nao existe ou morto)</span>
+      <span class="chip chip-yellow">3 P1 (stub/parcial)</span>
+      <span class="chip chip-primary">2 OK</span>
+      <span class="chip chip-info">2 Futuro</span>
+    </div>
+  </div>
+
+  <!-- S18: FLUXO 9 STEPS -->
+  <div class="section" id="steps">
+    <div class="section-header">
+      <span class="section-icon">🔄</span>
+      <h2>18. Fluxo 9 Steps — Julia Leads</h2>
+    </div>
+    <div class="card">
+      <div class="steps-flow">
+        <div class="step-item"><div class="step-num">1</div><div class="step-label">Lead Entra</div></div>
+        <span class="step-arrow">→</span>
+        <div class="step-item"><div class="step-num">2</div><div class="step-label">CPF</div></div>
+        <span class="step-arrow">→</span>
+        <div class="step-item"><div class="step-num">3</div><div class="step-label">Auditoria</div></div>
+        <span class="step-arrow">→</span>
+        <div class="step-item"><div class="step-num">4</div><div class="step-label">Viabilidade</div></div>
+        <span class="step-arrow">→</span>
+        <div class="step-item"><div class="step-num">5</div><div class="step-label">2 Docs</div></div>
+        <span class="step-arrow">→</span>
+        <div class="step-item"><div class="step-num">6</div><div class="step-label">Doc Reader</div></div>
+        <span class="step-arrow">→</span>
+        <div class="step-item"><div class="step-num">7</div><div class="step-label">CTPS</div></div>
+        <span class="step-arrow">→</span>
+        <div class="step-item"><div class="step-num">8</div><div class="step-label">Procuracao</div></div>
+        <span class="step-arrow">→</span>
+        <div class="step-item"><div class="step-num">9</div><div class="step-label">Assinatura</div></div>
+      </div>
+      <div class="grid g3" style="margin-top:20px;">
+        <div style="padding:12px;background:var(--surface);border-radius:8px;">
+          <strong style="font-size:0.8rem;">Step 1-2: Captacao</strong>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Lead recebe primeira msg. Julia coleta CPF, valida formato, busca na base.</p>
+        </div>
+        <div style="padding:12px;background:var(--surface);border-radius:8px;">
+          <strong style="font-size:0.8rem;">Step 3-4: Qualificacao</strong>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Roda auditoria Boa Vista, analisa restricoes, verifica viabilidade juridica. ICP score.</p>
+        </div>
+        <div style="padding:12px;background:var(--surface);border-radius:8px;">
+          <strong style="font-size:0.8rem;">Step 5-6: Documentacao</strong>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Solicita RG/CNH + comprovante. Doc Reader extrai dados automaticamente.</p>
+        </div>
+        <div style="padding:12px;background:var(--surface);border-radius:8px;">
+          <strong style="font-size:0.8rem;">Step 7: CTPS</strong>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Coleta carteira de trabalho quando necessario (casos emprego). Opcional.</p>
+        </div>
+        <div style="padding:12px;background:var(--surface);border-radius:8px;">
+          <strong style="font-size:0.8rem;">Step 8: Procuracao</strong>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Gera procuracao via template. Prepara para assinatura digital.</p>
+        </div>
+        <div style="padding:12px;background:var(--surface);border-radius:8px;">
+          <strong style="font-size:0.8rem;">Step 9: Assinatura</strong>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Envia via ZapSign para assinatura digital. Lead vira Cliente. Fim do funil SDR.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S19: DOC READER GAP -->
+  <div class="section" id="doc-reader">
+    <div class="section-header">
+      <span class="section-icon">📄</span>
+      <h2>19. Doc Reader — Gap Critico</h2>
+    </div>
+    <div class="callout callout-red" style="margin-bottom:16px;">
+      <strong>Pipeline 100% quebrado. Todas as 3 etapas sao P0.</strong>
+    </div>
+    <div class="grid g3">
+      <div class="card" style="border-top:3px solid var(--red);">
+        <div class="card-title">Etapa 1: Validar</div>
+        <span class="pill pill-err">P0</span>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Frontend envia imagem para <code style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">/mdzap/doc-reader</code>. Webhook NAO EXISTE no n8n. Retorna erro 404.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--red);">
+        <div class="card-title">Etapa 2: Extrair</div>
+        <span class="pill pill-err">P0</span>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Doc Reader deveria extrair nome, CPF, data nascimento, endereco da imagem via OCR/IA. Logica nao implementada.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--red);">
+        <div class="card-title">Etapa 3: Salvar</div>
+        <span class="pill pill-err">P0</span>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Resultado escreve em <code style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">mensagens.metadata.doc_reader_result</code> mas NUNCA propaga para <code style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;">conversas.metadata.pending_lead_data</code>.</p>
+      </div>
+    </div>
+    <div class="callout callout-yellow" style="margin-top:12px;">
+      <strong>Evidencia:</strong> <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;">pending_lead_data</code> = 0 registros em producao. A pipeline nunca funcionou end-to-end.
+    </div>
+  </div>
+
+  <!-- S20: REGRAS JULIA -->
+  <div class="section" id="regras-julia">
+    <div class="section-header">
+      <span class="section-icon">📏</span>
+      <h2>20. Regras Julia (SDR IA)</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">NUNCA (inviolavel)</div>
+        <ul style="font-size:0.82rem;padding-left:16px;">
+          <li style="color:var(--red);margin-bottom:6px;">NUNCA citar nome do escritorio ou dos advogados</li>
+          <li style="color:var(--red);margin-bottom:6px;">NUNCA dar garantia de resultado</li>
+          <li style="color:var(--red);margin-bottom:6px;">NUNCA mascarar CPF nas mensagens</li>
+          <li style="color:var(--red);margin-bottom:6px;">NUNCA usar modelo que nao seja Claude Sonnet</li>
+          <li style="color:var(--red);margin-bottom:6px;">NUNCA usar "JG" — sempre "AJG" (Assistencia Judiciaria Gratuita)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">SEMPRE</div>
+        <ul style="font-size:0.82rem;padding-left:16px;">
+          <li style="color:var(--primary);margin-bottom:6px;">SEMPRE usar Claude Sonnet como modelo</li>
+          <li style="color:var(--primary);margin-bottom:6px;">SEMPRE tom profissional mas acessivel</li>
+          <li style="color:var(--primary);margin-bottom:6px;">SEMPRE follow-up persistente (nao desistir)</li>
+          <li style="color:var(--primary);margin-bottom:6px;">SEMPRE explicar processo sem juridiques</li>
+          <li style="color:var(--primary);margin-bottom:6px;">SEMPRE registrar interacao na timeline</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout callout-info" style="margin-top:12px;">
+      <strong>Responsavel pelo prompt:</strong> Christian (CTO). Matheus saiu em abril/2026. Toda alteracao no prompt da Julia passa pelo CTO.
+    </div>
+  </div>
+
+  <!-- S21: BREAKS -->
+  <div class="section" id="breaks">
+    <div class="section-header">
+      <span class="section-icon">💥</span>
+      <h2>21. 7 Erros Futuros Previstos (BREAKs)</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card" style="border-left:3px solid var(--red);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-err">BREAK-01 P0</span>
+        </div>
+        <strong style="font-size:0.85rem;">primaryNumero global</strong>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">Quando ativar 2+ numeros, mensagens vao cruzar entre agentes. useMdzapSendMessage e useMdzapStatus usam primaryNumero (primeiro da lista). Msgs do agente de Acordos podem ir pelo numero de Leads.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--red);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-err">BREAK-02 P0</span>
+        </div>
+        <strong style="font-size:0.85rem;">Dashboard stats misturadas</strong>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">fn_mdzap_stats nao filtra por agente_slug. Dashboard vai mostrar conversas de Leads + Acordos + Docs juntas. Metricas completamente erradas.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--orange);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-warn">BREAK-03 P1</span>
+        </div>
+        <strong style="font-size:0.85rem;">MsgThread 479L estoura 500</strong>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">Regra MdFlow: .tsx max 500 linhas. MsgThread esta em 479. Qualquer feature nova vai estourar. Precisa split urgente.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--orange);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-warn">BREAK-04 P1</span>
+        </div>
+        <strong style="font-size:0.85rem;">ConversaList lenta com 100+</strong>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">Lista de conversas renderiza tudo client-side. Sem virtualizacao. Com 100+ conversas por agente, vai travar em mobile.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--orange);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-warn">BREAK-05 P1</span>
+        </div>
+        <strong style="font-size:0.85rem;">Realtime channel sem orgId</strong>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">Channels realtime nao filtram por organizacao_id no subscribe. Multi-tenant leak potencial (mitigado por RLS, mas gera trafego desnecessario).</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--yellow);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-info">BREAK-06 P2</span>
+        </div>
+        <strong style="font-size:0.85rem;">Campo fantasma mensagem?</strong>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">types.ts tem campo "mensagem?" que nao existe no DB. Qualquer codigo que leia esse campo recebe undefined silenciosamente.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--yellow);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill pill-info">BREAK-07 P2</span>
+        </div>
+        <strong style="font-size:0.85rem;">fn_mdzap_stats ignora deleted_at</strong>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">Stats contam conversas soft-deleted. Numeros inflados. Nao e critico agora (poucas conversas) mas vai distorcer metricas com volume.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S22: PENDENCIAS -->
+  <div class="section" id="pendencias">
+    <div class="section-header">
+      <span class="section-icon">📝</span>
+      <h2>22. 53+ Pendencias por Fase</h2>
+    </div>
+
+    <div class="grid g4" style="margin-bottom:20px;">
+      <div class="stat-card">
+        <div class="stat-value red">23</div>
+        <div class="stat-label">P0 Criticas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value orange">18</div>
+        <div class="stat-label">P1 Importantes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value yellow">12</div>
+        <div class="stat-label">P2 Melhorias</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--primary);">53+</div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+
+    <div class="grid g3">
+      <div class="card">
+        <div class="card-title">Fase 1 — Estabilizacao</div>
+        <div style="display:flex;gap:4px;margin-bottom:8px;">
+          <span class="pill pill-err">5 P0</span>
+          <span class="pill pill-warn">2 P1</span>
+        </div>
+        <ul style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+          <li>Sync types.ts com DB</li>
+          <li>Cadastrar numero ativo</li>
+          <li>Fix fn_mdzap_stats</li>
+          <li>Fix build errors olivia/*</li>
+          <li>Desligar 11 workflows mortos</li>
+          <li>Fix realtime cleanup</li>
+          <li>Fix ProcessoSelectorV3</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Fase 2 — Multi-Agente</div>
+        <div style="display:flex;gap:4px;margin-bottom:8px;">
+          <span class="pill pill-err">6 P0</span>
+          <span class="pill pill-warn">4 P1</span>
+        </div>
+        <ul style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+          <li>agente_slug em types.ts</li>
+          <li>p_agente_slug em RPCs</li>
+          <li>getNumeroByAgente()</li>
+          <li>WITH CHECK policies</li>
+          <li>Unificar metadata</li>
+          <li>Unificar AppPage/ChatPanel</li>
+          <li>Permissoes por perfil</li>
+          <li>Rotas /mdzap/*</li>
+          <li>Sidebar multi-agente</li>
+          <li>Dashboard por agente</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Fase 3 — Expansao</div>
+        <div style="display:flex;gap:4px;margin-bottom:8px;">
+          <span class="pill pill-err">4 P0</span>
+          <span class="pill pill-warn">3 P1</span>
+        </div>
+        <ul style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+          <li>Criar webhooks faltantes (12)</li>
+          <li>Doc Reader pipeline</li>
+          <li>ClientePanel para docs_pendentes</li>
+          <li>Split MsgThread</li>
+          <li>Virtualizacao ConversaList</li>
+          <li>Fix bureau mismatch</li>
+          <li>ZapSign integration</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Fase 4-11 + Transversal</div>
+        <div style="display:flex;gap:4px;margin-bottom:8px;">
+          <span class="pill pill-err">8 P0</span>
+          <span class="pill pill-warn">9 P1</span>
+          <span class="pill pill-info">12 P2</span>
+        </div>
+        <ul style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+          <li>Followup system</li>
+          <li>Template management</li>
+          <li>Audio processing</li>
+          <li>Bulk operations</li>
+          <li>ICP analytics</li>
+          <li>Lead memory system</li>
+          <li>Acordos CP/HM pipeline</li>
+          <li>E2E tests</li>
+          <li>LGPD compliance</li>
+          <li>Performance monitoring</li>
+          <li>+19 mais</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- S23: BUILD ERRORS -->
+  <div class="section" id="build-errors">
+    <div class="section-header">
+      <span class="section-icon">🔴</span>
+      <h2>23. Build Errors Ativos (2026-04-13)</h2>
+    </div>
+    <div class="callout callout-red" style="margin-bottom:16px;">
+      <strong>10+ erros de compilacao impedindo deploy limpo</strong>
+    </div>
+    <div class="card">
+      <div class="card-title">Causa Raiz: types.ts dessincronizado</div>
+      <div class="code">// Erros em olivia/*
+src/pages/olivia/components/OliviaAnalise.tsx  — Property 'restricoes' does not exist
+src/pages/olivia/components/OliviaPeticao.tsx  — Property 'modelo_id' does not exist
+src/pages/olivia/hooks/useOliviaAnalise.ts     — Type 'string' not assignable to 'Restricao[]'
+src/pages/olivia/hooks/useOliviaPeticao.ts     — Missing property 'titulo'
+src/pages/olivia/hooks/useOliviaJuris.ts       — Property 'tribunal' does not exist
+src/pages/olivia/components/OliviaVibelaw.tsx   — Module not found: '@/types/vibelaw'
+
+// Erro compartilhado
+src/components/shared/ProcessoSelectorV3.tsx    — Property 'numero_cnj' does not exist on type 'Processo'
+src/components/shared/ProcessoSelectorV3.tsx    — Cannot find name 'ProcessoBase'
+
+// MdZap relacionados
+src/pages/mdzap/types.ts                        — Interface 'Mensagem' incompatible with DB schema
+src/pages/mdzap/hooks/useMdzapConversas.ts      — Property 'agente_slug' missing in type</div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:12px;">Todos os erros derivam de um unico problema: o types.ts central nao reflete o schema atual do Supabase. A solucao e regenerar os tipos via <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">supabase gen types typescript</code> e ajustar as interfaces locais.</p>
+    </div>
+  </div>
+
+  <!-- S24: ROADMAP -->
+  <div class="section" id="roadmap">
+    <div class="section-header">
+      <span class="section-icon">🗺️</span>
+      <h2>24. Roadmap para Nota 9/10 (17 Acoes)</h2>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Fase 1 — Estabilizacao (7 itens, ~1h33min total)</div>
+      <div class="table-wrap" style="border:none;border-radius:0;">
+        <table>
+          <thead><tr><th>#</th><th>Acao</th><th>Tempo</th><th>Impacto</th></tr></thead>
+          <tbody>
+            <tr><td>1.1</td><td>Sync types.ts com schema Supabase</td><td>5 min</td><td><span class="pill pill-err">P0</span> elimina 80% dos build errors</td></tr>
+            <tr><td>1.2</td><td>Fix ProcessoSelectorV3</td><td>1 min</td><td><span class="pill pill-err">P0</span> componente compartilhado</td></tr>
+            <tr><td>1.3</td><td>Fix erros olivia/*</td><td>15 min</td><td><span class="pill pill-err">P0</span> 6 componentes quebrados</td></tr>
+            <tr><td>1.4</td><td>Cadastrar numero WhatsApp ativo</td><td>30 min</td><td><span class="pill pill-err">P0</span> reconecta MdZap</td></tr>
+            <tr><td>1.5</td><td>Fix fn_mdzap_stats (tempo_medio, taxa_handoff)</td><td>30 min</td><td><span class="pill pill-err">P0</span> dashboard honesto</td></tr>
+            <tr><td>1.6</td><td>Fix realtime channel cleanup</td><td>2 min</td><td><span class="pill pill-warn">P1</span> memory leak</td></tr>
+            <tr><td>1.7</td><td>Desligar 11 workflows mortos</td><td>10 min</td><td><span class="pill pill-warn">P1</span> higiene n8n</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Fase 2 — Multi-Agente Foundation (6 itens, ~2h07min total)</div>
+      <div class="table-wrap" style="border:none;border-radius:0;">
+        <table>
+          <thead><tr><th>#</th><th>Acao</th><th>Tempo</th><th>Impacto</th></tr></thead>
+          <tbody>
+            <tr><td>2.1</td><td>Adicionar p_agente_slug em fn_mdzap_conversas e fn_mdzap_stats</td><td>15 min</td><td><span class="pill pill-err">P0</span> isolamento agentes</td></tr>
+            <tr><td>2.2</td><td>Adicionar agente_slug no types.ts</td><td>2 min</td><td><span class="pill pill-err">P0</span> type safety</td></tr>
+            <tr><td>2.3</td><td>Criar getNumeroByAgente() no frontend</td><td>30 min</td><td><span class="pill pill-err">P0</span> elimina primaryNumero</td></tr>
+            <tr><td>2.4</td><td>Adicionar WITH CHECK em INSERT policies</td><td>5 min</td><td><span class="pill pill-warn">P1</span> seguranca</td></tr>
+            <tr><td>2.5</td><td>Unificar metadata (conversas vs mensagens)</td><td>15 min</td><td><span class="pill pill-warn">P1</span> source of truth</td></tr>
+            <tr><td>2.6</td><td>Unificar MdzapAppPage + MdzapChatPanel</td><td>1 h</td><td><span class="pill pill-warn">P1</span> DRY</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Fase 3 — Expansao (4 itens, ~4h total)</div>
+      <div class="table-wrap" style="border:none;border-radius:0;">
+        <table>
+          <thead><tr><th>#</th><th>Acao</th><th>Tempo</th><th>Impacto</th></tr></thead>
+          <tbody>
+            <tr><td>3.1</td><td>Implementar permissoes SDR por perfil</td><td>30 min</td><td><span class="pill pill-err">P0</span> multi-tenant seguro</td></tr>
+            <tr><td>3.2</td><td>Dashboard stats RPC server-side com agente</td><td>1 h</td><td><span class="pill pill-err">P0</span> metricas corretas</td></tr>
+            <tr><td>3.3</td><td>Criar ClientePanel para sdr_docs_pendentes</td><td>2 h</td><td><span class="pill pill-warn">P1</span> segundo agente</td></tr>
+            <tr><td>3.4</td><td>Split MsgThread em sub-componentes</td><td>30 min</td><td><span class="pill pill-warn">P1</span> 479L → 3x~160L</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- S25: REUTILIZAVEIS -->
+  <div class="section" id="reusaveis">
+    <div class="section-header">
+      <span class="section-icon">🧱</span>
+      <h2>25. Componentes Reutilizaveis vs Especificos</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card" style="border-top:3px solid var(--primary);">
+        <div class="card-title">100% Reutilizaveis</div>
+        <ul style="font-size:0.82rem;padding-left:16px;">
+          <li style="margin-bottom:4px;"><strong>MsgThread</strong> — thread de mensagens generico</li>
+          <li style="margin-bottom:4px;"><strong>MsgBubble</strong> — bolha de mensagem</li>
+          <li style="margin-bottom:4px;"><strong>MsgInput</strong> — input de envio</li>
+          <li style="margin-bottom:4px;"><strong>SwipeableCard</strong> — card com swipe actions</li>
+          <li style="margin-bottom:4px;"><strong>SearchBar</strong> — busca com debounce</li>
+          <li style="margin-bottom:4px;"><strong>SmartReplies</strong> — sugestoes rapidas</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid var(--yellow);">
+        <div class="card-title">Com Adaptacao</div>
+        <ul style="font-size:0.82rem;padding-left:16px;">
+          <li style="margin-bottom:4px;"><strong>ConversaList</strong> — precisa prop agente_slug</li>
+          <li style="margin-bottom:4px;"><strong>SdrModeToggle</strong> — precisa agentes dinamicos</li>
+          <li style="margin-bottom:4px;"><strong>ConnectionIndicator</strong> — precisa numero por agente</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid var(--red);">
+        <div class="card-title">NAO Reutilizaveis</div>
+        <ul style="font-size:0.82rem;padding-left:16px;">
+          <li style="margin-bottom:4px;"><strong>LeadPanel</strong> — hardcoded para Lead</li>
+          <li style="margin-bottom:4px;"><strong>Dashboard</strong> — stats globais sem agente</li>
+          <li style="margin-bottom:4px;"><strong>useMdzapSendMessage</strong> — primaryNumero</li>
+          <li style="margin-bottom:4px;"><strong>useMdzapStatus</strong> — primaryNumero</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- S26: ROUTING -->
+  <div class="section" id="routing">
+    <div class="section-header">
+      <span class="section-icon">🔀</span>
+      <h2>26. Routing Proposto</h2>
+    </div>
+    <div class="card">
+      <div class="code">/mdzap                    → Hub (selecao de agente)
+/mdzap/leads              → Julia Leads (sdr_leads)
+/mdzap/documentos         → Docs Pendentes (sdr_docs_pendentes)
+/mdzap/acordos/christian  → Acordos CP (sdr_acordos_cp)
+/mdzap/acordos/heloisa    → Acordos HM (sdr_acordos_hm)</div>
+      <div class="callout callout-yellow" style="margin-top:12px;">
+        <strong>Depende de ARQ-01:</strong> Se CTO decidir abas ao inves de rotas, o routing muda completamente. Decisao pendente.
+      </div>
+    </div>
+  </div>
+
+  <!-- S27: N8N ROUTING -->
+  <div class="section" id="n8n-routing">
+    <div class="section-header">
+      <span class="section-icon">🔧</span>
+      <h2>27. n8n Routing Multi-Agente</h2>
+    </div>
+    <div class="card">
+      <div class="code">Edge Function mdzap-webhook
+  ↓ recebe webhook Meta
+  ↓ extrai phone_number_id do payload
+  ↓ SELECT numero_id, agente_slug FROM whatsapp_numeros WHERE phone_number_id = $1
+  ↓ agente_slug determina pipeline:
+  ↓
+  ├─ sdr_leads         → /webhook/mdzap/ai-composer (Julia Sonnet)
+  ├─ sdr_docs_pendentes → /webhook/mdzap/docs-pipeline (a construir)
+  ├─ sdr_acordos_cp    → /webhook/mdzap/acordos-pipeline (a construir)
+  └─ sdr_acordos_hm    → /webhook/mdzap/acordos-pipeline (a construir, mesmo template)</div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:12px;">O switch e feito na Edge Function, nao no n8n. Cada agente tem um pipeline dedicado no n8n. Isso garante isolamento total e facilita debug.</p>
+    </div>
+  </div>
+
+  <!-- S28: CREDENCIAIS -->
+  <div class="section" id="credenciais">
+    <div class="section-header">
+      <span class="section-icon">🔑</span>
+      <h2>28. Credenciais Meta Business</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Advogado</th><th>Phone ID</th><th>WABA ID</th><th>Numero</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Christian</strong></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">1038640892669654</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">1267750791577634</td>
+            <td>+5551814749234</td>
+            <td><span class="pill pill-ok">Configurado</span></td>
+          </tr>
+          <tr>
+            <td><strong>Heloisa</strong></td>
+            <td style="color:var(--text-dim);">PENDENTE</td>
+            <td style="color:var(--text-dim);">PENDENTE</td>
+            <td style="color:var(--text-dim);">PENDENTE</td>
+            <td><span class="pill pill-pend">Pendente</span></td>
+          </tr>
+          <tr>
+            <td><strong>Midas (Leads)</strong></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">existente</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;">existente</td>
+            <td>+5551816855848</td>
+            <td><span class="pill pill-warn">Soft-deleted</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S29: HTMLS REF -->
+  <div class="section" id="htmls-ref">
+    <div class="section-header">
+      <span class="section-icon">📄</span>
+      <h2>29. 23+ HTMLs de Referencia</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Arquivo</th><th>Data</th><th>Conteudo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td style="font-size:0.75rem;">mdzap-situacao-completa-2026-04-10.html</td><td>04/10</td><td>Situacao completa v5, prompts Lovable</td></tr>
+          <tr><td>2</td><td style="font-size:0.75rem;">mdzap-deep-investigation-v2-2026-04-12.html</td><td>04/12</td><td>Deep Investigation v2, scores atualizados</td></tr>
+          <tr><td>3</td><td style="font-size:0.75rem;">mdzap-audit-completo-2026-04-08.html</td><td>04/08</td><td>Primeiro audit completo (nota 4.9)</td></tr>
+          <tr><td>4</td><td style="font-size:0.75rem;">mdzap-qa-page-loop-2026-04-11.html</td><td>04/11</td><td>Page loop QA (nota 8.6)</td></tr>
+          <tr><td>5</td><td style="font-size:0.75rem;">mdzap-frontend-audit-2026-04-09.html</td><td>04/09</td><td>Audit frontend componentes</td></tr>
+          <tr><td>6</td><td style="font-size:0.75rem;">mdzap-n8n-audit-2026-04-09.html</td><td>04/09</td><td>Audit n8n workflows</td></tr>
+          <tr><td>7</td><td style="font-size:0.75rem;">mdzap-schema-audit-2026-04-08.html</td><td>04/08</td><td>Audit schema DB</td></tr>
+          <tr><td>8</td><td style="font-size:0.75rem;">mdzap-webhooks-gap-2026-04-10.html</td><td>04/10</td><td>Analise 21 webhooks</td></tr>
+          <tr><td>9</td><td style="font-size:0.75rem;">mdzap-multi-agente-2026-04-11.html</td><td>04/11</td><td>Arquitetura 4 agentes SDR</td></tr>
+          <tr><td>10</td><td style="font-size:0.75rem;">mdzap-julia-prompts-2026-04-09.html</td><td>04/09</td><td>Prompts Julia e regras</td></tr>
+          <tr><td>11</td><td style="font-size:0.75rem;">mdzap-doc-reader-2026-04-10.html</td><td>04/10</td><td>Pipeline Doc Reader</td></tr>
+          <tr><td>12</td><td style="font-size:0.75rem;">mdzap-zapsign-2026-04-10.html</td><td>04/10</td><td>Integracao ZapSign</td></tr>
+          <tr><td>13</td><td style="font-size:0.75rem;">mdflow-core-v4-kb.html</td><td>03/27</td><td>KB principal MdFlow</td></tr>
+          <tr><td>14</td><td style="font-size:0.75rem;">audit_configuracoes_2026-03-31.html</td><td>03/31</td><td>Audit /configuracoes</td></tr>
+          <tr><td>15</td><td style="font-size:0.75rem;">audit_empresas_2026_04_06.html</td><td>04/06</td><td>Audit /empresas</td></tr>
+          <tr><td>16</td><td style="font-size:0.75rem;">AUDIT_EXECUCOES_2026-03-31.html</td><td>03/31</td><td>Audit /execucoes</td></tr>
+          <tr><td>17</td><td style="font-size:0.75rem;">mdzap-followup-zapsign-2026-04-11.html</td><td>04/11</td><td>Followup + ZapSign validation</td></tr>
+          <tr><td>18</td><td style="font-size:0.75rem;">mdzap-breaks-previstos-2026-04-12.html</td><td>04/12</td><td>7 BREAKs futuros</td></tr>
+          <tr><td>19</td><td style="font-size:0.75rem;">mdzap-build-errors-2026-04-13.html</td><td>04/13</td><td>Build errors ativos</td></tr>
+          <tr><td>20</td><td style="font-size:0.75rem;">mdzap-routing-proposta-2026-04-11.html</td><td>04/11</td><td>Proposta routing multi-agente</td></tr>
+          <tr><td>21</td><td style="font-size:0.75rem;">mdzap-permissoes-2026-04-12.html</td><td>04/12</td><td>Matriz permissoes por perfil</td></tr>
+          <tr><td>22</td><td style="font-size:0.75rem;">mdzap-credenciais-meta-2026-04-11.html</td><td>04/11</td><td>Credenciais Meta Business</td></tr>
+          <tr><td>23</td><td style="font-size:0.75rem;">mdzap-mega-completo-2026-04-13.html</td><td>04/13</td><td>ESTE DOCUMENTO (v6)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- S30: PROMPT LOVABLE -->
+  <div class="section" id="prompt">
+    <div class="section-header">
+      <span class="section-icon">🤖</span>
+      <h2>30. Prompt Lovable (Atualizado v6)</h2>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <p style="font-size:0.82rem;color:var(--text-muted);">Prompt para Lovable builder com TODOS os dados atualizados da Deep Investigation v2. Copiar e colar.</p>
+    </div>
+    <div class="prompt-box">## MdZap — Contexto Completo para Lovable (v6, 2026-04-13)
+
+### O que e
+MdZap = modulo WhatsApp do MdFlow (SaaS Legal Ops). SDR automatizada Julia (Claude Sonnet).
+Empresa: Midas Restricoes (~5.800 processos). Direito do Consumidor — remocao restricoes indevidas.
+NUNCA citar nome escritorio/advogado.
+
+### Nota Atual: 6.5/10
+- Schema & DB: 7/10 — RLS completo, fn_mdzap_stats hardcoded 0
+- Frontend: 7/10 — 52 componentes, 87 "as any", duplicacao AppPage/ChatPanel
+- n8n/Webhooks: 3/10 — 11/16 mortos, 15+ webhooks sem backend
+- Multi-Agente: 2/10 — primaryNumero global, sem filtro agente
+- Type Safety: 4/10 — types.ts dessincronizado, campo fantasma
+- Dados: 6/10 — 0 numeros ativos, 9 conversas, 197 msgs
+
+### 4 Agentes SDR
+1. Julia Leads (sdr_leads) — QUASE PRONTO — +5551816855848 — Leads — 9 steps
+2. Docs Pendentes (sdr_docs_pendentes) — A CONSTRUIR — Clientes pos-venda
+3. Acordos CP (sdr_acordos_cp) — CRED OK — +5551814749234 — Advogados adversos
+4. Acordos HM (sdr_acordos_hm) — FUTURO — Mesmo modelo Christian
+
+### 7 BREAKs Previstos
+BREAK-01 P0: primaryNumero global — msgs cruzam entre agentes
+BREAK-02 P0: Dashboard stats misturam agentes
+BREAK-03 P1: MsgThread 479L estoura 500
+BREAK-04 P1: ConversaList lenta com 100+
+BREAK-05 P1: Realtime sem orgId
+BREAK-06 P2: Campo fantasma mensagem?
+BREAK-07 P2: fn_mdzap_stats ignora deleted_at
+
+### Schema Drift (7 items)
+- agente_slug P0: falta no types.ts
+- mensagem? P1: campo fantasma (nao existe no DB)
+- metadata P1: duplicada em conversas E mensagens
+- deleted_at, updated_at, api_key_id, enviado_por P2: nao tipados
+
+### Stats Falsas
+fn_mdzap_stats retorna tempo_medio=0 e taxa_handoff=0 HARDCODED.
+Dashboard exibe dados falsos. Nao filtra por agente_slug.
+
+### 0 Numeros WhatsApp Ativos
+Unico numero soft-deleted. MdZap DESCONECTADO.
+whatsapp_mensagens=197 | message_queue=24 | conversas=9 | numeros=0(!)
+
+### Webhooks: 12 P0, 3 P1
+Mortos/inexistentes: assumir-conversa, devolver-julia, doc-reader, memoria,
+encerrar-conversa, transferir, lead-sync, stage-changed, document-received,
+followup-create, followup-cancel, icp-analyze, zapsign-create
+
+### Doc Reader Pipeline QUEBRADO
+3 etapas todas P0. n8n NAO EXISTE. pending_lead_data = 0 registros.
+Doc Reader escreve em mensagens.metadata mas nunca propaga para conversas.metadata.
+
+### Roadmap 17 Acoes (nota 9/10)
+Fase 1 (1h33): sync types, fix ProcessoSelector, fix olivia, cadastrar numero, fix stats, fix realtime, desligar mortos
+Fase 2 (2h07): p_agente_slug RPCs, agente_slug TS, getNumeroByAgente, WITH CHECK, unificar metadata, unificar AppPage
+Fase 3 (4h): permissoes SDR, dashboard stats RPC, ClientePanel, split MsgThread
+
+### Stack
+React 18/TS | shadcn-ui | Tailwind 3 | Supabase | n8n | Edge Functions
+Design: Warm Charcoal #12100e | Primary #20c997 | Inter+Manrope+JetBrains Mono
+
+### Decisoes Pendentes (BLOQUEANTES)
+ARQ-01: Rotas vs abas vs hibrido — define frontend inteiro
+ARQ-02: 1 conversa por processo vs escritorio — define schema acordos</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    🐙 Jarbas 2.0 / MdFlow — MdLab LegalTech · 2026-04-13 · Mega Documento v6
+  </div>
+
+</div>
+
+<script>
+// Smooth scroll for sidebar links
+document.querySelectorAll('.sidebar a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Highlight active sidebar link on scroll
+const sections = document.querySelectorAll('.section[id]');
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      sidebarLinks.forEach(link => {
+        link.style.color = '';
+        link.style.borderLeftColor = 'transparent';
+        link.style.background = '';
+      });
+      const activeLink = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+      if (activeLink) {
+        activeLink.style.color = 'var(--text)';
+        activeLink.style.borderLeftColor = 'var(--primary)';
+        activeLink.style.background = 'rgba(255,255,255,0.03)';
+      }
+    }
+  });
+}, { threshold: 0.1, rootMargin: '-80px 0px -60% 0px' });
+
+sections.forEach(section => observer.observe(section));
+</script>
+</body>
+</html>
