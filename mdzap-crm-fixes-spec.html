@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap+CRM Cross-Impact Fixes — Spec</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value.red { color: var(--accent2); }
+.stat-value.yellow { color: var(--accent4); }
+.stat-value.green { color: var(--accent3); }
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; display: inline-block; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+.task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+.task-card.p1 { border-left: 3px solid var(--accent2); }
+.task-card.p2 { border-left: 3px solid var(--accent4); }
+.task-card summary { padding: 16px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; list-style: none; user-select: none; }
+.task-card summary::-webkit-details-marker { display: none; }
+.task-card summary::before { content: '\25B6'; font-size: 0.65rem; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
+.task-card[open] summary::before { transform: rotate(90deg); }
+.task-card summary:hover { background: rgba(255,255,255,0.02); }
+.task-id { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--accent5); min-width: 32px; }
+.task-title { flex: 1; font-weight: 500; }
+.task-severity { padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; }
+.sev-p1 { background: rgba(255,107,107,0.15); color: var(--accent2); border: 1px solid rgba(255,107,107,0.3); }
+.sev-p2 { background: rgba(255,209,102,0.15); color: var(--accent4); border: 1px solid rgba(255,209,102,0.3); }
+.task-type { padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+.type-bug { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.type-sec { background: rgba(255,107,107,0.2); color: #ff8888; }
+.type-perf { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.type-ds { background: rgba(124,109,255,0.1); color: var(--accent); }
+.type-maint { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.type-ux { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.task-body { padding: 0 20px 20px; border-top: 1px solid var(--border); margin-top: 0; }
+.task-body h4 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 0 8px; }
+.task-body p, .task-body li { font-size: 0.85rem; line-height: 1.7; }
+.task-body ul { padding-left: 20px; }
+.task-body li { margin-bottom: 4px; }
+.risk-zero { color: var(--accent3); }
+.risk-low { color: var(--accent4); }
+.code-block-wrapper { position: relative; margin: 8px 0; }
+.copy-btn { position: absolute; top: 6px; right: 6px; background: var(--surface3); border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+.copy-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+.copy-btn.copied { background: var(--accent3); color: var(--bg); border-color: var(--accent3); }
+.coupling-type { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 0.72rem; font-weight: 600; }
+.ct-import { background: rgba(124,109,255,0.15); color: var(--accent); }
+.ct-query { background: rgba(91,196,245,0.15); color: var(--accent5); }
+.ct-fk { background: rgba(255,107,107,0.15); color: var(--accent2); }
+.ct-view { background: rgba(79,255,176,0.15); color: var(--accent3); }
+.ct-deeplink { background: rgba(255,209,102,0.15); color: var(--accent4); }
+.ct-param { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+.flow-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 2; color: var(--text-muted); text-align: center; overflow-x: auto; }
+.flow-diagram .flow-p1 { color: var(--accent2); font-weight: 700; }
+.flow-diagram .flow-p2 { color: var(--accent4); }
+.flow-diagram .flow-arrow { color: var(--accent); }
+.flow-diagram .flow-dep { color: var(--accent4); }
+.matrix-ok { color: var(--accent3); }
+.matrix-warn { color: var(--accent4); }
+.table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
+.table-wrap table { min-width: 600px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <span class="hero-emoji">&#128025;</span>
+    <h1 class="gradient-text">MdZap+CRM Cross-Impact Fixes</h1>
+    <p class="hero-sub">Spec consolidada de 3 auditorias profundas — 14 tarefas com analise de impacto cruzado</p>
+    <div class="badges">
+      <span class="badge bp">beta-mdflow</span>
+      <span class="badge bb">React 18/TS + Supabase + n8n</span>
+      <span class="badge by">14 Tarefas</span>
+      <span class="badge bg">6 Ja Resolvidos</span>
+      <span class="badge br">5 P1 Criticos</span>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-bottom: 32px;">
+    <div class="stat-card">
+      <div class="stat-value">14</div>
+      <div class="stat-label">Tarefas Total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value red">5</div>
+      <div class="stat-label">P1 Criticos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value yellow">9</div>
+      <div class="stat-label">P2 Melhorias</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value green">6</div>
+      <div class="stat-label">Ja Resolvidos</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128269;</span>
+      <h2>Origem — 3 Auditorias Consolidadas</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card">
+        <div class="card-title">Super Revisao MdZap+CRM</div>
+        <p style="font-size: 1.4rem; font-weight: 700; color: var(--accent);">125+</p>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">arquivos analisados, 10 conexoes bidirecionais</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Super Revisao Profunda MdZap</div>
+        <p style="font-size: 1.4rem; font-weight: 700; color: var(--accent5);">55</p>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">componentes, 22 hooks</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Super Revisao Profunda CRM</div>
+        <p style="font-size: 1.4rem; font-weight: 700; color: var(--accent4);">14</p>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">componentes, 12 modais</p>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top: 12px;">
+      <div class="card" style="border-left: 3px solid var(--accent2);">
+        <div class="card-title">RLS Audit</div>
+        <p style="font-size: 0.85rem;">49 tabelas mapeadas, todas policies catalogadas</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent5);">
+        <div class="card-title">Triggers + Cross-impacts</div>
+        <p style="font-size: 0.85rem;">8 items verificados linha a linha</p>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent3);">
+        <div class="card-title">Frontend P1/P2</div>
+        <p style="font-size: 0.85rem;">7 items com analise de impacto cruzado</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128279;</span>
+      <h2>CRM &#8596; MdZap — Tabela de Acoplamento</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>CRM</th><th>MdZap</th><th>Tipo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>CrmLeadCard</td><td>MdzapBadgeStatus + MdzapSendButton</td><td><span class="coupling-type ct-import">import direto</span></td></tr>
+          <tr><td>CrmPage</td><td>MdzapConnectionIndicator</td><td><span class="coupling-type ct-import">import direto</span></td></tr>
+          <tr><td>useCrmKanban</td><td>whatsapp_conversas (JOIN)</td><td><span class="coupling-type ct-query">query banco</span></td></tr>
+          <tr><td>leads (tabela)</td><td>whatsapp_conversas.lead_id</td><td><span class="coupling-type ct-fk">FK</span></td></tr>
+          <tr><td>view_crm_leads_kanban</td><td>leads + leads_origens + leads_atividades</td><td><span class="coupling-type ct-view">view</span></td></tr>
+          <tr><td>CrmLeadDrawer</td><td>navigate('/mdzap?lead=X')</td><td><span class="coupling-type ct-deeplink">deep-link</span></td></tr>
+          <tr><td>useLeadFilters</td><td>useMdzapConversas (lead_id param)</td><td><span class="coupling-type ct-param">URL param</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128450;</span>
+      <h2>Backend (B01-B07) — Executar Primeiro</h2>
+    </div>
+
+    <details class="task-card p1">
+      <summary>
+        <span class="task-id">B01</span>
+        <span class="task-title">fn_mdzap_conversas: filtrar lead.deleted_at</span>
+        <span class="task-severity sev-p1">P1</span>
+        <span class="task-type type-bug">BUG</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>LEFT JOIN com leads nao filtra deleted_at. Leads deletados aparecem nas conversas MdZap.</p>
+        <h4>Localizacao</h4>
+        <p>RPC <code>fn_mdzap_conversas</code> — versao mais recente em migrations</p>
+        <h4>Fix SQL</h4>
+        <div class="code-block-wrapper">
+          <div class="code" id="code-b01">-- ANTES:
+LEFT JOIN leads l ON l.id = wc.lead_id
+-- DEPOIS:
+LEFT JOIN leads l ON l.id = wc.lead_id AND l.deleted_at IS NULL</div>
+          <button class="copy-btn" onclick="copyCode('code-b01', this)">Copiar</button>
+        </div>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>Conversas SEM lead (lead_id IS NULL) continuam aparecendo — OK</li>
+          <li>view_crm_leads_kanban JA filtra deleted_at — sem divergencia apos fix</li>
+          <li>useMdzapConversas() para de mostrar leads fantasma — melhora UX</li>
+          <li>MdzapBadgeStatus em CrmLeadCard: se lead deletado, conversa some do MdZap mas lead ja nao existe no CRM — consistente</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-zero">ZERO — apenas remove dados invalidos da query</p>
+      </div>
+    </details>
+
+    <details class="task-card p1">
+      <summary>
+        <span class="task-id">B02</span>
+        <span class="task-title">whatsapp_mensagens: habilitar RLS</span>
+        <span class="task-severity sev-p1">P1</span>
+        <span class="task-type type-sec">SEGURANCA</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>Policies estao comentadas em <code>20260407000002_mdzap_rls_mensagens.sql</code>. Tabela sem RLS em producao.</p>
+        <h4>Fix SQL</h4>
+        <div class="code-block-wrapper">
+          <div class="code" id="code-b02">ALTER TABLE whatsapp_mensagens ENABLE ROW LEVEL SECURITY;
+
+-- Policy via conversa (mensagem pertence a conversa que pertence a org)
+CREATE POLICY "msg_select" ON whatsapp_mensagens
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM whatsapp_conversas wc
+      WHERE wc.id = whatsapp_mensagens.conversa_id
+      AND wc.organizacao_id = public.get_org_id()
+    )
+  );
+-- Repetir para INSERT/UPDATE</div>
+          <button class="copy-btn" onclick="copyCode('code-b02', this)">Copiar</button>
+        </div>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>useMdzapMessages hook: ja filtra por conversa_id — sem quebra</li>
+          <li>MdzapMsgThread: renderiza mensagens da conversa atual — sem quebra</li>
+          <li>n8n webhooks: usam service_role — bypassam RLS — sem quebra</li>
+          <li>Performance: JOIN com whatsapp_conversas em toda query — criar indice em conversa_id</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-low">BAIXO — testar com usuario normal (nao service_role) antes de deploy</p>
+      </div>
+    </details>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">B03</span>
+        <span class="task-title">Padronizar org_id() para get_org_id() em 7 tabelas</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-maint">CONSISTENCIA</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>7 tabelas usam <code>org_id()</code> nas policies, resto usa <code>get_org_id()</code>. Ambas retornam o mesmo valor.</p>
+        <h4>Tabelas Afetadas</h4>
+        <div class="code">crm_estagios_funil, crm_origens, docs_categorias, docs_tipos, decisoes_recursos, jarbas_tarefas, mdzap_ai_modules</div>
+        <h4>Fix</h4>
+        <p>Migration DROP + CREATE POLICY com get_org_id()</p>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>Zero risco funcional — mesma funcao</li>
+          <li>CRM: crm_estagios_funil e crm_origens usadas pelo kanban — policies identicas, sem impacto</li>
+          <li>MdZap: mdzap_ai_modules ja tem v2 com get_org_id — limpar v1</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-zero">ZERO</p>
+      </div>
+    </details>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">B04</span>
+        <span class="task-title">Triggers set_updated_at faltantes</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-maint">CONSISTENCIA</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>Tabelas com coluna updated_at mas sem trigger automatico.</p>
+        <h4>Tabelas</h4>
+        <ul>
+          <li><strong>whatsapp_conversas</strong> — tem updated_at column, sem trigger</li>
+          <li><strong>whatsapp_numeros</strong> — tem updated_at column, sem trigger</li>
+          <li><strong>leads_origens</strong> — mencionada em JOINs, sem trigger</li>
+        </ul>
+        <h4>Fix SQL</h4>
+        <div class="code-block-wrapper">
+          <div class="code" id="code-b04">CREATE TRIGGER set_updated_at BEFORE UPDATE ON whatsapp_conversas
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON whatsapp_numeros
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON leads_origens
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();</div>
+          <button class="copy-btn" onclick="copyCode('code-b04', this)">Copiar</button>
+        </div>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>Realtime subscriptions em whatsapp_conversas: ouvem postgres_changes — trigger nao afeta</li>
+          <li>RPCs que fazem UPDATE: trigger aplica APOS update — sem quebra</li>
+          <li>CRM: leads_origens trigger so muda updated_at — CrmOrigensChart nao depende desse campo</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-zero">ZERO — trigger standard do MdFlow</p>
+      </div>
+    </details>
+
+    <details class="task-card p1">
+      <summary>
+        <span class="task-id">B05</span>
+        <span class="task-title">CrmOrigensChart: RPC server-side</span>
+        <span class="task-severity sev-p1">P1</span>
+        <span class="task-type type-perf">PERFORMANCE</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>CrmOrigensChart.tsx faz SELECT * FROM leads + client-side Map aggregation. Com 5.800+ leads, transfere milhares de rows.</p>
+        <h4>Fix SQL</h4>
+        <div class="code-block-wrapper">
+          <div class="code" id="code-b05">CREATE OR REPLACE FUNCTION fn_crm_leads_por_origem(p_org_id UUID)
+RETURNS TABLE (origem_nome TEXT, total BIGINT)
+LANGUAGE sql SECURITY DEFINER STABLE
+AS $$
+  SELECT COALESCE(lo.nome, 'Sem origem'), COUNT(*)
+  FROM leads l
+  LEFT JOIN leads_origens lo ON l.origem_id = lo.id
+  WHERE l.organizacao_id = p_org_id
+    AND l.deleted_at IS NULL AND l.arquivado = false
+  GROUP BY lo.nome ORDER BY COUNT(*) DESC;
+$$;</div>
+          <button class="copy-btn" onclick="copyCode('code-b05', this)">Copiar</button>
+        </div>
+        <h4>Frontend</h4>
+        <p>Trocar query direta por <code>supabase.rpc('fn_crm_leads_por_origem', { p_org_id: orgId })</code></p>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>CrmOrigensChart e o UNICO consumer — sem quebra em outros</li>
+          <li>MdZap: nao usa esse chart — sem impacto</li>
+          <li>Dashboard: se tiver widget de origens, apontar para mesma RPC</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-low">BAIXO — testar shape de retorno no frontend</p>
+      </div>
+    </details>
+
+    <details class="task-card p1">
+      <summary>
+        <span class="task-id">B06</span>
+        <span class="task-title">CrmTrendChart: RPC server-side</span>
+        <span class="task-severity sev-p1">P1</span>
+        <span class="task-type type-perf">PERFORMANCE</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>CrmTrendChart.tsx faz SELECT created_at FROM leads WHERE >= 90d + client-side Map por semana.</p>
+        <h4>Fix SQL</h4>
+        <div class="code-block-wrapper">
+          <div class="code" id="code-b06">CREATE OR REPLACE FUNCTION fn_crm_trend_chart(p_org_id UUID, p_days INT DEFAULT 90)
+RETURNS TABLE (semana TEXT, total BIGINT)
+LANGUAGE sql SECURITY DEFINER STABLE
+AS $$
+  SELECT to_char(date_trunc('week', l.created_at), 'YYYY-MM-DD'), COUNT(*)
+  FROM leads l
+  WHERE l.organizacao_id = p_org_id
+    AND l.deleted_at IS NULL
+    AND l.created_at >= now() - make_interval(days => p_days)
+  GROUP BY date_trunc('week', l.created_at)
+  ORDER BY date_trunc('week', l.created_at);
+$$;</div>
+          <button class="copy-btn" onclick="copyCode('code-b06', this)">Copiar</button>
+        </div>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>CrmTrendChart e o UNICO consumer — sem quebra</li>
+          <li>MdZap: nao usa esse chart — sem impacto</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-low">BAIXO</p>
+      </div>
+    </details>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">B07</span>
+        <span class="task-title">fn_restricao_salvar: garantir migration</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-maint">CONSISTENCIA</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>RPC <code>fn_restricao_salvar</code> esta em types.ts e chamada em 2 hooks, mas nao ha migration SQL versionada.</p>
+        <h4>Chamadores</h4>
+        <ul>
+          <li><code>src/hooks/useRestricoes.ts:81</code></li>
+          <li><code>src/hooks/use_cadastrar_restricoes.ts:378</code> (com <code>as any</code>)</li>
+        </ul>
+        <h4>Fix</h4>
+        <p>Extrair DDL do banco via Supabase MCP e criar migration de versionamento. Remover <code>as any</code> apos regen types.</p>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>Se a funcao ja existe no banco: zero impacto (migration idempotente)</li>
+          <li>use_cadastrar_restricoes.ts:378 <code>as any</code> deve ser removido apos regen types</li>
+          <li>Fluxo MdZap Lead Cadastro &#8594; Auditoria &#8594; Restricoes &#8594; usa essa RPC — critico para pipeline</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-low">BAIXO — verificar existencia antes de criar</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#127912;</span>
+      <h2>Frontend (F01-F07) — Executar Apos Backend</h2>
+    </div>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">F01</span>
+        <span class="task-title">Hub.tsx: cores hardcoded</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-ds">DS VIOLATION</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p><code>text-yellow-400</code> hardcoded em vez de token CSS em <code>src/pages/mdzap/hub.tsx</code> linhas 130 e 173.</p>
+        <h4>Fix</h4>
+        <p>Trocar por <code>text-warning</code></p>
+        <h4>Cross-Impact</h4>
+        <p>ZERO — apenas visual, token warning ja existe no DS</p>
+        <h4>Risco</h4>
+        <p class="risk-zero">ZERO</p>
+      </div>
+    </details>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">F02</span>
+        <span class="task-title">CrmPage.tsx: extrair hooks (488 linhas)</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-maint">MAINTAINABILITY</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>488 linhas, proximo do limite 500. Dois blocos extraiveis.</p>
+        <h4>Hooks a Extrair</h4>
+        <ul>
+          <li><strong>useCrmContagens()</strong> — linhas 160-206 (47 linhas) — 3 queries de contagem &#8594; <code>src/hooks/crm/useCrmContagens.ts</code></li>
+          <li><strong>useCrmDeepLinks()</strong> — linhas 71-94 (24 linhas) — query params handling &#8594; <code>src/hooks/crm/useCrmDeepLinks.ts</code></li>
+        </ul>
+        <p>CrmPage.tsx cai para ~417 linhas.</p>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>useCrmRealtime() chamado na linha 158 — FORA dos blocos extraidos — sem quebra</li>
+          <li>Deep-link <code>?lead=X</code> usado em navigate('/mdzap?lead=${leadId}') — funciona igual extraido</li>
+          <li>Contagens invalidadas por realtime — continuam funcionando</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-low">BAIXO — refactoring puro, testar kanban apos</p>
+      </div>
+    </details>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">F03</span>
+        <span class="task-title">CrmListView: mobile responsive</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-ux">RESPONSIVE</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p><code>min-w-[640px]</code> forca largura minima em <code>src/components/crm/CrmListView.tsx</code> linha 138 — quebra mobile.</p>
+        <h4>Fix</h4>
+        <p>Remover min-w-[640px], manter overflow-x-auto no container pai.</p>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>Apenas CRM list view — MdZap nao usa esse componente</li>
+          <li>Desktop: sem mudanca visual (grid se ajusta)</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-low">BAIXO — testar em 375px e 1440px</p>
+      </div>
+    </details>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">F04</span>
+        <span class="task-title">MdzapAppPage: adicionar hooks faltantes</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-ux">FEATURE PARITY</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>MdzapAppPage (278 linhas) nao tem 3 hooks que MdzapChatPanel tem:</p>
+        <ul>
+          <li>useMdzapFaviconBadge</li>
+          <li>useMdzapNewMessageToast</li>
+          <li>useMdzapKeyboardShortcuts</li>
+        </ul>
+        <h4>Fix</h4>
+        <p>Importar e chamar os 3 hooks no MdzapAppPage.</p>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>MdzapChatPanel (embutido no CRM drawer) ja tem esses hooks</li>
+          <li>Adicionar NAO quebra nada — apenas adiciona features</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-zero">ZERO</p>
+      </div>
+    </details>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">F05</span>
+        <span class="task-title">useMdzapSmartReplies: melhorar fallback</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-ux">UX</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>Fallback hardcoded com 3 respostas genericas em <code>src/hooks/mdzap/useMdzapSmartReplies.ts</code> linhas 65-73.</p>
+        <h4>Recomendacao</h4>
+        <p>MANTER fallback. Alternativa: adicionar empty state em MdzapSmartReplies.tsx em vez de return null.</p>
+        <h4>Cross-Impact</h4>
+        <p>Apenas MdzapMsgThread usa — sem impacto CRM</p>
+        <h4>Risco</h4>
+        <p class="risk-zero">ZERO</p>
+      </div>
+    </details>
+
+    <details class="task-card p2">
+      <summary>
+        <span class="task-id">F06</span>
+        <span class="task-title">MdzapLeadCadastroDrawer: mensagem imprecisa</span>
+        <span class="task-severity sev-p2">P2</span>
+        <span class="task-type type-ux">COPY</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>"Pastas criadas no Drive." em linha 252 — impreciso, nao confirma se realmente criou.</p>
+        <h4>Fix</h4>
+        <p>Trocar por: <code>"Processo de criacao de pastas iniciado."</code> ou remover a frase.</p>
+        <h4>Cross-Impact</h4>
+        <p>ZERO — apenas texto visual</p>
+        <h4>Risco</h4>
+        <p class="risk-zero">ZERO</p>
+      </div>
+    </details>
+
+    <details class="task-card p1">
+      <summary>
+        <span class="task-id">F07</span>
+        <span class="task-title">CrmOrigensChart + CrmTrendChart: usar RPCs</span>
+        <span class="task-severity sev-p1">P1</span>
+        <span class="task-type type-perf">PERFORMANCE</span>
+      </summary>
+      <div class="task-body">
+        <h4>Problema</h4>
+        <p>Trocar queries diretas por chamadas RPC + remover aggregation client-side. Depende de B05 e B06.</p>
+        <h4>Localizacao</h4>
+        <ul>
+          <li><code>src/components/crm/charts/CrmOrigensChart.tsx</code></li>
+          <li><code>src/components/crm/charts/CrmTrendChart.tsx</code></li>
+        </ul>
+        <h4>Cross-Impact</h4>
+        <ul>
+          <li>Ambos charts renderizados apenas em CrmPage — sem impacto MdZap</li>
+          <li>Remover <code>as any</code> cast no TrendChart</li>
+        </ul>
+        <h4>Risco</h4>
+        <p class="risk-low">BAIXO — testar visual dos charts apos mudar shape</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#9989;</span>
+      <h2>Ja Resolvido — Nao Incluir no Projeto</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Item</th><th>Status</th><th>Evidencia</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>whatsapp_templates RLS</td>
+            <td><span class="status-pill sp-done">JA IMPLEMENTADO</span></td>
+            <td>Migration 20260409000003</td>
+          </tr>
+          <tr>
+            <td>mdzap_julia_lab_sessoes RLS generico</td>
+            <td><span class="status-pill sp-done">JA PADRONIZADO</span></td>
+            <td>Migration 20260409000003 com deleted_at</td>
+          </tr>
+          <tr>
+            <td>crm_notas trigger</td>
+            <td><span class="status-pill sp-done">JA EXISTE</span></td>
+            <td>Migration 20260406000008</td>
+          </tr>
+          <tr>
+            <td>leads_atividades trigger</td>
+            <td><span class="status-pill sp-done">JA EXISTE</span></td>
+            <td>Migration 20260407000012</td>
+          </tr>
+          <tr>
+            <td>mdzap_conversas_timeline trigger</td>
+            <td><span class="status-pill sp-done">JA EXISTE</span></td>
+            <td>Migration 20260401182303</td>
+          </tr>
+          <tr>
+            <td>Filtro periodo nao serializado</td>
+            <td><span class="status-pill sp-done">BY DESIGN</span></td>
+            <td>Comentario explicito no codigo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128260;</span>
+      <h2>Matriz de Cross-Impact</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Se corrigir...</th><th>Pode quebrar...</th><th>Mitigacao</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="task-severity sev-p1" style="font-size:0.65rem;">P1</span> B01 (lead.deleted_at)</td>
+            <td>Conversas orfas somem</td>
+            <td><span class="matrix-ok">OK</span> — lead nao existe, conversa sem lead continua</td>
+          </tr>
+          <tr>
+            <td><span class="task-severity sev-p1" style="font-size:0.65rem;">P1</span> B02 (RLS mensagens)</td>
+            <td>Queries de mensagem</td>
+            <td><span class="matrix-warn">Testar</span> com anon key — service_role bypassa</td>
+          </tr>
+          <tr>
+            <td><span class="task-severity sev-p1" style="font-size:0.65rem;">P1</span> B05+B06 (RPCs charts)</td>
+            <td>Shape dos dados mudou</td>
+            <td><span class="matrix-warn">Adaptar</span> types no frontend (F07)</td>
+          </tr>
+          <tr>
+            <td><span class="task-severity sev-p2" style="font-size:0.65rem;">P2</span> F02 (extrair hooks CRM)</td>
+            <td>Realtime listeners</td>
+            <td><span class="matrix-ok">OK</span> — useCrmRealtime esta fora dos blocos</td>
+          </tr>
+          <tr>
+            <td><span class="task-severity sev-p2" style="font-size:0.65rem;">P2</span> F04 (hooks AppPage)</td>
+            <td>Nada</td>
+            <td><span class="matrix-ok">OK</span> — apenas adiciona features</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128640;</span>
+      <h2>Ordem de Execucao</h2>
+    </div>
+    <div class="flow-diagram">
+      <div style="margin-bottom: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Backend (executar primeiro)</div>
+      <div>
+        <span class="flow-p1">B01</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p1">B02</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p2">B03</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p2">B04</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p1">B05</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p1">B06</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p2">B07</span>
+      </div>
+      <div style="margin: 16px 0; font-size: 1.2rem; color: var(--accent4);">&#8595;</div>
+      <div style="margin-bottom: 16px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Frontend (executar apos backend)</div>
+      <div>
+        <span class="flow-p2">F01</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p2">F02</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p2">F03</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p2">F04</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p2">F05</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p2">F06</span> <span class="flow-arrow">&#8594;</span>
+        <span class="flow-p1">F07</span>
+      </div>
+      <div style="margin-top: 16px; font-size: 0.75rem;">
+        <span class="flow-dep">&#9888; F07 depende de B05 + B06</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128202;</span>
+      <h2>Resumo de Complexidade</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-title">Backend (7 tarefas)</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+          <span class="status-pill sp-block">2 P1 BUG/SEC</span>
+          <span class="status-pill sp-run">2 P1 PERF</span>
+          <span class="status-pill sp-pend">3 P2</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Frontend (7 tarefas)</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+          <span class="status-pill sp-block">1 P1 (depende backend)</span>
+          <span class="status-pill sp-pend">6 P2</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top: 12px;">
+      <div class="card">
+        <div class="card-title">Complexidade</div>
+        <p style="font-size: 1.1rem;"><span style="color: var(--accent3); font-weight: 700;">10 S</span> <span style="color: var(--text-muted);">+</span> <span style="color: var(--accent4); font-weight: 700;">4 M</span></p>
+      </div>
+      <div class="card">
+        <div class="card-title">Principio</div>
+        <p style="font-size: 0.85rem; color: var(--accent5);">CRM e MdZap sao um sistema unico. Toda correcao DEVE ser verificada nos dois lados.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    &#128025; Jarbas 2.0 — MdLab LegalTech &middot; 2026-04-14
+  </div>
+</div>
+
+<script>
+function copyCode(id, btn) {
+  var el = document.getElementById(id);
+  var text = el.textContent || el.innerText;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = 'Copiado!';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = 'Copiar';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'Copiado!';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = 'Copiar';
+      btn.classList.remove('copied');
+    }, 2000);
+  }
+}
+</script>
+</body>
+</html>
