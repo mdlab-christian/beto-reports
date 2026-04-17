@@ -68,15 +68,26 @@ tr:last-child td { border-bottom: none; }
 .highlight-yellow { border-left-color: var(--accent4); }
 .highlight-blue { border-left-color: var(--accent5); }
 .highlight-red { border-left-color: var(--accent2); }
+.highlight-purple { border-left-color: var(--accent); }
 .highlight-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
 .highlight-green h3 { color: var(--accent3); }
 .highlight-yellow h3 { color: var(--accent4); }
 .highlight-blue h3 { color: var(--accent5); }
 .highlight-red h3 { color: var(--accent2); }
+.highlight-purple h3 { color: var(--accent); }
 .highlight-card p, .highlight-card li { font-size: 0.85rem; color: var(--text); line-height: 1.7; }
 .highlight-card ul { padding-left: 18px; margin-top: 8px; }
 .highlight-card li { margin-bottom: 4px; }
 .alert-box { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); border-radius: 10px; padding: 14px 18px; color: var(--accent2); font-weight: 600; font-size: 0.85rem; text-align: center; margin-top: 16px; }
+.featured-card { background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(255,209,102,0.08)); border: 1px solid rgba(255,209,102,0.3); border-radius: 14px; padding: 24px; margin-bottom: 16px; }
+.featured-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--accent4); margin-bottom: 10px; }
+.featured-card .repo-tag { display: inline-block; background: rgba(255,107,107,0.15); color: var(--accent2); padding: 2px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.featured-card ul { padding-left: 18px; margin-top: 8px; }
+.featured-card li { font-size: 0.85rem; line-height: 1.7; margin-bottom: 4px; }
+.featured-card .impact-note { margin-top: 12px; padding: 10px 14px; background: rgba(255,107,107,0.1); border-radius: 8px; color: var(--accent2); font-size: 0.82rem; font-weight: 600; }
+.market-stat { text-align: center; padding: 16px; }
+.market-stat .stat-value { font-size: 1.8rem; }
+.market-stat .stat-label { font-size: 0.72rem; }
 </style>
 </head>
 <body>
@@ -85,13 +96,13 @@ tr:last-child td { border-bottom: none; }
   <div class="hero">
     <span class="hero-emoji">&#127891;</span>
     <h1 class="gradient-text">Skills Claude Code para Automacao Juridica</h1>
-    <p class="hero-sub">Levantamento completo do ecossistema &mdash; GitHub, npm, MCP servers, frameworks</p>
+    <p class="hero-sub">Levantamento completo do ecossistema &mdash; GitHub, npm, MCP servers, frameworks, concorrentes BR</p>
     <div class="badges">
       <span class="badge bp">Pesquisa Abril/2026</span>
       <span class="badge bg">78 repos analisados</span>
       <span class="badge by">8 MCP servers</span>
-      <span class="badge br">Brasil: nicho vazio</span>
-      <span class="badge bb">MdOs: 22 skills</span>
+      <span class="badge br">Plugin oficial Anthropic</span>
+      <span class="badge bb">14 concorrentes BR</span>
     </div>
   </div>
 
@@ -105,12 +116,12 @@ tr:last-child td { border-bottom: none; }
       <div class="stat-label">Skills MdOs</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" style="color: var(--accent4);">0</div>
-      <div class="stat-label">MCP Legal BR</div>
+      <div class="stat-value" style="color: var(--accent4);">14</div>
+      <div class="stat-label">Concorrentes BR</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" style="color: var(--accent5);">8</div>
-      <div class="stat-label">MCP servers globais</div>
+      <div class="stat-value" style="color: var(--accent5);">10</div>
+      <div class="stat-label">MCP servers juridicos</div>
     </div>
   </div>
 
@@ -118,7 +129,7 @@ tr:last-child td { border-bottom: none; }
   <div class="section">
     <div class="section-header">
       <span class="section-icon">&#9878;&#65039;</span>
-      <h2>Skills Claude Code Juridicas (TOP por relevancia)</h2>
+      <h2>1. Skills Claude Code Juridicas (TOP por relevancia)</h2>
     </div>
 
     <span class="tier-label">Tier 1 &mdash; Skills dedicadas para advocacia</span>
@@ -233,7 +244,7 @@ tr:last-child td { border-bottom: none; }
   <div class="section">
     <div class="section-header">
       <span class="section-icon">&#128268;</span>
-      <h2>MCP Servers Juridicos</h2>
+      <h2>2. MCP Servers Juridicos</h2>
     </div>
     <div class="table-wrap">
       <table>
@@ -304,7 +315,7 @@ tr:last-child td { border-bottom: none; }
   <div class="section">
     <div class="section-header">
       <span class="section-icon">&#128230;</span>
-      <h2>Pacotes npm Juridicos</h2>
+      <h2>3. Pacotes npm Juridicos</h2>
     </div>
     <div class="table-wrap">
       <table>
@@ -350,7 +361,7 @@ tr:last-child td { border-bottom: none; }
   <div class="section">
     <div class="section-header">
       <span class="section-icon">&#9881;&#65039;</span>
-      <h2>Repositorios EPROC (Automacao de tribunais BR)</h2>
+      <h2>4. Repositorios EPROC (Automacao de tribunais BR)</h2>
     </div>
     <div class="table-wrap">
       <table>
@@ -414,7 +425,7 @@ tr:last-child td { border-bottom: none; }
   <div class="section">
     <div class="section-header">
       <span class="section-icon">&#127463;&#127479;</span>
-      <h2>Automacao Juridica BR (nao-EPROC)</h2>
+      <h2>5. Automacao Juridica BR (nao-EPROC)</h2>
     </div>
     <div class="table-wrap">
       <table>
@@ -460,7 +471,7 @@ tr:last-child td { border-bottom: none; }
   <div class="section">
     <div class="section-header">
       <span class="section-icon">&#128202;</span>
-      <h2>Grandes Repos de Skills CC (sem conteudo juridico)</h2>
+      <h2>6. Grandes Repos de Skills CC (sem conteudo juridico)</h2>
     </div>
     <div class="table-wrap">
       <table>
@@ -512,11 +523,297 @@ tr:last-child td { border-bottom: none; }
     </div>
   </div>
 
-  <!-- SECTION 7: Conclusoes -->
+  <!-- SECTION 7: Analise de Lacunas -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128269;</span>
+      <h2>7. Analise de Lacunas</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card highlight-card highlight-green">
+        <h3>NICHO VAZIO</h3>
+        <p>O MdOs/MdFlow e provavelmente o sistema mais avancado de automacao juridica com Claude Code no mundo. Nao existe nenhuma skill CC para direito brasileiro, EPROC, PJe, ou peticoes em portugues. Zero.</p>
+      </div>
+      <div class="card highlight-card highlight-yellow">
+        <h3>OPORTUNIDADES IDENTIFICADAS</h3>
+        <ul>
+          <li><strong>MCP Server Brasil Legal:</strong> O coreano tem 1.457 stars. Um mcp-brasil-legal (DataJud + EPROC + PJe) seria o primeiro.</li>
+          <li><strong>n8n-nodes-vectorgov:</strong> RAG juridico brasileiro, ja e node n8n. Testar integracao.</li>
+          <li><strong>kipeum86/legal-agent-orchestrator:</strong> 8 agentes juridicos &mdash; arquitetura similar a OlivIA. Referencia.</li>
+          <li><strong>rmcmenamin-svg/litigation-skills:</strong> Workflow de litigio real com Obsidian. Conceitos aplicaveis.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: Plugin Oficial Anthropic -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128680;</span>
+      <h2>8. DESCOBERTA CRITICA &mdash; Plugin Legal Oficial da Anthropic</h2>
+    </div>
+
+    <div class="featured-card">
+      <span class="featured-card repo-tag">Plugin Oficial</span>
+      <h3>anthropics/knowledge-work-plugins/legal</h3>
+      <p style="color: var(--text); font-size: 0.88rem; margin-bottom: 12px;">Plugin OFICIAL da Anthropic para trabalho juridico. Funciona no Claude Code com arquitetura de skills + commands em .md &mdash; identica ao MdOs.</p>
+      <div class="grid g2" style="margin-bottom: 14px;">
+        <div>
+          <span class="tier-label">5 Commands</span>
+          <ul style="padding-left: 18px;">
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><span class="code" style="padding: 2px 8px; display: inline;">/review-contract</span></li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><span class="code" style="padding: 2px 8px; display: inline;">/triage-nda</span></li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><span class="code" style="padding: 2px 8px; display: inline;">/vendor-check</span></li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><span class="code" style="padding: 2px 8px; display: inline;">/brief</span></li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><span class="code" style="padding: 2px 8px; display: inline;">/respond</span></li>
+          </ul>
+        </div>
+        <div>
+          <span class="tier-label">6 Skills</span>
+          <ul style="padding-left: 18px;">
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;">contract-review</li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;">nda-triage (GREEN/YELLOW/RED)</li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;">compliance (GDPR/CCPA)</li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;">canned-responses</li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;">legal-risk-assessment</li>
+            <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;">meeting-briefing</li>
+          </ul>
+        </div>
+      </div>
+      <ul style="padding-left: 18px;">
+        <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><strong>Playbook-driven:</strong> contract review configuravel por organizacao</li>
+        <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><strong>NDA pre-screening:</strong> sistema GREEN/YELLOW/RED automatizado</li>
+        <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><strong>GDPR/CCPA:</strong> compliance workflows integrados</li>
+        <li style="font-size: 0.85rem; color: var(--text); margin-bottom: 4px;"><strong>LexisNexis:</strong> ja integrou o plugin</li>
+      </ul>
+      <div class="impact-note">Lancado Fev/2026 &mdash; causou queda de 14-16% nas acoes da Thomson Reuters, RELX e Wolters Kluwer</div>
+    </div>
+  </div>
+
+  <!-- SECTION 9: MCP Server PJE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#9878;&#65039;</span>
+      <h2>9. MCP Server PJE &mdash; Integracao Tribunais BR</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Descricao</th>
+            <th>Tribunais testados</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">chapirousIA/pje-mcp-server</span></td>
+            <td>MCP server para PJE. Certificados digitais (A1/A3), gestao de processos, dados judiciais. JWT auth.</td>
+            <td>TJCE, TRF5, TJMG, TJSP, TJRJ</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">rsbritto/pje-mcp-server</span></td>
+            <td>Implementacao alternativa PJE MCP.</td>
+            <td>&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top: 16px; padding: 14px 18px; background: rgba(79,255,176,0.08); border: 1px solid rgba(79,255,176,0.25); border-radius: 10px; color: var(--accent3); font-weight: 600; font-size: 0.85rem; text-align: center;">
+      Relevancia MUITO ALTA &mdash; MdFlow integra EPROC. PJE MCP server ampliaria cobertura para tribunais PJE. A arquitetura pode inspirar um EPROC MCP server.
+    </div>
+  </div>
+
+  <!-- SECTION 10: Concorrentes BR -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#127968;</span>
+      <h2>10. Plataformas LegalTech BR (Concorrentes Comerciais)</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Plataforma</th>
+            <th>O que faz</th>
+            <th>Maturidade</th>
+            <th>Relevancia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color: var(--accent2);">JUDIT.io</strong></td>
+            <td>API para consulta/monitoramento em 90+ tribunais BR. Webhooks de notificacao. CNJ, CPF, CNPJ, OAB.</td>
+            <td><span class="status-pill sp-done">ALTA &mdash; SaaS producao</span></td>
+            <td><span class="status-pill sp-block">MUITO ALTA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent2);">LawX.ai</strong></td>
+            <td>35 ferramentas AI para advogados BR. Jurisprudencia, peticoes, gestao casos, prazos. 50.000+ advogados.</td>
+            <td><span class="status-pill sp-done">MUITO ALTA</span></td>
+            <td><span class="status-pill sp-block">ALTA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent2);">Softplan AI</strong></td>
+            <td>AI para transformacao digital judicial. Integracao NATIVA SAJ, PJe, ePROC. Geracao peticoes. LGPD + CNJ 615.</td>
+            <td><span class="status-pill sp-done">MUITO ALTA &mdash; usado por tribunais</span></td>
+            <td><span class="status-pill sp-block">ALTA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent4);">ChatADV</strong></td>
+            <td>IA juridica via WhatsApp + Web. Peticoes (inicial, contestacao, recursos). GPT-5.</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+            <td><span class="status-pill sp-block">ALTA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent4);">Juridico AI</strong></td>
+            <td>Gerador de peticoes com IA. Linhas argumentativas, citacoes, jurisprudencia. Analise preditiva.</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+            <td><span class="status-pill sp-block">ALTA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent4);">Jus IA (Jusbrasil)</strong></td>
+            <td>IA sobre a maior base juridica do Brasil.</td>
+            <td><span class="status-pill sp-done">MUITO ALTA &mdash; Jusbrasil</span></td>
+            <td><span class="status-pill sp-run">MEDIA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent5);">JUIT</strong></td>
+            <td>Jurimetria + IA em 92 tribunais BR. Pioneiro.</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+            <td><span class="status-pill sp-run">MEDIA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent5);">Data Lawyer</strong></td>
+            <td>Jurimetria + IA generativa. Analytics juridico.</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+            <td><span class="status-pill sp-run">MEDIA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent3);">Advbox</strong></td>
+            <td>Gestao processual + API aberta + IAs (Justine, Donna, CRIM-1). MdFlow JA integra.</td>
+            <td><span class="status-pill sp-done">MUITO ALTA</span></td>
+            <td><span class="status-pill sp-done">JA INTEGRADO</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent5);">Legal Wizard</strong></td>
+            <td>Bots para PJe, e-SAJ, ePROC. Automacao tarefas tribunais.</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+            <td><span class="status-pill sp-block">ALTA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--text-muted);">Peticione.ai</strong></td>
+            <td>Gerador peticoes simples.</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+            <td><span class="status-pill sp-pend">BAIXA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--text-muted);">Alfaneo</strong></td>
+            <td>Peticoes com LLMs treinados em legislacao BR.</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+            <td><span class="status-pill sp-run">MEDIA</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--text-muted);">Cria.AI</strong></td>
+            <td>"Primeira IA juridica do Brasil". Docs com base legal rastreavel.</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+            <td><span class="status-pill sp-run">MEDIA</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 11: Skills Adicionais -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128161;</span>
+      <h2>11. Skills Adicionais Encontradas</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Stars</th>
+            <th>O que faz</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">evolsb/claude-legal-skill</span></td>
+            <td><span class="star-count">&mdash;</span></td>
+            <td>Contract review com CUAD (41 categorias de risco de 510 contratos reais). Redlines .docx. Position-aware (customer vs vendor).</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">courtsbr (GitHub org)</span></td>
+            <td><span class="star-count">&mdash;</span></td>
+            <td>Scrapers R para tribunais BR: tjsp, scraperTJRS, dje (Diario Justica), stj, stfstj. TJRS e TJSP cobertos!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 12: Templates n8n -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#9881;&#65039;</span>
+      <h2>12. Templates n8n Juridicos</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card highlight-card highlight-purple">
+        <h3>n8n #6904 &mdash; Legal Department Automation</h3>
+        <p>CLO agent OpenAI O3 + 6 agentes especialistas. Ciclo contrato-compliance. Multi-agente similar a OlivIA.</p>
+      </div>
+      <div class="card highlight-card highlight-blue">
+        <h3>n8n #4354 &mdash; Legal Case Research Extractor</h3>
+        <p>Pesquisa juridica com Bright Data MCP + Gemini. Dados nao-estruturados convertidos em insights acionaveis.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 13: Dados de Mercado BR -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128200;</span>
+      <h2>13. Dados de Mercado BR</h2>
+    </div>
+    <div class="grid g3">
+      <div class="stat-card market-stat">
+        <div class="stat-value" style="color: var(--accent3);">47%</div>
+        <div class="stat-label">Escritorios BR ja usam IA (2026)</div>
+      </div>
+      <div class="stat-card market-stat">
+        <div class="stat-value" style="color: var(--accent4);">40-60%</div>
+        <div class="stat-label">Reducao tempo tarefas repetitivas</div>
+      </div>
+      <div class="stat-card market-stat">
+        <div class="stat-value" style="color: var(--accent5);">623</div>
+        <div class="stat-label">Legaltechs BR (AB2L 2022)</div>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top: 16px;">
+      <div class="stat-card market-stat">
+        <div class="stat-value" style="color: var(--accent2);">90M+</div>
+        <div class="stat-label">Processos ativos judiciario BR</div>
+      </div>
+      <div class="stat-card market-stat">
+        <div class="stat-value" style="color: var(--accent);">1B+</div>
+        <div class="stat-label">Processos historicos digitalizados</div>
+      </div>
+      <div class="stat-card market-stat">
+        <div class="stat-value" style="color: var(--accent3);">615</div>
+        <div class="stat-label">CNJ Resolucao 2025 (governanca IA)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 14: Conclusoes -->
   <div class="section">
     <div class="section-header">
       <span class="section-icon">&#127919;</span>
-      <h2>Conclusoes</h2>
+      <h2>14. Conclusoes</h2>
     </div>
 
     <div class="grid g2">
@@ -543,6 +840,26 @@ tr:last-child td { border-bottom: none; }
           <li><strong>1. rmcmenamin-svg/litigation-skills</strong> &mdash; 14 skills de litigio real, mais proximo do que fazemos</li>
           <li><strong>2. chrisryugj/korean-law-mcp</strong> &mdash; 1,457 stars, referencia de MCP legal</li>
           <li><strong>3. zubair-trabzada/ai-legal-claude</strong> &mdash; 746 stars, arquitetura multi-agente para contratos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top: 16px;">
+      <div class="card" style="background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,209,102,0.06)); border: 1px solid rgba(255,107,107,0.3); border-left: 3px solid var(--accent2); padding-left: 17px;">
+        <h3 style="color: var(--accent2); font-size: 0.95rem; font-weight: 700; margin-bottom: 8px;">ACAO IMEDIATA</h3>
+        <ol style="padding-left: 18px; margin-top: 8px;">
+          <li style="font-size: 0.85rem; color: var(--text); line-height: 1.7; margin-bottom: 6px;"><strong>Instalar e estudar o plugin oficial Anthropic</strong> (knowledge-work-plugins/legal) &mdash; a arquitetura de skills+commands e identica a do MdOs</li>
+          <li style="font-size: 0.85rem; color: var(--text); line-height: 1.7; margin-bottom: 6px;"><strong>Avaliar JUDIT.io API</strong> &mdash; pode monitorar 90+ tribunais vs os 3 do JARBAS (TJRS/TJSC/TJSP)</li>
+          <li style="font-size: 0.85rem; color: var(--text); line-height: 1.7; margin-bottom: 6px;"><strong>Testar chapirousIA/pje-mcp-server</strong> &mdash; MCP para PJE ampliaria cobertura de tribunais</li>
+        </ol>
+      </div>
+      <div class="card" style="background: linear-gradient(135deg, rgba(124,109,255,0.1), rgba(91,196,245,0.06)); border: 1px solid rgba(124,109,255,0.3); border-left: 3px solid var(--accent); padding-left: 17px;">
+        <h3 style="color: var(--accent); font-size: 0.95rem; font-weight: 700; margin-bottom: 8px;">POSICIONAMENTO MdOs vs MERCADO</h3>
+        <ul style="padding-left: 18px; margin-top: 8px;">
+          <li style="font-size: 0.85rem; color: var(--text); line-height: 1.7; margin-bottom: 6px;">MdOs e o <strong>UNICO</strong> sistema que combina: Claude Code skills + automacao EPROC + IA juridica (OlivIA) + jurimetria + WhatsApp (MdZap) + n8n workflows + gestao processual completa</li>
+          <li style="font-size: 0.85rem; color: var(--text); line-height: 1.7; margin-bottom: 6px;">Nenhuma plataforma comercial tem esta profundidade de automacao com Claude Code</li>
+          <li style="font-size: 0.85rem; color: var(--text); line-height: 1.7; margin-bottom: 6px;">O plugin oficial da Anthropic <strong>valida a abordagem</strong> &mdash; skills .md para legal e o caminho</li>
+          <li style="font-size: 0.85rem; color: var(--text); line-height: 1.7; margin-bottom: 6px;">Maior risco: <strong>JUDIT.io</strong> (90 tribunais) e <strong>LawX.ai</strong> (50k users) como concorrentes em escala</li>
         </ul>
       </div>
     </div>
