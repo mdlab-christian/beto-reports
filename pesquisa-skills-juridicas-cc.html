@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesquisa: Skills Claude Code para Automacao Juridica</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+.table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:last-child td { border-bottom: none; }
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; display: inline-block; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+.tier-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 700; margin-bottom: 12px; display: block; }
+.star-count { color: var(--accent4); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+.repo-name { color: var(--accent5); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+.highlight-card { border-left: 3px solid; padding-left: 17px; }
+.highlight-green { border-left-color: var(--accent3); }
+.highlight-yellow { border-left-color: var(--accent4); }
+.highlight-blue { border-left-color: var(--accent5); }
+.highlight-red { border-left-color: var(--accent2); }
+.highlight-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+.highlight-green h3 { color: var(--accent3); }
+.highlight-yellow h3 { color: var(--accent4); }
+.highlight-blue h3 { color: var(--accent5); }
+.highlight-red h3 { color: var(--accent2); }
+.highlight-card p, .highlight-card li { font-size: 0.85rem; color: var(--text); line-height: 1.7; }
+.highlight-card ul { padding-left: 18px; margin-top: 8px; }
+.highlight-card li { margin-bottom: 4px; }
+.alert-box { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); border-radius: 10px; padding: 14px 18px; color: var(--accent2); font-weight: 600; font-size: 0.85rem; text-align: center; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <span class="hero-emoji">&#127891;</span>
+    <h1 class="gradient-text">Skills Claude Code para Automacao Juridica</h1>
+    <p class="hero-sub">Levantamento completo do ecossistema &mdash; GitHub, npm, MCP servers, frameworks</p>
+    <div class="badges">
+      <span class="badge bp">Pesquisa Abril/2026</span>
+      <span class="badge bg">78 repos analisados</span>
+      <span class="badge by">8 MCP servers</span>
+      <span class="badge br">Brasil: nicho vazio</span>
+      <span class="badge bb">MdOs: 22 skills</span>
+    </div>
+  </div>
+
+  <div class="grid g4">
+    <div class="stat-card">
+      <div class="stat-value">78</div>
+      <div class="stat-label">Repos analisados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent3);">22</div>
+      <div class="stat-label">Skills MdOs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent4);">0</div>
+      <div class="stat-label">MCP Legal BR</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent5);">8</div>
+      <div class="stat-label">MCP servers globais</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Skills CC Juridicas -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#9878;&#65039;</span>
+      <h2>Skills Claude Code Juridicas (TOP por relevancia)</h2>
+    </div>
+
+    <span class="tier-label">Tier 1 &mdash; Skills dedicadas para advocacia</span>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Stars</th>
+            <th>Skills</th>
+            <th>Foco</th>
+            <th>Atualizado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">zubair-trabzada/ai-legal-claude</span></td>
+            <td><span class="star-count">746</span></td>
+            <td>14 skills + 5 agentes paralelos</td>
+            <td>Contract review, NDA, compliance. Score 0-100. Install via curl.</td>
+            <td>Abr/2026</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">duraninci/openclaw-legal-skills</span></td>
+            <td><span class="star-count">0</span></td>
+            <td>18 skills production-ready</td>
+            <td>M&amp;A, tax, IP, contracts, due diligence. Battle-tested 1000+ contratos. MIT+Apache.</td>
+            <td>Recente</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">rmcmenamin-svg/litigation-skills</span></td>
+            <td><span class="star-count">0</span></td>
+            <td>14 skills</td>
+            <td>LITIGIO REAL: briefs, hearings, transcripts, deposicoes, Obsidian sync. Opus sub-agents.</td>
+            <td>Abr/2026</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">danielrosehill/Claude-Code-Lawyer</span></td>
+            <td><span class="star-count">5</span></td>
+            <td>Template pesquisa juridica</td>
+            <td>Intake estruturado, evidencias SHA-256, geracao docs TYPST.</td>
+            <td>Abr/2026</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">danielrosehill/Claude-Case-File</span></td>
+            <td><span class="star-count">3</span></td>
+            <td>Case file management</td>
+            <td>Evidencias com chain of custody, privilege review.</td>
+            <td>Mar/2026</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">lotushj1/claude-skill-contract-reviewer</span></td>
+            <td><span class="star-count">4</span></td>
+            <td>4 skills</td>
+            <td>Contratos em chines tradicional (Taiwan). /review /summary /risk /compare</td>
+            <td>Fev/2026</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">hackjpnteam/claude-skill-contract</span></td>
+            <td><span class="star-count">0</span></td>
+            <td>1 skill</td>
+            <td>E-contracts japoneses. PDF via Puppeteer + Vercel + Resend.</td>
+            <td>Abr/2026</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">Sharan0516/claude-skill-legal-doc-advisor</span></td>
+            <td><span class="star-count">0</span></td>
+            <td>1 skill</td>
+            <td>NDAs, SaaS, SAFE notes, term sheets para startups.</td>
+            <td>Mar/2026</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="tier-label" style="margin-top: 24px;">Tier 2 &mdash; Skills juridicas dentro de repos maiores</span>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Stars</th>
+            <th>Skills juridicas</th>
+            <th>Foco</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">alirezarezvani/claude-skills</span></td>
+            <td><span class="star-count">11,469</span></td>
+            <td>~8</td>
+            <td>GDPR, contratos, ISO27001, CISO advisor</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">vibeforge1111/vibeship-spawner-skills</span></td>
+            <td><span class="star-count">847</span></td>
+            <td>5</td>
+            <td>Contract analysis, export control, GDPR, patents, SOX</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">fsch/compliance-tools</span></td>
+            <td><span class="star-count">0</span></td>
+            <td>2</td>
+            <td>SOC2 com 7 roles especializados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 2: MCP Servers -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128268;</span>
+      <h2>MCP Servers Juridicos</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Stars</th>
+            <th>Pais</th>
+            <th>Descricao</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">chrisryugj/korean-law-mcp</span></td>
+            <td><span class="star-count">1,457</span></td>
+            <td>Coreia</td>
+            <td>41 APIs juridicas &rarr; 15 MCP tools. Leis, decisoes, portarias. REFERENCIA de arquitetura.</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">saidsurucu/yargi-mcp</span></td>
+            <td><span class="star-count">767</span></td>
+            <td>Turquia</td>
+            <td>Bases de dados juridicas turcas via MCP.</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">ilhamfp/pasal</span></td>
+            <td><span class="star-count">211</span></td>
+            <td>Indonesia</td>
+            <td>Plataforma legal: MCP + REST API + web app. Primeiro open AI-native legal.</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">ayunis-core/ayunis-legal-mcp</span></td>
+            <td><span class="star-count">77</span></td>
+            <td>Alemanha</td>
+            <td>Codigos legais alemaes via MCP.</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">Mahender22/legal-mcp</span></td>
+            <td><span class="star-count">39</span></td>
+            <td>EUA</td>
+            <td>Case law, citacoes, court filings, practice management.</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">lawchat-oss/mcp-taiwan-legal-db</span></td>
+            <td><span class="star-count">29</span></td>
+            <td>Taiwan</td>
+            <td>Decisoes judiciais + legislacao nacional.</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">kipeum86/legal-agent-orchestrator</span></td>
+            <td><span class="star-count">28</span></td>
+            <td>&mdash;</td>
+            <td>8 agentes juridicos com MCP tools. Audit trails. Similar a OlivIA!</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">georgejeffers/uk-case-law-mcp-server</span></td>
+            <td><span class="star-count">22</span></td>
+            <td>UK</td>
+            <td>Case law via National Archives API.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert-box">BRASIL: ZERO MCP servers juridicos. Nicho completamente vazio.</div>
+  </div>
+
+  <!-- SECTION 3: npm -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128230;</span>
+      <h2>Pacotes npm Juridicos</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pacote</th>
+            <th>Descricao</th>
+            <th>Relevancia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">n8n-nodes-vectorgov</span></td>
+            <td>Node n8n para busca semantica em documentos legais brasileiros (RAG).</td>
+            <td><span class="status-pill sp-done">ALTA</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">mcp-legal-doc-analyzer</span></td>
+            <td>MCP server para analise de documentos legais (PDF/DOCX).</td>
+            <td><span class="status-pill sp-run">MEDIA</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">corisco</span></td>
+            <td>Chrome extension para captura de docs no PJe via ChatJT.</td>
+            <td><span class="status-pill sp-run">MEDIA</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">@solida-juridico/solida-isokit</span></td>
+            <td>Types/validators para plataforma SOLIDA (BR).</td>
+            <td><span class="status-pill sp-pend">BAIXA</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">ocr-provenance-mcp</span></td>
+            <td>MCP para OCR + busca semantica. Nao legal-especifico mas util.</td>
+            <td><span class="status-pill sp-run">MEDIA</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 4: EPROC -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#9881;&#65039;</span>
+      <h2>Repositorios EPROC (Automacao de tribunais BR)</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Stars</th>
+            <th>Stack</th>
+            <th>Descricao</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">grgbrasil/ProcAPI</span></td>
+            <td><span class="star-count">7</span></td>
+            <td>Python</td>
+            <td>API REST para consultas EPROC</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">ricardopera/eProc-TJSC-JFSC-webscraper</span></td>
+            <td><span class="star-count">6</span></td>
+            <td>Python</td>
+            <td>Scraper TJSC + download docs dos autos</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">gianluca-magnabosco/Agendador-ePROC</span></td>
+            <td><span class="star-count">5</span></td>
+            <td>Python</td>
+            <td>Download planilhas intimacoes pendentes</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">trf2-jus-br/eproc-api</span></td>
+            <td><span class="star-count">5</span></td>
+            <td>Java</td>
+            <td>API oficial TRF2 (federal)</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">PedroX-dev/Eproc</span></td>
+            <td><span class="star-count">3</span></td>
+            <td>&mdash;</td>
+            <td>Automacao EPROC (atualizado abr/2026)</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">ECCORJ/eproc-playwright</span></td>
+            <td><span class="star-count">0</span></td>
+            <td>JS</td>
+            <td>Playwright (MESMO STACK que MdFlow/JARBAS)</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">bborgeswq/eproc-scrapers</span></td>
+            <td><span class="star-count">0</span></td>
+            <td>JS</td>
+            <td>Scrapers TJRS 1o grau</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Automacao BR -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#127463;&#127479;</span>
+      <h2>Automacao Juridica BR (nao-EPROC)</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Stars</th>
+            <th>Descricao</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">abjur/datajudScraper</span></td>
+            <td><span class="star-count">23</span></td>
+            <td>Scraper DataJud/CNJ (R) &mdash; ABJ institute</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">hadtrindade/conversor-e-divisor</span></td>
+            <td><span class="star-count">14</span></td>
+            <td>Conversor midias para PJe</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">leonardomv1981/consulta-processo-judicial-apicnj</span></td>
+            <td><span class="star-count">12</span></td>
+            <td>API publica CNJ</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">juniormachado5/Automacao_pje</span></td>
+            <td><span class="star-count">12</span></td>
+            <td>Automacao PJE &rarr; Excel</td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">opiagile/direito-lux-mvp</span></td>
+            <td><span class="star-count">10</span></td>
+            <td>SaaS monitoramento DataJud (Go)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 6: Grandes repos -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#128202;</span>
+      <h2>Grandes Repos de Skills CC (sem conteudo juridico)</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Repo</th>
+            <th>Stars</th>
+            <th>Conteudo Legal?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="repo-name">awesome-claude-code</span></td>
+            <td><span class="star-count">39,219</span></td>
+            <td><span class="status-pill sp-block">Zero legal</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">VoltAgent/awesome-claude-code-subagents</span></td>
+            <td><span class="star-count">17,517</span></td>
+            <td><span class="status-pill sp-block">Zero legal</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">mattpocock/skills</span></td>
+            <td><span class="star-count">15,749</span></td>
+            <td><span class="status-pill sp-block">Zero legal</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">alirezarezvani/claude-skills</span></td>
+            <td><span class="star-count">11,469</span></td>
+            <td><span class="status-pill sp-pend">Compliance sim, litigio nao</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">slavingia/skills</span></td>
+            <td><span class="star-count">7,958</span></td>
+            <td><span class="status-pill sp-block">Zero legal</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">trailofbits/skills</span></td>
+            <td><span class="star-count">4,633</span></td>
+            <td><span class="status-pill sp-block">Security only</span></td>
+          </tr>
+          <tr>
+            <td><span class="repo-name">rohitg00/awesome-claude-code-toolkit</span></td>
+            <td><span class="star-count">1,305</span></td>
+            <td><span class="status-pill sp-block">Zero legal</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 7: Conclusoes -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">&#127919;</span>
+      <h2>Conclusoes</h2>
+    </div>
+
+    <div class="grid g2">
+      <div class="card highlight-card highlight-green">
+        <h3>NICHO VAZIO</h3>
+        <p>O MdOs/MdFlow e provavelmente o sistema mais avancado de automacao juridica com Claude Code no mundo. Nao existe nenhuma skill CC para direito brasileiro, EPROC, PJe, ou peticoes em portugues. Zero.</p>
+      </div>
+      <div class="card highlight-card highlight-yellow">
+        <h3>OPORTUNIDADES</h3>
+        <ul>
+          <li><strong>MCP Server Brasil Legal:</strong> O coreano tem 1.457 stars. Um mcp-brasil-legal (DataJud + EPROC + PJe) seria o primeiro.</li>
+          <li><strong>n8n-nodes-vectorgov:</strong> RAG juridico brasileiro, ja e node n8n. Testar integracao.</li>
+          <li><strong>kipeum86/legal-agent-orchestrator:</strong> 8 agentes juridicos &mdash; arquitetura similar a OlivIA. Referencia.</li>
+          <li><strong>rmcmenamin-svg/litigation-skills:</strong> Workflow de litigio real com Obsidian. Conceitos aplicaveis.</li>
+        </ul>
+      </div>
+      <div class="card highlight-card highlight-blue">
+        <h3>O QUE TEMOS vs O MERCADO</h3>
+        <p>MdOs tem 22 skills juridicas (OlivIA 7 + Controller 5 + Dados 6 + AdvBox 1 + Geral 3). O maior repo do mercado (ai-legal-claude) tem 14 skills focadas em contratos. Ninguem tem: automacao EPROC, captura de intimacoes, analise de decisoes judiciais, jurimetria, geracao de peticoes com IA, distribuicao de processos, ou gestao de execucoes.</p>
+      </div>
+      <div class="card highlight-card highlight-red">
+        <h3>TOP 3 PARA ESTUDAR</h3>
+        <ul>
+          <li><strong>1. rmcmenamin-svg/litigation-skills</strong> &mdash; 14 skills de litigio real, mais proximo do que fazemos</li>
+          <li><strong>2. chrisryugj/korean-law-mcp</strong> &mdash; 1,457 stars, referencia de MCP legal</li>
+          <li><strong>3. zubair-trabzada/ai-legal-claude</strong> &mdash; 746 stars, arquitetura multi-agente para contratos</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    &#128025; Jarbas 2.0 &mdash; MdLab LegalTech &middot; 17/04/2026
+  </div>
+
+</div>
+</body>
+</html>
