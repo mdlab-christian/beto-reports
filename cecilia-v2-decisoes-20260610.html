@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cecília-Controller v2 — Decisões em Aberto</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e;
+  --surface: #1a1714;
+  --card: #201d1a;
+  --border: #2e2b27;
+  --primary: #20c997;
+  --primary-dim: #20c99720;
+  --primary-border: #20c99740;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --info: #60a5fa;
+  --text: #f5f0eb;
+  --muted: #9e9890;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+h1 { font-family: Manrope, Inter, sans-serif; font-size: 1.6rem; font-weight: 700; }
+.subtitle { color: var(--muted); margin-top: .35rem; }
+.meta-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
+.meta-chip {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+  padding: .2rem .75rem; font-size: .78rem; color: var(--muted);
+}
+.meta-chip b { color: var(--text); font-weight: 600; }
+.howto {
+  background: var(--primary-dim); border: 1px solid var(--primary-border); border-radius: 10px;
+  padding: .9rem 1.1rem; margin-bottom: 2rem; font-size: .9rem;
+}
+.howto b { color: var(--primary); }
+.decision {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.4rem; margin-bottom: 1.6rem;
+}
+.decision-header { display: flex; align-items: center; gap: .7rem; margin-bottom: .35rem; flex-wrap: wrap; }
+.decision-id {
+  font-family: var(--mono); font-size: .78rem; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 6px; padding: .1rem .5rem; color: var(--primary);
+}
+.decision-title { font-family: Manrope, Inter, sans-serif; font-size: 1.08rem; font-weight: 700; }
+.badge {
+  font-size: .7rem; font-weight: 600; border-radius: 999px; padding: .12rem .6rem;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.badge-warn { background: #f59e0b22; color: var(--warn); border: 1px solid #f59e0b44; }
+.badge-info { background: #60a5fa22; color: var(--info); border: 1px solid #60a5fa44; }
+.badge-danger { background: #ef444422; color: var(--danger); border: 1px solid #ef444444; }
+.contexto { color: var(--muted); font-size: .9rem; margin-bottom: 1rem; }
+.contexto b { color: var(--text); }
+.options { display: grid; gap: .7rem; }
+@media (min-width: 760px) { .options.two { grid-template-columns: 1fr 1fr; } }
+.option {
+  position: relative; display: block; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: .9rem 1rem .9rem 2.6rem; cursor: pointer; transition: border-color .15s, background .15s;
+}
+.option:hover { border-color: var(--primary-border); }
+.option input { position: absolute; left: 1rem; top: 1.05rem; accent-color: var(--primary); }
+.option.selected { border-color: var(--primary); background: var(--primary-dim); }
+.option-label { font-weight: 600; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.rec {
+  font-size: .65rem; font-weight: 700; color: var(--primary); border: 1px solid var(--primary-border);
+  border-radius: 999px; padding: .05rem .5rem; text-transform: uppercase; letter-spacing: .05em;
+}
+.option-desc { color: var(--muted); font-size: .85rem; margin-top: .3rem; }
+.option-desc .pro { color: var(--success); }
+.option-desc .con { color: var(--danger); }
+.obs-input {
+  width: 100%; margin-top: .9rem; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-family: Inter, sans-serif; font-size: .88rem;
+  padding: .6rem .8rem; resize: vertical; min-height: 38px;
+}
+.obs-input::placeholder { color: #6b665f; }
+.mono { font-family: var(--mono); font-size: .85em; }
+.actions { position: sticky; bottom: 1rem; margin-top: 2rem; display: flex; gap: .8rem; align-items: center; }
+.btn-copy {
+  background: var(--primary); color: #0b1a15; border: none; border-radius: 10px;
+  font-family: Inter, sans-serif; font-weight: 600; font-size: .95rem; padding: .75rem 1.4rem;
+  cursor: pointer; box-shadow: 0 4px 24px #20c99733;
+}
+.btn-copy:hover { filter: brightness(1.08); }
+.copy-status { color: var(--success); font-size: .85rem; opacity: 0; transition: opacity .2s; }
+.copy-status.show { opacity: 1; }
+footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .78rem; }
+.ref { color: var(--muted); font-size: .8rem; margin-top: .8rem; }
+.ref .mono { color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧠 Cecília-Controller v2 — Decisões em Aberto</h1>
+  <div class="subtitle">4 decisões do PLAYBOOK-v2 (§9) que precisam do seu martelo antes de virar spec + tasks</div>
+  <div class="meta-row">
+    <span class="meta-chip">Projeto <b>cecilia-hibrida/v2</b></span>
+    <span class="meta-chip">Fonte <b>PLAYBOOK-v2.md §9</b></span>
+    <span class="meta-chip">Gerado <b>2026-06-10</b></span>
+    <span class="meta-chip">Decisor <b>Gustavo</b></span>
+  </div>
+</header>
+
+<div class="howto">
+  <b>Como usar:</b> marque uma opção em cada decisão (e anote observações se quiser). No final, clique em
+  <b>"Copiar respostas"</b> e cole o texto na conversa com o CC. Pode também responder por conta própria
+  (ex.: <span class="mono">"D-V2-01: B"</span>).
+</div>
+
+<!-- D-V2-01 -->
+<div class="decision" data-id="D-V2-01" data-title="Re-sort ao favoritar">
+  <div class="decision-header">
+    <span class="decision-id">D-V2-01</span>
+    <span class="decision-title">Favoritar/marcar importante: a intimação sobe na hora ou só depois?</span>
+    <span class="badge badge-warn">UX · lista</span>
+  </div>
+  <div class="contexto">
+    Hoje, ao marcar ★ importante, o card <b>sobe para o topo na hora</b> — e o João relatou que se perde do ponto
+    onde estava ("tu te perdes um pouco do teu fio"). Na ADVBox, a reordenação só acontece <b>no próximo filtro/recarga</b>.
+    Norte do produto: com ~1.000 intimações/dia, <b>nada deve se mover sob os pés do usuário</b>.
+  </div>
+  <div class="options two">
+    <label class="option">
+      <input type="radio" name="D-V2-01" value="A — sobe na hora (comportamento atual)">
+      <div class="option-label">A · Sobe na hora (atual)</div>
+      <div class="option-desc"><span class="pro">+ feedback imediato</span> de que a marcação funcionou ·
+      <span class="con">− usuário perde o fio</span> da leitura; lista "pula"</div>
+    </label>
+    <label class="option">
+      <input type="radio" name="D-V2-01" value="B — só reordena em reload/filtro (estilo ADVBox)">
+      <div class="option-label">B · Só reordena no reload/filtro <span class="rec">Recomendado</span></div>
+      <div class="option-desc"><span class="pro">+ lista estável</span>, coerente com "não se perder";
+      a estrela acende no lugar (feedback visual) e a ordenação muda só na próxima carga ·
+      <span class="con">− favoritas não "aparecem" no topo de imediato</span></div>
+    </label>
+  </div>
+  <textarea class="obs-input" placeholder="Observações (opcional)…"></textarea>
+</div>
+
+<!-- D-V2-02 -->
+<div class="decision" data-id="D-V2-02" data-title="Refazer /cecilia vs manter">
+  <div class="decision-header">
+    <span class="decision-id">D-V2-02</span>
+    <span class="decision-title">Página /cecilia (Mesa): refazer do zero ou manter e consertar?</span>
+    <span class="badge badge-danger">Estratégia · maior decisão do v2</span>
+  </div>
+  <div class="contexto">
+    Do seu áudio: o XLS <b>não cai na Mesa</b> na prática e o Christian autorizou refazer a página se você quiser.
+    O backend por trás (RPC-coração <span class="mono">fn_cecilia_captura_salvar</span>, Worker C, pipeline) é <b>intocável e funciona</b> —
+    a dúvida é só o <b>front da Mesa</b>. Critérios: velocidade, agilidade, precisão (quem opera é o João Pedro).
+  </div>
+  <div class="options">
+    <label class="option">
+      <input type="radio" name="D-V2-02" value="A — manter a página atual e consertar (começa pelo diagnóstico do XLS→Mesa)">
+      <div class="option-label">A · Manter + consertar</div>
+      <div class="option-desc"><span class="pro">+ menos retrabalho</span>; a estrutura (fila por OAB, ModalCaptura, Tipos) já existe ·
+      <span class="con">− herda os problemas de um front que nunca rodou de verdade</span> na mão do usuário</div>
+    </label>
+    <label class="option">
+      <input type="radio" name="D-V2-02" value="B — refazer o front da Mesa do zero (mantendo RPCs-coração e pipeline intactos)">
+      <div class="option-label">B · Refazer o front do zero</div>
+      <div class="option-desc"><span class="pro">+ página desenhada para o fluxo real</span> do João Pedro, sem bagagem ·
+      <span class="con">− mais esforço</span>; precisa re-testar tudo de novo</div>
+    </label>
+    <label class="option">
+      <input type="radio" name="D-V2-02" value="C — decidir DEPOIS do diagnóstico do P0-6 (XLS→Mesa): se for bug pontual, manter; se for estrutural, refazer">
+      <div class="option-label">C · Diagnóstico primeiro, decisão depois <span class="rec">Recomendado</span></div>
+      <div class="option-desc"><span class="pro">+ decisão informada</span>: o CC investiga o P0-6 (onde o XLS morre: processor → ponte → fila → front)
+      e te traz o veredicto — bug pontual ⇒ manter; falha estrutural ⇒ refazer ·
+      <span class="con">− adia a decisão</span> em ~1 investigação</div>
+    </label>
+  </div>
+  <textarea class="obs-input" placeholder="Observações (opcional)…"></textarea>
+</div>
+
+<!-- D-V2-03 -->
+<div class="decision" data-id="D-V2-03" data-title="Footer do drawer">
+  <div class="decision-header">
+    <span class="decision-id">D-V2-03</span>
+    <span class="decision-title">Botões do drawer (Audiência · Decisão · Doc. Pendente · Atividade · Acordo): fixos onde?</span>
+    <span class="badge badge-info">UX · drawer</span>
+  </div>
+  <div class="contexto">
+    O João pediu os botões <b>"sempre visíveis"</b> — ideal em todas as abas; se não der, sempre na aba Detalhes.
+    O drawer planejado tem <b>320–380px</b> de largura e 5 abas (Intimação · Processo · Histórico · Cecília · Análise).
+    São <b>5 botões</b> num rodapé estreito.
+  </div>
+  <div class="options">
+    <label class="option">
+      <input type="radio" name="D-V2-03" value="A — footer fixo em TODAS as abas (5 botões compactos, ícone + tooltip, ou 4 + menu '+' para Acordo)">
+      <div class="option-label">A · Fixo em todas as abas <span class="rec">Recomendado</span></div>
+      <div class="option-desc"><span class="pro">+ exatamente o que o João pediu</span>; ação a 1 clique de qualquer aba.
+      Para caber: botões compactos (ícone + label curto) ou 4 visíveis + "+" abrindo o Acordo ·
+      <span class="con">− rouba ~52px de altura útil</span> do drawer em todas as abas</div>
+    </label>
+    <label class="option">
+      <input type="radio" name="D-V2-03" value="B — footer só na aba Detalhes/Intimação">
+      <div class="option-label">B · Só na aba principal (Intimação/Detalhes)</div>
+      <div class="option-desc"><span class="pro">+ mais espaço</span> nas abas de leitura (Histórico, Análise) ·
+      <span class="con">− João precisa voltar de aba</span> para agir (mais cliques no dia de 1.000 intimações)</div>
+    </label>
+  </div>
+  <textarea class="obs-input" placeholder="Observações (opcional)…"></textarea>
+</div>
+
+<!-- D-V2-04 -->
+<div class="decision" data-id="D-V2-04" data-title="Screenshots da régua de alinhamento">
+  <div class="decision-header">
+    <span class="decision-id">D-V2-04</span>
+    <span class="decision-title">Screenshots do alinhamento dos nomes (a "linha de régua")</span>
+    <span class="badge badge-warn">Pendência sua · bloqueia o card</span>
+  </div>
+  <div class="contexto">
+    Na sessão vocês falaram: <b>"a gente vai mandar umas screenshots junto da forma que a gente queria e de como é que tá"</b>
+    (alinhamento AUTORA × RÉ centralizado em régua vertical, estilo ADVBox). Sem as imagens, o CC fecha a spec do card
+    pela descrição em texto — funciona, mas com risco de mais 1 rodada de ajuste visual.
+  </div>
+  <div class="options">
+    <label class="option">
+      <input type="radio" name="D-V2-04" value="A — vou mandar as screenshots (ADVBox como queremos + MdFlow como está) antes da implementação do card">
+      <div class="option-label">A · Vou mandar as screenshots <span class="rec">Recomendado</span></div>
+      <div class="option-desc"><span class="pro">+ spec visual exata</span>, menos ida-e-volta no ajuste do card</div>
+    </label>
+    <label class="option">
+      <input type="radio" name="D-V2-04" value="B — segue sem screenshots; implementar pela descrição em texto e ajustar na rodada 2 com o João">
+      <div class="option-label">B · Seguir sem screenshots</div>
+      <div class="option-desc"><span class="pro">+ não bloqueia o início</span> ·
+      <span class="con">− provável rodada extra</span> de ajuste fino do alinhamento</div>
+    </label>
+  </div>
+  <textarea class="obs-input" placeholder="Observações (opcional)…"></textarea>
+</div>
+
+<div class="actions">
+  <button class="btn-copy" onclick="copiarRespostas()">📋 Copiar respostas</button>
+  <span class="copy-status" id="copyStatus">✓ Copiado! Cole na conversa com o CC.</span>
+</div>
+
+<div class="ref">
+  Referências: <span class="mono">.projeto/cecilia-hibrida/v2/PLAYBOOK-v2.md</span> ·
+  <span class="mono">transcricao-joao-front.md</span> · <span class="mono">CONTEXTO-RETOMADA.md</span>
+</div>
+
+<footer>
+  Cecília-Controller v2 · Decisões em aberto · Gerado pelo CC em 2026-06-10 · MdLab LegalTech
+</footer>
+
+<script>
+document.querySelectorAll('.option input').forEach(input => {
+  input.addEventListener('change', () => {
+    const group = input.closest('.decision');
+    group.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    input.closest('.option').classList.add('selected');
+  });
+});
+
+function copiarRespostas() {
+  const linhas = ['Respostas — Decisões Cecília-Controller v2 (2026-06-10):', ''];
+  document.querySelectorAll('.decision').forEach(d => {
+    const id = d.dataset.id;
+    const title = d.dataset.title;
+    const sel = d.querySelector('input:checked');
+    const obs = d.querySelector('.obs-input').value.trim();
+    linhas.push(`${id} (${title}): ${sel ? sel.value : '— sem resposta —'}`);
+    if (obs) linhas.push(`  obs: ${obs}`);
+  });
+  const texto = linhas.join('\n');
+  navigator.clipboard.writeText(texto).then(() => {
+    const s = document.getElementById('copyStatus');
+    s.classList.add('show');
+    setTimeout(() => s.classList.remove('show'), 3000);
+  }).catch(() => {
+    prompt('Copie manualmente:', texto);
+  });
+}
+</script>
+
+</body>
+</html>
