@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Julia por dentro — manual completo (fases, skills, webhooks, input→output)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#12100e; --surface:#1a1714; --card:#201d1a; --border:#2e2b27;
+  --primary:#20c997; --primary-dim:#20c99720; --primary-border:#20c99740;
+  --warn:#f59e0b; --danger:#ef4444; --success:#22c55e; --info:#60a5fa;
+  --text:#f5f0eb; --muted:#9e9890; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.65;padding:2rem;max-width:1280px;margin:0 auto}
+.layout{display:flex;gap:2rem}
+.sidebar{width:235px;position:sticky;top:20px;height:fit-content;max-height:92vh;overflow-y:auto;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem}
+.sidebar h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:.9rem 0 .3rem}
+.sidebar h4:first-child{margin-top:0}
+.sidebar a{display:block;color:var(--text);text-decoration:none;font-size:.8rem;padding:.22rem .5rem;border-radius:6px}
+.sidebar a:hover{background:var(--primary-dim);color:var(--primary)}
+main{flex:1;min-width:0}
+@media(max-width:860px){.sidebar{display:none}body{padding:1rem}}
+h1{font-family:Manrope;font-size:1.75rem;font-weight:800;letter-spacing:-.02em}
+h1 .accent{color:var(--primary)}
+.subtitle{color:var(--muted);margin-top:.4rem;max-width:820px}
+.meta-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:.2rem .75rem;font-size:.75rem;color:var(--muted)}
+.meta-chip b{color:var(--text)}
+section{margin-top:2.8rem;scroll-margin-top:20px}
+h2{font-family:Manrope;font-size:1.3rem;font-weight:700;padding-bottom:.5rem;border-bottom:1px solid var(--border);margin-bottom:1.1rem}
+h2 .num{color:var(--primary);font-family:var(--mono);font-size:1rem;margin-right:.5rem}
+h3{font-family:Manrope;font-size:1.02rem;font-weight:700;margin:1.4rem 0 .6rem}
+p{margin-bottom:.8rem;max-width:880px}
+p.lead{font-size:.98rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1rem}
+.badge{display:inline-block;border-radius:6px;padding:.1rem .55rem;font-size:.7rem;font-weight:600;white-space:nowrap;vertical-align:middle}
+.b-primary{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)}
+.b-warn{background:#f59e0b1f;color:var(--warn);border:1px solid #f59e0b40}
+.b-danger{background:#ef44441f;color:var(--danger);border:1px solid #ef444440}
+.b-success{background:#22c55e1f;color:var(--success);border:1px solid #22c55e40}
+.b-info{background:#60a5fa1f;color:var(--info);border:1px solid #60a5fa40}
+.b-neutral{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+code{font-family:var(--mono);font-size:.82em;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.04rem .32rem}
+table{width:100%;border-collapse:collapse;margin:0 0 1rem;font-size:.85rem}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;padding:.45rem .6rem;border-bottom:1px solid var(--border)}
+td{padding:.5rem .6rem;border-bottom:1px solid #242019;vertical-align:top}
+tr:last-child td{border-bottom:none}
+/* fluxo numerado */
+.step{display:flex;gap:.9rem;margin-bottom:.65rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .95rem}
+.step .n{font-family:var(--mono);font-weight:600;color:var(--primary);background:var(--primary-dim);border:1px solid var(--primary-border);border-radius:8px;min-width:2.1rem;height:2.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step .t{flex:1}
+.step .t b{display:block;margin-bottom:.1rem}
+.step .t span{color:var(--muted);font-size:.86rem}
+.step.gate{border-left:3px solid var(--warn)}
+.step.llm{border-left:3px solid var(--info)}
+.step.out{border-left:3px solid var(--success)}
+/* fases */
+.fase-line{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin:.8rem 0 1.2rem;font-family:var(--mono);font-size:.78rem}
+.fase-pill{background:var(--primary-dim);border:1px solid var(--primary-border);color:var(--primary);border-radius:999px;padding:.25rem .7rem;font-weight:600}
+.fase-pill.gray{background:var(--surface);border-color:var(--border);color:var(--muted)}
+.fase-arrow{color:var(--muted)}
+/* skill cards */
+.skill{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.4rem;margin-bottom:1.3rem}
+.skill-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.6rem}
+.skill-head .nome{font-family:var(--mono);font-weight:600;font-size:1.02rem;color:var(--primary)}
+.skill dl{display:grid;grid-template-columns:170px 1fr;gap:.3rem .9rem;font-size:.87rem;margin:.7rem 0}
+.skill dt{color:var(--muted);font-weight:600}
+.skill dd{margin:0}
+.skill .paragrafo{background:var(--surface);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:.7rem .9rem;font-size:.87rem;color:#d8d2ca;margin:.6rem 0}
+.exemplo{font-family:var(--mono);font-size:.78rem;background:#161310;border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;color:#b9e7d6;margin:.5rem 0;overflow-x:auto;white-space:pre-wrap}
+.callout{background:linear-gradient(135deg,var(--primary-dim),transparent 65%);border:1px solid var(--primary-border);border-radius:12px;padding:1rem 1.2rem;margin:1rem 0}
+.callout.warn{background:linear-gradient(135deg,#f59e0b18,transparent 65%);border-color:#f59e0b40}
+.callout.danger{background:linear-gradient(135deg,#ef444418,transparent 65%);border-color:#ef444440}
+.callout b.titulo{display:block;margin-bottom:.3rem}
+ul.clean{list-style:none;margin:0 0 1rem}
+ul.clean li{padding:.28rem 0 .28rem 1.3rem;position:relative}
+ul.clean li::before{content:'→';position:absolute;left:0;color:var(--primary)}
+footer{margin-top:3rem;color:var(--muted);font-size:.78rem;text-align:center;border-top:1px solid var(--border);padding-top:1.2rem}
+a{color:var(--info)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}.skill dl{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <h4>Comece aqui</h4>
+  <a href="#glossario">0 · Glossário (inbound?)</a>
+  <a href="#jornada">1 · A jornada da mensagem</a>
+  <a href="#fases">2 · A máquina de fases</a>
+  <h4>Skills (roteadas)</h4>
+  <a href="#sk-recepcao">recepcao</a>
+  <a href="#sk-coleta">coleta_documentos</a>
+  <a href="#sk-comprovante">comprovante_residencia</a>
+  <a href="#sk-ctps">coleta_ctps</a>
+  <a href="#sk-transicao">transicao_humano</a>
+  <a href="#sk-pospdf">pos_pdf</a>
+  <a href="#sk-objecao">objecao</a>
+  <a href="#sk-cancelamento">cancelamento</a>
+  <a href="#sk-cpflimpo">cpf_limpo</a>
+  <h4>Skills (motor/cron)</h4>
+  <a href="#sk-auditoria">auditoria</a>
+  <a href="#sk-ffunil">followup_funil</a>
+  <a href="#sk-followup">followup · followup_docs</a>
+  <h4>Skills (mortas?)</h4>
+  <a href="#sk-mortas">docs · escalada · atend_cliente</a>
+  <h4>Sistema</h4>
+  <a href="#cerebro">3 · O cérebro (00_cerebro)</a>
+  <a href="#webhooks">4 · Webhooks &amp; integrações</a>
+  <a href="#crons">5 · Crons (Julia proativa)</a>
+  <a href="#leis">6 · Leis de script</a>
+  <a href="#ondemexer">7 · Onde mexer pra mudar X</a>
+  <h4>Estratégia</h4>
+  <a href="#estadoarte">8 · Estado da arte vs Julia</a>
+  <a href="#gargalos">9 · Gargalos &amp; oportunidades</a>
+</aside>
+<main>
+
+<header>
+  <h1>Julia <span class="accent">por dentro</span> — o manual completo</h1>
+  <p class="subtitle">Tudo o que acontece entre o lead apertar "enviar" no WhatsApp e a Julia responder — em ordem cronológica, fase por fase, skill por skill, webhook por webhook. Feito pra você enxergar onde mora cada coisa, achar os gargalos e planejar o próximo nível (incluindo o novo front do MdZap sdr_leads).</p>
+  <div class="meta-row">
+    <span class="meta-chip">📅 <b>2026-06-11</b></span>
+    <span class="meta-chip">Fonte: <b>inbound.controller.ts</b> (pós-decisões D1-D10) + Vault completo + pesquisa estado-da-arte</span>
+    <span class="meta-chip">Servidor: <b>julia-server</b> · Mac Mini · porta 8787</span>
+    <span class="meta-chip">Modelo: <b>Claude Sonnet</b> (~7-8k tokens/chamada, cache 5min)</span>
+  </div>
+</header>
+
+<!-- ════════════ 0 GLOSSÁRIO ════════════ -->
+<section id="glossario">
+<h2><span class="num">0</span>Glossário — os 10 termos que destravam tudo (incluindo a tua dúvida do "inbound")</h2>
+
+<div class="callout"><b class="titulo">🔑 INBOUND — a tua dúvida, respondida</b>
+<b>Inbound</b> = mensagem que ENTRA (do lead PARA a Julia). <b>Outbound</b> = mensagem que SAI (da Julia PARA o lead). São termos de direção do tráfego, emprestados do marketing/telefonia. No código da Julia, <code>/inbound</code> é o nome da "porta de entrada": o endereço HTTP (<code>POST /inbound</code>, porta 8787) que recebe TODA mensagem nova de lead. Quando alguém fala "o pipeline do /inbound", está falando de tudo que acontece desde a mensagem chegar nessa porta até a resposta sair. Por extensão: <b>funil inbound</b> = o lead vem até nós (anúncio → Diagnóstico Financeiro → WhatsApp); <b>funil outbound</b> = nós vamos até o lead (campanha, template, follow-up por cron).</div>
+
+<table>
+<thead><tr><th style="width:170px">Termo</th><th>O que é, em português claro</th></tr></thead>
+<tbody>
+<tr><td><b>Webhook</b></td><td>Um "campainha de internet": quando algo acontece num sistema (ex.: lead mandou mensagem na Meta), esse sistema CHAMA uma URL nossa avisando. É o contrário de ficar perguntando "chegou algo?" — o evento vem até nós.</td></tr>
+<tr><td><b>Edge Function</b></td><td>Um mini-programa que roda dentro do Supabase (nosso banco na nuvem). A <code>mdzap-webhook</code> é uma Edge Function: a Meta chama ela, ela salva a mensagem no banco e repassa pro julia-server.</td></tr>
+<tr><td><b>Fase</b></td><td>Onde o lead está na esteira (<code>aguardando_id</code>, <code>aguardando_comprovante</code>...). Fica gravada no banco em <code>leads.memoria_julia.fase</code>. É a memória de longo prazo da posição — a Julia "sabe onde está" porque o script LÊ a fase antes de cada resposta e a INJETA no prompt.</td></tr>
+<tr><td><b>Skill</b></td><td>Um arquivo <code>.md</code> do Vault com o roteiro de UM momento da conversa. A cada mensagem, o script escolhe UMA skill (pela fase) e cola ela no prompt. A Julia nunca vê duas skills ao mesmo tempo.</td></tr>
+<tr><td><b>System prompt</b></td><td>O "briefing" completo que vai pro Claude a cada mensagem: SOUL (quem ela é) + STYLE (como fala) + a skill da vez + instrução de formato. ~27KB, ~7-8 mil tokens. Fica em cache por 5 minutos (por isso edição de skill demora até 5min pra valer — ou exige restart).</td></tr>
+<tr><td><b>Marker</b></td><td>Etiqueta <code>[MAIÚSCULA]</code> que a Julia esconde na resposta (ex.: <code>[COMPROVANTE_OK]</code>). O script intercepta, REMOVE antes de enviar ao lead, e executa uma ação (avançar fase, escalar, arquivar). É o único jeito de o prompt "apertar botões" do sistema.</td></tr>
+<tr><td><b>Gate</b></td><td>Regra determinística de código (TypeScript) que NÃO depende da IA: roda antes ou depois do Claude e pode calar a Julia, reescrever a resposta ou forçar transição. Gate sempre vence prompt.</td></tr>
+<tr><td><b>Cron</b></td><td>Despertador do servidor: tarefa que roda sozinha em horários fixos (ex.: follow-up 8h/10h/12h...). É o que torna a Julia PROATIVA — sem cron, ela só reage.</td></tr>
+<tr><td><b>Engine</b></td><td>Motor de código que usa uma skill SEM passar pelo /inbound — ex.: o <code>followup-funil-engine</code> decide sozinho quem cobrar e usa a skill <code>followup_funil.md</code> só pra redigir o texto.</td></tr>
+<tr><td><b>Bolhas / delays</b></td><td>A Julia não responde num textão: o Claude devolve um JSON <code>{bolhas:[...], delays_ms:[...]}</code> e o script envia bolha por bolha com pausas de 1,2-2,2s — simulando digitação humana.</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ════════════ 1 JORNADA ════════════ -->
+<section id="jornada">
+<h2><span class="num">1</span>A jornada de uma mensagem — input → output, em ordem cronológica</h2>
+<p class="lead">Isto é O MAPA. Cada mensagem do lead percorre estes 14 passos, nesta ordem. Borda <span class="badge b-warn">amarela</span> = gate de script (pode parar tudo aqui) · <span class="badge b-info">azul</span> = IA · <span class="badge b-success">verde</span> = saída.</p>
+
+<div class="step"><div class="n">1</div><div class="t"><b>Lead envia a mensagem no WhatsApp</b><span>Texto, foto, PDF ou áudio. O celular dele fala com os servidores da Meta (dona do WhatsApp).</span></div></div>
+<div class="step"><div class="n">2</div><div class="t"><b>Meta Cloud API dispara o webhook</b><span>A Meta chama a nossa URL registrada — a Edge Function <code>mdzap-webhook</code> no Supabase. É AQUI que a mensagem entra no nosso mundo.</span></div></div>
+<div class="step"><div class="n">3</div><div class="t"><b>mdzap-webhook salva e repassa</b><span>Grava a mensagem em <code>whatsapp_mensagens</code> (por isso ela aparece no MdZap mesmo se a Julia falhar), acha/cria a conversa, transcreve áudio se preciso, e faz <code>POST /inbound</code> no julia-server (Mac Mini, porta 8787, header de autenticação <code>mdflow</code>) com timeout de 25s.</span></div></div>
+<div class="step gate"><div class="n">4</div><div class="t"><b>GATES DE ENTRADA — a Julia decide se sequer responde</b><span>Em sequência: é eco da própria Julia? → ignora. 1ª mensagem sem <code>[Codigo atendimento: CPF]</code>? → escala humano e cala. Lead com <code>awaiting_human=true</code>? → cala. Atendente humano respondeu há menos de 12h? → cala (silêncio pós-handoff). Foto/doc FORA de fase de coleta? → "vou chamar alguém" + escala. Auditoria com erro? → mensagem honesta + escala. Se qualquer gate dispara, o Claude NEM É CHAMADO.</span></div></div>
+<div class="step"><div class="n">5</div><div class="t"><b>Carrega o estado do lead</b><span>Busca no banco: <code>memoria_julia</code> (fase, contadores, última skill), documentos já recebidos (frente/verso/comprovante/CTPS), CPF, metadata, histórico das últimas 15 mensagens, e se já existe PDF de auditoria.</span></div></div>
+<div class="step"><div class="n">6</div><div class="t"><b>ZapSign — detecção e consulta de procuração</b><span>Se algum atendente mandou link ZapSign na conversa → salva o token em <code>procuracoes</code>. Se o lead está em <code>aguardando_assinatura</code> → consulta a API ZapSign na hora; se assinou → confirma com o lead e encerra o ciclo Julia.</span></div></div>
+<div class="step gate"><div class="n">7</div><div class="t"><b>Processamento de mídia (se foto/PDF/áudio)</b><span>Áudio → Whisper local (~2s). Foto/PDF em fase de coleta → Vision + <b>doc-reader</b> (o leitor JO-16, Sonnet 4.6): identifica o tipo (RG/CNH/comprovante/CTPS), o lado (frente/verso), se está legível, extrai nome/CPF/datas. AQUI rodam os gates de documento: frente+verso completo? → marca avanço forçado. Nome do comprovante ≠ titular? → regra do terceiro (B3). Salva tudo em <code>leads.documentos</code>.</span></div></div>
+<div class="step"><div class="n">8</div><div class="t"><b>Roteador escolhe A skill</b><span>Pela fase + tipo de mensagem + detector de objeção (regex). Só UMA skill é carregada (tabela na §2). Detalhe importante: objeção detectada VENCE a fase — o lead em coleta que escreve "é golpe?" cai na <code>objecao.md</code> naquele turno.</span></div></div>
+<div class="step"><div class="n">9</div><div class="t"><b>Monta o prompt</b><span>System = SOUL + STYLE + skill escolhida + formato JSON. User = brief do Diagnóstico Financeiro + contexto consolidado + histórico + STATUS DOS DOCUMENTOS ("ID: JÁ RECEBIDO. NÃO peça de novo.") + injeções [SISTEMA] (fase atual, proibições, gates de documento do passo 7) + a mensagem do lead. ~15 injeções possíveis — o script "conversa" com a IA por aqui.</span></div></div>
+<div class="step llm"><div class="n">10</div><div class="t"><b>Claude responde</b><span>Sonnet gera o JSON <code>{bolhas, delays_ms}</code> + markers escondidos. Circuit breaker de 30s, máx 5 chamadas simultâneas, custo ~R$0,05-0,15/resposta (com cache).</span></div></div>
+<div class="step gate"><div class="n">11</div><div class="t"><b>FILTROS DE SAÍDA — o script revisa a IA</b><span>(a) Anti-alucinação: lead mandou só TEXTO e a Julia "confirmou documento"? → REESCREVE as bolhas pedindo a foto. (b) Processa e remove os 5 markers. (c) Forbidden filter: palavra-tabu (tribunal, advogado, garantia...)? → bloqueia a resposta proibida, manda bolha neutra de fallback e escala humano (novo, D8). Resíduos de marker são logados antes de remover (novo, D6).</span></div></div>
+<div class="step out"><div class="n">12</div><div class="t"><b>Envia bolha por bolha via Meta</b><span>Loop: manda bolha 1 → espera o delay → bolha 2... Cada bolha vira uma linha em <code>whatsapp_mensagens</code> (por isso o MdZap mostra em tempo real). Se a Meta recusar uma, para o loop.</span></div></div>
+<div class="step out"><div class="n">13</div><div class="t"><b>Atualiza o estado (transições de fase)</b><span>Grava <code>memoria_julia</code>: nova fase (pelos markers OU pelos gates determinísticos — o doc-reader avança a fase mesmo se a IA esquecer o marker), contadores de tentativa, última skill. Handoff imediato: entrou em <code>aguardando_ctps</code> → <code>awaiting_human=true</code> (o Vinícius já assume). Dispara auditoria em background se foi o turno do documento completo.</span></div></div>
+<div class="step out"><div class="n">14</div><div class="t"><b>Trilha de auditoria</b><span>Tudo registrado em <code>julia_skills_audit_log</code> (quem, o quê, quantas bolhas, latência) e nos logs do servidor (<code>/Users/julia/logs/julia.out.log</code>). Resposta total hoje: ~30s (gargalo conhecido — ver §9).</span></div></div>
+
+<div class="callout"><b class="titulo">Resumo do desenho (e por que ele é bom)</b>A IA é só o passo 10 de 14. Todo o resto é script determinístico — é por isso que dá pra confiar a Julia com documento que vai pra Justiça. A indústria chama isso de "o LLM é ~20% do sistema" — e é exatamente o padrão recomendado (ver §8).</div>
+</section>
+
+<!-- ════════════ 2 FASES ════════════ -->
+<section id="fases">
+<h2><span class="num">2</span>A máquina de fases — a esteira que o lead percorre</h2>
+<p>A <b>fase</b> é a coluna vertebral. Mora em <code>leads.memoria_julia.fase</code>, só o SCRIPT escreve nela, e ela decide qual skill a Julia usa. O fluxo positivo (lead caminhando pra assinatura):</p>
+<div class="fase-line">
+  <span class="fase-pill gray">null (1ª msg)</span><span class="fase-arrow">→</span>
+  <span class="fase-pill">aguardando_id</span><span class="fase-arrow">→ RG frente+verso OK →</span>
+  <span class="fase-pill">aguardando_comprovante</span><span class="fase-arrow">→ comprovante OK →</span>
+  <span class="fase-pill">aguardando_ctps</span><span class="fase-arrow">→ CTPS ou recusa →</span>
+  <span class="fase-pill">documentos_completos</span><span class="fase-arrow">→ humano (Vinícius) → ZapSign →</span>
+  <span class="fase-pill gray">procuracao_assinada</span>
+</div>
+<p>Desvios (fluxo negativo ou lateral): <code>confirmando_cancelamento → arquivado</code> (lead desistiu) · <code>cpf_limpo → arquivado</code> (sem restrições — vira indicação). E em paralelo às fases existe o <code>awaiting_human</code> (humano assumiu → Julia cala) e o <code>coluna_crm</code> (a coluna do kanban no CRM).</p>
+<table>
+<thead><tr><th>Fase</th><th>Skill que assume</th><th>Como entra</th><th>Como sai</th><th>Duração típica</th></tr></thead>
+<tbody>
+<tr><td><code>null</code> → <code>aguardando_id</code></td><td>recepcao</td><td>1ª msg com código de atendimento</td><td>automático após a 1ª resposta</td><td>segundos</td></tr>
+<tr><td><code>aguardando_id</code></td><td>coleta_documentos</td><td>pós-recepção</td><td>doc-reader confirma frente+verso → dispara auditoria + avança</td><td>minutos a dias (depende do lead)</td></tr>
+<tr><td><code>aguardando_comprovante</code></td><td>comprovante_residencia</td><td>ID validado</td><td>leitor valida comprovante (ou marker) → avança</td><td>minutos a dias</td></tr>
+<tr><td><code>aguardando_ctps</code></td><td>coleta_ctps</td><td>comprovante OK · <b>já sobe pro Ag. Humano aqui</b></td><td>CTPS/renda recebida OU recusa → escala</td><td>1-2 mensagens (best-effort)</td></tr>
+<tr><td><code>documentos_completos</code></td><td>transicao_humano</td><td>ciclo de docs fechado</td><td>handoff → silêncio Julia</td><td>—</td></tr>
+<tr><td><code>confirmando_cancelamento</code></td><td>cancelamento</td><td>detector de desistência (destravado 11/06)</td><td>confirma → arquivado · recua → volta ao fluxo</td><td>1 troca</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ════════════ SKILLS ROTEADAS ════════════ -->
+<section id="skills">
+<h2><span class="num">S</span>As skills, uma a uma — no formato que tu pediu</h2>
+<p class="lead">Cada card: pra que serve · quando ativa · quanto dura · como a Julia sabe · parágrafo do conteúdo · vezes por conversa · fluxo positivo/negativo · sempre ou depende. Primeiro as 9 <b>roteadas pelo /inbound</b> (em ordem cronológica da jornada do lead), depois as de motor/cron, depois as suspeitas de estar mortas.</p>
+
+<!-- recepcao -->
+<div class="skill" id="sk-recepcao">
+  <div class="skill-head"><span class="nome">recepcao.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-primary">sempre utilizada</span><span class="badge b-neutral">7,7KB</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Dar o primeiro "oi" e já pedir o RG/CNH (frente E verso, 2 fotos). É a porta de entrada de TODO lead vindo do Diagnóstico Financeiro.</dd>
+    <dt>Ativada quando</dt><dd>1ª mensagem do lead contendo <code>[Codigo atendimento: CPF]</code> (o link do site embute isso). Sem o código → nem responde, escala humano. É também a skill-default quando nenhuma outra regra do roteador bate.</dd>
+    <dt>Dura até</dt><dd>A 1ª resposta — o script já grava <code>fase=aguardando_id</code> e a próxima mensagem cai na coleta.</dd>
+    <dt>Como a Julia sabe</dt><dd>O roteador injeta a skill quando não há fase ainda; o CPF chega extraído do código ("NÃO peça o CPF").</dd>
+    <dt>Vezes por conversa</dt><dd>1 (ou 2, se o lead some e volta sem auditoria feita).</dd>
+    <dt>Markers</dt><dd>Nenhum (proibida de emitir <code>[AUDITORIA_AUTORIZADA]</code> — a auditoria dispara depois, pelo script).</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: saudação com 1º nome e variação por horário (bom dia/boa noite), o pedido do documento em 2 bolhas, modo "lead retornante" (não recomeça do zero), respostas pra quem manda "oi"/"pode falar" antes do documento, a regra do comprovante de terceiro (referência), tabus e few-shots. Filosofia v3 doc-first: NÃO pede autorização pra auditoria — pede o documento, e a auditoria roda sozinha quando ele chega.</div>
+  <div class="exemplo">{"bolhas": ["Oi João! Aqui é a Julia da Midas. 👋", "Me manda uma foto do teu RG ou CNH (frente E verso — as 2 fotos) pra eu já dar andamento no processo. 📄"], "delays_ms": [0, 1500]}</div>
+</div>
+
+<!-- coleta_documentos -->
+<div class="skill" id="sk-coleta">
+  <div class="skill-head"><span class="nome">coleta_documentos.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-primary">sempre utilizada</span><span class="badge b-neutral">11KB</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Receber e validar o RG/CNH: confirmar o par frente+verso, pedir o lado que falta, lidar com foto ilegível, e celebrar quando completa (a auditoria dispara nesse momento).</dd>
+    <dt>Ativada quando</dt><dd><code>fase=aguardando_id</code> — qualquer mensagem (foto, PDF ou texto) cai aqui.</dd>
+    <dt>Dura até</dt><dd>O doc-reader confirmar frente+verso → o script dispara a auditoria e grava <code>fase=aguardando_comprovante</code> (desde 11/06 isso é determinístico — não depende mais da IA emitir o marker).</dd>
+    <dt>Como a Julia sabe</dt><dd>Injeção [SISTEMA] com a fase + bloco STATUS DOCUMENTOS ("frente já recebida, falta o verso") + instruções do gate B quando a foto chega.</dd>
+    <dt>Vezes por conversa</dt><dd>2 a 6 (é a fase com mais ida-e-volta: lado faltando, foto escura, lead conversando antes de mandar).</dd>
+    <dt>Markers</dt><dd><code>[AUDITORIA_AUTORIZADA]</code> na bolha 1 quando completo (hoje é reforço — o gatilho real é o script).</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: a REGRA ABSOLUTA de que texto nunca é documento ("já mandei" não vale — só foto), o PASSO 0 de checar o que já chegou antes de pedir qualquer coisa, estados prontos pra cada situação (só frente / ilegível / tipo desconhecido / completo / 3 tentativas → escala), CNH digital em PDF = completo, foto do rosto da CNH é opcional. É a skill mais blindada por gates — porque era onde a Julia mais alucinava ("pede o verso 10 vezes").</div>
+  <div class="exemplo">{"bolhas": ["Perfeito! Recebi seu documento completo. ✅ [AUDITORIA_AUTORIZADA]", "Já vou fazer a consulta do seu CPF — te mando o resultado em instantes! 😊"], "delays_ms": [0, 1800]}</div>
+</div>
+
+<!-- comprovante -->
+<div class="skill" id="sk-comprovante">
+  <div class="skill-head"><span class="nome">comprovante_residencia.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-primary">sempre utilizada</span><span class="badge b-neutral">11KB · 🔒 2 redações-fonte</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Validar o comprovante de residência: tipo certo, no nome do lead, dos últimos 90 dias — e aplicar a regra mais sensível do funil: comprovante de TERCEIRO.</dd>
+    <dt>Ativada quando</dt><dd><code>fase=aguardando_comprovante</code> (foto, PDF ou texto — inclusive o "Sim" confirmando endereço).</dd>
+    <dt>Dura até</dt><dd>Leitor validar (ou marker) → <code>fase=aguardando_ctps</code> + handoff imediato pro Ag. Humano. Terceiro detectado → escala direto.</dd>
+    <dt>Como a Julia sabe</dt><dd>Injeção de fase + STATUS ("ID: JÁ RECEBIDO — não peça de novo") + gates A1/A2 quando há sinal de terceiro.</dd>
+    <dt>Vezes por conversa</dt><dd>2 a 5.</dd>
+    <dt>Markers</dt><dd><code>[COMPROVANTE_OK]</code> (avança pra CTPS) · <code>[ESCALAR_HUMANO]</code> (terceiro/falha).</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: as DUAS redações-fonte do sistema (🔒 LISTA ÚNICA de comprovantes aceitos — luz, água, gás, internet, boleto do banco COM endereço, contrato de locação vigente; recusados — extrato bancário, print de tela, IPTU, >90 dias · e 🔒 a REGRA DO TERCEIRO — declaração assinada do titular + RG do titular, atendente confere). Mais: regra de sempre pedir "no SEU nome", margem de 7 dias na data, e o estado de confirmação de endereço que já emenda o pedido da CTPS.</div>
+  <div class="exemplo">{"bolhas": ["Recebi o comprovante, está tudo certo! ✅", "Pra finalizar, me manda também a tua Carteira de Trabalho (CTPS) ou um comprovante de renda. 📄 [COMPROVANTE_OK]"], "delays_ms": [0, 1800]}</div>
+</div>
+
+<!-- ctps -->
+<div class="skill" id="sk-ctps">
+  <div class="skill-head"><span class="nome">coleta_ctps.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-primary">sempre utilizada</span><span class="badge b-neutral">4,5KB · JO-15</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Pedir a CTPS ou comprovante de renda — a ÚLTIMA etapa antes do especialista. É "best-effort": tenta uma vez, nunca prende o lead.</dd>
+    <dt>Ativada quando</dt><dd><code>fase=aguardando_ctps</code>. Detalhe: o lead JÁ subiu pro Ag. Humano quando entrou aqui (handoff imediato, pedido do Vinícius) — a Julia pede a CTPS mas o humano já está de olho.</dd>
+    <dt>Dura até</dt><dd>Receber o doc OU o lead dizer que não tem → <code>[ESCALAR_HUMANO]</code> → <code>documentos_completos</code>.</dd>
+    <dt>Como a Julia sabe</dt><dd>Injeção: "ID e comprovante JÁ validados. ÚLTIMA etapa. NÃO peça os outros de novo."</dd>
+    <dt>Vezes por conversa</dt><dd>1 a 2 (máximo 1 insistência por regra).</dd>
+    <dt>Markers</dt><dd><code>[ESCALAR_HUMANO]</code> — SEMPRE termina nele.</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: aceita CTPS física ou digital OU holerite/recibo/extrato de benefício; proibida de mencionar restrições/auditoria/CPF nesta fase; na dúvida se o que chegou serve → sobe pro humano. A regra de ouro é "nunca prender": a CTPS é desejável, não obrigatória — recusa também fecha o ciclo.</div>
+  <div class="exemplo">{"bolhas": ["Pra finalizar, me manda também a tua Carteira de Trabalho (CTPS) ou um comprovante de renda. 📄", "Pode ser holerite, recibo de pagamento, extrato de benefício — foto ou PDF, aqui mesmo. 😊"], "delays_ms": [0, 1800]}</div>
+</div>
+
+<!-- transicao -->
+<div class="skill" id="sk-transicao">
+  <div class="skill-head"><span class="nome">transicao_humano.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-primary">sempre utilizada</span><span class="badge b-neutral">4,3KB</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Fechar o ciclo da Julia com elegância: confirmar que está tudo recebido e anunciar o especialista. Depois disso, silêncio total.</dd>
+    <dt>Ativada quando</dt><dd><code>fase=documentos_completos</code> e o lead manda mais alguma coisa.</dd>
+    <dt>Dura até</dt><dd>O handoff — <code>awaiting_human=true</code> + <code>coluna_crm=triagem</code>. O microfone passa pro Vinícius.</dd>
+    <dt>Como a Julia sabe</dt><dd>Fase injetada: "ambos os documentos recebidos. Faça a transição."</dd>
+    <dt>Vezes por conversa</dt><dd>1.</dd>
+    <dt>Markers</dt><dd><code>[ESCALAR_HUMANO]</code> obrigatório.</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: a regra INVIOLÁVEL do silêncio pós-handoff (nunca mais uma bolha depois de escalar, nunca atropelar o humano, nunca reabrir coleta), e a proibição de mencionar próximos passos específicos (procuração, assinatura — isso é assunto do especialista). O gate de 12h no script garante o silêncio mesmo se o prompt falhar.</div>
+  <div class="exemplo">{"bolhas": ["Perfeito! Recebi tudo que precisava — documentos e comprovante de residência. 📋", "Vou chamar um especialista agora para dar continuidade. Em instantes alguém entra em contato por aqui! 😊"], "delays_ms": [0, 2200]}</div>
+</div>
+
+<!-- pos_pdf -->
+<div class="skill" id="sk-pospdf">
+  <div class="skill-head"><span class="nome">pos_pdf.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-warn">depende do caso</span><span class="badge b-neutral">13KB — a maior</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Ser a "vendedora educada" depois que o lead recebeu o PDF da auditoria: responde TODAS as dúvidas (é grátis? como funciona? é golpe? prazo?) e sempre volta pro pedido de documentos.</dd>
+    <dt>Ativada quando</dt><dd>Lead tem PDF gerado + não é 1ª mensagem + nenhuma fase de coleta ativa bate antes no roteador.</dd>
+    <dt>Dura até</dt><dd>O lead engajar na coleta (aí as fases assumem) ou desistir.</dd>
+    <dt>Como a Julia sabe</dt><dd>Injeções: "Auditoria JÁ CONCLUÍDA — proibido se reapresentar ou reoferecer auditoria" + status do PDF.</dd>
+    <dt>Vezes por conversa</dt><dd>0 a 10+ — é a skill mais "conversacional", absorve todo o meio do funil.</dd>
+    <dt>Markers</dt><dd>Nenhum.</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: o "Contexto do serviço" (a cola oficial: custo R$0 pro lead, quem paga é a empresa que negativou, prazo "em geral menos de 60 dias", contestação ≠ Serasa Limpa Nome), respostas prontas pra 8+ perguntas frequentes, a regra de NUNCA abrir a resposta resumindo as restrições (o PDF já fez isso), nunca fazer perguntas proativas (só pedir os 2 docs), e o roteiro do comprovante de terceiro. É o coração do "meio do funil".</div>
+  <div class="exemplo">{"bolhas": ["É 100% gratuito Maria.", "Tu não paga nada — nem no início, nem no fim.", "Quem arca com os custos são as empresas que fizeram as restrições indevidas no teu nome."], "delays_ms": [0, 1500, 1800]}</div>
+</div>
+
+<!-- objecao -->
+<div class="skill" id="sk-objecao">
+  <div class="skill-head"><span class="nome">objecao.md</span><span class="badge b-danger">fluxo negativo (recupera)</span><span class="badge b-warn">depende do caso</span><span class="badge b-neutral">5,5KB</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Responder as 8 objeções clássicas sem pressionar: gratuito? · garantido? · quanto tempo? · é golpe? · e se der errado? · tô desempregado · agora não dá · vou pensar.</dd>
+    <dt>Ativada quando</dt><dd>Um classificador por REGEX (no script) detecta objeção no texto. <b>ATENÇÃO: vence a fase</b> — lead em coleta que pergunta "é golpe?" cai aqui naquele turno (e os markers de coleta não funcionam nesse turno — agora pelo menos é logado).</dd>
+    <dt>Dura até</dt><dd>1 turno. Na mensagem seguinte sem objeção, a fase reassume.</dd>
+    <dt>Como a Julia sabe</dt><dd>Injeção "Objeção detectada: golpe" no prompt.</dd>
+    <dt>Vezes por conversa</dt><dd>0 a 3 (3 turnos seguidos de objeção sem avanço = escalar pro humano).</dd>
+    <dt>Markers</dt><dd>Nenhum.</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: um playbook por objeção com a resposta calibrada (ex.: "é garantido?" → "Não posso garantir — seria desonesto. Depende de encontrarmos irregularidades, e é exatamente isso que a auditoria faz"), prioridade quando duas objeções empatam (golpe vence tudo), e a regra de nunca insistir nas objeções 7 e 8 ("agora não"/"vou pensar") — deixa a porta aberta e o follow-up reengaja depois.</div>
+  <div class="exemplo">{"bolhas": ["Não posso te garantir nada — seria desonesto da minha parte.", "Depende de encontrarmos irregularidades nas restrições.", "Mas é exatamente isso que a gente faz: auditoria pra identificar o que dá pra contestar."], "delays_ms": [0, 1800, 2000]}</div>
+</div>
+
+<!-- cancelamento -->
+<div class="skill" id="sk-cancelamento">
+  <div class="skill-head"><span class="nome">cancelamento.md</span><span class="badge b-danger">fluxo negativo</span><span class="badge b-warn">depende do caso</span><span class="badge b-neutral">2,6KB · destravada 11/06</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Confirmar com respeito a desistência do lead — sem pressão, sem desconto, sem julgamento — e arquivar se confirmado.</dd>
+    <dt>Ativada quando</dt><dd><code>fase=confirmando_cancelamento</code>. O caminho: um detector de desistência (regex: "não quero mais", "desisti", "vou resolver direto"...) faz a Julia perguntar se quer mesmo encerrar; a resposta cai nesta skill. <b>Esse caminho estava MORTO até 11/06</b> (bug circular) — agora funciona.</dd>
+    <dt>Dura até</dt><dd>1 troca: confirma → <code>[ARQUIVAR_LEAD]</code> → arquivado · mudou de ideia → volta ao fluxo.</dd>
+    <dt>Vezes por conversa</dt><dd>0 a 1.</dd>
+    <dt>Markers</dt><dd><code>[ARQUIVAR_LEAD]</code> só com confirmação explícita.</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: tom sereno, máximo 2 bolhas, "a porta sempre fica aberta", proibição de oferecer benefício pra segurar o lead. Vale observar nos próximos dias os logs <code>cancelamento_confirmacao_fase_set</code> — é a primeira vez que leads desistentes entram aqui de verdade.</div>
+  <div class="exemplo">{"bolhas": ["Tudo certo! Entendo a tua decisão. 😊 Fico por aqui então.", "Se mudar de ideia no futuro, é só chamar. [ARQUIVAR_LEAD]"], "delays_ms": [0, 1800]}</div>
+</div>
+
+<!-- cpf_limpo -->
+<div class="skill" id="sk-cpflimpo">
+  <div class="skill-head"><span class="nome">cpf_limpo.md</span><span class="badge b-info">fluxo lateral (vira indicação)</span><span class="badge b-warn">depende do caso</span><span class="badge b-neutral">2,8KB</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Quando a auditoria volta ZERADA (sem restrições): dar a boa notícia e converter o momento em INDICAÇÃO ("conhece alguém com nome sujo?").</dd>
+    <dt>Ativada quando</dt><dd>PDF gerado com <code>total_restricoes=0</code> + não é 1ª msg.</dd>
+    <dt>Dura até</dt><dd>O lead responder: com indicação → escala pro humano; sem → encerra e o script ARQUIVA lead + conversa automaticamente (uma vez só).</dd>
+    <dt>Vezes por conversa</dt><dd>0 a 1.</dd>
+    <dt>Markers</dt><dd><code>[ESCALAR_HUMANO]</code> apenas se houver indicação.</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: celebração genuína ("teu CPF tá limpo! 🎉"), proibição de termos negativos sobre o CPF, o convite leve pra indicar familiar/amigo, e nunca dizer "não podemos te ajudar". É o único fluxo onde "perder o lead" é o resultado certo — e ainda tenta extrair valor (indicação).</div>
+  <div class="exemplo">{"bolhas": ["Boa notícia: seu CPF está limpo, sem nenhuma restrição! 🎉", "Você conhece alguém — familiar, amigo, colega — que esteja com dívidas ou negativação? Me passa o contato que a gente pode ajudar! 😊"], "delays_ms": [0, 2200]}</div>
+</div>
+
+<!-- ════ ENGINE SKILLS ════ -->
+<h3 style="margin-top:2.2rem">Skills de MOTOR — usadas por crons/engines, não pelo roteador do /inbound</h3>
+
+<div class="skill" id="sk-auditoria">
+  <div class="skill-head"><span class="nome">auditoria.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-primary">sempre utilizada</span><span class="badge b-neutral">4,6KB · engine</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>Redigir a mensagem de ENTREGA do PDF: "te mandei o PDF, achei N restrições somando R$ X". É a ponte entre a consulta no bureau e a conversa.</dd>
+    <dt>Ativada quando</dt><dd>O pipeline de auditoria (n8n) conclui e o PDF é enviado — quem chama é o motor de auditoria, não o roteador.</dd>
+    <dt>Vezes por conversa</dt><dd>1.</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: 4 tons por classificação (alta/média/baixa/limpo) usando os números reais (quantidade de restrições, valor total, maior credor), sem pitch comercial — deixa o lead digerir o PDF antes do pos_pdf assumir. Nunca promete prazo.</div>
+</div>
+
+<div class="skill" id="sk-ffunil">
+  <div class="skill-head"><span class="nome">followup_funil.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-primary">sempre (proativa)</span><span class="badge b-neutral">8,9KB · cron 8-22h</span></div>
+  <dl>
+    <dt>Serve para</dt><dd>A COBRANÇA inteligente: o motor varre os leads parados e a skill redige o lembrete certo pro estágio certo (falta RG / falta comprovante / falta ASSINAR a procuração).</dd>
+    <dt>Ativada quando</dt><dd>Cron <code>julia-followup-funil</code> (8h, 10h, 12h... 22h). O ENGINE decide quem cobrar (cotas por estágio — fix do starvation 10/06: assinatura 40, docs 40, atendimento 40, novos 30); a skill só escreve.</dd>
+    <dt>Particularidade</dt><dd>Estágio <code>aguardando_assinatura</code> é a ÚNICA exceção ao silêncio pós-handoff (D9): cobra mesmo com humano atribuído — assinatura parada é dinheiro parado.</dd>
+    <dt>Vezes por lead</dt><dd>Guards anti-spam: pula se a Julia falou há &lt;30min, se o lead respondeu há &lt;15min, se já pediu a mesma coisa na última msg.</dd>
+  </dl>
+  <div class="paragrafo">O que tem dentro: um bloco por estágio com o que analisar antes de escrever (nunca regredir, nunca repetir), o roteiro da assinatura ZapSign ("abre o link e assina com o dedo, igual à assinatura do documento — menos de 1 minuto"), máximo 2 bolhas, zero pressão emocional. Pós-assinatura o lead vira cliente e sai da alçada da Julia (Bia assume no portal).</div>
+</div>
+
+<div class="skill" id="sk-followup">
+  <div class="skill-head"><span class="nome">followup.md + followup_docs.md</span><span class="badge b-success">fluxo positivo</span><span class="badge b-warn">depende do caso</span><span class="badge b-neutral">7,4KB + 4KB · cron/manual</span></div>
+  <dl>
+    <dt>Servem para</dt><dd><code>followup.md</code> = reengajar lead silencioso genérico (gap 3-24h, decide por IA se vale mandar e o quê). <code>followup_docs.md</code> = lembrete específico de documento pendente (manual via admin ou inatividade).</dd>
+    <dt>Ativadas quando</dt><dd>Crons próprios (v2 roda 9-19h seg-sex a cada 3h) ou clique manual do atendente ("Reengajar").</dd>
+    <dt>Particularidade</dt><dd>2+ follow-ups sem resposta → para de insistir. Respeita a janela de 24h da Meta (fora dela, só template aprovado — o caminho HSM).</dd>
+  </dl>
+  <div class="paragrafo">Sobreposição com followup_funil é um ponto de atenção: são 3 skills de follow-up + 2 engines diferentes — candidatas a unificação (ver §9).</div>
+</div>
+
+<!-- mortas -->
+<h3 style="margin-top:2.2rem" id="sk-mortas">Skills que o roteador NUNCA carrega — suspeitas de código morto 🔍</h3>
+<div class="callout warn"><b class="titulo">Achado desta análise (cruzando o Vault com o roteador real)</b>
+Estas 3 skills existem no Vault mas <b>nenhuma linha do roteador do /inbound as seleciona</b>. Editar elas pela aba Gestão não muda NADA no comportamento — exatamente o tipo de "função que não acontece" que a gente mapeou:
+<ul class="clean" style="margin-top:.5rem">
+<li><b>docs.md</b> (6,2KB) — explicação dos documentos; o conteúdo foi absorvido pela pos_pdf/coleta. Legado da v2.</li>
+<li><b>escalada.md</b> (4,9KB) — handoff rico com briefing pro Vinicius; o handoff real hoje é a transicao_humano + gates. O briefing estruturado dela é uma boa ideia NÃO implementada no fluxo atual.</li>
+<li><b>atendimento_cliente.md</b> (2,9KB) — atendimento pós-conversão (cliente já assinou); o gate de awaiting_human/cliente intercepta antes. Pode ser útil num futuro "modo cliente", hoje não roda.</li>
+<li><b>recepcao_v2_backup.md</b> — backup explícito, ok.</li>
+</ul>
+Recomendação: mover as 3 pra uma pasta <code>01_skills/_arquivadas/</code> (ou deletar docs.md) pra ninguém mais perder tempo editando skill morta.</div>
+</section>
+
+<!-- ════════════ 3 CÉREBRO ════════════ -->
+<section id="cerebro">
+<h2><span class="num">3</span>O cérebro — o que mora em <code>00_cerebro/</code></h2>
+<p>Tudo que é <b>permanente</b> (vai em TODA mensagem, independente da skill):</p>
+<table>
+<thead><tr><th>Arquivo</th><th>Papel</th><th>Vai no prompt?</th></tr></thead>
+<tbody>
+<tr><td><code>SOUL.md</code> (13KB)</td><td>QUEM ela é: identidade feminina, nunca diz que é IA, princípios (honestidade radical, zero promessa), frases-âncora do vídeo do DF, glossário, e a 🔒 <b>LISTA CANÔNICA DE TABUS</b> (fonte única desde a faxina de 11/06 — STYLE e skills só referenciam).</td><td>✅ sempre</td></tr>
+<tr><td><code>STYLE.md</code> (7,3KB)</td><td>COMO ela fala: "tu" gaúcho, multi-bolha ≤140 chars, máx 1 emoji/bolha, paleta de emojis, variação por horário, frases banidas de chatbot, como se despedir.</td><td>✅ sempre</td></tr>
+<tr><td><code>HIERARQUIA.md</code> + <code>MARKERS.md</code></td><td>Os documentos canônicos da precedência prompt×script (criados 11/06). São pra HUMANOS editarem certo — não vão no prompt.</td><td>❌ documentação</td></tr>
+<tr><td><code>03_examples/</code> (12 cenários)</td><td>Few-shots: conversas-modelo (fluxo feliz, objeção de golpe, lead desempregado, fechamento completo...). Carregados pontualmente, não por padrão.</td><td>⚠️ sob demanda</td></tr>
+<tr><td>Outros (ARCHITECTURE, GLOSSARY, MEMORY...)</td><td>Documentação de apoio do vault.</td><td>❌</td></tr>
+</tbody>
+</table>
+<p><b>Como editar:</b> aba <b>Gestão → Vault Julia</b> no MdZap (Edge Function <code>julia-vault</code>) ou direto no arquivo (precisa do user julia/sudo). Lembra do cache de 5 minutos. E lembra da HIERARQUIA: se a função muda ESTADO (fase, escalar, arquivar), prompt não resolve — é script.</p>
+</section>
+
+<!-- ════════════ 4 WEBHOOKS ════════════ -->
+<section id="webhooks">
+<h2><span class="num">4</span>Webhooks &amp; integrações — todo o tráfego que entra e sai</h2>
+<h3>ENTRADA (como as coisas chegam até a Julia)</h3>
+<table>
+<thead><tr><th>De onde</th><th>Para onde</th><th>O que carrega</th></tr></thead>
+<tbody>
+<tr><td>Meta Cloud API (WhatsApp)</td><td>Edge Function <code>mdzap-webhook</code> (Supabase) → <code>POST /inbound</code> julia-server:8787</td><td>Toda mensagem de lead (texto/foto/PDF/áudio). Header de auth <code>mdflow</code>, timeout 25s. É O webhook principal — sem ele a Julia é surda.</td></tr>
+<tr><td>n8n <code>WH-ZAPSIGN-ASSINADO-01</code></td><td>atualiza <code>procuracoes</code> + CRM</td><td>Aviso proativo da ZapSign quando o lead assina (além do polling de 5min).</td></tr>
+<tr><td>Telegram <code>@Julia_mdbot</code></td><td>julia-server (rota telegram)</td><td>Comandos de operação: <code>/julia:off</code> (kill switch), <code>/julia:status</code>, <code>/julia:skills</code>. Acesso do Christian.</td></tr>
+</tbody>
+</table>
+<h3>SAÍDA (como a Julia age no mundo)</h3>
+<table>
+<thead><tr><th>Para onde</th><th>Quando</th><th>O que faz</th></tr></thead>
+<tbody>
+<tr><td><b>Meta Cloud API</b> (Graph API direta)</td><td>Toda resposta</td><td>Envia as bolhas, uma a uma, com delays. Grava cada bolha em <code>whatsapp_mensagens</code> (o MdZap lê dali em realtime).</td></tr>
+<tr><td><b>n8n <code>WH-AUD-01</code></b></td><td>Documento de ID confirmado (gatilho determinístico desde 11/06)</td><td>O pipeline de auditoria: consulta a APIFULL (bureau Boa Vista SCPC — único bureau! Julia nunca cita Serasa/SPC), monta o PDF de 6 páginas e envia ao lead. Tem trava (lock) contra disparo duplo. O PDF baixável usa <code>mdflow/auditoria/gerar-pdf</code> (Gotenberg).</td></tr>
+<tr><td><b>ZapSign API</b></td><td>Polling cron 5/5min + consulta na hora quando lead em <code>aguardando_assinatura</code> fala</td><td>Verifica assinatura da procuração; assinou → confirma com o lead + move CRM.</td></tr>
+<tr><td><b>Supabase</b> (service role)</td><td>O tempo todo</td><td>leads, whatsapp_conversas/mensagens, procuracoes, auditorias, julia_pdfs_gerados, julia_skills_audit_log, lead_documentos.</td></tr>
+<tr><td><b>Whisper local</b> (Mac Mini)</td><td>Áudio recebido</td><td>Transcrição em ~2s, modelo large-v3-turbo, cache por hash do áudio.</td></tr>
+<tr><td><b>Anthropic API</b></td><td>Passo 10 da jornada</td><td>Claude Sonnet — a única chamada de IA "de conversa". O doc-reader usa Sonnet 4.6 com fallback GPT-4.1-mini.</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ════════════ 5 CRONS ════════════ -->
+<section id="crons">
+<h2><span class="num">5</span>Crons — a Julia proativa (o que roda sozinho)</h2>
+<table>
+<thead><tr><th>Cron</th><th>Horário (BRT)</th><th>O que faz</th></tr></thead>
+<tbody>
+<tr><td><code>zapsign-polling</code></td><td>a cada 5 min, 24/7</td><td>Caça assinaturas de procuração; achou → confirma com o lead e move o CRM.</td></tr>
+<tr><td><code>julia-followup-funil</code></td><td>8h às 22h, de 2 em 2h</td><td>A cobrança por estágio (skill followup_funil) — com as cotas anti-starvation desde 10/06.</td></tr>
+<tr><td><code>julia-followup</code> v2</td><td>9h-19h /3h, seg-sex</td><td>Reengajamento de leads silenciosos (janela 3-24h).</td></tr>
+<tr><td><code>julia-followup-hsm</code></td><td>10h e 15h, seg-sex</td><td>Leads FORA da janela de 24h da Meta → template HSM aprovado.</td></tr>
+<tr><td><code>julia-memory-consolidator</code></td><td>domingo 3h</td><td>Consolida o histórico de cada lead num resumo (<code>contexto_consolidado</code>).</td></tr>
+<tr><td><code>bia-*</code> (3 crons)</td><td>vários</td><td>A persona Bia (pós-venda/portal) — fora do escopo da Julia, mesmo servidor.</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ════════════ 6 LEIS ════════════ -->
+<section id="leis">
+<h2><span class="num">6</span>As leis de script — o que a IA NÃO pode desobedecer</h2>
+<p>Resumo executivo da HIERARQUIA (o doc completo está no vault e em <code>.projeto/julia-hierarquia/</code>):</p>
+<ul class="clean">
+<li><b>Documento só vale como FOTO.</b> Texto "já mandei" → o filtro reescreve a resposta pedindo a imagem. Vai pra Justiça — sem exceção.</li>
+<li><b>RG/CNH = frente + verso</b> (ou PDF com os dois). O leitor confere; verso sozinho não valida.</li>
+<li><b>Comprovante de terceiro NUNCA é validado pela Julia</b> — declaração + RG do titular e um humano confere (B3).</li>
+<li><b>Comprovante OK → o lead JÁ sobe pro Ag. Humano</b> (handoff imediato, pedido do Vinícius) — a CTPS vira best-effort.</li>
+<li><b>Atendente falou há &lt;12h → Julia cala.</b> Exceção única: cobrança de assinatura (D9).</li>
+<li><b>Palavra-tabu → resposta bloqueada</b> + bolha neutra + escala (lista canônica no SOUL; o filtro tem 15 padrões em código).</li>
+<li><b>Fase só anda pra frente e quem escreve é o script</b> — markers e gates; a IA não consegue "voltar" o lead.</li>
+<li><b>Auditoria dispara pelo script</b> quando o documento completa (desde 11/06) — não depende mais do humor do LLM.</li>
+</ul>
+</section>
+
+<!-- ════════════ 7 ONDE MEXER ════════════ -->
+<section id="ondemexer">
+<h2><span class="num">7</span>Onde mexer pra mudar X — o mapa do editor</h2>
+<table>
+<thead><tr><th>Quero mudar...</th><th>Mexe em</th><th>Como</th></tr></thead>
+<tbody>
+<tr><td>O tom, emojis, jeito de falar</td><td><code>STYLE.md</code></td><td>Aba Gestão · vale pra TODAS as fases · cache 5min</td></tr>
+<tr><td>Identidade, princípios, tabus</td><td><code>SOUL.md</code> (🔒 fonte única)</td><td>Aba Gestão · tabu novo no filtro de runtime = código</td></tr>
+<tr><td>O que ela fala NUMA fase</td><td>A skill daquela fase (ver §2)</td><td>Aba Gestão · conferir no roteador se é a skill certa!</td></tr>
+<tr><td>Tipos de comprovante aceitos</td><td><code>comprovante_residencia.md</code> §Comprovantes (🔒 lista única)</td><td>Aba Gestão · NUNCA criar lista em outra skill</td></tr>
+<tr><td>Regra do terceiro</td><td><code>comprovante_residencia.md</code> §terceiro (🔒)</td><td>Aba Gestão</td></tr>
+<tr><td>Quando escalar / mudar fase / arquivar</td><td><b>SCRIPT</b> (inbound.controller.ts)</td><td>Conversa comigo → stage + teu sudo</td></tr>
+<tr><td>Horário/frequência de cobrança</td><td><b>SCRIPT</b> (crons no index.ts + engine)</td><td>Conversa comigo → deploy</td></tr>
+<tr><td>Mensagens da cobrança</td><td><code>followup_funil.md</code></td><td>Aba Gestão</td></tr>
+<tr><td>Validação de documento (o que o leitor aceita)</td><td><b>SCRIPT</b> (doc-reader.ts)</td><td>Conversa comigo → deploy</td></tr>
+</tbody>
+</table>
+<p>Checklist antes de editar (a versão completa está na HIERARQUIA §5): (1) em qual FASE isso roda — a skill que vou editar é a carregada? (2) algum gate sobrepõe? (3) muda ESTADO? → então é script. (4) a regra já existe em outro arquivo? (5) esperar o cache de 5min antes de testar.</p>
+</section>
+
+<!-- ════════════ 8 ESTADO DA ARTE ════════════ -->
+<section id="estadoarte">
+<h2><span class="num">8</span>Estado da arte (pesquisa 06/2026) — como a Julia se compara e onde melhorar</h2>
+<p class="lead">Pesquisei os padrões atuais de agentes de produção construídos com script + prompt + arquivos .md (Anthropic, MLflow, 12-Factor Agents, guardrails). A conclusão honesta: <b>a arquitetura da Julia é estado-da-arte no desenho</b> — e tem 5 lacunas claras nas ferramentas em volta.</p>
+
+<h3>✅ Onde a Julia JÁ É o padrão recomendado</h3>
+<table>
+<thead><tr><th>Padrão da indústria</th><th>Na Julia</th></tr></thead>
+<tbody>
+<tr><td>"Um agente de produção não é um prompt — é um sistema distribuído onde o LLM é o redator" (MLflow 2026: o LLM é ~20% do sistema)</td><td>✅ Exatamente o desenho: 14 passos, IA é só o passo 10.</td></tr>
+<tr><td>Máquina de estados determinística + transições fora do LLM (12-Factor: "own your control flow")</td><td>✅ <code>memoria_julia.fase</code> + gates + bypasses determinísticos.</td></tr>
+<tr><td>Guardrails em camadas: pré-LLM rápidos/determinísticos + pós-LLM (Arthur.ai)</td><td>✅ Gates de entrada (regex/estado) + filtros de saída (anti-alucinação, forbidden, markers).</td></tr>
+<tr><td>Skills em Markdown legíveis por humano e máquina, carregadas só quando precisa (Anthropic Agent Skills, progressive disclosure)</td><td>✅ O Vault é literalmente isso — 1 skill por momento, editável por não-dev. A Anthropic padronizou SKILL.md em 2025; o Vault da Julia é o mesmo conceito, caseiro e anterior.</td></tr>
+<tr><td>"Own your prompts" — prompts como artefatos próprios, não strings escondidas (12-Factor #2)</td><td>✅ Vault versionável + aba Gestão + agora HIERARQUIA/MARKERS documentando o contrato.</td></tr>
+<tr><td>Shadow mode antes de produção</td><td>✅ <code>JULIA_DEPLOY_MODE=shadow</code> — pouca gente tem isso.</td></tr>
+</tbody>
+</table>
+
+<h3>⚠️ As 5 lacunas (em ordem do que eu atacaria primeiro)</h3>
+<div class="card"><b>1 · EVALS — teste automático de comportamento</b><span class="badge b-danger" style="margin-left:.5rem">maior lacuna</span>
+<p style="margin-top:.4rem">O padrão 2026 é "evaluation in CI": uma suíte de conversas-teste (golden conversations) que roda ANTES de cada mudança de skill — "lead manda só texto dizendo 'enviei o RG' → a Julia NÃO pode confirmar". Hoje a validação é manual (olhar conversas). Temos a matéria-prima pronta: os 12 cenários do <code>03_examples/</code> + o shadow mode + o audit log. Um eval-runner que dispara N cenários contra o /inbound em shadow e confere as respostas seria o maior salto de confiabilidade por esforço — e destravaria mudar prompt sem medo.</p></div>
+<div class="card"><b>2 · Tool-calling nativo em vez de markers de texto</b>
+<p style="margin-top:.4rem">Os markers (<code>[COMPROVANTE_OK]</code>) são um protocolo caseiro de 2024: a IA escreve texto e o script caça com regex — frágil (vimos o marker engolido). O padrão atual é o LLM chamar "ferramentas" estruturadas (tool use da API Anthropic): em vez de esconder uma tag, o Claude devolve <code>{tool: "avancar_fase", fase: "aguardando_ctps"}</code> validado pela própria API. Migração natural junto com o refactor /inbound — elimina a classe inteira de bugs de marker.</p></div>
+<div class="card"><b>3 · Observabilidade por conversa (tracing)</b>
+<p style="margin-top:.4rem">Hoje tem log de servidor (pino) e audit log — bom, mas pra responder "POR QUE a Julia disse isso pro lead X?" é preciso garimpar. O padrão é trace por conversa: cada turno guarda qual skill, quais injeções, qual prompt final, quais gates dispararam, custo e latência — navegável numa UI. <b>Conexão direta com o teu plano do novo front do MdZap sdr_leads</b>: uma aba "raio-X do turno" na conversa seria observabilidade de primeira linha e ajudaria a operação inteira.</p></div>
+<div class="card"><b>4 · Versionamento e staging de prompt</b>
+<p style="margin-top:.4rem">A aba Gestão edita DIRETO a produção (com cache de 5min de delay). O padrão: cada mudança de skill vira versão (git no vault), com diff, rollback de 1 clique e — combinado com o item 1 — evals rodando antes de publicar. O vault nem tem git tags hoje. Barato de montar e elimina o risco "editei e piorou e não sei o que era antes".</p></div>
+<div class="card"><b>5 · Memória de longo prazo mais rica</b>
+<p style="margin-top:.4rem">A <code>memoria_julia</code> (fase+contadores) e o consolidador semanal são um bom começo. O padrão 2026 separa memória episódica ("lead disse que a esposa é a titular da conta de luz") de estado de máquina — hoje, se o lead contou algo importante há 20 mensagens, saiu da janela de 15 e a Julia esqueceu. Um "fatos do lead" estruturado (extraído por IA, salvo no banco, injetado sempre) deixaria a conversa visivelmente mais inteligente.</p></div>
+
+<p style="font-size:.8rem;color:var(--muted)">Fontes: <a href="https://mlflow.org/articles/building-production-ready-ai-agents-in-2026/">MLflow — Building Production-Ready AI Agents in 2026</a> · <a href="https://github.com/humanlayer/12-factor-agents">12-Factor Agents (HumanLayer)</a> · <a href="https://www.anthropic.com/research/building-effective-agents">Anthropic — Building Effective Agents</a> · <a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills">Anthropic — Agent Skills</a> · <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic — Context Engineering</a> · <a href="https://www.arthur.ai/blog/best-practices-for-building-agents-guardrails">Arthur — Guardrails pre/post-LLM</a> · <a href="https://andriifurmanets.com/blogs/ai-agents-2026-practical-architecture-tools-memory-evals-guardrails">AI Agents in 2026 — tools, memory, evals, guardrails</a> · <a href="https://www.firecrawl.dev/blog/agent-skills">Agent Skills explained (SKILL.md)</a></p>
+</section>
+
+<!-- ════════════ 9 GARGALOS ════════════ -->
+<section id="gargalos">
+<h2><span class="num">9</span>Gargalos conhecidos &amp; oportunidades — a lista pra tua próxima rodada de ideias</h2>
+<table>
+<thead><tr><th style="width:36px">#</th><th>Gargalo / oportunidade</th><th>Impacto</th><th>Caminho</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><b>Latência ~30s por resposta</b> + mensagens picadas geram respostas duplicadas (56 conversas/3 dias)</td><td><span class="badge b-danger">alto</span></td><td>Refactor /inbound já planejado (responder 200 cedo + serializar por conversa + unificar Vision) — aguardando GO</td></tr>
+<tr><td>2</td><td><b>Message Grouper (n8n)</b>: ~1.227 mensagens órfãs em "pending" — leads perdidos</td><td><span class="badge b-danger">alto</span></td><td>Investigação n8n dedicada (delicada, sem plano formal ainda)</td></tr>
+<tr><td>3</td><td><b>Vision lê o mesmo documento 2-3×</b> na mesma mensagem (custo + latência)</td><td><span class="badge b-warn">médio</span></td><td>Unificação no refactor (Vision + doc-reader numa passada)</td></tr>
+<tr><td>4</td><td><b>3 skills mortas no Vault</b> (docs, escalada, atendimento_cliente) — armadilha de edição</td><td><span class="badge b-warn">médio</span></td><td>Arquivar em <code>_arquivadas/</code> (5 min de trabalho)</td></tr>
+<tr><td>5</td><td><b>3 sistemas de follow-up sobrepostos</b> (funil, v2, docs) com guards diferentes</td><td><span class="badge b-warn">médio</span></td><td>Unificar num engine só com cotas por estágio (o do funil é o mais maduro)</td></tr>
+<tr><td>6</td><td><b>Sem evals</b> — mudança de prompt é teste em produção</td><td><span class="badge b-warn">médio</span></td><td>Eval-runner com os 12 cenários do 03_examples (§8.1)</td></tr>
+<tr><td>7</td><td><b>Markers frágeis</b> — <code>[COMPROVANTE_OK]</code> ainda preso à skill (logado, não resolvido)</td><td><span class="badge b-info">baixo*</span></td><td>Tool-calling nativo no refactor (§8.2) — *baixo HOJE pelos bypasses</td></tr>
+<tr><td>8</td><td><b>"Máx 3 tentativas de doc ilegível"</b> vive só no prompt; o contador existe no script e ninguém usa</td><td><span class="badge b-info">baixo</span></td><td>Virar gate determinístico (10 linhas)</td></tr>
+<tr><td>9</td><td><b>Auditoria reconsulta bureau</b> em retries/reenvios (custo APIFULL)</td><td><span class="badge b-info">baixo</span></td><td>Cache por CPF+janela no pipeline</td></tr>
+<tr><td>10</td><td><b>Observabilidade por turno inexistente na UI</b> — operação não vê "por que a Julia disse isso"</td><td><span class="badge b-success">oportunidade</span></td><td>👉 Encaixa perfeito no teu redesign do front sdr_leads: aba "raio-X" por conversa (skill, fase, gates, custo)</td></tr>
+</tbody>
+</table>
+<div class="callout"><b class="titulo">Pro teu plano do novo front do MdZap sdr_leads</b>O que este manual sugere que o front novo poderia mostrar por conversa: a FASE atual do lead como elemento de primeira classe (hoje invisível na UI), os documentos recebidos com status (frente/verso/comprovante/CTPS), o raio-X do turno (gargalo #10), o status da procuração ZapSign, e os motivos de silêncio da Julia (awaiting_human, pós-handoff, forbidden) — hoje o atendente não sabe POR QUE a Julia não respondeu. Quando trouxeres tua ideia, esse mapa já está pronto pra conversar com ela.</div>
+</section>
+
+<footer>
+Julia por dentro · gerado em 2026-06-11 pela Conversa B (projeto julia-hierarquia) · Fontes primárias: inbound.controller.ts (pós D1-D10), Vault Julia completo, HIERARQUIA.md, MARKERS.md, DNA julia-v3 · Pesquisa: MLflow, Anthropic, 12-Factor Agents, Arthur.ai (06/2026) · MdFlow DS v5 Warm Charcoal
+</footer>
+
+</main>
+</div>
+</body>
+</html>
