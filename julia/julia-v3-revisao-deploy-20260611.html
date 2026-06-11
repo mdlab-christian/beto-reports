@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Julia V3 — Revisão pré-deploy: todas as mudanças + dúvidas a confirmar</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12100e;--surface:#1a1714;--card:#201d1a;--border:#2e2b27;--primary:#20c997;--primary-dim:#20c99720;--primary-border:#20c99740;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--info:#60a5fa;--text:#f5f0eb;--muted:#9e9890;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.65;padding:2rem;max-width:1180px;margin:0 auto}
+h1{font-family:Manrope;font-size:1.65rem;font-weight:800;letter-spacing:-.02em}
+h1 .accent{color:var(--primary)}
+.subtitle{color:var(--muted);margin-top:.4rem;max-width:840px}
+.meta-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:.2rem .75rem;font-size:.75rem;color:var(--muted)}
+.meta-chip b{color:var(--text)}
+section{margin-top:2.6rem;scroll-margin-top:20px}
+h2{font-family:Manrope;font-size:1.25rem;font-weight:700;padding-bottom:.5rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+h2 .num{color:var(--primary);font-family:var(--mono);font-size:.95rem;margin-right:.5rem}
+h3{font-family:Manrope;font-size:1rem;font-weight:700;margin:1.3rem 0 .55rem}
+p{margin-bottom:.8rem;max-width:900px}
+.badge{display:inline-block;border-radius:6px;padding:.1rem .55rem;font-size:.7rem;font-weight:600;white-space:nowrap;vertical-align:middle}
+.b-primary{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)}
+.b-warn{background:#f59e0b1f;color:var(--warn);border:1px solid #f59e0b40}
+.b-danger{background:#ef44441f;color:var(--danger);border:1px solid #ef444440}
+.b-success{background:#22c55e1f;color:var(--success);border:1px solid #22c55e40}
+.b-info{background:#60a5fa1f;color:var(--info);border:1px solid #60a5fa40}
+code{font-family:var(--mono);font-size:.82em;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.04rem .32rem}
+table{width:100%;border-collapse:collapse;margin:0 0 1rem;font-size:.85rem}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.06em;padding:.45rem .6rem;border-bottom:1px solid var(--border)}
+td{padding:.5rem .6rem;border-bottom:1px solid #242019;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.mud{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.15rem 1.3rem;margin-bottom:1.1rem}
+.mud-head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem}
+.mud-head .t{font-family:Manrope;font-weight:700;font-size:1rem}
+.antes,.depois{font-family:var(--mono);font-size:.78rem;border-radius:8px;padding:.6rem .8rem;margin:.4rem 0;white-space:pre-wrap}
+.antes{background:#1d1512;border:1px solid #3a2520;color:#d9a79b}
+.antes::before{content:'ANTES';display:block;font-size:.62rem;letter-spacing:.12em;color:#b07060;margin-bottom:.3rem;font-family:Inter}
+.depois{background:#121a16;border:1px solid #1f3a30;color:#a8e2cb}
+.depois::before{content:'DEPOIS';display:block;font-size:.62rem;letter-spacing:.12em;color:var(--primary);margin-bottom:.3rem;font-family:Inter}
+.duvida{background:var(--card);border:1px solid #f59e0b40;border-left:4px solid var(--warn);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem}
+.duvida .q{font-weight:700;font-family:Manrope}
+.duvida .q .dn{color:var(--warn);font-family:var(--mono);margin-right:.4rem}
+.duvida p{margin:.4rem 0 0;font-size:.88rem;color:#d8d2ca}
+.callout{background:linear-gradient(135deg,var(--primary-dim),transparent 65%);border:1px solid var(--primary-border);border-radius:12px;padding:1rem 1.2rem;margin:1rem 0}
+.callout b.titulo{display:block;margin-bottom:.3rem}
+ul.clean{list-style:none;margin:0 0 1rem}
+ul.clean li{padding:.26rem 0 .26rem 1.3rem;position:relative;max-width:920px}
+ul.clean li::before{content:'→';position:absolute;left:0;color:var(--primary)}
+footer{margin-top:3rem;color:var(--muted);font-size:.78rem;text-align:center;border-top:1px solid var(--border);padding-top:1.2rem}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Julia V3 · rodada 1 — <span class="accent">revisão pré-deploy</span></h1>
+  <p class="subtitle">Tudo que o <code>sudo bash /Users/beto/.tmp-julia-v3/deploy-julia-v3.sh</code> vai aplicar, com antes→depois das mensagens que o lead vai ver, as mudanças de código e — no final — <b>as 7 dúvidas que preciso que tu esclareças antes de rodar</b> (duas são afirmações factuais que a Julia vai passar a dizer).</p>
+  <div class="meta-row">
+    <span class="meta-chip">📅 <b>2026-06-11</b></span>
+    <span class="meta-chip">1 deploy = <b>8 pacotes</b> · 12 skills + 3 arquivos cérebro + 3 arquivos de código</span>
+    <span class="meta-chip">tsc <b>exit 0</b> · sintaxe bash OK · backup automático + rollback impresso</span>
+    <span class="meta-chip">⚠️ substitui deploy-faxina.sh e deploy-followup-funil.sh</span>
+  </div>
+</header>
+
+<!-- ════ MAPA GERAL ════ -->
+<section id="mapa">
+<h2><span class="num">A</span>Mapa geral — os 8 pacotes do deploy</h2>
+<table>
+<thead><tr><th>#</th><th>Pacote</th><th>Tipo</th><th>O que muda na prática</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Faxina de tabus</td><td>Vault</td><td>SOUL.md vira a lista única 🔒 de palavras proibidas; STYLE e 10 skills passam a referenciar (zero mudança de comportamento — só organização)</td></tr>
+<tr><td>2</td><td>Mensagens novas (teus inputs)</td><td>Vault</td><td>O lead passa a receber pedidos INSTRUTIVOS e feedbacks específicos — seção B abaixo, antes→depois</td></tr>
+<tr><td>3</td><td>PUBLICO.md (perfil do lead)</td><td>Vault novo</td><td>Em TODA resposta a Julia "lembra" quem é o nosso público (leigo digital, medo de golpe, imediatista) e as 5 implicações práticas</td></tr>
+<tr><td>4</td><td>Fix do follow-up de assinatura</td><td>Código</td><td>Cotas por estágio (assinatura 40/docs 40/atendimento 40/novos 30 por execução, 8×/dia) + assinatura ignora awaiting_human → os 77 links parados começam a ser cobrados</td></tr>
+<tr><td>5</td><td>Gate anti-loop de documento</td><td>Código</td><td>3ª foto do MESMO documento sem validar → Julia avisa que vai chamar alguém e o lead ESCALA de verdade (mata o loop dos 222)</td></tr>
+<tr><td>6</td><td>Contador de objeção</td><td>Código</td><td>Mesma objeção 2× seguidas (ou 3 quaisquer seguidas) → escala pro humano — a regra que vivia só no prompt vira lei</td></tr>
+<tr><td>7</td><td>Objeção "honorários" no detector</td><td>Código</td><td>Lead falando "30%"/"porcentagem"/"honorários" cai na resposta nova #9 (hoje cai no genérico ou no vácuo)</td></tr>
+<tr><td>8</td><td>Arquivar skills mortas</td><td>Vault</td><td><code>docs.md</code>, <code>escalada.md</code>, <code>atendimento_cliente.md</code> → <code>_arquivadas/</code> (roteador nunca as carrega; reversível com 1 mv)</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ════ B MENSAGENS ════ -->
+<section id="mensagens">
+<h2><span class="num">B</span>O que o LEAD vai ver diferente — antes → depois</h2>
+
+<div class="mud"><div class="mud-head"><span class="t">📄 1º pedido do RG/CNH (recepção)</span><span class="badge b-primary">teu input</span></div>
+<div class="antes">"Oi [Nome]! Aqui é a Julia da Midas. 👋"
+"Me manda uma foto do teu RG ou CNH (frente E verso — as 2 fotos) pra eu já dar andamento no processo. 📄"</div>
+<div class="depois">"Oi [Nome]! Aqui é a Julia da Midas. 👋"
+"Pra fazer a tua auditoria, preciso do teu documento de identificação: RG ou CNH — FRENTE e VERSO. 📄"
+"Pode ser foto (bem iluminada, enquadrada e legível) ou PDF — o RG sai no site do gov.br e a CNH no app Carteira Digital de Trânsito. 😊"</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">📄 Foto ruim do documento (feedback específico — 3 variantes tuas)</span><span class="badge b-primary">teu input</span></div>
+<div class="antes">"Recebi a foto, mas ela ficou um pouco escura/desfocada e não consigo ler os dados direitinho."
+"Pode tirar outra foto com mais luz? Se possível, em ambiente bem iluminado e o documento deitado numa superfície plana. 📸"
+(uma resposta única pra qualquer problema)</div>
+<div class="depois">Luz/foco → "Recebi a foto, mas percebi que não está totalmente legível." + "Procura tirar num lugar mais iluminado e com o documento mais enquadrado. 📸"
+Cortada → "...algumas informações vieram cortadas." + "Tira com um pouco mais de distância, mostrando o documento inteiro. 📸"
+Distante → "...ficou muito distante e os dados ficaram pequenos." + "Tira mais centralizada e num ambiente mais iluminado. 📸"
+Após 2 falhas → oferece o caminho do PDF oficial (gov.br / app CNH)</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">🏠 Pedido do comprovante (+ truque do boleto digital)</span><span class="badge b-primary">teu input</span></div>
+<div class="antes">"Agora me manda um comprovante de residência recente (últimos 3 meses) — conta de luz, água, internet ou boleto que mostre o endereço."
+"Importante: precisa estar no SEU nome. Se estiver no nome de outra pessoa (mãe, pai, esposo(a)...), também dá — mas aí preciso de uma declaração assinada por ela dizendo que vocês moram juntos + o RG/CNH dela. 😊"</div>
+<div class="depois">"Agora preciso do teu comprovante de residência recente (últimos 3 meses) — conta de luz, água, internet ou boleto que mostre o endereço. 🏠"
+"Importante: precisa estar no TEU nome e com o endereço LEGÍVEL na foto. Pode ser foto ou PDF."
+"Não tem nenhum no teu nome? Dá pra emitir um boleto no app do teu banco que mostra o endereço — pesquisa 'como emitir boleto no [teu banco]'. 😊"</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">🏠 Comprovante de terceiro (+ modelo de declaração PRONTO)</span><span class="badge b-primary">teu input</span></div>
+<div class="antes">"Vi que o comprovante está no nome de outra pessoa."
+"Se você mora com esse familiar, posso aceitar — mas preciso de uma declaração assinada por ele/ela e o RG ou CNH dele/dela também."</div>
+<div class="depois">1º: oferece a saída fácil → "Tu tens algum no teu nome? Se não: dá pra emitir um boleto no app do teu banco..."
+2º (se for mesmo terceiro): pede declaração + RG do titular E ENVIA O MODELO pronto:
+"Eu [nome da pessoa], portador(a) do CPF [CPF], declaro que [teu nome], portador(a) do CPF [teu CPF], mora neste endereço."</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">💼 Pedido da CTPS (+ regra do aposentado)</span><span class="badge b-primary">teu input</span></div>
+<div class="antes">"Pra finalizar, me manda também a tua Carteira de Trabalho (CTPS) ou um comprovante de renda. 📄"
+"Pode ser holerite, recibo de pagamento, extrato de benefício — foto ou PDF, aqui mesmo. 😊"</div>
+<div class="depois">"Pra finalizar, preciso da tua Carteira de Trabalho (CTPS) ou um comprovante de renda. 📄"
+"Vale holerite, recibo de pagamento ou extrato de benefício. Se a CTPS estiver com contrato fechado ou até vazia, serve também!"
+"Pode ser foto ou PDF — se for foto, manda TODAS as páginas que tenham algo escrito, bem legíveis. 😊"
++ regra interna: aposentado/autônomo/desempregado nunca trava — extrato de benefício/holerite vale; CTPS vazia vale</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">🛡️ Objeção "é golpe?" (resposta nova)</span><span class="badge b-primary">teu input</span></div>
+<div class="antes">"Entendo a desconfiança Maria, é importante mesmo ter cuidado."
+"A Midas já ajudou milhares de pessoas a limparem o nome."
+"Inclusive a gente faz questão de marcar uma conversa com nosso especialista — tu vê o rosto, conhece quem tá te ajudando."
+"Tudo formalizado, sem pegadinha."</div>
+<div class="depois">"Entendo a tua preocupação Maria — é importante mesmo ter cuidado."
+"Pode ficar tranquila: a Midas é uma empresa séria, com CNPJ, há 10 anos no ramo de irregularidades em restrições financeiras."
+"E é gratuito de verdade: quem nos paga são as empresas que te negativaram. Se não houver resultado, os custos são todos nossos."
+"Cada situação é analisada individualmente. Tudo formalizado, sem pegadinha. 😊"</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">💰 NOVA: objeção #9 "os 30% sou eu que pago?"</span><span class="badge b-success">não existia</span></div>
+<div class="depois">"Boa pergunta Maria! Esses 30% NÃO saem do teu bolso — pode ficar tranquila."
+"É a forma como a gente e os parceiros que cuidam do teu caso somos remunerados — e só recebemos se houver resultado."
+"Pra ti é gratuito do início ao fim: sem taxa, sem mensalidade, sem custo nenhum. O que tu ganhas é o nome limpo. 😊"
+(baseada na fala do atendente; "parceiros especializados" no lugar de "escritórios de advocacia" — ver dúvida D2)</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">⚖️ NOVA: objeção #10 "só assino se TODAS saírem"</span><span class="badge b-success">não existia</span></div>
+<div class="depois">"Maria, cada restrição é discutida individualmente — cada uma é um caso diferente, com as próprias irregularidades."
+"É justamente por isso que as chances de êxito aumentam: a gente ataca uma por uma."
+"Mas sendo 100% honesta contigo: não dá pra garantir se saem todas, algumas ou nenhuma. O que garanto é que tu não paga nada em nenhum cenário."</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">✍️ Follow-up de assinatura (tom persuasivo + 2 casos novos)</span><span class="badge b-primary">teu input</span></div>
+<div class="antes">"Oi Maria! Tudo certo por aqui. 😊 Só falta assinar a procuração."
+"É bem simples — abre o link e assina com o dedo na tela... Menos de 1 minutinho! Quando tu consegues?"</div>
+<div class="depois">"Oi Maria! Ficou pendente só a tua assinatura. ✍️"
+"Sem ela a gente não consegue dar andamento ao teu caso — é o único passo que falta pra seguirmos."
+"Se ficou qualquer dúvida sobre a assinatura, me pergunta aqui! 😊"
+
+NOVO caso "erro nos dados" → explica (carteira sem contrato em aberto), pergunta a profissão, avisa que corrige e manda link novo
+NOVO caso "selfie/técnico" → "é coisa do sistema, não do teu celular — vou pedir um link novo sem a etapa que tá travando"</div></div>
+
+<div class="mud"><div class="mud-head"><span class="t">🚪 Anti-loop: a 3ª foto ruim não vira a 4ª cobrança</span><span class="badge b-success">novo comportamento</span></div>
+<div class="antes">(loop infinito: "não consegui ler, manda de novo" ×4, ×7... ×19 — 222 leads presos)</div>
+<div class="depois">Na 3ª tentativa sem validar: "Vou chamar alguém da equipe pra te ajudar pessoalmente com esse documento 😊" + lead escala DE VERDADE pro humano (awaiting_human + triagem)</div></div>
+</section>
+
+<!-- ════ C CÓDIGO ════ -->
+<section id="codigo">
+<h2><span class="num">C</span>Mudanças de código (3 arquivos — invisíveis pro lead, mudam o motor)</h2>
+<table>
+<thead><tr><th>Arquivo</th><th>Mudança</th><th>Risco / mitigação</th></tr></thead>
+<tbody>
+<tr><td><code>inbound.controller.ts</code></td><td>(a) PUBLICO.md entra no system prompt (tolera arquivo ausente); (b) gate anti-loop (flag antes do LLM + escalada no pós-processamento, só conta tentativa que FALHOU — foto válida não dispara); (c) contador de objeção em <code>memoria_julia.objecoes_seguidas/ultima_objecao</code> (zera quando o lead avança)</td><td>baixo — aditivo, não altera fluxos existentes; logs novos para auditar (<code>gate_anti_loop_*</code>, <code>objecao_repetida_*</code>)</td></tr>
+<tr><td><code>jobs/julia-followup-funil.job.ts</code></td><td>Substitui o de 14/05: 4 queries com cota por estágio; assinatura ignora <code>awaiting_human</code> (única exceção, D9)</td><td>médio-baixo — já validado em 10/06 e re-type-checkado hoje contra o src atual; é follow-up, não inbound (falha não derruba atendimento)</td></tr>
+<tr><td><code>lib/objecao-detector.ts</code></td><td>+tipo <code>honorarios</code> (regex 30%/trinta por cento/honorári/porcentagem/percentual), prioridade logo abaixo de golpe</td><td>baixo — regex aditiva</td></tr>
+</tbody>
+</table>
+<p><b>Backup e rollback:</b> o script salva TUDO (cérebro, 12+3 skills, controller, job, detector) em <code>backup_TIMESTAMP/</code> e imprime os comandos de rollback. O <code>PUBLICO.md</code> é novo — rollback dele é só deletar (o controller tolera ausência).</p>
+</section>
+
+<!-- ════ D DÚVIDAS ════ -->
+<section id="duvidas">
+<h2><span class="num">D</span>As 7 dúvidas — me responde antes de rodar (formato livre, ex.: "D1: sim; D2: ...")</h2>
+
+<div class="duvida"><div class="q"><span class="dn">D1</span>"Há 10 anos no ramo" — esse número é REAL?</div>
+<p>Entrou na resposta do golpe porque tu escreveste "há 10 anos" no input. É uma afirmação factual que a Julia vai repetir centenas de vezes — se a Midas tem menos tempo, vira munição contra nós (e problema de honestidade radical). Confirma o número, ou me dá a redação segura (ex.: "há anos no mercado").</p></div>
+
+<div class="duvida"><div class="q"><span class="dn">D2</span>Quer citar o NÚMERO do CNPJ na resposta de golpe?</div>
+<p>Hoje ficou "empresa séria, com CNPJ" (genérico). Citar o número real ("CNPJ 12.345.678/0001-XX — pode consultar") é prova social fortíssima pra esse público. Se sim, me manda o CNPJ que a Julia deve falar. Se preferir genérico, mantém como está.</p></div>
+
+<div class="duvida"><div class="q"><span class="dn">D3</span>Honorários: a formulação "parceiros que cuidam do teu caso" te atende?</div>
+<p>O atendente fala "escritórios de advocacia parceiros" — mas "escritório" e "advogado" disparam o forbidden filter e a resposta seria BLOQUEADA. Redigi com "parceiros especializados que cuidam do teu caso". Funciona pra ti? (A alternativa — abrandar o filtro pra permitir esses termos em contextos específicos — é mudança maior no código, dá pra fazer no pacote 2 se quiseres.)</p></div>
+
+<div class="duvida"><div class="q"><span class="dn">D4</span>Calibragem do contador de objeção: 2× a mesma / 3 quaisquer está bom?</div>
+<p>Como está: o lead repete a MESMA objeção 2 turnos seguidos → humano; ou 3 objeções seguidas de qualquer tipo → humano. Atenção: "quanto tempo demora?" é classificado como objeção — lead perguntando de prazo 2× seguidas escalaria. Se achares agressivo, posso subir pra 3×/4 ou excluir os tipos "tempo" e "desempregado" do contador (são dúvidas, não resistência). O que preferes?</p></div>
+
+<div class="duvida"><div class="q"><span class="dn">D5</span>Os 222 leads JÁ presos em loop: escalar retroativamente?</div>
+<p>O gate anti-loop age daqui pra frente (dispara na PRÓXIMA foto ruim de quem já tem 2+). Os 222 que JÁ têm 3+ tentativas só escalam se mandarem outra foto ruim. Quer que eu rode um UPDATE one-shot no banco subindo eles pro Ag. Humano agora (entram na fila do atendente de uma vez — são ~222 de uma tacada)? Ou deixa o gate pegar organicamente?</p></div>
+
+<div class="duvida"><div class="q"><span class="dn">D6</span>Anti-loop e cobrança de assinatura AUMENTAM a fila do humano — ciente?</div>
+<p>De propósito: escalada de loop + leads respondendo à cobrança dos 77 links = mais conversas chegando na fila Ag. Humano — que já tem 991 sem vazão. É o comportamento desejado (humano fecha), mas o Vinicius vai sentir o volume nos primeiros dias. Confirma que a operação está pronta pra absorver (ou quer que a cobrança comece com cota menor que 40/execução?).</p></div>
+
+<div class="duvida"><div class="q"><span class="dn">D7</span>Boleto digital como instrução ATIVA — ok mesmo?</div>
+<p>A Julia vai passar a ENSINAR o lead a emitir boleto no app do banco como comprovante. A regra já aceitava "boleto do banco com endereço" — a novidade é instruir ativamente. Só confirma: qualquer boleto emitido no app (Nubank, Caixa Tem, PicPay...) com endereço visível VALE pro processo? (lembrando: vai pro juiz.)</p></div>
+
+<div class="callout"><b class="titulo">Depois das respostas</b>Eu aplico os ajustes que as respostas pedirem (são edições de minutos no stage), re-valido, e aí sim tu rodas o <code>sudo bash /Users/beto/.tmp-julia-v3/deploy-julia-v3.sh</code>. Se todas as respostas forem "tá certo como está", o deploy já está pronto — nada a retocar.</div>
+</section>
+
+<!-- ════ E FORA ════ -->
+<section id="fora">
+<h2><span class="num">E</span>O que este deploy NÃO inclui (consciente — pacote 2)</h2>
+<ul class="clean">
+<li><b>Leitor de docs apontando O CAMPO ilegível</b> ("o nome ficou cortado") — mexe no motor de visão, quero fazer com teste de qualidade. As 3 variantes de hoje já cobrem a maior parte.</li>
+<li><b>Desligar o follow-up v2</b> (redundante) — 1 semana observando o funil novo antes de matar o antigo.</li>
+<li><b>Prioridades finas de follow-up</b> (CTPS com cota própria; pós-auditoria com restrição como critério) — o job novo já resolve o grosso; o refino entra com os dados da 1ª semana.</li>
+<li><b>Refactor /inbound</b> (agrupar as 2 fotos de verdade, tool-calling no lugar de markers, latência) e <b>front por fases no MdZap</b> — teus GOs futuros.</li>
+</ul>
+</section>
+
+<footer>Julia V3 rodada 1 — revisão pré-deploy · 2026-06-11 · stage: /Users/beto/.tmp-julia-v3/ · espelho git: .projeto/julia-hierarquia/v3-rodada1/ · MdFlow DS v5</footer>
+</body>
+</html>
