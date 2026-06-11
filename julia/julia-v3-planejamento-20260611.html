@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Julia V3 — Planejamento: dados reais, código morto, e os teus inputs</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12100e;--surface:#1a1714;--card:#201d1a;--border:#2e2b27;--primary:#20c997;--primary-dim:#20c99720;--primary-border:#20c99740;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--info:#60a5fa;--text:#f5f0eb;--muted:#9e9890;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.65;padding:2rem 2rem 8rem;max-width:1280px;margin:0 auto}
+.layout{display:flex;gap:2rem}
+.sidebar{width:230px;position:sticky;top:20px;height:fit-content;max-height:90vh;overflow-y:auto;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem}
+.sidebar h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:.9rem 0 .3rem}
+.sidebar h4:first-child{margin-top:0}
+.sidebar a{display:block;color:var(--text);text-decoration:none;font-size:.8rem;padding:.22rem .5rem;border-radius:6px}
+.sidebar a:hover{background:var(--primary-dim);color:var(--primary)}
+main{flex:1;min-width:0}
+@media(max-width:860px){.sidebar{display:none}body{padding:1rem 1rem 10rem}}
+h1{font-family:Manrope;font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+h1 .accent{color:var(--primary)}
+.subtitle{color:var(--muted);margin-top:.4rem;max-width:840px}
+.meta-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:.2rem .75rem;font-size:.75rem;color:var(--muted)}
+.meta-chip b{color:var(--text)}
+section{margin-top:2.8rem;scroll-margin-top:20px}
+h2{font-family:Manrope;font-size:1.28rem;font-weight:700;padding-bottom:.5rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+h2 .num{color:var(--primary);font-family:var(--mono);font-size:1rem;margin-right:.5rem}
+h3{font-family:Manrope;font-size:1rem;font-weight:700;margin:1.3rem 0 .55rem}
+p{margin-bottom:.8rem;max-width:900px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1rem}
+.badge{display:inline-block;border-radius:6px;padding:.1rem .55rem;font-size:.7rem;font-weight:600;white-space:nowrap;vertical-align:middle}
+.b-primary{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)}
+.b-warn{background:#f59e0b1f;color:var(--warn);border:1px solid #f59e0b40}
+.b-danger{background:#ef44441f;color:var(--danger);border:1px solid #ef444440}
+.b-success{background:#22c55e1f;color:var(--success);border:1px solid #22c55e40}
+.b-info{background:#60a5fa1f;color:var(--info);border:1px solid #60a5fa40}
+.b-neutral{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+code{font-family:var(--mono);font-size:.82em;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.04rem .32rem}
+table{width:100%;border-collapse:collapse;margin:0 0 1rem;font-size:.85rem}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:.73rem;text-transform:uppercase;letter-spacing:.06em;padding:.45rem .6rem;border-bottom:1px solid var(--border)}
+td{padding:.5rem .6rem;border-bottom:1px solid #242019;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;margin:1rem 0}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem}
+.kpi .v{font-family:Manrope;font-size:1.55rem;font-weight:800;color:var(--primary)}
+.kpi .v.bad{color:var(--danger)}
+.kpi .v.warn{color:var(--warn)}
+.kpi .l{font-size:.78rem;color:var(--muted);line-height:1.35}
+.callout{background:linear-gradient(135deg,var(--primary-dim),transparent 65%);border:1px solid var(--primary-border);border-radius:12px;padding:1rem 1.2rem;margin:1rem 0}
+.callout.warn{background:linear-gradient(135deg,#f59e0b18,transparent 65%);border-color:#f59e0b40}
+.callout.danger{background:linear-gradient(135deg,#ef444418,transparent 65%);border-color:#ef444440}
+.callout b.titulo{display:block;margin-bottom:.3rem}
+.hoje{font-family:var(--mono);font-size:.78rem;background:#161310;border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;color:#b9c7e7;margin:.4rem 0;white-space:pre-wrap}
+.hoje::before{content:'COMO A JULIA FALA HOJE';display:block;font-size:.62rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.35rem}
+.cit{font-style:italic;color:#d8d2ca;font-size:.85rem}
+ul.clean{list-style:none;margin:0 0 1rem}
+ul.clean li{padding:.26rem 0 .26rem 1.3rem;position:relative;max-width:900px}
+ul.clean li::before{content:'→';position:absolute;left:0;color:var(--primary)}
+/* inputs */
+.igrp{margin:.7rem 0}
+.igrp label{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--primary);margin-bottom:.3rem}
+.igrp label .opc{color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
+.igrp textarea{width:100%;min-height:64px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;color:var(--text);font-family:Inter;font-size:.88rem;line-height:1.5;padding:.6rem .75rem;resize:vertical}
+.igrp textarea:focus{outline:none;border-color:var(--primary)}
+.igrp textarea.filled{border-color:var(--primary-border)}
+.ibox{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.15rem 1.3rem;margin-bottom:1.2rem}
+.ibox-head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.4rem}
+.ibox-head .t{font-family:Manrope;font-weight:700;font-size:1rem}
+.ibox .ctx{color:var(--muted);font-size:.85rem;margin-bottom:.5rem}
+/* barra */
+.copybar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#161310f2;backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:.85rem 1.5rem}
+.copybar-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.copybar .count{font-size:.8rem;color:var(--muted)}
+.copybar .count b{color:var(--primary);font-family:var(--mono)}
+.btn{font-family:Inter;font-weight:600;font-size:.85rem;border-radius:9px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text)}
+.btn-primary{background:var(--primary);color:#0b1f19;border-color:var(--primary)}
+.btn:hover{filter:brightness(1.1)}
+footer{margin-top:3rem;color:var(--muted);font-size:.78rem;text-align:center;border-top:1px solid var(--border);padding-top:1.2rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:780px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <h4>Diagnóstico</h4>
+  <a href="#resumo">0 · Os 6 fatos</a>
+  <a href="#assinatura">1 · Funil de assinatura</a>
+  <a href="#objecoes">2 · Objeções reais + inputs</a>
+  <a href="#documentos">3 · Documentos + inputs</a>
+  <a href="#morto">4 · Código morto (com datas)</a>
+  <a href="#awaiting">5 · Awaiting Human: mapa</a>
+  <a href="#perfil">6 · Perfil do lead + input</a>
+  <h4>Veredicto</h4>
+  <a href="#impiedosa">7 · Análise impiedosa</a>
+  <a href="#plano">8 · Backlog Julia V3</a>
+  <a href="#futuro">9 · Registrado p/ depois</a>
+</aside>
+<main>
+
+<header>
+  <h1>Julia <span class="accent">V3</span> — planejamento com dados reais</h1>
+  <p class="subtitle">Tudo que tu pediste nos 2 áudios: os números reais do banco (objeções pós-link, quem assina, loops de documento, awaiting human), o código morto com datas, as mensagens atuais da Julia lado a lado com os <b>teus campos de input</b> pra reescrever — e a análise impiedosa no final. Preenche os campos, clica em <b>Copiar tudo</b> na barra de baixo e cola na conversa. (Teus textos ficam salvos no navegador automaticamente.)</p>
+  <div class="meta-row">
+    <span class="meta-chip">📅 <b>2026-06-11</b></span>
+    <span class="meta-chip">Dados: <b>Supabase produção</b> (org Midas) + julia-server + Vault</span>
+    <span class="meta-chip">2 subagentes: mineração SQL + varredura código/vault</span>
+  </div>
+</header>
+
+<!-- ════ 0 RESUMO ════ -->
+<section id="resumo">
+<h2><span class="num">0</span>Os 6 fatos que mudam o jogo</h2>
+<div class="kpis">
+  <div class="kpi"><div class="v bad">0×</div><div class="l">vezes que o follow-up de assinatura rodou — o deploy de 10/06 <b>nunca foi executado</b> (produção segue com o job de 14/05)</div></div>
+  <div class="kpi"><div class="v bad">100%</div><div class="l">dos 76 leads com link pendente estão <code>awaiting_human=true</code> — e o cron atual PULA esses leads (filtro global). Dupla causa.</div></div>
+  <div class="kpi"><div class="v warn">65%</div><div class="l">dos leads com link &gt;3 dias ficaram em <b>silêncio total</b> após receber — ninguém cobrou (26 de 40 analisados)</div></div>
+  <div class="kpi"><div class="v">9 min</div><div class="l"><b>mediana</b> entre receber o link e assinar (quem assina). Quem deixa esfriar, raramente volta — cobrar CEDO &gt; cobrar sempre</div></div>
+  <div class="kpi"><div class="v warn">222</div><div class="l">leads presos em <b>loop de documento</b> (3+ tentativas; extremos de 10, 15, 19 tentativas) — o gargalo que tu apontaste, confirmado</div></div>
+  <div class="kpi"><div class="v warn">1.722</div><div class="l">leads em <code>awaiting_human=true</code> hoje — <b>991 parados</b> em novos × documentos_completos esperando humano</div></div>
+</div>
+<div class="callout"><b class="titulo">A tua tese dos áudios, validada pelos dados</b>O gargalo é DOCUMENTO + COBRANÇA, não a "inteligência" da Julia: 222 leads em loop de foto ruim, 65% de silêncio pós-link sem ninguém cobrar, e o follow-up mais valioso (assinatura) estruturalmente desligado. E a janela é curta: quem assina, assina em minutos — cada hora sem cobrar custa conversão.</div>
+</section>
+
+<!-- ════ 1 ASSINATURA ════ -->
+<section id="assinatura">
+<h2><span class="num">1</span>Funil de assinatura — o porquê de "expliquei mas nunca aconteceu"</h2>
+<p>Tu estavas certo: a regra existia, mas morava em 2 armadilhas de código:</p>
+<ul class="clean">
+<li><b>Causa 1 — deploy não rodado:</b> o fix de 10/06 (cotas por estágio: assinatura 40 / docs 40 / atendimento 40 / novos 30) ficou pronto e validado, mas o <code>sudo</code> nunca foi executado. Produção roda o job de <b>14 de maio</b>: <code>limit(30)</code> sem ordenação — ~4.000 leads "novos" enchem os 30 slots sempre.</li>
+<li><b>Causa 2 — filtro estrutural:</b> o job de produção tem <code>.eq('awaiting_human', false)</code> GLOBAL. Como <b>100% dos leads com link estão awaiting_human=true</b> (handoff pós-CTPS), leads de assinatura eram invisíveis pro cron MESMO sem o starvation. O job novo abre exceção pra assinatura (decisão tua de 10/06, formalizada como D9).</li>
+</ul>
+<div class="callout"><b class="titulo">⚡ Ação imediata (1 comando, já validado contra o código atual)</b><code>sudo bash /Users/beto/.tmp-julia-fv/deploy-followup-funil.sh</code> — destrava HOJE a cobrança dos 77 links parados (32 pendentes + 45 abertos-sem-assinar, 37 deles já com 7-30 dias).</div>
+
+<h3>As tuas prioridades de follow-up (áudio 1) → como ficam no motor</h3>
+<table>
+<thead><tr><th>Prioridade (tua)</th><th>Estágio</th><th>Por quê (tuas palavras)</th><th>Estado no job novo</th><th>Ajuste proposto</th></tr></thead>
+<tbody>
+<tr><td>🥇 1ª</td><td><b>aguardando_assinatura</b></td><td>"só falta assinar pra fecharmos"</td><td>cota 40, ignora awaiting ✅</td><td>+ cobrar nas <b>primeiras horas</b> (mediana de assinatura = 9min; cron de 2/2h já ajuda, mas um disparo ~1h após o link seria cirúrgico)</td></tr>
+<tr><td>🥈 2ª</td><td><b>pós-comprovante / CTPS</b></td><td>"já mandou 2 docs — o mais precioso depois da assinatura"</td><td>entra em "docs" (cota 40) sem distinção</td><td>separar cota própria pra <code>aguardando_ctps</code>, acima do resto de docs</td></tr>
+<tr><td>🥉 3ª</td><td><b>pós-auditoria COM restrições</b></td><td>"já pagamos a consulta, sabemos as restrições"</td><td>não é critério hoje</td><td>novo filtro: tem PDF + total_restricoes&gt;0 + sem docs → cota própria; <b>CPF limpo NÃO entra</b> ✅ (cpf_limpo já arquiva sozinho)</td></tr>
+<tr><td>4ª</td><td>cobrança de ID</td><td>"se nem o RG mandou, não tá tão interessado"</td><td>compete com tudo</td><td>cota menor, última na fila</td></tr>
+</tbody>
+</table>
+<p><b>Dado extra da mineração:</b> 4 dos 40 leads pós-link estavam <b>cobrando retorno e ninguém respondeu</b> ("Ola ainda nada", "Bom dia"×2) — gap do atendimento humano, não da Julia. O follow-up de assinatura também cobre isso (a Julia responde mesmo com humano atribuído nesse estágio).</p>
+</section>
+
+<!-- ════ 2 OBJEÇÕES ════ -->
+<section id="objecoes">
+<h2><span class="num">2</span>Objeções reais pós-link + os teus inputs de resposta</h2>
+<p>Minerei as mensagens dos 40 leads com link pendente &gt;3 dias. O resultado por tema (com falas reais), e embaixo de cada um, <b>os teus 2 campos</b>: a EXPLICAÇÃO (por que o lead sente isso — teu contexto pra eu calibrar a Julia) e a MENSAGEM IDEAL (como a Julia deve responder). Preenche os que quiseres — o que ficar vazio eu trato com o padrão atual.</p>
+<table>
+<thead><tr><th>Tema</th><th>~leads</th><th>Falas reais (literais)</th></tr></thead>
+<tbody>
+<tr><td><b>Silêncio total</b></td><td><b>26/40</b></td><td>— (não é objeção: é AUSÊNCIA de cobrança. Remédio = seção 1)</td></tr>
+<tr><td>Procrastinação</td><td>5</td><td class="cit">"Ok vou ler ali" · "Até metade da tarde assino" · "Estou no trabalho.. mais tarde eu vejo"</td></tr>
+<tr><td>Cobrando retorno (sem resposta)</td><td>4</td><td class="cit">"Ola ainda nada" · "Bom dia" (2× sem resposta)</td></tr>
+<tr><td>Expectativa de escopo/resultado</td><td>2</td><td class="cit">"só consigo assinar se esses também forem retirados, caso contrário continuo com o nome sujo"</td></tr>
+<tr><td>Desistência explícita</td><td>2</td><td class="cit">"Eu não quero mais vou desistir" · "não concordo com o contato"</td></tr>
+<tr><td>Honorários (30%)</td><td>1</td><td class="cit">"Mas é eu que tenho que pagar os 30 por cento ao advogado?"</td></tr>
+<tr><td>Erro nos dados da procuração</td><td>1</td><td class="cit">"na procuração diz que estou desempregado, eu estou trabalhando"</td></tr>
+<tr><td>Dificuldade técnica</td><td>1</td><td class="cit">"diz que não tenho armazenamento suficiente. Mas eu tenho"</td></tr>
+<tr><td>Desconfiança / quem fala</td><td>1</td><td class="cit">"Por gentileza com quem estou falando?"</td></tr>
+</tbody>
+</table>
+
+<div class="ibox"><div class="ibox-head"><span class="t">💬 Procrastinação ("assino depois")</span><span class="badge b-warn">5/40</span></div>
+<div class="ctx">Hoje a Julia só lembra ("Só falta assinar... quando tu consegues?"). O dado da mediana de 9min diz que "depois" = quase nunca.</div>
+<div class="igrp"><label data-k="obj.procrastinacao.explicacao">Explicação — por que o lead adia, no teu entender</label><textarea placeholder="Ex.: ele tem medo de compromisso formal, ou simplesmente esquece porque a vida dele é corrida..."></textarea></div>
+<div class="igrp"><label data-k="obj.procrastinacao.mensagem">Mensagem ideal da Julia</label><textarea placeholder="Ex.: criar leve urgência sem pressão — 'a análise fica reservada por X dias'..."></textarea></div></div>
+
+<div class="ibox"><div class="ibox-head"><span class="t">💬 Honorários / "30% pro advogado?"</span><span class="badge b-danger">sensível</span></div>
+<div class="ctx">Apareceu nos dados e é delicada: a Julia tem tabu de "advogado" e não discute valores. Hoje ela não tem resposta pra isso — provavelmente escala ou se enrola.</div>
+<div class="igrp"><label data-k="obj.honorarios.explicacao">Explicação — como funciona o modelo de cobrança e o que pode ser dito</label><textarea placeholder="Ex.: o lead não paga nada do bolso; o êxito é descontado de..., e a Julia PODE/NÃO PODE falar disso..."></textarea></div>
+<div class="igrp"><label data-k="obj.honorarios.mensagem">Mensagem ideal da Julia</label><textarea placeholder="Como ela explica o custo sem ferir os tabus..."></textarea></div></div>
+
+<div class="ibox"><div class="ibox-head"><span class="t">💬 Expectativa de escopo ("só assino se TODAS saírem")</span><span class="badge b-warn">2/40</span></div>
+<div class="ctx">O lead acha que é tudo-ou-nada. Honestidade radical da Julia proíbe prometer — mas falta uma explicação calibrada do que é realista.</div>
+<div class="igrp"><label data-k="obj.escopo.explicacao">Explicação — o que é realista prometer/explicar sobre quais restrições saem</label><textarea placeholder="Ex.: a gente contesta as que têm irregularidade; algumas saem, outras não; o que acontece com as que não saem..."></textarea></div>
+<div class="igrp"><label data-k="obj.escopo.mensagem">Mensagem ideal da Julia</label><textarea placeholder=""></textarea></div></div>
+
+<div class="ibox"><div class="ibox-head"><span class="t">💬 Erro nos dados da procuração</span><span class="badge b-info">operacional</span></div>
+<div class="ctx">"Diz que estou desempregado, eu estou trabalhando" → hoje vira limbo. Precisa de um caminho: avisar humano pra corrigir e reenviar.</div>
+<div class="igrp"><label data-k="obj.erro_dados.explicacao">Explicação — o processo de correção (quem corrige, quanto demora)</label><textarea placeholder=""></textarea></div>
+<div class="igrp"><label data-k="obj.erro_dados.mensagem">Mensagem ideal da Julia</label><textarea placeholder="Ex.: 'boa, obrigada por avisar! Vou pedir a correção e te mando o link novo...'"></textarea></div></div>
+
+<div class="ibox"><div class="ibox-head"><span class="t">💬 Dificuldade técnica pra assinar (celular, armazenamento, selfie)</span><span class="badge b-info">público 42+</span></div>
+<div class="ctx">Encaixa no perfil do nosso público (seção 6). A Julia poderia ter um mini-tutorial de assinatura por etapas.</div>
+<div class="igrp"><label data-k="obj.tecnica.explicacao">Explicação — os problemas técnicos mais comuns que o atendente vê</label><textarea placeholder="Ex.: não acha o link, o ZapSign pede selfie e trava, memória cheia..."></textarea></div>
+<div class="igrp"><label data-k="obj.tecnica.mensagem">Mensagem ideal da Julia (passo a passo curto)</label><textarea placeholder=""></textarea></div></div>
+
+<div class="ibox"><div class="ibox-head"><span class="t">💬 Golpe / desconfiança (a objeção nº 1 do detector)</span><span class="badge b-primary">tu citaste no áudio</span></div>
+<div class="ctx">Confirmado no código: "golpe" NÃO chama humano — só carrega a skill de objeção. A resposta atual: "Entendo a desconfiança. Tu não paga nada em nenhuma etapa...". Tu deste no áudio um rascunho: <span class="cit">"A Midas é uma empresa profissional com CNPJ que atua no ramo há tantos anos, que já ajudou vários brasileiros a recuperar o crédito"</span>.</div>
+<div class="igrp"><label data-k="obj.golpe.explicacao">Explicação — por que o lead acha que é golpe (teu áudio já deu: 100% grátis + tudo online + golpes pedindo documento)</label><textarea placeholder="Complementa ou confirma o contexto do áudio..."></textarea></div>
+<div class="igrp"><label data-k="obj.golpe.mensagem">Mensagem ideal da Julia (com CNPJ? anos de atuação? número de clientes?)</label><textarea placeholder="Ex.: 'A Midas é uma empresa com CNPJ XX.XXX, atua há X anos...' — me dá os números reais que posso usar"></textarea></div></div>
+
+<div class="ibox"><div class="ibox-head"><span class="t">💬 Outras objeções que tu queiras mapear</span><span class="badge b-neutral">livre</span></div>
+<div class="igrp"><label data-k="obj.extra.conteudo">Tema + explicação + mensagem (formato livre)</label><textarea placeholder="Ex.: 'já tentei isso antes e não funcionou' → ..."></textarea></div></div>
+</section>
+
+<!-- ════ 3 DOCUMENTOS ════ -->
+<section id="documentos">
+<h2><span class="num">3</span>Documentos — o gargalo central, com as mensagens atuais e os teus inputs</h2>
+<p>Os números: <b>222 leads com 3+ tentativas</b> de documento (7,5% de quem está em coleta), extremos de 19 tentativas. Tua tese do áudio: <i>"a Julia não sofre da performance dela — sofre do jeito que as informações chegam, com base no jeito que ela pediu"</i>. Plano: mensagens INSTRUTIVAS (como fotografar, PDF do Gov vale), feedback de erro ESPECÍFICO ("o nome tá ilegível, tira mais de perto" em vez de "ficou escura"), e regras com adaptações explícitas. Pra cada documento: como ela fala HOJE (verbatim do Vault) + teus 3 campos: <b>REGRAS</b> (absolutas) · <b>REGRAS/ADAPTAÇÃO</b> (flexíveis — "se não tiver X, vale Y") · <b>MENSAGEM IDEAL</b>.</p>
+
+<div class="ibox"><div class="ibox-head"><span class="t">📄 RG / CNH (identificação)</span><span class="badge b-primary">1º documento</span></div>
+<div class="hoje">1º pedido (recepcao): "Oi [Nome]! Aqui é a Julia da Midas. 👋" → "Me manda uma foto do teu RG ou CNH (frente E verso — as 2 fotos) pra eu já dar andamento no processo. 📄"
+
+Ilegível (coleta): "Recebi a foto, mas ela ficou um pouco escura/desfocada e não consigo ler os dados direitinho." → "Pode tirar outra foto com mais luz? Se possível, em ambiente bem iluminado e o documento deitado numa superfície plana. 📸"
+
+Falta o verso: "Recebi a frente do documento! 📄" → "Agora me manda o verso também, por favor. Pode ser uma foto do mesmo jeito. 📸"</div>
+<div class="ctx">Tua ideia do áudio (pra te inspirar): foto clara e visível · frente e verso (1 foto com os dois OU 2 fotos) · enquadrada, sem muito espaço entre a câmera e o documento (mas não 100% colada) · PDF do Gov.br/app CNH vale e é até melhor.</div>
+<div class="igrp"><label data-k="doc.id.regras">REGRAS (absolutas)</label><textarea placeholder="Ex.: frente E verso obrigatórios; legível nome, CPF e foto; ..."></textarea></div>
+<div class="igrp"><label data-k="doc.id.adaptacao">REGRAS/ADAPTAÇÃO (o que vale como alternativa)</label><textarea placeholder="Ex.: PDF do Gov.br ou app CNH vale como completo; CNH vencida vale?; RG muito antigo vale?..."></textarea></div>
+<div class="igrp"><label data-k="doc.id.mensagem">MENSAGEM IDEAL do 1º pedido (a versão instrutiva)</label><textarea placeholder="Como a Julia pede o RG ensinando a fotografar..."></textarea></div>
+<div class="igrp"><label data-k="doc.id.msg_ilegivel">MENSAGEM de ilegível (feedback específico) <span class="opc">— opcional; eu já vou fazer o leitor dizer O QUE está ilegível</span></label><textarea placeholder="Ex.: 'Vi que é o teu RG, mas o nome ficou cortado na foto — consegue tirar de novo um pouco mais de perto?'"></textarea></div></div>
+
+<div class="ibox"><div class="ibox-head"><span class="t">🏠 Comprovante de residência</span><span class="badge b-danger">o mais crítico (vai pro juiz)</span></div>
+<div class="hoje">Pedido: "Agora me manda um comprovante de residência recente (últimos 3 meses) — conta de luz, água, internet ou boleto que mostre o endereço." → "Importante: precisa estar no SEU nome. Se estiver no nome de outra pessoa (mãe, pai, esposo(a)...), também dá — mas aí preciso de uma declaração assinada por ela dizendo que vocês moram juntos + o RG/CNH dela. 😊"
+
+Desatualizado: "Recebi, mas esse comprovante está um pouco desatualizado — precisa ser dos últimos 3 meses."
+
+Terceiro: "Vi que o comprovante está no nome de outra pessoa." → "Se você mora com esse familiar, posso aceitar — mas preciso de uma declaração assinada por ele/ela e o RG ou CNH dele/dela também."</div>
+<div class="ctx">Regras vigentes (lista única 🔒): luz/água/gás/internet/boleto do banco COM endereço/contrato de locação vigente · extrato bancário NÃO · 90 dias (margem 7) · terceiro = declaração + RG do titular.</div>
+<div class="igrp"><label data-k="doc.comprovante.regras">REGRAS (absolutas)</label><textarea placeholder="Ex.: últimos 3 meses obrigatório; endereço LEGÍVEL (vamos preencher com ele); nome visível..."></textarea></div>
+<div class="igrp"><label data-k="doc.comprovante.adaptacao">REGRAS/ADAPTAÇÃO</label><textarea placeholder="Ex.: se não tiver no nome dele → de quem mora junto COM declaração+RG do titular, e a mensagem ideal pra instruir isso; conta digital (app) vale se...?"></textarea></div>
+<div class="igrp"><label data-k="doc.comprovante.mensagem">MENSAGEM IDEAL do pedido (instrutiva)</label><textarea placeholder=""></textarea></div></div>
+
+<div class="ibox"><div class="ibox-head"><span class="t">💼 CTPS / comprovante de renda</span><span class="badge b-warn">+ regra nova do aposentado</span></div>
+<div class="hoje">Pedido: "Pra finalizar, me manda também a tua Carteira de Trabalho (CTPS) ou um comprovante de renda. 📄" → "Pode ser holerite, recibo de pagamento, extrato de benefício — foto ou PDF, aqui mesmo. 😊"</div>
+<div class="ctx">Tua regra nova do áudio 1: <b>aposentado</b> → precisa comprovar a aposentadoria; CTPS VAZIA vale, desde que comprove que é aposentado. A Julia deve instruir isso.</div>
+<div class="igrp"><label data-k="doc.ctps.regras">REGRAS (absolutas)</label><textarea placeholder="Ex.: CTPS digital (app) vale; páginas X e Y da física; ..."></textarea></div>
+<div class="igrp"><label data-k="doc.ctps.adaptacao">REGRAS/ADAPTAÇÃO (aposentado, autônomo, desempregado...)</label><textarea placeholder="Ex.: aposentado → extrato do benefício INSS + CTPS mesmo vazia; autônomo → extrato bancário?; desempregado → ..."></textarea></div>
+<div class="igrp"><label data-k="doc.ctps.mensagem">MENSAGEM IDEAL do pedido</label><textarea placeholder=""></textarea></div></div>
+
+<div class="callout"><b class="titulo">O lado técnico que EU executo quando tu devolveres os inputs</b>(1) Reescrever os pedidos nas skills com as tuas mensagens. (2) Doc-reader devolver feedback ESPECÍFICO de ilegibilidade (qual campo falhou) — hoje ele já extrai os campos; falta expor o motivo na resposta. (3) Gate anti-loop: contador <code>tentativas_doc</code> já existe e NINGUÉM usa (confirmado: 222 leads em loop) → 3 tentativas do MESMO documento = escala com contexto, vira lei de script. (4) O "delay pra esperar as 2 fotos" entra no refactor (serializar por conversa) — agrupamento é script, não prompt.</div>
+</section>
+
+<!-- ════ 4 MORTO ════ -->
+<section id="morto">
+<h2><span class="num">4</span>Código e regra morta — com as datas que tu pediste</h2>
+<p>Regra de leitura que tu deste: atualizado recente = em uso/planejado; antigo = descartável. Mtime = data real do arquivo; frontmatter = data declarada.</p>
+<table>
+<thead><tr><th>Item</th><th>mtime</th><th>frontmatter</th><th>Veredicto</th></tr></thead>
+<tbody>
+<tr><td><code>docs.md</code></td><td>08/06*</td><td>13/05</td><td><span class="badge b-danger">MORTA</span> roteador nunca carrega; conteúdo absorvido por pos_pdf/coleta. *mtime de 08/06 = a faxina de gates tocou em massa, não é uso</td></tr>
+<tr><td><code>escalada.md</code></td><td>08/06*</td><td><b>05/05</b></td><td><span class="badge b-danger">MORTA</span> nunca roteada. MAS: o briefing estruturado que ela descreve (resumo do lead pro Vinicius no handoff) é uma ideia BOA não implementada — candidata a renascer como feature</td></tr>
+<tr><td><code>atendimento_cliente.md</code></td><td>19/05</td><td>16/05</td><td><span class="badge b-warn">DORMENTE</span> nunca roteada; útil só se criarmos "modo cliente" no futuro</td></tr>
+<tr><td><code>recepcao_v2_backup.md</code></td><td>16/05</td><td>—</td><td><span class="badge b-neutral">backup ok</span></td></tr>
+<tr><td><code>followup.md</code> + <code>julia-followup.job</code> (v2)</td><td>16/05 / <b>05/05</b></td><td>12/05</td><td><span class="badge b-warn">ATIVO mas REDUNDANTE</span> cron roda seg-sex 9-19h/3h; job intocado desde 05/05. Sobrepõe o funil → candidato a DESLIGAR quando o funil novo estiver no ar (1 motor só)</td></tr>
+<tr><td><code>followup_docs.md</code> + <code>julia-followup-docs-engine.ts</code></td><td>08/06* / 19/05</td><td>14/05</td><td><span class="badge b-danger">ÓRFÃO</span> engine existe mas NÃO está registrado em cron nenhum — nunca roda sozinho. Era a tua ideia que "foi adicionada e não substituída no lugar certo": o funil (estágio coleta) já faz esse papel</td></tr>
+<tr><td><code>followup_hsm</code> (cron 10h/15h)</td><td>job 18/05, engine 19/05</td><td>skill NÃO existe</td><td><span class="badge b-success">VIVO</span> usa templates Meta direto (sem skill .md) — correto: fora da janela de 24h só pode template</td></tr>
+<tr><td><code>objecao.md</code>, <code>auditoria.md</code></td><td>16/05</td><td><b>05/05</b></td><td><span class="badge b-success">VIVAS</span> mas paradas desde 05/05 — são as próximas a receber os teus inputs (§2)</td></tr>
+<tr><td>Regra "3 turnos de objeção → escala"</td><td>—</td><td>—</td><td><span class="badge b-danger">REGRA MORTA</span> vive só no prompt, sem contador no código = não é garantida. Tu pediste no áudio exatamente isso ("se continua com objeção mesmo explicado → humano") → virar gate com contador real</td></tr>
+<tr><td>Regra "delay 40s-1min pra esperar 2 fotos"</td><td>—</td><td>—</td><td><span class="badge b-neutral">JÁ REMOVIDA</span> (D4, ontem) — renasce como código no refactor</td></tr>
+</tbody>
+</table>
+<p><b>Proposta de limpeza (5 min, junto com o próximo deploy):</b> mover <code>docs.md</code>, <code>escalada.md</code>, <code>atendimento_cliente.md</code> pra <code>01_skills/_arquivadas/</code>; desligar o cron <code>julia-followup</code> v2 e deletar o engine docs órfão QUANDO o funil novo estiver validado (1 semana de observação).</p>
+</section>
+
+<!-- ════ 5 AWAITING ════ -->
+<section id="awaiting">
+<h2><span class="num">5</span>Awaiting Human — o mapa pra REDUZIR (não matar)</h2>
+<p>Teu objetivo: humano só pra (a) dúvida que a Julia não dá conta e (b) cadastrar + fazer procuração. Hoje: <b>1.722 leads</b> com a flag ligada. Onde ela nasce no código, e o que fazer com cada nascedouro:</p>
+<table>
+<thead><tr><th>Onde nasce</th><th>Volume/impacto</th><th>Veredicto pro teu objetivo</th></tr></thead>
+<tbody>
+<tr><td><b>Handoff pós-CTPS</b> (entrou em aguardando_ctps → flag liga)</td><td>991 leads parados em novos×documentos_completos + 47 em ctps</td><td><span class="badge b-success">MANTER</span> — é o teu (b): cadastro+procuração são do humano. O problema não é a flag, é a FILA: 991 esperando alguém agir → o front por fases (§9) ataca isso</td></tr>
+<tr><td><b>Media-handoff</b> (foto fora de fase de coleta)</td><td>contribui pros 227 em aguardando_comprovante c/ flag</td><td><span class="badge b-warn">REDUZIR</span> — se o lead manda doc "fora de hora", a Julia podia processar mesmo assim (o leitor identifica o tipo e salva na fase certa) em vez de chamar humano. Candidato nº 1 de corte de falso-positivo</td></tr>
+<tr><td><b>1ª msg sem código</b></td><td>56 em 30d</td><td><span class="badge b-warn">REDUZIR</span> — as 3 camadas de recuperação de CPF já existem; dá pra Julia pedir o CPF em mais casos antes de escalar</td></tr>
+<tr><td><b>Comprovante de terceiro (B3)</b></td><td>—</td><td><span class="badge b-success">MANTER</span> — validação humana é segurança jurídica real</td></tr>
+<tr><td><b>Erro de auditoria</b></td><td>227 falhas em 30d</td><td><span class="badge b-warn">REDUZIR</span> — retry automático antes de escalar (hoje escala na 1ª falha)</td></tr>
+<tr><td><b>Forbidden filter</b></td><td>48 em 30d</td><td><span class="badge b-neutral">já melhorado ontem</span> (D8: fallback + escala) — e os teus inputs de objeção (§2) reduzem os hits na origem</td></tr>
+<tr><td><b>3 tentativas de doc</b> (só prompt!)</td><td>222 leads em loop SEM escalar</td><td><span class="badge b-danger">INVERTIDO</span> — aqui falta escalar e não escala (regra morta). Vira gate: 3 falhas DO MESMO doc = humano com contexto</td></tr>
+</tbody>
+</table>
+<p>Resumindo a tua visão: o caminho não é desligar a flag — é (1) cortar os falso-positivos (media-handoff, erro de auditoria), (2) ligar onde falta (loop de doc), e (3) dar VAZÃO à fila de 991 com o front por fases. Com documentos chegando melhores (§3), o handoff pós-CTPS vira o único grande — e esse é desejado.</p>
+</section>
+
+<!-- ════ 6 PERFIL ════ -->
+<section id="perfil">
+<h2><span class="num">6</span>Perfil do lead — o arquivo novo que tu pediste</h2>
+<p><b>Onde deve morar:</b> <code>00_cerebro/PUBLICO.md</code>, injetado no system prompt junto com SOUL+STYLE (vai em TODA mensagem, igual ao SOUL — porque o público não muda por fase). É leve (~1KB) e muda o tom de TUDO. Rascunho que montei com o que falaste nos áudios + os dados:</p>
+<div class="card"><div class="hoje" style="color:#d8d2ca">RASCUNHO PUBLICO.md — Quem é o nosso lead
+
+- Pessoa endividada/negativada, geralmente 35-50 anos (média real: 42), classe C/D.
+- Baixa familiaridade digital: não sabe "escanear", manda foto torta/cortada, confunde frente/verso, tem celular com pouca memória.
+- MUITO medo de golpe (é o nosso público mais visado por golpistas pedindo documento) — desconfiança é DEFESA, não rejeição.
+- Imediatista: quer resolver AGORA; resposta lenta = esfria (dado real: quem assina, assina em mediana 9 MINUTOS após o link).
+- Linguagem: simples, zero jargão, frases curtas, 1 instrução por vez. NUNCA presumir que sabe baixar app/abrir PDF/assinar digital — ENSINAR passo a passo, com paciência e sem infantilizar.
+- Implicação prática: pedir documento = INSTRUIR como fotografar. Explicar o porquê de cada pedido ("vai pro teu processo, precisa estar legível"). Celebrar cada passo concluído.</div>
+<div class="igrp"><label data-k="perfil.publico">Teu ajuste no perfil (corrige, adiciona, corta)</label><textarea placeholder="Edita o rascunho com o que só tu sabes do público..."></textarea></div></div>
+<h3>Sinais de potencial assinatura (dados reais)</h3>
+<ul class="clean">
+<li><b>Velocidade</b>: quem assina troca ~50% mais mensagens por dia de conversa (88,9 vs 59,5) e responde mais denso (16,8 vs 13,6 msgs). Teu dado de 17 vs 23 min vai na mesma direção.</li>
+<li><b>Mediana 9 min link→assinatura</b>: o lead "quente" fecha na hora. Sinal operacional: lead respondendo rápido = prioridade máxima de atenção humana; lead lento = follow-up automático cuida.</li>
+<li>Idade NÃO discrimina (42 anos nos dois grupos) — confirma tua intuição de que sexo/idade importam pouco.</li>
+<li>Uso futuro: um "score de calor" simples (tempo médio de resposta + fase) ordenando a fila do atendente. Encaixa no front novo (§9).</li>
+</ul>
+</section>
+
+<!-- ════ 7 IMPIEDOSA ════ -->
+<section id="impiedosa">
+<h2><span class="num">7</span>Análise impiedosa — a Julia serve pro que ela existe?</h2>
+<p><b>Pra que a Julia serve</b> (teu objetivo declarado): atender sozinha do "oi" até o lead pronto-pra-procuração, com humano só em dúvida-difícil e cadastro/procuração. Contra isso:</p>
+<table>
+<thead><tr><th>Etapa</th><th>Nota</th><th>Veredicto sem dó</th></tr></thead>
+<tbody>
+<tr><td>Recepção + código</td><td><b>8/10</b></td><td>Funciona. Perde pontos pelos 56/mês sem código que escalam em silêncio.</td></tr>
+<tr><td>Coleta de ID</td><td><b>5/10</b></td><td>O gargalo confirmado: 7,5% em loop, mensagens de pedido secas que geram foto ruim, feedback de erro genérico ("ficou escura") e NENHUM teto real de tentativas. É exatamente onde teu plano de mensagens instrutivas + leitor com feedback específico + gate anti-loop ataca. Maior ROI do projeto V3.</td></tr>
+<tr><td>Comprovante</td><td><b>6/10</b></td><td>Regras boas e agora com fonte única; mas mesma doença da coleta (instrução fraca) e contador de tentativas que nem incrementa direito (máx 2 registrado em 1.381 leads).</td></tr>
+<tr><td>CTPS</td><td><b>7/10</b></td><td>Best-effort correto. Falta a regra do aposentado (teu input §3).</td></tr>
+<tr><td>Pós-PDF / objeções</td><td><b>6/10</b></td><td>Playbook decente mas parado desde 05/05, sem as objeções REAIS de contrato (§2) e com a regra dos 3 turnos morta. Com teus inputs, sobe rápido.</td></tr>
+<tr><td>Assinatura (follow-up)</td><td><b>1/10</b></td><td>O elo mais valioso do funil estava simplesmente DESLIGADO (deploy + filtro). 77 links parados, 65% no silêncio. Imperdoável — e é o fix mais barato de todos (1 sudo).</td></tr>
+<tr><td>Awaiting/handoff</td><td><b>6/10</b></td><td>O conceito é certo; a execução acumula 1.722 (991 sem vazão) e mistura falso-positivo com handoff legítimo. Precisa do trio: cortar falsos + gate de loop + front com fila por fase.</td></tr>
+<tr><td>Arquitetura geral</td><td><b>9/10</b></td><td>Estado da arte (manual de ontem §8). O problema NUNCA foi a fundação — é conteúdo de mensagem, cobrança desligada e fila sem vazão.</td></tr>
+</tbody>
+</table>
+<div class="callout danger"><b class="titulo">A frase impiedosa</b>A Julia hoje é uma EXCELENTE recepcionista com uma PÉSSIMA cobradora dentro dela: ela conversa bem, valida documento razoavelmente, mas deixou 77 contratos na mesa por um cron desligado e mantém 222 leads num loop de foto sem nunca pedir ajuda. O projeto V3 não precisa reinventar a Julia — precisa ligar a cobrança, ensinar o lead a fotografar e dar vazão à fila.</div>
+</section>
+
+<!-- ════ 8 PLANO ════ -->
+<section id="plano">
+<h2><span class="num">8</span>Backlog Julia V3 — priorizado por ROI</h2>
+<table>
+<thead><tr><th>#</th><th>Ação</th><th>Depende de</th><th>Esforço</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><b>Deploy do follow-up de assinatura</b> (cotas + exceção awaiting)</td><td>1 sudo teu — pronto e validado</td><td><span class="badge b-success">minutos</span></td></tr>
+<tr><td>2</td><td><b>Teus inputs deste HTML</b> (objeções + documentos + perfil) → eu reescrevo skills + crio PUBLICO.md</td><td>tu preencheres + 1 deploy</td><td><span class="badge b-success">1 rodada</span></td></tr>
+<tr><td>3</td><td><b>Gate anti-loop</b>: 3 falhas do MESMO doc → escala com contexto (mata os 222)</td><td>código (pequeno)</td><td><span class="badge b-success">pequeno</span></td></tr>
+<tr><td>4</td><td><b>Doc-reader com feedback específico</b> ("nome ilegível → mais perto") + mensagens de erro instrutivas</td><td>código (médio) + teus textos</td><td><span class="badge b-warn">médio</span></td></tr>
+<tr><td>5</td><td><b>Cotas de follow-up nas TUAS prioridades</b> (assinatura cedo &gt; CTPS &gt; pós-auditoria c/ restrição &gt; ID) + desligar followup v2 + arquivar skills mortas</td><td>código (pequeno) + 1 semana de observação</td><td><span class="badge b-success">pequeno</span></td></tr>
+<tr><td>6</td><td><b>Reduzir falso-positivo de awaiting</b> (media-handoff processa em vez de escalar; retry de auditoria)</td><td>código (médio)</td><td><span class="badge b-warn">médio</span></td></tr>
+<tr><td>7</td><td><b>Contador real de objeção</b> (persistir + 2ª objeção igual sem avanço → humano, como pediste)</td><td>código (pequeno)</td><td><span class="badge b-success">pequeno</span></td></tr>
+<tr><td>8</td><td><b>Transcrever áudios do atendente</b> (casos pós-link) → minerar as explicações dele pros teus inputs</td><td>Whisper local já existe; precisa baixar as mídias das msgs de áudio do atendente — tarefa batch separada</td><td><span class="badge b-warn">médio/demorado</span></td></tr>
+<tr><td>9</td><td><b>Refactor /inbound</b> (serializar por conversa = o "delay das 2 fotos" de verdade + tool-calling no lugar de markers)</td><td>plano pronto, GO teu</td><td><span class="badge b-danger">grande</span></td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ════ 9 FUTURO ════ -->
+<section id="futuro">
+<h2><span class="num">9</span>Registrado pra depois (teu contexto, sem executar agora)</h2>
+<ul class="clean">
+<li><b>Front MdZap sdr_leads — abas por FASE</b>: trocar as abas atuais (colunas de CRM pensadas pra um time grande) por abas da esteira real: Auditoria · Recebendo docs · Pronto p/ procuração (os 991!) · Aguardando assinatura · Pós-assinatura. Com o raio-X por turno (skill/fase/gates/motivo de silêncio) que o manual de ontem sugeriu. Quando o cenário acima estiver rodando, tu me trazes tua ideia e desenhamos.</li>
+<li><b>Abrandar tabus com contexto</b> ("escritório/advogado" continuar bloqueados, mas a Julia explicar melhor o que somos): entra junto com teus inputs de objeção — a resposta do "golpe" com CNPJ/anos é o primeiro caso.</li>
+<li><b>Score de calor do lead</b> (velocidade de resposta como sinal de assinatura) — alimenta o front novo.</li>
+</ul>
+</section>
+
+<footer>Julia V3 — planejamento · 2026-06-11 · dados: Supabase produção (org Midas), julia-server, Vault Julia · 2 subagentes (SQL + código) · MdFlow DS v5</footer>
+</main>
+</div>
+
+<div class="copybar"><div class="copybar-inner">
+  <span class="count"><b id="nfilled">0</b> campos preenchidos</span>
+  <button class="btn" id="btnLimpar">Limpar tudo</button>
+  <button class="btn btn-primary" id="btnCopiar">📋 Copiar tudo (formato pra colar na conversa)</button>
+</div></div>
+
+<script>
+const TA = () => Array.from(document.querySelectorAll('.igrp')).map(g => ({
+  key: g.querySelector('label').dataset.k,
+  label: g.querySelector('label').textContent.trim(),
+  ta: g.querySelector('textarea'),
+  section: g.closest('.ibox')?.querySelector('.ibox-head .t')?.textContent.trim() ?? g.closest('section')?.querySelector('h2')?.textContent.trim() ?? ''
+}));
+function refresh(){
+  let n=0;
+  TA().forEach(({ta,key})=>{
+    if(ta.value.trim()){n++;ta.classList.add('filled');}else ta.classList.remove('filled');
+    try{localStorage.setItem('jv3.'+key, ta.value);}catch(e){}
+  });
+  document.getElementById('nfilled').textContent=n;
+}
+TA().forEach(({ta,key})=>{
+  try{const v=localStorage.getItem('jv3.'+key); if(v) ta.value=v;}catch(e){}
+  ta.addEventListener('input',refresh);
+});
+refresh();
+document.getElementById('btnCopiar').addEventListener('click',async(e)=>{
+  const parts=['# INPUTS JULIA V3 — Gustavo · '+new Date().toLocaleDateString('pt-BR'),''];
+  let cur='';
+  TA().forEach(({key,label,ta,section})=>{
+    if(!ta.value.trim())return;
+    if(section!==cur){parts.push('## '+section);cur=section;}
+    parts.push('### ['+key+'] '+label);
+    parts.push(ta.value.trim());
+    parts.push('');
+  });
+  if(parts.length<=2)return;
+  const txt=parts.join('\n');
+  try{await navigator.clipboard.writeText(txt);}catch(_){
+    const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();
+  }
+  const b=e.currentTarget,o=b.textContent;b.textContent='✓ Copiado!';setTimeout(()=>b.textContent=o,1600);
+});
+document.getElementById('btnLimpar').addEventListener('click',()=>{
+  if(!confirm('Apagar todos os textos preenchidos?'))return;
+  TA().forEach(({ta,key})=>{ta.value='';try{localStorage.removeItem('jv3.'+key);}catch(e){}});
+  refresh();
+});
+</script>
+</body>
+</html>
