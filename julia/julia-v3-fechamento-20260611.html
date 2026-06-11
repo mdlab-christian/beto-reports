@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Julia V3 — Fechamento do dia 11/06: planejado × executado</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12100e;--surface:#1a1714;--card:#201d1a;--border:#2e2b27;--primary:#20c997;--primary-dim:#20c99720;--primary-border:#20c99740;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--info:#60a5fa;--text:#f5f0eb;--muted:#9e9890;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.65;padding:2rem;max-width:1180px;margin:0 auto}
+h1{font-family:Manrope;font-size:1.65rem;font-weight:800;letter-spacing:-.02em}
+h1 .accent{color:var(--primary)}
+.subtitle{color:var(--muted);margin-top:.4rem;max-width:860px}
+.meta-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:.2rem .75rem;font-size:.75rem;color:var(--muted)}
+.meta-chip b{color:var(--text)}
+section{margin-top:2.6rem}
+h2{font-family:Manrope;font-size:1.22rem;font-weight:700;padding-bottom:.5rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+h2 .num{color:var(--primary);font-family:var(--mono);font-size:.95rem;margin-right:.5rem}
+p{margin-bottom:.8rem;max-width:900px}
+.badge{display:inline-block;border-radius:6px;padding:.1rem .5rem;font-size:.7rem;font-weight:600;white-space:nowrap}
+.ok{background:#22c55e1f;color:var(--success);border:1px solid #22c55e40}
+.parcial{background:#f59e0b1f;color:var(--warn);border:1px solid #f59e0b40}
+.aberto{background:#60a5fa1f;color:var(--info);border:1px solid #60a5fa40}
+.consciente{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+code{font-family:var(--mono);font-size:.82em;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.04rem .32rem}
+table{width:100%;border-collapse:collapse;margin:0 0 1rem;font-size:.84rem}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;padding:.45rem .55rem;border-bottom:1px solid var(--border)}
+td{padding:.45rem .55rem;border-bottom:1px solid #242019;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.8rem;margin:1rem 0}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem}
+.kpi .v{font-family:Manrope;font-size:1.5rem;font-weight:800;color:var(--primary)}
+.kpi .l{font-size:.76rem;color:var(--muted);line-height:1.35}
+.callout{background:linear-gradient(135deg,var(--primary-dim),transparent 65%);border:1px solid var(--primary-border);border-radius:12px;padding:1rem 1.2rem;margin:1rem 0}
+.callout b.titulo{display:block;margin-bottom:.3rem}
+footer{margin-top:3rem;color:var(--muted);font-size:.78rem;text-align:center;border-top:1px solid var(--border);padding-top:1.2rem}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Julia V3 — <span class="accent">fechamento do dia</span> · planejado × executado</h1>
+  <p class="subtitle">Revisão completa de consciência limpa: cada item dos 4 HTMLs de planejamento desta sessão, conferido contra o que está EM PRODUÇÃO agora (checksums validados, logs ao vivo). Legenda: <span class="badge ok">✓ no ar</span> <span class="badge parcial">◐ parcial</span> <span class="badge aberto">→ aberto (agendado)</span> <span class="badge consciente">contexto futuro (por design)</span></p>
+  <div class="meta-row">
+    <span class="meta-chip">📅 <b>11/06/2026 ~18:25</b></span>
+    <span class="meta-chip"><b>7 deploys</b> hoje · todos validados · <b>0 sudo pendente</b></span>
+    <span class="meta-chip">stage = produção <b>SYNC</b> · erros pós-deploy final: <b>0</b></span>
+  </div>
+</header>
+
+<section>
+<h2><span class="num">A</span>Estado da Julia AGORA (verificado ao vivo, 18:25)</h2>
+<div class="kpis">
+  <div class="kpi"><div class="v">0</div><div class="l">erros/warnings desde o deploy final (18:19)</div></div>
+  <div class="kpi"><div class="v">7/7</div><div class="l">checksums produção = stage (controller, 2 libs, 4 skills)</div></div>
+  <div class="kpi"><div class="v">2×</div><div class="l">exceção da CTPS já agiu — leads que ficariam mudos sendo atendidos</div></div>
+  <div class="kpi"><div class="v">9</div><div class="l">cobranças do cron 18h (6 de ASSINATURA — primeira vez na história)</div></div>
+  <div class="kpi"><div class="v">185≈194</div><div class="l">auditorias ≈ documentos recebidos (gasto saudável, sem vazamento)</div></div>
+  <div class="kpi"><div class="v">0</div><div class="l">leads zumbis / fases mentirosas restantes no banco</div></div>
+</div>
+<p><b>No ar em produção:</b> prompts V3 completos (pedidos instrutivos, PUBLICO.md em todo turno, objeções #9/#10, prazo canônico, modelo de declaração em 1 bolha) · motor blindado (stale guard duplo, delay de 60s pro par de fotos, anti-leak no parser, anti-loop determinístico, terceiro em conjunto, fase CTPS viva, silêncio falso eliminado, zumbi auto-corrigido, auditoria determinística, cotas de cobrança) · WH-AUD-01 com texto alinhado (sem extrato, sem "quando puder").</p>
+</section>
+
+<section>
+<h2><span class="num">B</span>HTML 1 — As 10 decisões (decisoes-hierarquia) → <b>10/10 no ar</b></h2>
+<table>
+<thead><tr><th>Decisão</th><th>Status</th><th>Evidência</th></tr></thead>
+<tbody>
+<tr><td>D1 lista única de comprovantes (extrato fora)</td><td><span class="badge ok">✓</span></td><td>4 cópias corrigidas + WH-AUD-01 n8n patchado</td></tr>
+<tr><td>D2 verso obrigatório desde a recepção</td><td><span class="badge ok">✓</span></td><td>+ caps removidos depois (feedback ao vivo)</td></tr>
+<tr><td>D3 auditoria com disparo determinístico</td><td><span class="badge ok">✓</span></td><td>185 auditorias hoje, gate_b em ação nos logs</td></tr>
+<tr><td>D4 instrução morta de delay removida</td><td><span class="badge ok">✓</span></td><td>e o delay REAL virou código hoje (60s)</td></tr>
+<tr><td>D5 regra B3 fonte única</td><td><span class="badge ok">✓</span></td><td>+ modelo de declaração canônico adicionado</td></tr>
+<tr><td>D6 logs de marker engolido</td><td><span class="badge ok">✓</span></td><td>marker_sem_efeito/residual ativos</td></tr>
+<tr><td>D7 cancelamento destravado</td><td><span class="badge ok">✓</span></td><td>transição independe da skill</td></tr>
+<tr><td>D8 forbidden com fallback + escala</td><td><span class="badge ok">✓</span></td><td>2 hits hoje com fallback (antes: lead no vácuo)</td></tr>
+<tr><td>D9 exceção única do silêncio (assinatura)</td><td><span class="badge ok">✓</span></td><td>formalizada; cron 18h cobrou 6 assinaturas</td></tr>
+<tr><td>D10 prazo unificado</td><td><span class="badge ok">✓</span></td><td>refinado ao vivo: "demora em torno de 60 dias pra termos o primeiro resultado"</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2><span class="num">C</span>HTML 4 — Revisão pré-deploy (8 pacotes + 7 dúvidas) → <b>tudo no ar</b></h2>
+<p>Os 8 pacotes (faxina de tabus · mensagens novas · PUBLICO.md · fix follow-up · anti-loop · contador de objeção · regex honorários · skills mortas arquivadas) — <span class="badge ok">✓ deployados 17:05</span>. As 7 dúvidas D1-D7 respondidas e aplicadas, incluindo whitelist do forbidden (D3-A) com o bônus do fix da gratuidade, contador em 3× com reformulação (D4) e boleto digital 1× → terceiro (D7). Ajustes pós-resposta do Gustavo também no ar (separado=opcional, endereço sem número vale, sem régua de caracteres).</p>
+</section>
+
+<section>
+<h2><span class="num">D</span>HTML 3 — Backlog do planejamento V3 (9 itens)</h2>
+<table>
+<thead><tr><th>#</th><th>Item</th><th>Status</th><th>Detalhe</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Deploy do follow-up de assinatura</td><td><span class="badge ok">✓</span></td><td>No ar 17:05; cron 18h: 9 envios (6 assinatura), guards ok</td></tr>
+<tr><td>2</td><td>Inputs do Gustavo → skills + PUBLICO.md</td><td><span class="badge ok">✓</span></td><td>Aplicados + 6 refinamentos ao vivo</td></tr>
+<tr><td>3</td><td>Gate anti-loop (222 presos)</td><td><span class="badge ok">✓</span></td><td>E evoluiu: 100% determinístico (msg fixa, sem LLM) na mega revisão</td></tr>
+<tr><td>4</td><td>Doc-reader com feedback específico</td><td><span class="badge parcial">◐</span></td><td>3 variantes de feedback + endereço legível NO AR; "leitor aponta o campo exato" = pacote 2 (consciente)</td></tr>
+<tr><td>5</td><td>Cotas nas prioridades (CTPS própria, pós-auditoria)</td><td><span class="badge parcial">◐</span></td><td>Cotas base no ar; refino fino agendado com os dados da 1ª semana</td></tr>
+<tr><td>6</td><td>Reduzir falso-positivo de awaiting</td><td><span class="badge parcial">◐</span></td><td>3 FEITOS além do plano (silêncio falso n8n, fase nula=coleta, CTPS viva); retry de auditoria pendente (227 falhas/30d)</td></tr>
+<tr><td>7</td><td>Contador real de objeção</td><td><span class="badge ok">✓</span></td><td>3 seguidas → humano; repetição → reformular abordagem</td></tr>
+<tr><td>8</td><td>Transcrever áudios do atendente</td><td><span class="badge aberto">→</span></td><td>Gustavo trouxe 2 manualmente (honorários, selfie — já viraram skill); batch automático fica pro futuro</td></tr>
+<tr><td>9</td><td>Refactor /inbound</td><td><span class="badge aberto">→</span></td><td>GO futuro — e o dia de hoje escreveu a spec dele em casos reais (serialização, tool-calling, resposta-cedo)</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2><span class="num">E</span>HTML 2 — Manual: os 10 gargalos (§9) e as 5 lacunas (§8)</h2>
+<table>
+<thead><tr><th>#</th><th>Gargalo</th><th>Status</th><th>Detalhe</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Latência ~30s + duplicação</td><td><span class="badge parcial">◐</span></td><td>Sintoma MORTO hoje (stale guard + delay agindo nos logs); cura estrutural = refactor</td></tr>
+<tr><td>2</td><td>Message Grouper (1.227 órfãs)</td><td><span class="badge aberto">→</span></td><td>Não tocado (investigação n8n dedicada — era assim no plano)</td></tr>
+<tr><td>3</td><td>Vision lê o doc 2-3×</td><td><span class="badge aberto">→</span></td><td>Refactor (unificação Vision+doc-reader)</td></tr>
+<tr><td>4</td><td>3 skills mortas no Vault</td><td><span class="badge ok">✓</span></td><td>Arquivadas em <code>_arquivadas/</code></td></tr>
+<tr><td>5</td><td>3 follow-ups sobrepostos</td><td><span class="badge parcial">◐</span></td><td>v2 CONFIRMADO inócuo hoje (0 envios/50 candidatos) — desligar agendado p/ semana, após validar o funil</td></tr>
+<tr><td>6</td><td>Sem evals</td><td><span class="badge aberto">→</span></td><td>Estratégico (matéria-prima pronta: 12 cenários + shadow mode)</td></tr>
+<tr><td>7</td><td>Markers frágeis</td><td><span class="badge parcial">◐</span></td><td>Logs + 3 blindagens novas (cancelamento, terceiro, anti-loop sem marker); tool-calling = refactor</td></tr>
+<tr><td>8</td><td>"3 tentativas" só no prompt</td><td><span class="badge ok">✓</span></td><td>Virou lei de script (anti-loop)</td></tr>
+<tr><td>9</td><td>Auditoria: desperdício de bureau</td><td><span class="badge parcial">◐</span></td><td>Auditado hoje: SAUDÁVEL (1/lead, sem vazamento do DF); cache formal = baixa prioridade real</td></tr>
+<tr><td>10</td><td>Raio-X por turno na UI</td><td><span class="badge consciente">futuro</span></td><td>Espera o front por fases (tua ideia) — por design</td></tr>
+</tbody>
+</table>
+<p><b>Lacunas estratégicas (§8 — nunca foram compromisso do dia):</b> evals <span class="badge aberto">→</span> · tool-calling <span class="badge aberto">→ refactor</span> · tracing <span class="badge parcial">◐ logs nomeados novos</span> · versionamento de prompt <span class="badge aberto">→</span> (mitigado: todo deploy tem backup + espelho git) · memória episódica <span class="badge aberto">→</span>.</p>
+</section>
+
+<section>
+<h2><span class="num">F</span>Os 14 casos reais do acompanhamento ao vivo → <b>14/14 com causa-raiz e fix no ar</b></h2>
+<table>
+<thead><tr><th>Caso</th><th>Causa-raiz</th><th>Fix (no ar)</th></tr></thead>
+<tbody>
+<tr><td>Juliano (foto → Ag.Humano)</td><td>restart matou turno → fase perdida</td><td>fase re-ancora + fase nula=coleta + lead consertado</td></tr>
+<tr><td>edinei + William (comprovante no vácuo)</td><td>msgs do n8n como 'human' → mudez 12h</td><td>silêncio só com atendente COM NOME</td></tr>
+<tr><td>jacke / Edmar (mensagens duplicadas)</td><td>turnos paralelos sem fila</td><td>stale guard (já descartou duplicada real nos logs)</td></tr>
+<tr><td>Claudemir (repetiu pedido do n8n)</td><td>resposta velha pós-PDF</td><td>stale guard duplo (pré e pós-geração)</td></tr>
+<tr><td>Waltencir (pediu verso já em trânsito)</td><td>sem agrupamento de fotos</td><td>delay 60s (agindo nos logs)</td></tr>
+<tr><td>Anderson (foto como arquivo ignorada)</td><td>parser de PDF em JPEG</td><td>fallback pra análise de imagem</td></tr>
+<tr><td>Rafael (FRENTE em caps, pedido contraditório)</td><td>texto hardcoded + RG antigo (foto no verso)</td><td>ladoFaltante reescrito</td></tr>
+<tr><td>Maria Alice (declaração no vácuo)</td><td>terceiro escalava na detecção</td><td>coleta o conjunto, escala no final</td></tr>
+<tr><td>Edmar/Alice (modelo omitido/truncado)</td><td>modelo &gt;140 chars vs limite de bolha</td><td>modelo curto + exceção declarada + 1 bolha</td></tr>
+<tr><td>Braulio/Neli ("recebi tudo" na 1ª msg)</td><td>lead zumbi (fase mentirosa de maio)</td><td>re-ancoragem automática + 2 leads consertados</td></tr>
+<tr><td>Antônio (mudo na CTPS / "trabalho por conta")</td><td>handoff imediato calava a própria fase</td><td>CTPS viva (já agiu 2×) + skill com caso autônomo</td></tr>
+<tr><td>Antônio 2 (comprovante borrado aceito)</td><td>critério fraco (8 chars/cidade+UF)</td><td>visão julga legibilidade (com teus 2 ajustes)</td></tr>
+<tr><td>Verônica (pulou pra CTPS com terceiro)</td><td>injeções em contradição</td><td>contradição morta + marker ignorado com terceiro</td></tr>
+<tr><td>Caso 18:07 (raciocínio interno PRO LEAD)</td><td>contradição + parser frágil</td><td>anti-leak (JSON embutido + guarda regex + skip)</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2><span class="num">G</span>Veredicto + o que fica em aberto (lista honesta)</h2>
+<div class="callout"><b class="titulo">✅ Consciência limpa</b>Tudo que foi COMPROMETIDO nesta sessão está em produção, validado por checksum e com evidência nos logs. Nenhum sudo pendente, nenhum stage dessincronizado, nenhum lead consertável deixado quebrado no banco. O que está aberto é estratégico, documentado, com dono e momento — nada disso bloqueia a operação de amanhã.</div>
+<table>
+<thead><tr><th>Aberto</th><th>Quando</th></tr></thead>
+<tbody>
+<tr><td>Desligar follow-up v2 (confirmado inócuo: 0/50)</td><td>Após ~1 semana de funil validado</td></tr>
+<tr><td>Cotas finas (CTPS própria · pós-auditoria com restrição · cobrança ~1h pós-link)</td><td>Com os dados da 1ª semana</td></tr>
+<tr><td>Retry automático de auditoria (227 falhas/30d escalam na 1ª)</td><td>Pacote 2</td></tr>
+<tr><td>Doc-reader apontando o CAMPO ilegível</td><td>Pacote 2</td></tr>
+<tr><td>Message Grouper (1.227 órfãs)</td><td>Investigação n8n dedicada</td></tr>
+<tr><td>Refactor /inbound (serialização, tool-calling, resposta-cedo) — spec escrita pelos casos de hoje</td><td>GO do Gustavo</td></tr>
+<tr><td>Evals (12 cenários + shadow) · versionamento de prompt · memória episódica</td><td>Estratégicos</td></tr>
+<tr><td>Transcrição batch dos áudios do atendente</td><td>Futuro</td></tr>
+<tr><td><b>Front MdZap por fases + raio-X por turno</b></td><td>Quando o Gustavo trouxer a ideia — terreno mapeado</td></tr>
+</tbody>
+</table>
+<p><b>Pra amanhã cedo (observação, sem ação):</b> conversões dos 77 links cobrados · contadores das blindagens (<code>resposta_descartada_stale</code>, <code>doc_group_*</code>, <code>gate_anti_loop</code>, <code>parse_skip</code>) · taxa de aceitação de comprovante com o critério novo.</p>
+</section>
+
+<footer>Julia V3 — fechamento 11/06/2026 · 7 deploys · 30+ correções · 14 casos reais resolvidos · 4 HTMLs de planejamento conferidos item a item · espelho git: .projeto/julia-hierarquia/v3-rodada1/ · MdFlow DS v5</footer>
+</body>
+</html>
