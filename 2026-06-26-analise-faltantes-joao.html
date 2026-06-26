@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise — intimações faltantes 23-24/06 (obs. do João × MdFlow)</title>
+<style>
+:root{--bg:hsl(25 16% 6%);--card:hsl(30 18% 9%);--surface:hsl(28 14% 11%);--fg:hsl(36 17% 93%);--muted:hsl(33 10% 58%);--primary:#20c997;--border:hsl(28 10% 21%);--warn:hsl(38 92% 50%);--red:hsl(0 84% 60%);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif;line-height:1.5;padding:30px 18px 60px;max-width:1000px;margin:0 auto}
+h1{font-size:22px;font-weight:800;margin-bottom:5px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px}
+@media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.kpi .v{font-size:26px;font-weight:800;font-family:Manrope,Inter,sans-serif;line-height:1}
+.kpi .l{font-size:12px;color:var(--muted);margin-top:5px}
+.kpi.g .v{color:var(--red)}.kpi.c .v{color:var(--primary)}.kpi.f .v{color:var(--warn)}
+.read{background:rgba(32,201,151,.06);border:1px solid rgba(32,201,151,.22);border-radius:12px;padding:15px 17px;margin-bottom:20px;font-size:14px}
+.read h2{font-size:14px;color:var(--primary);margin-bottom:8px}
+.read p{margin-bottom:7px}.read b{color:var(--fg)}
+.read ul{margin:6px 0 2px 18px}.read li{margin-bottom:5px;font-size:13.5px}
+.bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;position:sticky;top:0;background:var(--bg);padding:9px 0;z-index:5;border-bottom:1px solid var(--border)}
+.fb{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:600;cursor:pointer}
+.fb.on{background:var(--primary);color:#04140f;border-color:var(--primary)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px 15px 12px 17px;margin-bottom:9px;position:relative;overflow:hidden}
+.rail{position:absolute;left:0;top:0;bottom:0;width:3px}
+.rail.gap{background:var(--red)}.rail.cap{background:var(--primary)}.rail.fora{background:var(--warn)}
+.top{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.num{color:var(--muted);font-weight:700;font-size:12px;min-width:22px}
+.cnj{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14.5px;font-weight:600}
+.tags{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.bdg{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.3px}
+.bdg.uf{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+.bdg.g2{background:rgba(245,158,11,.13);color:var(--warn)}
+.bdg.g1{background:rgba(255,255,255,.05);color:var(--muted)}
+.bdg.rel{background:rgba(239,68,68,.13);color:var(--red)}
+.bdg.irr{background:rgba(255,255,255,.05);color:var(--muted)}
+.bdg.inv{background:rgba(245,158,11,.16);color:var(--warn)}
+.bdg.cap{background:rgba(32,201,151,.14);color:var(--primary)}
+.bdg.gap{background:rgba(239,68,68,.14);color:var(--red)}
+.bdg.fora{background:rgba(245,158,11,.16);color:var(--warn)}
+.ato{font-size:12px;color:var(--muted);margin-top:4px}
+.obs{font-size:13.5px;margin-top:7px;padding:8px 11px;background:var(--surface);border-radius:8px;border-left:2px solid var(--border)}
+.obs b{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:2px}
+.copy{background:transparent;border:1px solid var(--border);color:var(--fg);border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer}
+.copy.done{color:var(--primary);border-color:var(--primary)}
+.foot{color:var(--muted);font-size:12px;margin-top:22px;border-top:1px solid var(--border);padding-top:14px}
+</style></head><body>
+<h1>Intimações faltantes 23-24/06 — análise cruzada</h1>
+<div class="sub">Observações do João (Controller) × status real no MdFlow · 67 processos · 26/06/2026</div>
+
+<div class="kpis">
+<div class="kpi"><div class="v">67</div><div class="l">listados pelo AdvBox como faltantes</div></div>
+<div class="kpi c"><div class="v">32</div><div class="l">JÁ estavam no MdFlow (data anterior)</div></div>
+<div class="kpi g"><div class="v">31</div><div class="l">gap real — MdFlow não capturou</div></div>
+<div class="kpi g"><div class="v">12</div><div class="l">gap real <b>E relevante</b> (prioridade)</div></div>
+</div>
+
+<div class="read">
+<h2>Leitura — por que foram pro AdvBox e não pro MdFlow</h2>
+<p>Cruzando as observações do João com o que o MdFlow realmente tem, a "falta" se separa em três grupos:</p>
+<ul>
+<li><b style="color:var(--primary)">32 não eram falta de verdade.</b> O MdFlow <b>capturou</b> essas intimações — a maioria (RS/SC) em <b>19/06</b>. O AdvBox só as listou nos dias 23-24 (atraso do AdvBox em registrar). Por isso "sumiram" na comparação de janela.</li>
+<li><b style="color:var(--red)">31 são gap real</b> — o MdFlow não pegou em nenhuma data. Concentrados em <b>SP de 1º grau</b> (foros 0100/0068/0405). Desses, <b>12 são relevantes</b> pelo João (réplica, sentença, decisão) e <b>19 irrelevantes</b>.</li>
+<li><b style="color:var(--warn)">4 estão fora do acervo</b> — nem o processo existe no MdFlow (inclui o caso que o João marcou "não é do nosso acervo, é de outro advogado").</li>
+</ul>
+<p style="margin-top:8px">Hipótese a investigar: o gap real é a <b>captura de 1º grau de SP</b> (provável OAB/fonte de diário não cobrindo esses foros). O 2º grau e o RS/SC já estão sendo pegos — só com atraso de listagem no AdvBox.</p>
+</div>
+
+<div class="bar" id="bar">
+<button class="fb on" data-f="all">Todos (67)</button>
+<button class="fb" data-f="gap">Gap real (31)</button>
+<button class="fb" data-f="gaprel">Gap relevante (12)</button>
+<button class="fb" data-f="cap">Já no MdFlow (32)</button>
+<button class="fb" data-f="fora">Fora do acervo (4)</button>
+<button class="fb" data-f="SP">SP</button><button class="fb" data-f="RS">RS</button><button class="fb" data-f="SC">SC</button>
+</div>
+<div id="lista"></div>
+<div class="foot">Status do MdFlow consultado na tabela <code>intimacoes</code> (qualquer data) + existência do processo no acervo. "Já no MdFlow" mostra a data da intimação capturada. Recontagem completa de 67 (antes: amostra de 10).</div>
+<script>
+const dados=[{"n":2,"cnj":"4002027-71.2026.8.26.0002","uf":"SP","grau":"2º grau","ato":"Acórdão","obs":"intimação do acordão no evento 16 dia 12/06","relev":"relevante","cat":"gap","mdData":null},{"n":9,"cnj":"4009530-76.2025.8.26.0068","uf":"SP","grau":"2º grau","ato":"Acórdão","obs":"intimação do acordão no evento 18 dia 15/06","relev":"relevante","cat":"gap","mdData":null},{"n":12,"cnj":"4010798-69.2025.8.26.0100","uf":"SP","grau":"1º grau","ato":"Sentença","obs":"intimação da sentença no dia 12/06","relev":"relevante","cat":"gap","mdData":null},{"n":13,"cnj":"4012177-45.2025.8.26.0100","uf":"SP","grau":"1º grau","ato":"Sentença","obs":"intimação da sentença no dia 11/06","relev":"relevante","cat":"gap","mdData":null},{"n":15,"cnj":"4014476-16.2026.8.26.0405","uf":"SP","grau":"1º grau","ato":"Réplica","obs":"intimação para réplica em 10/06","relev":"relevante","cat":"gap","mdData":null},{"n":16,"cnj":"4014481-38.2026.8.26.0405","uf":"SP","grau":"1º grau","ato":"Réplica","obs":"intimação para réplica em 11/06","relev":"relevante","cat":"gap","mdData":null},{"n":24,"cnj":"4056114-71.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Réplica","obs":"intimação para réplica em 16/06","relev":"relevante","cat":"gap","mdData":null},{"n":32,"cnj":"4082162-67.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 10/06","relev":"relevante","cat":"gap","mdData":null},{"n":34,"cnj":"4103661-10.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 15/06","relev":"relevante","cat":"gap","mdData":null},{"n":35,"cnj":"4104073-38.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 15/06","relev":"relevante","cat":"gap","mdData":null},{"n":41,"cnj":"5017279-88.2024.8.21.0008","uf":"RS","grau":"2º grau","ato":"Decisão","obs":"intimação de decisão no tribunal dia 12/06","relev":"relevante","cat":"gap","mdData":null},{"n":50,"cnj":"5051086-36.2025.8.24.0023","uf":"SC","grau":"2º grau","ato":"Acórdão","obs":"intimação do acórdão dia 22/06","relev":"relevante","cat":"gap","mdData":null},{"n":3,"cnj":"4003338-86.2025.8.26.0405","uf":"SP","grau":"2º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":4,"cnj":"4004594-71.2026.8.26.0068","uf":"SP","grau":"2º grau","ato":"Pauta de julgamento","obs":"disponibilizado em pauta de julgamento nos últimos eventos dos dias 12 e 15/06, irrelevante.","relev":"irrelevante","cat":"gap","mdData":null},{"n":7,"cnj":"4008129-64.2026.8.26.0405","uf":"SP","grau":"1º grau","ato":"Decisão","obs":"decisão irrelevante no evento 25 com intimação no evento 26 dia 12/06","relev":"irrelevante","cat":"gap","mdData":null},{"n":8,"cnj":"4009424-17.2025.8.26.0068","uf":"SP","grau":"2º grau","ato":"Pauta de julgamento","obs":"disponibilizado em pauta de julgamento nos últimos eventos dos dias 12 e 15/06, irrelevante.","relev":"irrelevante","cat":"gap","mdData":null},{"n":10,"cnj":"4009656-29.2025.8.26.0068","uf":"SP","grau":"2º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":11,"cnj":"4009778-42.2025.8.26.0068","uf":"SP","grau":"2º grau","ato":"Pauta de julgamento","obs":"disponibilizado em pauta de julgamento nos últimos eventos dos dias 12 e 15/06, irrelevante.","relev":"irrelevante","cat":"gap","mdData":null},{"n":14,"cnj":"4013506-92.2025.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":17,"cnj":"4014683-91.2025.8.26.0100","uf":"SP","grau":"2º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":18,"cnj":"4015040-71.2025.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":19,"cnj":"4015506-65.2025.8.26.0100","uf":"SP","grau":"2º grau","ato":"Pauta de julgamento","obs":"disponibilizado em pauta de julgamento nos últimos eventos dos dias 16 e 17/06, irrelevante.","relev":"irrelevante","cat":"gap","mdData":null},{"n":20,"cnj":"4043984-49.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":21,"cnj":"4049456-31.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":22,"cnj":"4052778-59.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":23,"cnj":"4053307-78.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":25,"cnj":"4056243-13.2025.8.26.0100","uf":"SP","grau":"2º grau","ato":"Pauta de julgamento","obs":"disponibilizado em pauta de julgamento nos últimos eventos dos dias 12 e 15/06, irrelevante.","relev":"irrelevante","cat":"gap","mdData":null},{"n":26,"cnj":"4061987-86.2025.8.26.0100","uf":"SP","grau":"2º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":31,"cnj":"4080964-92.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":52,"cnj":"5059071-56.2025.8.24.0023","uf":"SC","grau":"2º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":65,"cnj":"5275743-45.2024.8.21.0001","uf":"RS","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"gap","mdData":null},{"n":28,"cnj":"4065455-33.2026.8.26.0000","uf":"SP","grau":"2º grau","ato":"Agravo","obs":"intimação de decisão no agravo dia 13/06","relev":"relevante","cat":"fora","mdData":null},{"n":53,"cnj":"5081875-34.2026.8.21.0001","uf":"RS","grau":"1º grau","ato":"Alvará/Honorários","obs":"cumprimento de honorários, expedição de alvará dia 23/06, intimação dia 26/06","relev":"relevante","cat":"fora","mdData":null},{"n":6,"cnj":"4007377-80.2025.8.26.0000","uf":"SP","grau":"2º grau","ato":"Outro","obs":"não sei de onde saiu esse processo até pq nem é do nosso acervo, é de outro advogado, investigar!","relev":"investigar","cat":"fora","mdData":null},{"n":5,"cnj":"4006827-85.2025.8.26.0000","uf":"SP","grau":"2º grau","ato":"Outro","obs":"nada relevante, processo já baixado.","relev":"irrelevante","cat":"fora","mdData":null},{"n":1,"cnj":"4001857-83.2026.8.26.0072","uf":"SP","grau":"1º grau","ato":"Réplica","obs":"intimação para réplica no evento 19 dia 16/06","relev":"relevante","cat":"capturado","mdData":"18/06/2026"},{"n":27,"cnj":"4065152-44.2025.8.26.0100","uf":"SP","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 17/06","relev":"relevante","cat":"capturado","mdData":"18/06/2026"},{"n":33,"cnj":"4099296-10.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 17/06","relev":"relevante","cat":"capturado","mdData":"18/06/2026"},{"n":36,"cnj":"5003995-23.2025.8.21.0155","uf":"RS","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":37,"cnj":"5005164-23.2025.8.21.0033","uf":"RS","grau":"2º grau","ato":"Acórdão","obs":"intimação do acórdão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":38,"cnj":"5008753-22.2025.8.21.0001","uf":"RS","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":39,"cnj":"5011408-85.2025.8.24.0064","uf":"SC","grau":"1º grau","ato":"Retorno dos autos","obs":"intimação do retorno dos autos do tribunal dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":40,"cnj":"5014637-35.2026.8.21.0021","uf":"RS","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":42,"cnj":"5019212-83.2025.8.21.0001","uf":"RS","grau":"1º grau","ato":"Sentença","obs":"intimação da sentença em 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":43,"cnj":"5023098-92.2025.8.24.0038","uf":"SC","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":44,"cnj":"5025493-68.2026.8.24.0023","uf":"SC","grau":"1º grau","ato":"Réplica","obs":"intimação para réplica dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":45,"cnj":"5031317-08.2026.8.24.0023","uf":"SC","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":46,"cnj":"5031326-67.2026.8.24.0023","uf":"SC","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":47,"cnj":"5031333-59.2026.8.24.0023","uf":"SC","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":48,"cnj":"5031959-78.2026.8.24.0023","uf":"SC","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":49,"cnj":"5040077-77.2025.8.24.0023","uf":"SC","grau":"1º grau","ato":"Sentença","obs":"intimação da sentença dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":51,"cnj":"5056754-85.2025.8.24.0023","uf":"SC","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":54,"cnj":"5125642-59.2025.8.21.0001","uf":"RS","grau":"1º grau","ato":"Agravo","obs":"intimação para resposta ao agravo interno dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":55,"cnj":"5126075-97.2024.8.21.0001","uf":"RS","grau":"2º grau","ato":"Acórdão","obs":"intimação do acórdão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":56,"cnj":"5129867-25.2025.8.21.0001","uf":"RS","grau":"2º grau","ato":"Acórdão","obs":"intimação do acórdão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":57,"cnj":"5144516-92.2025.8.21.0001","uf":"RS","grau":"2º grau","ato":"Acórdão","obs":"intimação do acórdão dia 17/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":58,"cnj":"5145716-03.2026.8.21.0001","uf":"RS","grau":"1º grau","ato":"Réplica","obs":"intimação para réplica dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":59,"cnj":"5148253-69.2026.8.21.0001","uf":"RS","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":60,"cnj":"5170990-66.2026.8.21.0001","uf":"RS","grau":"1º grau","ato":"Decisão","obs":"intimação de decisão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":61,"cnj":"5171004-50.2026.8.21.0001","uf":"RS","grau":"1º grau","ato":"Ato ordinatório","obs":"intimação do ato ordinatório dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":62,"cnj":"5172725-37.2026.8.21.0001","uf":"RS","grau":"1º grau","ato":"Ato ordinatório","obs":"intimação do ato ordinatório dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":63,"cnj":"5206862-79.2025.8.21.0001","uf":"RS","grau":"2º grau","ato":"Sentença","obs":"intimação da sentença em 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":64,"cnj":"5237580-30.2023.8.21.0001","uf":"RS","grau":"2º grau","ato":"Decisão","obs":"intimação de decisão do tribunal dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":66,"cnj":"5287554-02.2024.8.21.0001","uf":"RS","grau":"2º grau","ato":"Sentença","obs":"intimação da sentença em 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":67,"cnj":"5324328-31.2024.8.21.0001","uf":"RS","grau":"2º grau","ato":"Acórdão","obs":"intimação do acórdão dia 18/06","relev":"relevante","cat":"capturado","mdData":"19/06/2026"},{"n":29,"cnj":"4072596-94.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"capturado","mdData":"11/05/2026"},{"n":30,"cnj":"4074703-14.2026.8.26.0100","uf":"SP","grau":"1º grau","ato":"Outro","obs":"nada relevante","relev":"irrelevante","cat":"capturado","mdData":"06/05/2026"}];
+const catCls={gap:'gap',capturado:'cap',fora:'fora'};
+const catLbl={gap:'Gap real',capturado:'No MdFlow'+'',fora:'Fora do acervo'};
+const relCls={relevante:'rel',irrelevante:'irr',investigar:'inv'};
+const relLbl={relevante:'Relevante',irrelevante:'Irrelevante',investigar:'Investigar'};
+function copiar(t,b){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='✓';b.classList.add('done');setTimeout(()=>{b.textContent=o;b.classList.remove('done')},1100);});}
+function render(f){
+  const arr=dados.filter(d=>{
+    if(f==='all')return true; if(f==='gap')return d.cat==='gap'; if(f==='cap')return d.cat==='capturado';
+    if(f==='fora')return d.cat==='fora'; if(f==='gaprel')return d.cat==='gap'&&d.relev==='relevante';
+    return d.uf===f;});
+  document.getElementById('lista').innerHTML=arr.map(d=>{
+    const md = d.cat==='capturado' ? ('No MdFlow · '+(d.mdData||'?')) : (d.cat==='fora'?'Fora do acervo':'Não capturado');
+    return '<div class="card"><div class="rail '+catCls[d.cat]+'"></div>'+
+     '<div class="top"><span class="num">'+d.n+'</span><span class="cnj">'+d.cnj+'</span>'+
+     '<span class="tags"><span class="bdg uf">'+d.uf+'</span><span class="bdg '+(d.grau==='2º grau'?'g2':'g1')+'">'+d.grau+'</span>'+
+     '<span class="bdg '+relCls[d.relev]+'">'+relLbl[d.relev]+'</span>'+
+     '<span class="bdg '+catCls[d.cat]+'">'+md+'</span>'+
+     '<button class="copy" onclick="copiar(\''+d.cnj+'\',this)">⧉</button></span></div>'+
+     (d.ato&&d.ato!=='Outro'?'<div class="ato">Ato: '+d.ato+'</div>':'')+
+     '<div class="obs"><b>Observação do João</b>'+d.obs+'</div></div>';
+  }).join('');
+}
+document.querySelectorAll('#bar .fb').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#bar .fb').forEach(x=>x.classList.remove('on'));b.classList.add('on');render(b.dataset.f);}));
+render('all');
+</script></body></html>
