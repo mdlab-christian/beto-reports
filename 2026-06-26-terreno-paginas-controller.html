@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Páginas do Controller — terreno para considerações da equipe</title>
+<style>
+  :root{
+    --bg:hsl(25 16% 6%); --card:hsl(30 18% 9%); --surface:hsl(28 14% 11%); --sidebar:hsl(30 20% 4%);
+    --fg:hsl(36 17% 93%); --muted:hsl(33 10% 58%); --primary:#20c997;
+    --border:hsl(28 10% 21%); --warn:hsl(38 92% 50%); --success:hsl(142 71% 45%); --destructive:hsl(0 84% 60%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:Inter,-apple-system,system-ui,sans-serif;
+    line-height:1.55;padding:0 0 60px}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(180deg,hsl(30 20% 4%),hsl(25 16% 6%));border-bottom:1px solid var(--border);
+    padding:38px 0 30px;margin-bottom:8px}
+  h1{font-size:27px;font-weight:800;letter-spacing:-.4px;margin-bottom:8px}
+  h1 .dot{color:var(--primary)}
+  .lede{color:var(--muted);font-size:15px;max-width:720px}
+  .pill{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+    color:var(--primary);background:rgba(32,201,151,.1);border:1px solid rgba(32,201,151,.25);
+    padding:3px 10px;border-radius:20px;margin-bottom:14px}
+  nav{position:sticky;top:0;z-index:20;background:rgba(18,16,14,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);padding:11px 0;margin-bottom:26px}
+  nav .wrap{display:flex;gap:7px;flex-wrap:wrap}
+  nav a{font-size:12.5px;color:var(--muted);text-decoration:none;padding:5px 11px;border-radius:7px;
+    border:1px solid transparent;transition:.15s;white-space:nowrap}
+  nav a:hover{color:var(--fg);border-color:var(--border);background:var(--surface)}
+  .intro{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:30px}
+  .intro h2{font-size:15px;margin-bottom:8px}
+  .intro p{font-size:14px;color:var(--muted);margin-bottom:6px}
+  .intro b{color:var(--fg)}
+  section.page{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    padding:24px 24px 8px;margin-bottom:22px;scroll-margin-top:64px}
+  .phead{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    background:rgba(32,201,151,.1);border:1px solid rgba(32,201,151,.22);font-size:19px;flex-shrink:0}
+  .phead h2{font-size:19px;font-weight:700}
+  .route{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;color:var(--primary);margin-left:auto}
+  .serve{font-size:14.5px;color:var(--fg);margin:10px 0 16px;padding-left:12px;border-left:2px solid var(--primary)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:6px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}.route{display:none}}
+  .block h3{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px;
+    display:flex;align-items:center;gap:6px}
+  .block ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .block li{font-size:13.3px;padding-left:18px;position:relative;color:var(--fg)}
+  .block li::before{position:absolute;left:0;top:0}
+  .ok li::before{content:"✓";color:var(--success);font-weight:700}
+  .new li::before{content:"★";color:var(--primary)}
+  .conn li::before{content:"↔";color:var(--muted)}
+  .ask{background:var(--surface);border:1px dashed rgba(245,158,11,.4);border-radius:11px;
+    padding:14px 16px;margin:8px 0 20px}
+  .ask h3{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--warn);margin-bottom:9px}
+  .ask ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .ask li{font-size:13.5px;padding-left:20px;position:relative;color:var(--fg)}
+  .ask li::before{content:"?";position:absolute;left:0;top:-1px;color:var(--warn);font-weight:800;
+    background:rgba(245,158,11,.12);width:15px;height:15px;border-radius:50%;display:flex;
+    align-items:center;justify-content:center;font-size:10px}
+  .note{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .considera{margin:2px 0 18px}
+  .considera label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+  .considera .line{border-bottom:1px dotted var(--border);height:26px;margin-top:6px}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:34px;padding-top:20px;border-top:1px solid var(--border)}
+  .tag{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:5px;margin-left:6px;vertical-align:middle}
+  .tag.fonte{background:rgba(32,201,151,.12);color:var(--primary);border:1px solid rgba(32,201,151,.25)}
+  .tag.mdzap{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.3)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="pill">Base para considerações da equipe · 26/06/2026</span>
+    <h1>Páginas do Controller<span class="dot">.</span> o que são, o que melhoramos, o que falta decidir</h1>
+    <p class="lede">Este documento é um <b>terreno</b>: descreve, em linguagem direta, para que serve cada página
+    ligada ao processo, com o que ela conversa e onde estão as decisões em aberto. A ideia é que a equipe
+    leia e dê suas considerações — o aprofundamento página por página vem depois, já com esse retorno.</p>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#processos">Processos</a>
+  <a href="#atividades">Atividades</a>
+  <a href="#docs">Documentos Pendentes</a>
+  <a href="#acordos">Acordos</a>
+  <a href="#audiencias">Audiências</a>
+  <a href="#execucoes">Execuções</a>
+  <a href="#decisoes">Decisões</a>
+</div></nav>
+
+<div class="wrap">
+
+  <div class="intro">
+    <h2>Como ler isto</h2>
+    <p><b>Para que serve</b> — a função da página no dia a dia.</p>
+    <p><span style="color:var(--success)">✓ Já funciona</span> — o que está sólido e não precisa mexer.</p>
+    <p><span style="color:var(--primary)">★ Melhoramos agora</span> — o que foi ajustado nesta rodada (já no ar).</p>
+    <p><span style="color:var(--warn)">? Para a equipe decidir</span> — as perguntas abertas. <b>É aqui que queremos a opinião de vocês.</b></p>
+    <p class="note">Marcação <span class="tag fonte">fonte</span> = página de origem da informação · <span class="tag mdzap">MdZap</span> = dispara mensagem no WhatsApp (já pronto, só conferimos a ligação).</p>
+  </div>
+
+  <!-- PROCESSOS -->
+  <section class="page" id="processos">
+    <div class="phead"><div class="icon">⚖️</div><h2>Processos <span class="tag fonte">fonte da verdade</span></h2><span class="route">/processos</span></div>
+    <p class="serve">É a página central — "move tudo". Cada processo carrega seus vínculos: cliente, empresa (ré) e
+    restrição. As abas internas (dados, movimentações, decisões, documentos, restrições, audiências, histórico, insights, OlivIA) são o painel de controle de cada caso.</p>
+    <div class="grid">
+      <div class="block conn"><h3>Conversa com</h3><ul>
+        <li>Clientes, Empresas e Restrições (vínculos)</li>
+        <li>Todas as demais páginas apontam para o processo</li>
+      </ul></div>
+      <div class="block ok"><h3>Já funciona</h3><ul>
+        <li>Vínculos cliente/empresa/restrição íntegros (auditados — 0 quebrados)</li>
+        <li>Busca por CNJ, cliente, empresa, advogado</li>
+        <li>9 abas no detalhe do processo</li>
+      </ul></div>
+    </div>
+    <div class="block new"><h3>Melhoramos agora</h3><ul>
+      <li>A <b>lista</b> agora mostra um selo quando o processo tem <b>audiência marcada</b> (antes só via abrindo o caso)</li>
+      <li>Auditoria de conexões: vínculos órfãos (apontando processo apagado) corrigidos</li>
+    </ul></div>
+    <div class="ask"><h3>Para a equipe decidir</h3><ul>
+      <li>As 9 abas atuais cobrem o que vocês usam? Falta ou sobra alguma?</li>
+      <li>Na lista de processos, que informação ajudaria a "bater o olho e entender"? (ex.: próximo prazo, próxima audiência, valor)</li>
+      <li>Falta poder editar o cliente/empresa direto pela página? (hoje não há esse botão)</li>
+    </ul></div>
+    <div class="considera"><label>Considerações da equipe</label><div class="line"></div><div class="line"></div></div>
+  </section>
+
+  <!-- ATIVIDADES -->
+  <section class="page" id="atividades">
+    <div class="phead"><div class="icon">✅</div><h2>Atividades</h2><span class="route">/atividades</span></div>
+    <p class="serve">Onde o controller <b>delega o que cada um tem que fazer</b>. É reutilizada por outras páginas:
+    Documentos Pendentes, Acordos e Audiências podem gerar uma atividade (ex.: "protocolar documento", "protocolar minuta", "fazer a audiência"). A informação no card e a velocidade são críticas — é usada o tempo todo.</p>
+    <div class="grid">
+      <div class="block conn"><h3>Conversa com</h3><ul>
+        <li>Processos <span class="tag fonte">fonte</span> (cada tarefa pertence a um processo/cliente)</li>
+        <li>Controller, Documentos Pendentes, Acordos, Audiências (origem das tarefas)</li>
+      </ul></div>
+      <div class="block ok"><h3>Já funciona</h3><ul>
+        <li>Delegação a responsável + participantes</li>
+        <li>Prazos (interno e fatal), urgente/importante, lida/não-lida</li>
+        <li>Card com tipo, CNJ, cliente, ré, OAB, tribunal, má-fé</li>
+      </ul></div>
+    </div>
+    <div class="block new"><h3>Melhoramos agora</h3><ul>
+      <li>Toda atividade agora herda o <b>cliente</b> do processo (27 estavam sem cliente → some dos filtros). Corrigido</li>
+      <li>O card mostra um selo de <b>origem</b> da tarefa: "Controller", "Jarbas", "Cecília"</li>
+    </ul></div>
+    <div class="ask"><h3>Para a equipe decidir</h3><ul>
+      <li>O card mostra o suficiente para vocês agirem rápido? O que falta de relance?</li>
+      <li>Faltam filtros ou uma visão (calendário/kanban) que vocês usariam?</li>
+      <li>Vale um atalho clicável da atividade para a intimação que a originou?</li>
+    </ul></div>
+    <div class="considera"><label>Considerações da equipe</label><div class="line"></div><div class="line"></div></div>
+  </section>
+
+  <!-- DOCUMENTOS PENDENTES -->
+  <section class="page" id="docs">
+    <div class="phead"><div class="icon">📄</div><h2>Documentos Pendentes</h2><span class="route">/documentos-pendentes</span></div>
+    <p class="serve">Cria a pendência de um documento para um processo, um cliente, ou vários processos do mesmo cliente,
+    e <b>dispara a cobrança pelo WhatsApp</b> <span class="tag mdzap">MdZap</span>. Quando o documento chega (ou o cliente desiste), gera uma <b>atividade</b> para protocolar no processo.</p>
+    <div class="grid">
+      <div class="block conn"><h3>Conversa com</h3><ul>
+        <li>Clientes e Processos <span class="tag fonte">fonte</span></li>
+        <li>Atividades (cria tarefa ao resolver/desistir)</li>
+        <li>MdZap <span class="tag mdzap">MdZap</span> (cobrança no WhatsApp)</li>
+      </ul></div>
+      <div class="block ok"><h3>Já funciona</h3><ul>
+        <li>Pendência por cliente agrupando vários processos</li>
+        <li>Disparo da cobrança registra contexto (cliente, advogado, documentos)</li>
+        <li>Modal "criar atividade" com modelos (protocolar / desistência)</li>
+      </ul></div>
+    </div>
+    <div class="block new"><h3>Melhoramos agora</h3><ul>
+      <li>A atividade criada aqui agora também herda o <b>cliente</b> automaticamente (mesma correção das Atividades)</li>
+    </ul></div>
+    <div class="ask"><h3>Para a equipe decidir</h3><ul>
+      <li>Os tipos de documento e os modelos de mensagem de cobrança estão completos?</li>
+      <li>Quando o documento chega, a atividade deve ser criada sozinha ou sempre manual?</li>
+      <li>Falta acompanhar "cobrado há X dias / sem resposta" de forma mais visível?</li>
+    </ul></div>
+    <div class="considera"><label>Considerações da equipe</label><div class="line"></div><div class="line"></div></div>
+  </section>
+
+  <!-- ACORDOS -->
+  <section class="page" id="acordos">
+    <div class="phead"><div class="icon">🤝</div><h2>Acordos</h2><span class="route">/acordos</span></div>
+    <p class="serve">Criar um acordo, <b>disparar no WhatsApp</b> <span class="tag mdzap">MdZap</span>, receber contraproposta, delegar o responsável e
+    fazer tudo <b>cair no Financeiro</b>. Pelo acordo também se cria a atividade para <b>protocolar a minuta</b> no processo, com a minuta salva.</p>
+    <div class="grid">
+      <div class="block conn"><h3>Conversa com</h3><ul>
+        <li>Processos e Clientes <span class="tag fonte">fonte</span></li>
+        <li>Financeiro (acordo pago vira lançamento)</li>
+        <li>Atividades (protocolar minuta) · MdZap <span class="tag mdzap">MdZap</span></li>
+      </ul></div>
+      <div class="block ok"><h3>Já funciona</h3><ul>
+        <li>Fluxo: negociação → protocolo → pagamento → pago</li>
+        <li>Contraproposta e responsável (delegação) suportados</li>
+        <li>Marcar minuta juntada / protocolada / pago (com data)</li>
+        <li>Conversa do WhatsApp vinculada ao acordo</li>
+      </ul></div>
+    </div>
+    <div class="ask"><h3>Para a equipe decidir</h3><ul>
+      <li><b>Minuta salva:</b> hoje marcamos que foi juntada, mas não guardamos o <b>arquivo</b>. Onde vocês querem anexar e baixar a minuta?</li>
+      <li>Acordo <b>parcelado</b> deve gerar uma parcela por mês no Financeiro, ou um lançamento único?</li>
+      <li>A delegação precisa registrar "quem delegou e quando" (histórico)?</li>
+      <li>Que campos da contraproposta importam para vocês acompanharem?</li>
+    </ul></div>
+    <div class="considera"><label>Considerações da equipe</label><div class="line"></div><div class="line"></div></div>
+  </section>
+
+  <!-- AUDIÊNCIAS -->
+  <section class="page" id="audiencias">
+    <div class="phead"><div class="icon">🗓️</div><h2>Audiências</h2><span class="route">/audiencias</span></div>
+    <p class="serve">Quando há audiência marcada, guarda a <b>data no processo</b> (que passa a mostrar que tem audiência)
+    e permite <b>delegar a audiência a um advogado</b> para que ele a faça.</p>
+    <div class="grid">
+      <div class="block conn"><h3>Conversa com</h3><ul>
+        <li>Processos <span class="tag fonte">fonte</span> (data reflete no caso)</li>
+        <li>Cadastro de Advogados e Correspondentes</li>
+        <li>Financeiro (pagamento ao correspondente)</li>
+      </ul></div>
+      <div class="block ok"><h3>Já funciona</h3><ul>
+        <li>Data, tipo, modalidade, local/link, conflito de horário</li>
+        <li>Correspondente externo + valor + controle de pagamento</li>
+        <li>Aba de audiências dentro do processo</li>
+      </ul></div>
+    </div>
+    <div class="block new"><h3>Melhoramos agora</h3><ul>
+      <li>Selo "tem audiência" na <b>lista de processos</b></li>
+      <li>Novo seletor de <b>advogado responsável</b> (do cadastro de advogados) — delega quem fará a audiência; sugere o advogado do processo</li>
+    </ul></div>
+    <div class="ask"><h3>Para a equipe decidir</h3><ul>
+      <li>Além de delegar o advogado, o que mais precisam ao marcar uma audiência? (lembrete, checklist de preparação?)</li>
+      <li>A audiência deve gerar uma atividade automática de "preparar" para o advogado?</li>
+      <li>Querem uma agenda/visão de calendário das audiências da semana?</li>
+    </ul></div>
+    <div class="considera"><label>Considerações da equipe</label><div class="line"></div><div class="line"></div></div>
+  </section>
+
+  <!-- EXECUÇÕES -->
+  <section class="page" id="execucoes">
+    <div class="phead"><div class="icon">💰</div><h2>Execuções</h2><span class="route">/execucoes</span></div>
+    <p class="serve">Base de controle do que precisa ser executado: depósitos, levantamentos, alvarás, pagamentos.
+    Tem <b>ligação forte com o Financeiro</b> — é por aqui que se acompanha o que está caindo e o que não está.</p>
+    <div class="grid">
+      <div class="block conn"><h3>Conversa com</h3><ul>
+        <li>Processos e Decisões <span class="tag fonte">fonte</span> (nasce de decisão favorável)</li>
+        <li>Financeiro (valores a receber / recebidos)</li>
+      </ul></div>
+      <div class="block ok"><h3>Já funciona</h3><ul>
+        <li>Etapas, situações, valores de condenação/depósito/levantamento</li>
+        <li>Valores em R$ escondidos para quem não tem acesso financeiro</li>
+        <li>Vínculo com a decisão de origem</li>
+      </ul></div>
+    </div>
+    <div class="block new"><h3>Melhoramos agora</h3><ul>
+      <li>Corrigido o "sem processo" que aparecia errado e a aba de lista que dava erro</li>
+    </ul></div>
+    <div class="ask"><h3>Para a equipe decidir</h3><ul>
+      <li>Que ligação com o Financeiro vocês esperam ver? (o que cai automático, o que é manual?)</li>
+      <li>Na tabela, falta mostrar o <b>saldo pendente</b> e o <b>valor levantado</b> por linha?</li>
+      <li>Quando uma decisão é favorável, a execução deve ser criada sozinha ou sempre por escolha?</li>
+    </ul></div>
+    <div class="considera"><label>Considerações da equipe</label><div class="line"></div><div class="line"></div></div>
+  </section>
+
+  <!-- DECISÕES -->
+  <section class="page" id="decisoes">
+    <div class="phead"><div class="icon">📑</div><h2>Decisões</h2><span class="route">/decisoes</span></div>
+    <p class="serve">Base das decisões dos processos: favorável / desfavorável, o que precisa de execução, o controle do
+    que está caindo. Uma decisão favorável alimenta a Execução.</p>
+    <div class="grid">
+      <div class="block conn"><h3>Conversa com</h3><ul>
+        <li>Processos <span class="tag fonte">fonte</span></li>
+        <li>Execuções (favorável → vira execução)</li>
+      </ul></div>
+      <div class="block ok"><h3>Já funciona</h3><ul>
+        <li>Classificação por tipo (sentença, acórdão, homologação) e resultado</li>
+        <li>Despacho <b>não</b> é mais tratado como desfavorável (corrigido antes)</li>
+        <li>Valores escondidos sem acesso financeiro</li>
+      </ul></div>
+    </div>
+    <div class="ask"><h3>Para a equipe decidir</h3><ul>
+      <li>A separação favorável / parcial / desfavorável está como vocês pensam?</li>
+      <li>Falta alguma informação da decisão na tela (teor, prazo recursal, julgador)?</li>
+      <li>O caminho "decisão favorável → criar execução" está claro e no lugar certo?</li>
+    </ul></div>
+    <div class="considera"><label>Considerações da equipe</label><div class="line"></div><div class="line"></div></div>
+  </section>
+
+  <footer>
+    MdFlow · terreno de lapidação das páginas do Controller · gerado para colher considerações da equipe ·
+    detalhamento página por página será feito depois, com esse retorno em mãos.
+  </footer>
+</div>
+</body>
+</html>
