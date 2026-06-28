@@ -1,134 +1,123 @@
-<!doctype html><meta charset=utf-8><title>Ensaio — Cumprimento de Sentença</title><style>
+<!doctype html><meta charset=utf-8><title>Ensaio v2 — Cumprimento de Sentença</title><style>
   body{background:#12100e;color:#ece6dd;font:14px/1.5 Inter,-apple-system,sans-serif;margin:0;padding:24px}
   h1{font-size:21px}h2{font-size:14px;color:#20c997;margin:0;font-family:ui-monospace,monospace}
   .card{background:#1a1714;border:1px solid #322b24;border-radius:12px;padding:16px;margin:0 0 16px}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:10px 0}
   .lbl{display:block;color:#7a6f63;font-size:11px;text-transform:uppercase;margin-bottom:3px}
-  .acao{margin-top:8px;padding:8px 10px;background:#0f1a16;border-left:2px solid #20c997;border-radius:6px;font-size:13px}
-  .intro{color:#9a8f82;max-width:820px;margin-bottom:20px}</style>
-  <h1>Ensaio — Cadastro de Cumprimento de Sentença (read-only)</h1>
-  <p class=intro>Extração das partes do EPROC + matching no MdFlow. <b>Nada foi criado.</b> Confira se os CPF/CNPJ
-  casaram certo e o que seria cadastrado. ✓ = já existe no MdFlow; NOVO = precisaria criar.</p>
+  .intro{color:#9a8f82;max-width:840px;margin-bottom:20px}</style>
+  <h1>Ensaio v2 — Cadastro de Cumprimento de Sentença (read-only)</h1>
+  <p class=intro>Parser por coluna da tabela do EPROC + matching no MdFlow. <b>Nada criado.</b> Os 3 tipos: honorários
+  (nós × empresa), cliente executa (favorável), empresa executa cliente (desfavorável). Em todos, o cadastro liga
+  <b>a pessoa física (nosso cliente)</b> + <b>a empresa ré</b>. ✓ = já existe; NOVO/NOVA = criar.</p>
   <div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>51736884520268210001</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">honorarios (adv)</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>51736884520268210001</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">Honorários (nós × empresa)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span> </div>
-        <div><span class=lbl>Executado (ré)</span>BANCO DO ESTADO DO RIO GRANDE DO SUL S/A - BANRISUL <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">92.702.067/0001-96</span></div>
+        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span></div>
+        <div><span class=lbl>Executado</span>BANCO DO ESTADO DO RIO GRANDE DO SUL S/A - BANRISUL <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">92.702.067/0001-96</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span>titular = advogado (honorários)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>BANCO DO ESTADO DO RIO GRANDE DO SUL S.A. - BANRISUL</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Entidade ANNA CANDICE WEILER MIRALLES · RS079635</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento de honorários</b> · titular = advogado · ré = BANCO DO ESTADO DO RIO GRANDE DO SUL S/A - BANRISUL (empresa NOVA — criar)</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50079751320268210035</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">cliente</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50079751320268210035</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">Cliente executa (favorável)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>JOAO VICTOR VERISSIMO DA FONSECA AVILA <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">032.531.090-46</span> </div>
-        <div><span class=lbl>Executado (ré)</span>AZUL COMPANHIA DE SEGUROS GERAIS <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">33.448.150/0001-11</span></div>
+        <div><span class=lbl>Exequente</span>JOAO VICTOR VERISSIMO DA FONSECA AVILA <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">032.531.090-46</span></div>
+        <div><span class=lbl>Executado</span>AZUL COMPANHIA DE SEGUROS GERAIS <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">33.448.150/0001-11</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span><b>JOAO VICTOR VERISSIMO DA FONSECA AVILA</b> ✓ (já cadastrado)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span>AZUL COMPANHIA DE SEGUROS GERAIS <b style=color:#e8a>NOVA</b></div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa FísicaJG CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Jurídica CINTIA MALFATTI MASSONI CENIZE · SP138636</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento</b> · cliente = JOAO VICTOR VERISSIMO DA FONSECA AVILA (cliente NOVO — criar) · ré = AZUL COMPANHIA DE SEGUROS GERAIS</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50211401420268210008</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">honorarios (adv)</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50211401420268210008</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">Honorários (nós × empresa)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span> </div>
-        <div><span class=lbl>Executado (ré)</span>MERCADO PAGO INSTITUICAO DE PAGAMENTO LTDA <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">10.573.521/0001-91</span></div>
+        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span></div>
+        <div><span class=lbl>Executado</span>MERCADO PAGO INSTITUICAO DE PAGAMENTO LTDA <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">10.573.521/0001-91</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span>titular = advogado (honorários)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>MERCADO PAGO INSTITUICAO DE PAGAMENTO LTDA</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Jurídica JOAO THOMAZ PRAZERES GONDIM · RS123683</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento de honorários</b> · titular = advogado · ré = <b>MERCADO PAGO INSTITUICAO DE PAGAMENTO LTDA</b> (empresa já cadastrada ✓)</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50011544820268210146</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">cliente</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50011544820268210146</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">Cliente executa (favorável)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>VIVIANE PATRICIA NOEDEL <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">019.397.140-28</span> </div>
-        <div><span class=lbl>Executado (ré)</span>ES FINANCEIRA S.A. - SOCIEDADE DE CREDITO, FINANCIAMENTO E INVESTIMENTO <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">11.271.860/0001-86</span></div>
+        <div><span class=lbl>Exequente</span>VIVIANE PATRICIA NOEDEL <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">019.397.140-28</span></div>
+        <div><span class=lbl>Executado</span>LEBES FINANCEIRA S.A. - SOCIEDADE DE CREDITO, FINANCIAMENTO E INVESTIMENTO <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">11.271.860/0001-86</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span><b>VIVIANE PATRICIA NOEDEL</b> ✓ (já cadastrado)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>LOJAS LEBES - DREBES FINANCEIRA SA</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Jurídica OLINDO BARCELLOS DA SILVA · RS018389</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento</b> · cliente = VIVIANE PATRICIA NOEDEL (cliente NOVO — criar) · ré = LOJAS LEBES - DREBES FINANCEIRA SA</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50163908820268210033</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">honorarios (adv)</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50163908820268210033</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">Honorários (nós × empresa)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span> </div>
-        <div><span class=lbl>Executado (ré)</span>AGAFARMA-ASSOCIACAO GAUCHA DE FARMACIAS E DROGARIAS INDEPENDENTES <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">01.569.100/0001-04</span></div>
+        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span></div>
+        <div><span class=lbl>Executado</span>AGAFARMA-ASSOCIACAO GAUCHA DE FARMACIAS E DROGARIAS INDEPENDENTES <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">01.569.100/0001-04</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span>titular = advogado (honorários)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>AGAFARMA-ASSOCIACAO GAUCHA DE FARMACIAS E DROGARIAS INDEPENDENTES</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Jurídica FERNANDO ANTONIO ZANELLA · RS018320</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">ADVOGADO MARCELO BRAUN BURGER · RS064056</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">ADVOGADO CLAUDIO KAMINSKI TAVARES · RS087144</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">ADVOGADO EDUARDO FAYET ZANELLA · RS093325</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">ADVOGADO ALEX GENTA DE LEAO · RS071189</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento de honorários</b> · titular = advogado · ré = <b>AGAFARMA-ASSOCIACAO GAUCHA DE FARMACIAS E DROGARIAS INDEPENDENTES</b> (empresa já cadastrada ✓)</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50599725320258210008</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">cliente</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50599725320258210008</h2><span style="background:#5a2030;padding:2px 8px;border-radius:10px;font-size:11px">Empresa executa cliente (desfavorável)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">18.236.120/0001-58</span> </div>
-        <div><span class=lbl>Executado (ré)</span>ITALO RENAN DA SILVA MACIOSCIK <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">030.712.740-09</span></div>
+        <div><span class=lbl>Exequente</span>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">18.236.120/0001-58</span></div>
+        <div><span class=lbl>Executado</span>ITALO RENAN DA SILVA MACIOSCIK <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">030.712.740-09</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span><b>ITALO RENAN DA SILVA MACIOSCIK</b> ✓ (já cadastrado)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Jurídica JULIO CESAR GOULART LANES · RS046648</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento</b> · cliente = NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO (cliente NOVO — criar) · ré = ITALO RENAN DA SILVA MACIOSCIK</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50075083420268210035</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">honorarios (adv)</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50075083420268210035</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">Honorários (nós × empresa)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span> </div>
-        <div><span class=lbl>Executado (ré)</span>O BOTICARIO FRANCHISING LTDA <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">76.801.166/0001-79</span></div>
+        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span></div>
+        <div><span class=lbl>Executado</span>O BOTICARIO FRANCHISING LTDA <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">76.801.166/0001-79</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span>titular = advogado (honorários)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span>O BOTICARIO FRANCHISING LTDA <b style=color:#e8a>NOVA</b></div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">ADVOGADO CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Jurídica FELIPE HASSON · PR042682</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento de honorários</b> · titular = advogado · ré = O BOTICARIO FRANCHISING LTDA (empresa NOVA — criar)</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50599769020258210008</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">cliente</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50599769020258210008</h2><span style="background:#5a2030;padding:2px 8px;border-radius:10px;font-size:11px">Empresa executa cliente (desfavorável)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">18.236.120/0001-58</span> </div>
-        <div><span class=lbl>Executado (ré)</span>GISLANE DOS SANTOS <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">038.780.440-46</span></div>
+        <div><span class=lbl>Exequente</span>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">18.236.120/0001-58</span></div>
+        <div><span class=lbl>Executado</span>GISLANE DOS SANTOS <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">038.780.440-46</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span><b>GISLAINE DOS SANTOS VAZ</b> ✓ (já cadastrado)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Jurídica JULIO CESAR GOULART LANES · RS046648</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento</b> · cliente = NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO (cliente NOVO — criar) · ré = GISLANE DOS SANTOS</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50156917920268210039</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">cliente</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50156917920268210039</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">Cliente executa (favorável)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>SANDRO ROBERTO DA SILVA <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">708.509.680-20</span> </div>
-        <div><span class=lbl>Executado (ré)</span>MERCADO PAGO INSTITUICAO DE PAGAMENTO LTDA <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">10.573.521/0001-91</span></div>
+        <div><span class=lbl>Exequente</span>SANDRO ROBERTO DA SILVA <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">708.509.680-20</span></div>
+        <div><span class=lbl>Executado</span>MERCADO PAGO INSTITUICAO DE PAGAMENTO LTDA <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">10.573.521/0001-91</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span><b>SANDRO ROBERTO DA SILVA</b> ✓ (já cadastrado)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>MERCADO PAGO INSTITUICAO DE PAGAMENTO LTDA</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Jurídica LUIZ GUSTAVO DE OLIVEIRA RAMOS · SP128998</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento</b> · cliente = <b>SANDRO ROBERTO DA SILVA</b> (já cadastrado ✓) · ré = MERCADO PAGO INSTITUICAO DE PAGAMENTO LTDA</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>50686289020258210010</h2><span style="background:#1d4d3a;padding:2px 8px;border-radius:10px;font-size:11px">cliente</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>50686289020258210010</h2><span style="background:#5a2030;padding:2px 8px;border-radius:10px;font-size:11px">Empresa executa cliente (desfavorável)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">18.236.120/0001-58</span> </div>
-        <div><span class=lbl>Executado (ré)</span>MARIA LUIZA ARAMBULA MEDINA <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">007.535.920-02</span></div>
+        <div><span class=lbl>Exequente</span>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">18.236.120/0001-58</span></div>
+        <div><span class=lbl>Executado</span>MARIA LUIZA ARAMBULA MEDINA <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">007.535.920-02</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span><b>MARIA LUIZA ARAMBULA MEDINA</b> ✓ (já cadastrado)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Jurídica JULIO CESAR GOULART LANES · RS046648</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento</b> · cliente = NU PAGAMENTOS S.A. - INSTITUICAO DE PAGAMENTO (cliente NOVO — criar) · ré = MARIA LUIZA ARAMBULA MEDINA</div>
     </div><div class=card>
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <h2>51736970720268210001</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">honorarios (adv)</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h2>51736970720268210001</h2><span style="background:#3a2a55;padding:2px 8px;border-radius:10px;font-size:11px">Honorários (nós × empresa)</span></div>
       <div class=grid>
-        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span> </div>
-        <div><span class=lbl>Executado (ré)</span>ITAU UNIBANCO S.A. <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">60.701.190/0364-78</span></div>
+        <div><span class=lbl>Exequente</span>CHRISTIAN DENER PAZ <span style="background:#2a3a55;padding:2px 8px;border-radius:10px;font-size:11px">029.593.290-23</span></div>
+        <div><span class=lbl>Executado</span>ITAU UNIBANCO S.A. <span style="background:#553a2a;padding:2px 8px;border-radius:10px;font-size:11px">60.701.190/0364-78</span></div>
+        <div><span class=lbl>Cliente da Midas → cadastrar</span>titular = advogado (honorários)</div>
+        <div><span class=lbl>Empresa (ré) → cadastrar</span><b>ITAU UNIBANCO S.A.</b> ✓</div>
         <div><span class=lbl>Advogado(s)</span><span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Pessoa Física CHRISTIAN DENER PAZ · RS116571</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">Jurídica ARTHUR SPONCHIADO DE AVILA · RS054157</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">ADVOGADO CRISTIANO DA SILVA BREDA · RS040466</span> <span style="background:#333;padding:2px 8px;border-radius:10px;font-size:11px">ADVOGADO PAULO TURRA MAGNI · RS017732</span></div>
         <div><span class=lbl>Classe / valor</span>CUMPRIMENTO DE SENTENÇA </div>
       </div>
-      <div class=acao>➜ Criar processo de <b>cumprimento de honorários</b> · titular = advogado · ré = ITAU UNIBANCO S.A. (empresa NOVA — criar)</div>
     </div>
-  <p class=intro>Gerado 28/06/2026 · 11 casos · EPROC TJRS (Christian) · poc-ensaio-cumprimento.mjs</p>
+  <p class=intro>Gerado 28/06/2026 · 11 casos · poc-ensaio-cumprimento2.mjs</p>
