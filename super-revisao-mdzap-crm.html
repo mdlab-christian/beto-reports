@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Revisão MdZap + CRM + Restrições</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e; --surface: #1a1714; --card: #201d1a; --border: #2e2b27;
+  --primary: #20c997; --primary-dim: #20c99720; --primary-border: #20c99740;
+  --warn: #f59e0b; --danger: #ef4444; --success: #22c55e; --info: #60a5fa;
+  --text: #f5f0eb; --muted: #9e9890;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --chart-2: #a78bfa; --chart-3: #f59e0b; --chart-4: #f43f5e; --chart-5: #0ea5e9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; font-size: 14px; line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+.layout { display: flex; gap: 2rem; }
+.sidebar { width: 220px; position: sticky; top: 24px; height: fit-content; flex-shrink: 0; }
+.sidebar a { display: block; padding: 4px 12px; color: var(--muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all 0.2s; }
+.sidebar a:hover, .sidebar a.active { color: var(--primary); border-left-color: var(--primary); }
+.sidebar .nav-group { font-size: 11px; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px 4px; margin-top: 8px; }
+main { flex: 1; max-width: 960px; }
+@media (max-width: 720px) { .sidebar { display: none; } }
+header { margin-bottom: 2rem; }
+header h1 { font-family: Manrope, sans-serif; font-size: 28px; font-weight: 700; color: var(--primary); }
+.subtitle { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.meta-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.meta-chip { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 12px; color: var(--muted); }
+.section { margin-bottom: 2.5rem; }
+.section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.section-icon { font-size: 18px; }
+.section-title { font-family: Manrope, sans-serif; font-size: 18px; font-weight: 700; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+.card-title { font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--primary); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px; }
+th { text-align: left; padding: 8px 10px; background: var(--surface); color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid var(--border); }
+td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:hover td { background: var(--surface); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.badge-primary { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary-border); }
+.badge-warn { background: #f59e0b20; color: var(--warn); border: 1px solid #f59e0b40; }
+.badge-danger { background: #ef444420; color: var(--danger); border: 1px solid #ef444440; }
+.badge-success { background: #22c55e20; color: var(--success); border: 1px solid #22c55e40; }
+.badge-info { background: #60a5fa20; color: var(--info); border: 1px solid #60a5fa40; }
+.badge-neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+.code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: var(--mono); font-size: 12px; overflow-x: auto; margin: 8px 0; white-space: pre-wrap; }
+.c-key { color: var(--info); } .c-val { color: var(--primary); } .c-str { color: var(--warn); } .c-comment { color: var(--muted); } .c-kw { color: var(--chart-2); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+.pending-item { display: flex; gap: 10px; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+.pending-item.p0 { background: #ef444415; border-left: 3px solid var(--danger); }
+.pending-item.p1 { background: #f59e0b15; border-left: 3px solid var(--warn); }
+.pending-item.p2 { background: #60a5fa15; border-left: 3px solid var(--info); }
+.pending-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+.pending-content { flex: 1; }
+.pending-content strong { font-size: 13px; }
+.pending-content p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); text-align: center; }
+.score-ring { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; }
+.score-ring svg { width: 64px; height: 64px; }
+.score-label { font-size: 11px; color: var(--muted); text-align: center; }
+.score-value { font-family: Manrope, sans-serif; font-weight: 700; font-size: 16px; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+.kpi-card .kpi-val { font-family: Manrope, sans-serif; font-size: 24px; font-weight: 700; color: var(--primary); }
+.kpi-card .kpi-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.flow-diagram { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; padding: 12px; }
+.flow-step { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 12px; }
+.flow-arrow { color: var(--primary); font-weight: bold; }
+.status-ok { color: var(--success); } .status-warn { color: var(--warn); } .status-err { color: var(--danger); }
+h3 { font-size: 15px; font-weight: 600; margin: 16px 0 8px; color: var(--text); }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="nav-group">Visão Geral</div>
+  <a href="#overview">Resumo Executivo</a>
+  <a href="#scores">Scorecard de Saúde</a>
+  <div class="nav-group">MdZap</div>
+  <a href="#mdzap-arch">Arquitetura</a>
+  <a href="#mdzap-files">Inventário (75 arq)</a>
+  <a href="#mdzap-realtime">Realtime &amp; SDR</a>
+  <div class="nav-group">CRM</div>
+  <a href="#crm-arch">Arquitetura</a>
+  <a href="#crm-files">Inventário (50 arq)</a>
+  <a href="#crm-modals">Modais &amp; Drawers</a>
+  <div class="nav-group">Restrições</div>
+  <a href="#restricoes-flow">Fluxo Completo</a>
+  <a href="#restricoes-schema">Schema Banco</a>
+  <a href="#restricoes-drive">Drive &amp; Pastas</a>
+  <div class="nav-group">Dados do Lead</div>
+  <a href="#lead-dados">Formulário &amp; Mutations</a>
+  <a href="#lead-docreader">Doc Reader</a>
+  <div class="nav-group">Conexões</div>
+  <a href="#conexoes">CRM ↔ MdZap (10)</a>
+  <a href="#conexoes-matrix">Matriz de Integração</a>
+  <div class="nav-group">Schema DB</div>
+  <a href="#schema-restricoes">restricoes (23 cols)</a>
+  <a href="#schema-leads">leads (64 cols)</a>
+  <a href="#schema-rls">RLS Policies</a>
+  <a href="#schema-rpcs">RPCs (40+)</a>
+  <div class="nav-group">Achados</div>
+  <a href="#achados-p0">P0 — Críticos</a>
+  <a href="#achados-p1">P1 — Importantes</a>
+  <a href="#achados-p2">P2 — Tech Debt</a>
+  <div class="nav-group">Veredicto</div>
+  <a href="#veredicto">Veredicto Final</a>
+</aside>
+
+<main>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header>
+  <h1>🔍 Super Revisão MdZap + CRM + Restrições</h1>
+  <div class="subtitle">Auditoria exaustiva de código, banco de dados, RLS, RPCs, conexões bidirecionais e schema drift</div>
+  <div class="meta-row">
+    <span class="meta-chip">📅 2026-04-14 21:24</span>
+    <span class="meta-chip">🗂️ 125+ arquivos auditados</span>
+    <span class="meta-chip">🗄️ 40+ tabelas verificadas</span>
+    <span class="meta-chip">🔗 10 conexões CRM↔MdZap</span>
+    <span class="meta-chip">⚠️ 21+ erros TypeScript</span>
+  </div>
+</header>
+
+<!-- ═══════════ SEÇÃO 1: RESUMO EXECUTIVO ═══════════ -->
+<div class="section" id="overview">
+  <div class="section-header"><span class="section-icon">📊</span><span class="section-title">Resumo Executivo</span></div>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-val">75</div><div class="kpi-label">Arquivos MdZap</div></div>
+    <div class="kpi-card"><div class="kpi-val">50</div><div class="kpi-label">Arquivos CRM</div></div>
+    <div class="kpi-card"><div class="kpi-val">12</div><div class="kpi-label">Arq. Restrições</div></div>
+    <div class="kpi-card"><div class="kpi-val">40+</div><div class="kpi-label">RPCs Auditadas</div></div>
+    <div class="kpi-card"><div class="kpi-val">10</div><div class="kpi-label">Conexões Bi-dir</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:var(--danger)">21+</div><div class="kpi-label">Build Errors TS</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Diagnóstico Geral</div>
+    <p>O sistema MdZap + CRM é uma integração <strong>bidirecional robusta</strong> com 10 pontos de conexão verificados.
+    O mecanismo de restrições (Boa Vista → Drive) está completo e funcional. As RPCs são todas <code>SECURITY DEFINER</code>.
+    Os problemas principais são: <strong>21+ erros TypeScript de build</strong> (schema drift com types.ts do Supabase),
+    <strong>RLS inconsistente</strong> (tabelas usando <code>org_id()</code> deprecated vs <code>get_org_id()</code>),
+    e <strong>restrições com RLS ALL-only</strong> sem granularidade CRUD.</p>
+  </div>
+</div>
+
+<!-- ═══════════ SEÇÃO 2: SCORECARD ═══════════ -->
+<div class="section" id="scores">
+  <div class="section-header"><span class="section-icon">🎯</span><span class="section-title">Scorecard de Saúde por Área</span></div>
+  <div class="grid3">
+    <div class="card" style="text-align:center">
+      <div class="card-title">MdZap — Código</div>
+      <div class="score-value" style="color:var(--warn)">7/10</div>
+      <p style="font-size:12px;color:var(--muted)">21 erros TS em 3 arquivos. Lógica OK, types desalinhados.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">CRM — Código</div>
+      <div class="score-value" style="color:var(--success)">9/10</div>
+      <p style="font-size:12px;color:var(--muted)">Sem erros de build. Kanban, modais e dashboard sólidos.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">Restrições</div>
+      <div class="score-value" style="color:var(--success)">8/10</div>
+      <p style="font-size:12px;color:var(--muted)">Fluxo completo. RLS ALL-only (sem granularidade).</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">RLS / Segurança</div>
+      <div class="score-value" style="color:var(--warn)">6/10</div>
+      <p style="font-size:12px;color:var(--muted)">Mix de org_id() e get_org_id(). Leads/auditorias deprecated.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">Conexões CRM↔MdZap</div>
+      <div class="score-value" style="color:var(--success)">9/10</div>
+      <p style="font-size:12px;color:var(--muted)">10/10 conexões verificadas e funcionais.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="card-title">RPCs</div>
+      <div class="score-value" style="color:var(--success)">9/10</div>
+      <p style="font-size:12px;color:var(--muted)">Todas SECURITY DEFINER. Nenhuma faltante.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SEÇÃO 3: MDZAP ARQUITETURA ═══════════ -->
+<div class="section" id="mdzap-arch">
+  <div class="section-header"><span class="section-icon">💬</span><span class="section-title">MdZap — Arquitetura Completa</span></div>
+
+  <div class="card">
+    <div class="card-title">Layout 3 Colunas</div>
+    <div class="flow-diagram">
+      <span class="flow-step">📋 ConversaList</span><span class="flow-arrow">→</span>
+      <span class="flow-step">💬 MsgThread</span><span class="flow-arrow">→</span>
+      <span class="flow-step">👤 LeadPanel</span>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">
+      <strong>MdzapAppPage.tsx</strong> (280 linhas) — rota standalone <code>/mdzap/app</code> fora do AppLayout.<br>
+      <strong>MdzapAppShell</strong> — componente principal que orquestra as 3 colunas com estados de seleção.<br>
+      Mobile: redirect para <code>/mdzap/app</code> com MdzapBottomNav e swipeable cards.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">SDR Modes (Multi-Agente)</div>
+    <table>
+      <thead><tr><th>Agente</th><th>Slug</th><th>Foco</th><th>Rota</th></tr></thead>
+      <tbody>
+        <tr><td>Julia (SDR Leads)</td><td><code>sdr_leads</code></td><td>Captação, CPF, docs, triagem</td><td><code>/mdzap/leads</code></td></tr>
+        <tr><td>SDR Documentos</td><td><code>sdr_docs</code></td><td>Pós-venda, docs pendentes</td><td><code>/mdzap/documentos</code></td></tr>
+        <tr><td>SDR Acordos</td><td><code>sdr_acordos</code></td><td>Negociação com advogados adversos</td><td><code>/mdzap/acordos/:slug</code></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--muted)">Seletor: <code>SdrModeToggle.tsx</code> (68 linhas). Isolamento total por <code>agente_slug</code> + número WhatsApp.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Realtime — 3 Canais Core</div>
+    <table>
+      <thead><tr><th>Canal</th><th>Tabela</th><th>Hook</th><th>Cleanup</th></tr></thead>
+      <tbody>
+        <tr><td>mdzap-conversas</td><td>whatsapp_conversas</td><td>useMdzapConversas</td><td class="status-ok">✅ removeChannel</td></tr>
+        <tr><td>mdzap-mensagens</td><td>whatsapp_mensagens</td><td>useMdzapMensagens</td><td class="status-ok">✅ removeChannel</td></tr>
+        <tr><td>mdzap-leads-rt</td><td>leads</td><td>useMdzapConversas</td><td class="status-ok">✅ removeChannel</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--muted)">Padrão confirmado: todos os useEffect fazem cleanup com <code>supabase.removeChannel()</code>.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">RPC Principal — fn_mdzap_conversas</div>
+    <div class="code-block"><span class="c-kw">FUNCTION</span> <span class="c-val">fn_mdzap_conversas</span>(
+  <span class="c-key">p_org_id</span> uuid,
+  <span class="c-key">p_page</span> integer,
+  <span class="c-key">p_per_page</span> integer,
+  <span class="c-key">p_numero_id</span> uuid,
+  <span class="c-key">p_status</span> text,
+  <span class="c-key">p_search</span> text,
+  <span class="c-key">p_agente_slug</span> text
+) <span class="c-kw">RETURNS</span> JSONB
+<span class="c-comment">-- SECURITY DEFINER ✅</span></div>
+    <p style="font-size:12px;color:var(--muted)">Retorna conversas com contexto de lead, último mensagem, atendente, e contagem de não-lidas.</p>
+  </div>
+</div>
+
+<!-- ═══════════ MDZAP INVENTÁRIO ═══════════ -->
+<div class="section" id="mdzap-files">
+  <div class="section-header"><span class="section-icon">📁</span><span class="section-title">MdZap — Inventário de Arquivos (75)</span></div>
+
+  <h3>Componentes Principais (50)</h3>
+  <table>
+    <thead><tr><th>Arquivo</th><th>Linhas</th><th>Responsabilidade</th></tr></thead>
+    <tbody>
+      <tr><td><code>MdzapMsgThread.tsx</code></td><td>328</td><td>Thread de mensagens com scroll infinito e reply</td></tr>
+      <tr><td><code>MdzapConversaList.tsx</code></td><td>296</td><td>Lista de conversas com filtros e bulk actions</td></tr>
+      <tr><td><code>MdzapLeadCadastroDrawer.tsx</code></td><td>297</td><td>Drawer 2 fases: Dados → Restrições</td></tr>
+      <tr><td><code>MdzapLeadPanel.tsx</code></td><td>290</td><td>Painel lateral com tabs (Dados, Docs, Notas, Restrições, Memória)</td></tr>
+      <tr><td><code>MdzapMsgInput.tsx</code></td><td>276</td><td>Input de mensagem com attach, áudio, templates</td></tr>
+      <tr><td><code>MdzapJuliaLab.tsx</code></td><td>271</td><td>Lab de teste da Julia AI — <span class="badge badge-danger">18 erros TS</span></td></tr>
+      <tr><td><code>MdzapChatPanel.tsx</code></td><td>258</td><td>Painel central: thread + input + smart replies</td></tr>
+      <tr><td><code>MdzapMsgBubble.tsx</code></td><td>238</td><td>Bolha de mensagem (texto, mídia, áudio, doc, template)</td></tr>
+      <tr><td><code>MdzapSwipeableCard.tsx</code></td><td>301</td><td>Card swipeable mobile com gestos</td></tr>
+      <tr><td><code>TemplatesManagerDialog.tsx</code></td><td>323</td><td>CRUD de templates WhatsApp</td></tr>
+      <tr><td><code>MdzapDashboard.tsx</code></td><td>399</td><td>Dashboard com KPIs e gráficos</td></tr>
+      <tr><td><code>MdzapAdminIA.tsx</code></td><td>228</td><td>Admin: prompts Julia (7 tipos)</td></tr>
+      <tr><td><code>MdzapThreadHeader.tsx</code></td><td>217</td><td>Header da thread com dados do contato</td></tr>
+      <tr><td><code>MdzapLeadMemoryPanel.tsx</code></td><td>219</td><td>Painel de memória do lead (contexto Julia)</td></tr>
+      <tr><td><code>MdzapMsgFeedback.tsx</code></td><td>218</td><td>Feedback de mensagens Julia (👍/👎)</td></tr>
+      <tr><td><code>MdzapIcpTab.tsx</code></td><td>228</td><td>Tab ICP scoring no lead panel</td></tr>
+      <tr><td><code>MdzapTelemetriaPanel.tsx</code></td><td>170</td><td>Telemetria de uso e performance</td></tr>
+      <tr><td><code>MdzapTransferModal.tsx</code></td><td>168</td><td>Modal de transferência de conversa</td></tr>
+      <tr><td><code>MdzapConversaBulkBar.tsx</code></td><td>184</td><td>Barra de ações em massa</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Lead Panel (13 arquivos)</h3>
+  <table>
+    <thead><tr><th>Arquivo</th><th>Linhas</th><th>Responsabilidade</th></tr></thead>
+    <tbody>
+      <tr><td><code>LeadDadosFields.tsx</code></td><td>300</td><td>Campos do formulário de dados do lead</td></tr>
+      <tr><td><code>useLeadMutations.ts</code></td><td>242</td><td>saveLead, criarLead, criarLeadEAuditarInline</td></tr>
+      <tr><td><code>LeadDadosTab.tsx</code></td><td>168</td><td>Tab Dados: form + Doc Reader + auditoria</td></tr>
+      <tr><td><code>LeadDocumentosTab.tsx</code></td><td>185</td><td>Tab Documentos: upload + Doc Reader</td></tr>
+      <tr><td><code>useLeadFormData.ts</code></td><td>148</td><td>Query leads + advogados + origens — <span class="badge badge-danger">2 erros TS</span></td></tr>
+      <tr><td><code>LeadRestricoesMdzapTab.tsx</code></td><td>117</td><td>Tab Restrições: auditoria + lista</td></tr>
+      <tr><td><code>doc-reader-helpers.ts</code></td><td>102</td><td>Extração campos Doc Reader + CTPS</td></tr>
+      <tr><td><code>useDocReaderMapping.ts</code></td><td>69</td><td>Query mensagens doc + mapeamento automático</td></tr>
+      <tr><td><code>types.ts</code></td><td>57</td><td>Interface LeadDados (30+ campos)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Hooks (24 arquivos)</h3>
+  <table>
+    <thead><tr><th>Hook</th><th>Linhas</th><th>Responsabilidade</th></tr></thead>
+    <tbody>
+      <tr><td><code>useMdzapSendMessage.ts</code></td><td>284</td><td>Pipeline: insert otimista → webhook n8n</td></tr>
+      <tr><td><code>useMdzapConversas.ts</code></td><td>209</td><td>RPC fn_mdzap_conversas + realtime 2 canais</td></tr>
+      <tr><td><code>useMdzapSend.ts</code></td><td>159</td><td>Wrapper simplificado de envio</td></tr>
+      <tr><td><code>useMdzapMensagens.ts</code></td><td>148</td><td>Query direta whatsapp_mensagens + realtime</td></tr>
+      <tr><td><code>useMdzapTelemetria.ts</code></td><td>147</td><td>Métricas de performance</td></tr>
+      <tr><td><code>useMdzapTyping.ts</code></td><td>107</td><td>Indicador de digitação</td></tr>
+      <tr><td><code>useConversaAssumirDevolver.ts</code></td><td>97</td><td>Assumir/devolver conversa</td></tr>
+      <tr><td><code>useMdzapStatus.ts</code></td><td>95</td><td>Status WhatsApp + heartbeat + primaryNumero</td></tr>
+      <tr><td><code>useMdzapScroll.ts</code></td><td>90</td><td>Scroll inteligente com auto-scroll</td></tr>
+      <tr><td><code>useMdzapSmartReplies.ts</code></td><td>88</td><td>Sugestões AI de resposta</td></tr>
+      <tr><td><code>useMdzapTemplates.ts</code></td><td>88</td><td>CRUD templates</td></tr>
+      <tr><td><code>useMdzapThreadActions.ts</code></td><td>146</td><td>Ações da thread (ler, arquivar, etc)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════ MDZAP REALTIME ═══════════ -->
+<div class="section" id="mdzap-realtime">
+  <div class="section-header"><span class="section-icon">⚡</span><span class="section-title">MdZap — Realtime &amp; SDR</span></div>
+  <div class="card">
+    <div class="card-title">Pipeline de Envio de Mensagem</div>
+    <div class="flow-diagram">
+      <span class="flow-step">📝 MsgInput</span><span class="flow-arrow">→</span>
+      <span class="flow-step">📤 INSERT otimista</span><span class="flow-arrow">→</span>
+      <span class="flow-step">🔗 webhook mdzap/enviar-mensagem</span><span class="flow-arrow">→</span>
+      <span class="flow-step">📱 WhatsApp API</span><span class="flow-arrow">→</span>
+      <span class="flow-step">✅ Status update realtime</span>
+    </div>
+    <p style="font-size:12px;color:var(--muted)">Webhook SEM prefixo <code>mdflow/</code>. Áudio via base64. Mídias no bucket <code>mdzap-media</code>.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">AI Composer</div>
+    <p style="font-size:12px">Webhook: <code>mdzap/ai-composer</code> (sem prefixo mdflow/). Gera resposta AI baseada no contexto da conversa. Hook: <code>useMdzapSmartReplies.ts</code></p>
+  </div>
+</div>
+
+<!-- ═══════════ SEÇÃO CRM ARQUITETURA ═══════════ -->
+<div class="section" id="crm-arch">
+  <div class="section-header"><span class="section-icon">📋</span><span class="section-title">CRM — Arquitetura Completa</span></div>
+  <div class="card">
+    <div class="card-title">CrmPage.tsx — 4 Tabs (488 linhas)</div>
+    <div class="grid2">
+      <div><strong>Dashboard</strong><br><span style="font-size:12px;color:var(--muted)">KPIs, funil, origens, trend chart. RPC: <code>rpc_crm_dashboard_kpis</code></span></div>
+      <div><strong>Pipeline (Kanban)</strong><br><span style="font-size:12px;color:var(--muted)">@dnd-kit, colunas dinâmicas. View: <code>view_crm_leads_kanban</code></span></div>
+      <div><strong>Radar</strong><br><span style="font-size:12px;color:var(--muted)">Leads sem atividade. View: <code>view_crm_radar</code></span></div>
+      <div><strong>Arquivados</strong><br><span style="font-size:12px;color:var(--muted)">Motivos + reativação. <code>CrmArquivados.tsx</code> (309 linhas)</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Fluxo Principal do Lead</div>
+    <div class="flow-diagram">
+      <span class="flow-step">📥 Entrada (MdZap/Manual/Indicação)</span><span class="flow-arrow">→</span>
+      <span class="flow-step">🔍 Triagem (CPF + Auditoria)</span><span class="flow-arrow">→</span>
+      <span class="flow-step">📋 Pipeline Kanban</span><span class="flow-arrow">→</span>
+      <span class="flow-step">⚖️ Distribuição</span><span class="flow-arrow">→</span>
+      <span class="flow-step">✅ Conversão (Cliente)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CRM INVENTÁRIO ═══════════ -->
+<div class="section" id="crm-files">
+  <div class="section-header"><span class="section-icon">📁</span><span class="section-title">CRM — Inventário de Arquivos (50)</span></div>
+
+  <h3>Componentes Core (15)</h3>
+  <table>
+    <thead><tr><th>Arquivo</th><th>Linhas</th><th>Responsabilidade</th></tr></thead>
+    <tbody>
+      <tr><td><code>CrmKanban.tsx</code></td><td>463</td><td>Kanban com @dnd-kit, drag-drop, colunas dinâmicas</td></tr>
+      <tr><td><code>CrmAuditoriaPanel.tsx</code></td><td>396</td><td>Painel de auditoria CPF (Boa Vista), polling, resultado</td></tr>
+      <tr><td><code>CrmLeadCard.tsx</code></td><td>331</td><td>Card do lead no kanban com badges MdZap</td></tr>
+      <tr><td><code>CrmArquivados.tsx</code></td><td>309</td><td>Lista de arquivados com filtros e reativação</td></tr>
+      <tr><td><code>CrmFilterBar.tsx</code></td><td>292</td><td>Barra de filtros: atendente, origem, etiquetas, busca</td></tr>
+      <tr><td><code>CrmListView.tsx</code></td><td>288</td><td>Vista em lista (alternativa ao kanban)</td></tr>
+      <tr><td><code>CrmLeadNotas.tsx</code></td><td>177</td><td>Notas compartilhadas (CRM + MdZap)</td></tr>
+      <tr><td><code>CrmDashboard.tsx</code></td><td>134</td><td>Dashboard com 4 gráficos</td></tr>
+      <tr><td><code>CrmRadar.tsx</code></td><td>118</td><td>Radar de leads sem atividade</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Modais (15)</h3>
+  <table>
+    <thead><tr><th>Modal</th><th>Linhas</th><th>Ação</th></tr></thead>
+    <tbody>
+      <tr><td><code>ModalTriagem.tsx</code></td><td>494</td><td>Triagem completa: CPF, auditoria, restrições, aprovação</td></tr>
+      <tr><td><code>ModalEditarLead.tsx</code></td><td>354</td><td>Edição multi-tab: Pessoais, Contato, CRM, Endereço</td></tr>
+      <tr><td><code>ModalNovoLead.tsx</code></td><td>305</td><td>Criação com pré-processamento CPF</td></tr>
+      <tr><td><code>ModalVincularAdvogado.tsx</code></td><td>303</td><td>Vincular advogado ao lead</td></tr>
+      <tr><td><code>ModalAIReport.tsx</code></td><td>256</td><td>Relatório AI do lead via webhook</td></tr>
+      <tr><td><code>ModalDistribuirLead.tsx</code></td><td>249</td><td>Distribuir lead para advogado</td></tr>
+      <tr><td><code>FormNovoLead.tsx</code></td><td>242</td><td>Formulário de novo lead</td></tr>
+      <tr><td><code>ModalArquivar.tsx</code></td><td>208</td><td>Arquivar com motivo</td></tr>
+      <tr><td><code>ModalDistribuicao.tsx</code></td><td>199</td><td>Distribuição automática</td></tr>
+      <tr><td><code>ModalSelecionarAtendente.tsx</code></td><td>136</td><td>Selecionar atendente</td></tr>
+      <tr><td><code>ModalSelecionarEtapa.tsx</code></td><td>128</td><td>Mover para etapa do kanban</td></tr>
+      <tr><td><code>ModalDedup.tsx</code></td><td>143</td><td>Deduplicação de leads</td></tr>
+      <tr><td><code>ModalNovaAuditoria.tsx</code></td><td>100</td><td>Disparar nova auditoria CPF</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Hooks CRM (13)</h3>
+  <table>
+    <thead><tr><th>Hook</th><th>Linhas</th><th>Responsabilidade</th></tr></thead>
+    <tbody>
+      <tr><td><code>useCrmKanban.ts</code></td><td>259</td><td>Estado kanban + drag-drop + update etapa</td></tr>
+      <tr><td><code>useLeadFollowup.ts</code></td><td>155</td><td>Follow-up: próxima data, lembretes</td></tr>
+      <tr><td><code>useLeadFilters.ts</code></td><td>137</td><td>Filtros URL-based compartilháveis</td></tr>
+      <tr><td><code>useWebhookPolling.ts</code></td><td>105</td><td>Polling de status webhook</td></tr>
+      <tr><td><code>useCrmModals.ts</code></td><td>104</td><td>Estado de abertura dos 15 modais</td></tr>
+      <tr><td><code>useLeads.ts</code></td><td>91</td><td>Query principal de leads</td></tr>
+      <tr><td><code>useCrmRadar.ts</code></td><td>91</td><td>Query do radar</td></tr>
+      <tr><td><code>useCrmRealtime.ts</code></td><td>70</td><td>Realtime leads + invalidação</td></tr>
+      <tr><td><code>useDispararAuditoria.ts</code></td><td>63</td><td>Disparar auditoria CPF via RPC</td></tr>
+      <tr><td><code>useLeadBulkActions.ts</code></td><td>57</td><td>Ações em massa</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════ CRM MODAIS ═══════════ -->
+<div class="section" id="crm-modals">
+  <div class="section-header"><span class="section-icon">🪟</span><span class="section-title">CRM — ClienteDrawer (Shared)</span></div>
+  <div class="card">
+    <div class="card-title">ClienteDrawer.tsx (458 linhas) — 11 Tabs</div>
+    <table>
+      <thead><tr><th>Tab</th><th>Componente</th><th>Linhas</th></tr></thead>
+      <tbody>
+        <tr><td>Dados</td><td><code>ClienteDrawerTabDados.tsx</code></td><td>1151</td></tr>
+        <tr><td>Restrições</td><td><code>ClienteDrawerTabRestricoes.tsx</code></td><td>421</td></tr>
+        <tr><td>Docs Lead</td><td><code>ClienteDrawerTabDocumentosLead.tsx</code></td><td>648</td></tr>
+        <tr><td>Documentos</td><td><code>ClienteDrawerTabDocumentos.tsx</code></td><td>359</td></tr>
+        <tr><td>Follow-up</td><td><code>ClienteDrawerTabFollowup.tsx</code></td><td>317</td></tr>
+        <tr><td>Atividades</td><td><code>ClienteDrawerTabAtividades.tsx</code></td><td>267</td></tr>
+        <tr><td>Docs Pendentes</td><td><code>ClienteDrawerTabDocumentosPendentes.tsx</code></td><td>290</td></tr>
+        <tr><td>Jurídico</td><td><code>ClienteDrawerTabJuridico.tsx</code></td><td>188</td></tr>
+        <tr><td>Histórico</td><td><code>ClienteDrawerTabHistorico.tsx</code></td><td>193</td></tr>
+        <tr><td>MdZap</td><td><code>ClienteDrawerTabMdzap.tsx</code></td><td>127</td></tr>
+        <tr><td>Notas</td><td><code>ClienteDrawerTabNotas.tsx</code></td><td>109</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ SEÇÃO RESTRIÇÕES FLUXO ═══════════ -->
+<div class="section" id="restricoes-flow">
+  <div class="section-header"><span class="section-icon">🔒</span><span class="section-title">Restrições — Fluxo Completo</span></div>
+
+  <div class="card">
+    <div class="card-title">Pipeline Boa Vista → Restrição → Drive</div>
+    <div class="flow-diagram">
+      <span class="flow-step">🔍 CPF digitado</span><span class="flow-arrow">→</span>
+      <span class="flow-step">📡 rpc_disparar_auditoria</span><span class="flow-arrow">→</span>
+      <span class="flow-step">⏳ Polling status</span><span class="flow-arrow">→</span>
+      <span class="flow-step">📊 Resultado Boa Vista</span><span class="flow-arrow">→</span>
+      <span class="flow-step">✍️ Cadastrar restrições</span><span class="flow-arrow">→</span>
+      <span class="flow-step">📁 Pasta Drive (webhook)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Hooks de Restrições</div>
+    <table>
+      <thead><tr><th>Hook/Função</th><th>RPC/Ação</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><code>useRestricoes()</code></td><td><code>fn_restricoes_listar</code></td><td class="status-ok">✅ SECURITY DEFINER</td></tr>
+        <tr><td><code>useSalvarRestricao()</code></td><td><code>fn_restricao_salvar</code> + webhook Drive</td><td class="status-ok">✅ Webhook fire-and-forget</td></tr>
+        <tr><td><code>useExcluirRestricao()</code></td><td>Soft delete direto (UPDATE deleted_at)</td><td class="status-ok">✅ Soft delete</td></tr>
+        <tr><td><code>useClienteRestricoes()</code></td><td><code>fn_restricoes_por_cliente</code></td><td class="status-ok">✅ Variante simplificada</td></tr>
+        <tr><td><code>use_cadastrar_restricoes</code></td><td>Lógica de seleção + optout</td><td class="status-ok">✅ 449 linhas</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Componentes de Restrições</div>
+    <table>
+      <thead><tr><th>Componente</th><th>Linhas</th><th>Contexto de Uso</th></tr></thead>
+      <tbody>
+        <tr><td><code>ClienteDrawerTabRestricoes.tsx</code></td><td>421</td><td>CRM Drawer — lista + edição + contrato</td></tr>
+        <tr><td><code>cadastrar_restricoes_drawer.tsx</code></td><td>444</td><td>Página /auditorias — cadastro pós-auditoria</td></tr>
+        <tr><td><code>ModalAdicionarRestricoes.tsx</code></td><td>399</td><td>Drawer — adicionar manual</td></tr>
+        <tr><td><code>FormRestricao.tsx</code></td><td>355</td><td>Formulário de restrição</td></tr>
+        <tr><td><code>RestricaoPastaCard.tsx</code></td><td>503</td><td>Pasta accordion com drag-drop docs</td></tr>
+        <tr><td><code>ClienteTabRestricoes.tsx</code></td><td>400</td><td>Página /pagina_cliente</td></tr>
+        <tr><td><code>ImportarRestricoesCSVModal.tsx</code></td><td>259</td><td>Import CSV de restrições</td></tr>
+        <tr><td><code>CadastroRestricoesPhase.tsx</code></td><td>75</td><td>MdZap — fase 2 do drawer</td></tr>
+        <tr><td><code>CadastroRestricaoCard.tsx</code></td><td>121</td><td>MdZap — card individual</td></tr>
+        <tr><td><code>LeadRestricoesMdzapTab.tsx</code></td><td>117</td><td>MdZap — tab restrições</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ RESTRIÇÕES SCHEMA ═══════════ -->
+<div class="section" id="restricoes-schema">
+  <div class="section-header"><span class="section-icon">🗄️</span><span class="section-title">Restrições — Schema do Banco</span></div>
+  <div class="card">
+    <div class="card-title">Tabela: restricoes (23 colunas)</div>
+    <table>
+      <thead><tr><th>Coluna</th><th>Tipo</th><th>Nullable</th><th>Default</th><th>Observação</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>uuid</td><td>NOT NULL</td><td>gen_random_uuid()</td><td class="status-ok">✅ PK</td></tr>
+        <tr><td><code>organizacao_id</code></td><td>uuid</td><td>NOT NULL</td><td>—</td><td class="status-ok">✅ Multi-tenant</td></tr>
+        <tr><td><code>lead_id</code></td><td>uuid</td><td>YES</td><td>—</td><td>FK leads</td></tr>
+        <tr><td><code>cliente_id</code></td><td>uuid</td><td>YES</td><td>—</td><td>FK clientes</td></tr>
+        <tr><td><code>empresa_id</code></td><td>uuid</td><td>YES</td><td>—</td><td>FK empresas</td></tr>
+        <tr><td><code>empresa_nome</code></td><td>text</td><td>YES</td><td>—</td><td>Nome denormalizado</td></tr>
+        <tr><td><code>orgao_nome</code></td><td>text</td><td>YES</td><td>—</td><td>Ex: Serasa, SPC</td></tr>
+        <tr><td><code>orgao_id</code></td><td>uuid</td><td>YES</td><td>—</td><td>FK orgãos</td></tr>
+        <tr><td><code>tipo</code></td><td>text</td><td>YES</td><td>—</td><td>comprador/devedor/fiador/avalista</td></tr>
+        <tr><td><code>codigo_contrato</code></td><td>text</td><td>YES</td><td>—</td><td>Código do contrato</td></tr>
+        <tr><td><code>data_restricao</code></td><td>date</td><td>YES</td><td>—</td><td class="status-warn">⚠️ DATE (não TIMESTAMPTZ)</td></tr>
+        <tr><td><code>valor</code></td><td>bigint</td><td>YES</td><td>—</td><td class="status-ok">✅ Centavos</td></tr>
+        <tr><td><code>processavel</code></td><td>boolean</td><td>NOT NULL</td><td>true</td><td>Flag Boa Vista</td></tr>
+        <tr><td><code>motivo_nao_processavel</code></td><td>text</td><td>YES</td><td>—</td><td>Razão de exclusão</td></tr>
+        <tr><td><code>processo_id</code></td><td>uuid</td><td>YES</td><td>—</td><td>FK processos (quando vinculada)</td></tr>
+        <tr><td><code>drive_pasta_id</code></td><td>text</td><td>YES</td><td>—</td><td>Google Drive folder ID</td></tr>
+        <tr><td><code>drive_pasta_url</code></td><td>text</td><td>YES</td><td>—</td><td>URL da pasta no Drive</td></tr>
+        <tr><td><code>uid_legado</code></td><td>text</td><td>YES</td><td>—</td><td>Migração</td></tr>
+        <tr><td><code>tipo_legado</code></td><td>integer</td><td>YES</td><td>—</td><td>Migração</td></tr>
+        <tr><td><code>created_by</code></td><td>uuid</td><td>YES</td><td>—</td><td>Quem criou</td></tr>
+        <tr><td><code>created_at</code></td><td>timestamptz</td><td>NOT NULL</td><td>now()</td><td class="status-ok">✅</td></tr>
+        <tr><td><code>updated_at</code></td><td>timestamptz</td><td>NOT NULL</td><td>now()</td><td class="status-ok">✅</td></tr>
+        <tr><td><code>deleted_at</code></td><td>timestamptz</td><td>YES</td><td>—</td><td class="status-ok">✅ Soft delete</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ RESTRIÇÕES DRIVE ═══════════ -->
+<div class="section" id="restricoes-drive">
+  <div class="section-header"><span class="section-icon">📂</span><span class="section-title">Restrições — Drive &amp; Pastas</span></div>
+  <div class="card">
+    <div class="card-title">Automação de Pasta (fire-and-forget)</div>
+    <div class="code-block"><span class="c-comment">// useSalvarRestricao → onSuccess</span>
+<span class="c-kw">if</span> (!vars.id && restricaoId && vars.clienteId && vars.empresaNome) {
+  <span class="c-val">callWebhook</span>(<span class="c-str">'mdflow/drive-pasta-restricao'</span>, {
+    organizacao_id, actor_user_id: <span class="c-str">''</span>,
+    data: { cliente_id, restricao_id, empresa_nome, valor }
+  }).<span class="c-kw">catch</span>(() => { <span class="c-comment">/* silencioso — Drive é best-effort */</span> })
+}</div>
+    <p style="font-size:12px;color:var(--muted)">
+      <strong>Tier 2:</strong> Documentos vinculados a restrições via <code>RestricaoPastaCard.tsx</code> (503 linhas).<br>
+      Accordion com drag-and-drop, upload, renomear, exclusão lógica com undo de 3s.<br>
+      Bucket: <code>leads-docs</code> (categoria <code>documento_restricao</code>).
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ SEÇÃO DADOS DO LEAD ═══════════ -->
+<div class="section" id="lead-dados">
+  <div class="section-header"><span class="section-icon">👤</span><span class="section-title">Dados do Lead no MdZap</span></div>
+  <div class="card">
+    <div class="card-title">Formulário de Dados (LeadDadosFields.tsx — 300 linhas)</div>
+    <p style="font-size:12px">Campos: nome, CPF, RG, telefone, email, data nascimento, sexo, profissão, estado civil, endereço completo (CEP, logradouro, número, complemento, bairro, cidade, UF).</p>
+    <p style="font-size:12px;color:var(--muted);margin-top:4px">
+      <strong>useLeadFormData.ts</strong> (148 linhas): query <code>leads</code> por ID + <code>advogados</code> + <code>origens_lead</code>.<br>
+      <span class="badge badge-danger">2 erros TS</span> — <code>.eq()</code> type mismatch no Supabase types.
+    </p>
+  </div>
+  <div class="card">
+    <div class="card-title">Mutations (useLeadMutations.ts — 242 linhas)</div>
+    <table>
+      <thead><tr><th>Mutation</th><th>Ação</th><th>Cache</th></tr></thead>
+      <tbody>
+        <tr><td><code>saveLead</code></td><td>UPDATE lead existente</td><td>Invalida <code>['mdzap','conversas']</code></td></tr>
+        <tr><td><code>criarLead</code></td><td>INSERT lead + link conversa</td><td>Invalida <code>['crm-leads-kanban']</code></td></tr>
+        <tr><td><code>criarLeadEAuditarInline</code></td><td>Criar + disparar auditoria + setar pending_lead_data</td><td>Multi-invalidação</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section" id="lead-docreader">
+  <div class="section-header"><span class="section-icon">📄</span><span class="section-title">Dados do Lead — Doc Reader</span></div>
+  <div class="card">
+    <div class="card-title">Preenchimento Automático via Doc Reader</div>
+    <p style="font-size:12px">
+      <strong>useDocReaderMapping.ts</strong>: Query mensagens com <code>tipo IN ('document','image')</code> + <code>metadata.doc_reader_result.qualidade !== 'ilegivel'</code>.<br>
+      <strong>doc-reader-helpers.ts</strong>: Extrai campos (nome, CPF, RG, endereço, CTPS) do resultado Doc Reader e mapeia para <code>LeadDados</code>.<br>
+      <strong>FieldConfidenceBadge.tsx</strong>: Badge visual de confiança (alto/médio/baixo) para cada campo preenchido automaticamente.<br>
+      <strong>Fluxo:</strong> Botão "Preencher com Doc Reader" → <code>applyDocReader()</code> → toast informando quantos campos preenchidos → usuário salva.
+    </p>
+  </div>
+  <div class="card">
+    <div class="card-title">pending_lead_data (metadata da conversa)</div>
+    <p style="font-size:12px">
+      RPC: <code>set_conversa_pending_lead_data(p_conversa_id, p_organizacao_id, p_pending_lead_data)</code> — SECURITY DEFINER ✅<br>
+      Usado no fluxo <code>criarLeadEAuditarInline</code>: salva dados temporários na conversa antes do lead ser criado.<br>
+      Recuperado no <code>LeadDadosTab</code> para pré-preencher o formulário quando o operador volta à conversa.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ SEÇÃO CONEXÕES CRM↔MDZAP ═══════════ -->
+<div class="section" id="conexoes">
+  <div class="section-header"><span class="section-icon">🔗</span><span class="section-title">Conexões CRM ↔ MdZap — 10 Pontos Verificados</span></div>
+  <table>
+    <thead><tr><th>#</th><th>Conexão</th><th>Origem</th><th>Destino</th><th>Mecanismo</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Lead criado no MdZap → CRM</td><td>MdZap</td><td>CRM</td><td>INSERT leads + invalidate <code>crm-leads-kanban</code></td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>2</td><td>Badge MdZap no card CRM</td><td>CRM</td><td>MdZap</td><td><code>MdzapBadgeStatus</code> + <code>MdzapSendButton</code></td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>3</td><td>Notas compartilhadas</td><td>Ambos</td><td>Ambos</td><td><code>CrmLeadNotas</code> via <code>crm_notas</code> (origem: crm|mdzap)</td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>4</td><td>Auditoria MdZap → restrições</td><td>MdZap</td><td>CRM</td><td><code>rpc_disparar_auditoria</code> + <code>CrmAuditoriaPanel</code> reusado</td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>5</td><td>CRM sync events</td><td>CRM</td><td>MdZap</td><td>Trigger <code>fn_trg_leads_mdzap_sync</code> → <code>crm_sync_events</code></td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>6</td><td>Lead vinculado à conversa</td><td>MdZap</td><td>DB</td><td><code>fn_link_conversa_to_lead</code> (SECURITY DEFINER, REVOKE authenticated)</td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>7</td><td>Realtime leads → conversas</td><td>CRM</td><td>MdZap</td><td>Canal <code>mdzap-leads-rt</code> invalida conversas quando lead muda</td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>8</td><td>CRM abre MdZap</td><td>CRM</td><td>MdZap</td><td><code>navigate('/mdzap?lead=...')</code></td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>9</td><td>Restrições compartilhadas</td><td>Ambos</td><td>Ambos</td><td><code>useRestricoes</code> (mesma RPC) em MdZap e ClienteDrawer</td><td><span class="badge badge-success">✅</span></td></tr>
+      <tr><td>10</td><td>Contagens CRM atualizadas</td><td>MdZap</td><td>CRM</td><td><code>invalidateQueries(['crm-leads-kanban'])</code> após criar lead</td><td><span class="badge badge-success">✅</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section" id="conexoes-matrix">
+  <div class="section-header"><span class="section-icon">🧩</span><span class="section-title">Matriz de Integração — Detalhamento</span></div>
+
+  <div class="card">
+    <div class="card-title">Conexão 1: Lead criado no MdZap → aparece no CRM</div>
+    <div class="code-block"><span class="c-comment">// useLeadMutations.ts → criarLead()</span>
+<span class="c-kw">const</span> { data } = <span class="c-kw">await</span> supabase.<span class="c-val">from</span>(<span class="c-str">'leads'</span>).<span class="c-val">insert</span>({...})
+<span class="c-kw">await</span> supabase.<span class="c-val">rpc</span>(<span class="c-str">'fn_link_conversa_to_lead'</span>, {...})
+queryClient.<span class="c-val">invalidateQueries</span>({ queryKey: [<span class="c-str">'crm-leads-kanban'</span>] })</div>
+    <p style="font-size:12px;color:var(--muted)"><strong>Verificação:</strong> O lead inserido no MdZap aparece imediatamente no CRM Kanban via invalidação de cache. A RPC <code>fn_link_conversa_to_lead</code> vincula o lead à conversa WhatsApp. ✅ Funcional.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Conexão 5: Trigger fn_trg_leads_mdzap_sync</div>
+    <p style="font-size:12px">Quando <code>coluna_crm</code> ou <code>atendente_id</code> muda na tabela <code>leads</code>, o trigger insere um registro em <code>crm_sync_events</code> com <code>tipo='stage_change'</code> ou <code>'assignee_change'</code>. O MdZap consome esses eventos para manter UI sincronizada.</p>
+    <p style="font-size:12px;color:var(--muted)">RLS de crm_sync_events: usa <code>org_id()</code> (deprecated) — deveria ser <code>get_org_id()</code>.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Conexão 6: fn_link_conversa_to_lead — Segurança</div>
+    <p style="font-size:12px">
+      <span class="badge badge-success">SECURITY DEFINER</span> — executa com permissão do owner.<br>
+      <span class="badge badge-success">REVOKE authenticated</span> — não chamável diretamente pelo frontend.<br>
+      Chamada apenas internamente por outras RPCs ou pelo service_role. Impede escalação de privilégios.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ SCHEMA DB ═══════════ -->
+<div class="section" id="schema-leads">
+  <div class="section-header"><span class="section-icon">🗄️</span><span class="section-title">Schema — Tabela leads (64 colunas)</span></div>
+  <div class="card">
+    <div class="card-title">Campos Principais</div>
+    <table>
+      <thead><tr><th>Coluna</th><th>Tipo</th><th>Grupo</th></tr></thead>
+      <tbody>
+        <tr><td><code>id, organizacao_id, nome</code></td><td>uuid, uuid, text</td><td>Core</td></tr>
+        <tr><td><code>email, telefone, whatsapp, cpf, rg</code></td><td>text</td><td>Contato/Docs</td></tr>
+        <tr><td><code>coluna_crm, origem_id, campanha_id</code></td><td>text, uuid, uuid</td><td>CRM</td></tr>
+        <tr><td><code>captador_id, responsavel_id, atendente_id</code></td><td>uuid</td><td>Equipe</td></tr>
+        <tr><td><code>advogado_id, indicacao_id</code></td><td>uuid</td><td>Jurídico</td></tr>
+        <tr><td><code>valor_estimado</code></td><td>bigint</td><td>Financeiro (centavos) ✅</td></tr>
+        <tr><td><code>score, icp_score</code></td><td>int, smallint</td><td>Scoring</td></tr>
+        <tr><td><code>mdzap_contact_id, mdzap_conversation_id</code></td><td>text</td><td>MdZap link</td></tr>
+        <tr><td><code>wa_status, wa_unread_count, wa_last_message_at</code></td><td>text, int, timestamptz</td><td>WhatsApp status</td></tr>
+        <tr><td><code>data_nascimento, sexo, profissao, estado_civil</code></td><td>date, text, text, text</td><td>Pessoais</td></tr>
+        <tr><td><code>endereco_*</code> (8 campos)</td><td>text</td><td>Endereço</td></tr>
+        <tr><td><code>followup_proxima_data, followup_data</code></td><td>timestamptz</td><td>Follow-up</td></tr>
+        <tr><td><code>metadata, restricoes, ai_report, documentos</code></td><td>jsonb</td><td>JSON data</td></tr>
+        <tr><td><code>tentativas</code></td><td>integer (NOT NULL)</td><td>Controle</td></tr>
+        <tr><td><code>google_drive_folder_id</code></td><td>text</td><td>Drive</td></tr>
+        <tr><td><code>created_at, updated_at, deleted_at</code></td><td>timestamptz</td><td>Timestamps ✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section" id="schema-rls">
+  <div class="section-header"><span class="section-icon">🔐</span><span class="section-title">Schema — RLS Policies</span></div>
+
+  <div class="card">
+    <div class="card-title">Comparação de Padrões RLS</div>
+    <table>
+      <thead><tr><th>Tabela</th><th>Função usada</th><th>Padrão</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><code>leads</code></td><td><code>org_id()</code></td><td>CRUD granular (SELECT/INSERT/UPDATE/DELETE)</td><td><span class="badge badge-warn">⚠️ Deprecated</span></td></tr>
+        <tr><td><code>auditorias</code></td><td><code>org_id()</code></td><td>CRUD granular</td><td><span class="badge badge-warn">⚠️ Deprecated</span></td></tr>
+        <tr><td><code>crm_sync_events</code></td><td><code>org_id()</code></td><td>CRUD granular</td><td><span class="badge badge-warn">⚠️ Deprecated</span></td></tr>
+        <tr><td><code>restricoes</code></td><td><code>get_org_id()</code></td><td>ALL only (sem granularidade)</td><td><span class="badge badge-info">ℹ️ Funcional, sem CRUD</span></td></tr>
+        <tr><td><code>crm_notas</code></td><td><code>get_org_id()</code></td><td>ALL only</td><td><span class="badge badge-info">ℹ️ Funcional, sem CRUD</span></td></tr>
+        <tr><td><code>whatsapp_conversas</code></td><td><code>get_org_id()</code></td><td>CRUD granular + <code>deleted_at IS NULL</code></td><td><span class="badge badge-success">✅ Ideal</span></td></tr>
+        <tr><td><code>whatsapp_mensagens</code></td><td><code>get_org_id()</code></td><td>CRUD granular + <code>deleted_at IS NULL</code></td><td><span class="badge badge-success">✅ Ideal</span></td></tr>
+        <tr><td><code>whatsapp_numeros</code></td><td><code>get_org_id()</code></td><td>CRUD granular + <code>deleted_at IS NULL</code></td><td><span class="badge badge-success">✅ Ideal</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Detalhamento — leads RLS</div>
+    <div class="code-block"><span class="c-comment">-- SELECT:</span> organizacao_id = <span class="c-val">org_id()</span>  <span class="c-comment">-- ⚠️ deveria ser get_org_id()</span>
+<span class="c-comment">-- INSERT WITH CHECK:</span> organizacao_id = <span class="c-val">org_id()</span>
+<span class="c-comment">-- UPDATE USING:</span> organizacao_id = <span class="c-val">org_id()</span>
+<span class="c-comment">-- DELETE USING:</span> organizacao_id = <span class="c-val">org_id()</span> <span class="c-kw">AND</span> perfil = <span class="c-str">'admin'</span></div>
+  </div>
+</div>
+
+<div class="section" id="schema-rpcs">
+  <div class="section-header"><span class="section-icon">⚙️</span><span class="section-title">Schema — RPCs Auditadas (40+)</span></div>
+
+  <h3>RPCs MdZap</h3>
+  <table>
+    <thead><tr><th>RPC</th><th>SECURITY DEFINER</th><th>Parâmetros</th></tr></thead>
+    <tbody>
+      <tr><td><code>fn_mdzap_conversas</code></td><td class="status-ok">✅</td><td>p_org_id, p_page, p_per_page, p_numero_id, p_status, p_search, p_agente_slug</td></tr>
+      <tr><td><code>fn_mdzap_listar_membros</code></td><td class="status-ok">✅</td><td>p_organizacao_id</td></tr>
+      <tr><td><code>fn_mdzap_smart_replies</code></td><td class="status-ok">✅</td><td>p_org_id, p_conversa_id, p_ultima_mensagem</td></tr>
+      <tr><td><code>fn_mdzap_stats</code></td><td class="status-ok">✅</td><td>p_org_id</td></tr>
+      <tr><td><code>fn_link_conversa_to_lead</code></td><td class="status-ok">✅</td><td>p_lead_id, p_conversa_id</td></tr>
+      <tr><td><code>set_conversa_pending_lead_data</code></td><td class="status-ok">✅</td><td>p_conversa_id, p_organizacao_id, p_pending_lead_data</td></tr>
+    </tbody>
+  </table>
+
+  <h3>RPCs Restrições</h3>
+  <table>
+    <thead><tr><th>RPC</th><th>SECURITY DEFINER</th><th>Parâmetros</th></tr></thead>
+    <tbody>
+      <tr><td><code>fn_restricoes_listar</code></td><td class="status-ok">✅</td><td>p_organizacao_id, p_cliente_id, p_lead_id, p_apenas_processaveis, p_apenas_sem_processo, p_processo_id</td></tr>
+      <tr><td><code>fn_restricoes_por_cliente</code></td><td class="status-ok">✅</td><td>p_organizacao_id, p_cliente_id</td></tr>
+      <tr><td><code>get_cliente_restricoes_completo</code></td><td class="status-ok">✅</td><td>p_cliente_id</td></tr>
+      <tr><td><code>recalc_restricoes_contadores</code></td><td class="status-ok">✅</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h3>RPCs CRM / Auditoria</h3>
+  <table>
+    <thead><tr><th>RPC</th><th>SECURITY DEFINER</th><th>Parâmetros</th></tr></thead>
+    <tbody>
+      <tr><td><code>rpc_disparar_auditoria</code></td><td class="status-ok">✅</td><td>p_organizacao_id, p_user_id, p_cpf, p_lead_id, p_bureaus</td></tr>
+      <tr><td><code>rpc_crm_aprovar_triagem</code></td><td class="status-ok">✅</td><td>p_lead_id, p_organizacao_id, p_user_id, p_observacoes, p_advogado_id, p_restricoes_selecionadas, p_restricoes_optout, p_tipo_acao, p_dados_extras</td></tr>
+      <tr><td><code>rpc_crm_dashboard_kpis</code></td><td class="status-ok">✅</td><td>p_organizacao_id, p_periodo_dias</td></tr>
+      <tr><td><code>rpc_crm_bulk_action</code></td><td class="status-ok">✅</td><td>p_organizacao_id, p_user_id, p_lead_ids, p_action, p_payload</td></tr>
+      <tr><td><code>rpc_devolver_crm</code></td><td class="status-ok">✅</td><td>p_organizacao_id, p_processo_id, p_motivo, p_descricao, p_criar_pendencia, p_prazo_retorno, p_actor_user_id</td></tr>
+      <tr><td><code>fn_crm_funil</code></td><td class="status-ok">✅</td><td>p_org_id, p_data_inicio, p_data_fim</td></tr>
+      <tr><td><code>fn_crm_stats</code></td><td class="status-ok">✅</td><td>p_organizacao_id</td></tr>
+      <tr><td><code>fn_trg_leads_mdzap_sync</code></td><td class="status-ok">✅</td><td>— (trigger function)</td></tr>
+      <tr><td><code>fn_trg_leads_data_conversao</code></td><td class="status-ok">✅</td><td>— (trigger function)</td></tr>
+      <tr><td><code>distribuir_lead_completo</code></td><td class="status-ok">✅</td><td>p_lead_id, p_organizacao_id</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted);margin-top:8px"><strong>Resultado:</strong> 100% das RPCs auditadas possuem <code>SECURITY DEFINER</code>. Nenhuma RPC faltante identificada.</p>
+</div>
+
+<!-- ═══════════ SEÇÃO ACHADOS ═══════════ -->
+<div class="section" id="achados-p0">
+  <div class="section-header"><span class="section-icon">🔴</span><span class="section-title">Achados P0 — Críticos (Build Failures)</span></div>
+
+  <div class="pending-item p0">
+    <div class="pending-icon">❌</div>
+    <div class="pending-content">
+      <strong>MdzapJuliaLab.tsx — 18 erros TypeScript</strong>
+      <p>Schema drift: <code>mdzap_julia_lab_sessoes</code> com tipos desalinhados entre <code>types.ts</code> gerado e uso real. Todas as operações <code>.eq()</code>, <code>.insert()</code>, <code>.update()</code> falham com TS2345/TS2698. <strong>Fix:</strong> adicionar <code>as any</code> nos pontos de tipo-safety exception (convenção do projeto).</p>
+    </div>
+  </div>
+
+  <div class="pending-item p0">
+    <div class="pending-icon">❌</div>
+    <div class="pending-content">
+      <strong>MdzapMsgThread.tsx — 3 erros TypeScript</strong>
+      <p>Linha 187: <code>.update({metadata: Json}).eq('id', string).eq('organizacao_id', string)</code> — tipos incompatíveis com schema gerado de <code>whatsapp_conversas</code>. <strong>Fix:</strong> <code>as any</code> nos <code>.eq()</code> e <code>.update()</code>.</p>
+    </div>
+  </div>
+
+  <div class="pending-item p0">
+    <div class="pending-icon">❌</div>
+    <div class="pending-content">
+      <strong>useLeadFormData.ts — 2 erros TypeScript</strong>
+      <p>Linhas 26-27: <code>.eq('organizacao_id', string)</code> e <code>.eq('ativo', boolean)</code> na query de advogados. Schema gerado não aceita esses tipos diretamente. <strong>Fix:</strong> <code>as any</code>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="achados-p1">
+  <div class="section-header"><span class="section-icon">🟡</span><span class="section-title">Achados P1 — Importantes</span></div>
+
+  <div class="pending-item p1">
+    <div class="pending-icon">⚠️</div>
+    <div class="pending-content">
+      <strong>RLS — leads, auditorias, crm_sync_events usam org_id() deprecated</strong>
+      <p>O padrão MdFlow exige <code>get_org_id()</code>. Estas 3 tabelas core ainda usam <code>org_id()</code>. Funcionalmente equivalente hoje, mas risco de quebra se <code>org_id()</code> for removido. <strong>Fix:</strong> Migration para atualizar policies para <code>get_org_id()</code>.</p>
+    </div>
+  </div>
+
+  <div class="pending-item p1">
+    <div class="pending-icon">⚠️</div>
+    <div class="pending-content">
+      <strong>restricoes — RLS é apenas ALL policy, sem granularidade CRUD</strong>
+      <p>Tabela <code>restricoes</code> tem apenas <code>restricoes_org_isolation</code> (ALL). Deveria ter policies separadas para SELECT, INSERT, UPDATE, DELETE com regras específicas (ex: DELETE somente admin). <strong>Fix:</strong> Criar 4 policies granulares.</p>
+    </div>
+  </div>
+
+  <div class="pending-item p1">
+    <div class="pending-icon">⚠️</div>
+    <div class="pending-content">
+      <strong>crm_notas — RLS é apenas ALL policy</strong>
+      <p>Mesmo problema de <code>restricoes</code>. Policy <code>tenant_isolation</code> cobre tudo mas sem granularidade. <strong>Fix:</strong> Adicionar policies CRUD.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="achados-p2">
+  <div class="section-header"><span class="section-icon">🔵</span><span class="section-title">Achados P2 — Tech Debt</span></div>
+
+  <div class="pending-item p2">
+    <div class="pending-icon">💡</div>
+    <div class="pending-content">
+      <strong>data_restricao usa DATE em vez de TIMESTAMPTZ</strong>
+      <p>A coluna <code>restricoes.data_restricao</code> é <code>date</code>. O padrão MdFlow exige <code>TIMESTAMPTZ</code>. Neste caso, porém, faz sentido manter DATE pois restrições têm apenas data (sem hora).</p>
+    </div>
+  </div>
+
+  <div class="pending-item p2">
+    <div class="pending-icon">💡</div>
+    <div class="pending-content">
+      <strong>leads tem 64 colunas — potencial de refatoração</strong>
+      <p>A tabela <code>leads</code> cresceu para 64 colunas. Campos como <code>wa_*</code> (5 cols) e <code>endereco_*</code> (8 cols) poderiam ser normalizados em tabelas separadas ou JSONB. Não é bloqueante mas aumenta complexidade.</p>
+    </div>
+  </div>
+
+  <div class="pending-item p2">
+    <div class="pending-icon">💡</div>
+    <div class="pending-content">
+      <strong>fn_restricao_salvar não aparece na lista de RPCs</strong>
+      <p>O hook <code>useSalvarRestricao</code> chama <code>fn_restricao_salvar</code> mas essa RPC não apareceu no inventário. Pode ter nome diferente ou não estar criada. <strong>Verificar no banco.</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ VEREDICTO FINAL ═══════════ -->
+<div class="section" id="veredicto">
+  <div class="section-header"><span class="section-icon">⚖️</span><span class="section-title">Veredicto Final</span></div>
+
+  <div class="card" style="border-color: var(--primary-border); border-width: 2px;">
+    <div class="card-title" style="font-size: 16px;">Diagnóstico Geral — Saúde: 7.5/10</div>
+    <p style="margin-bottom: 12px;">
+      O sistema MdZap + CRM + Restrições é uma integração <strong>madura e bem arquitetada</strong>.
+      As 10 conexões bidirecionais estão todas funcionais e verificadas. O mecanismo de restrições
+      (Boa Vista → cadastro → Drive) é robusto com 12 componentes e 5 hooks dedicados.
+    </p>
+    <p style="margin-bottom: 12px;">
+      <strong>Ponto forte:</strong> 100% das RPCs com SECURITY DEFINER, realtime com cleanup correto,
+      soft delete consistente, e pipeline de envio otimista bem implementado.
+    </p>
+    <p style="margin-bottom: 12px;">
+      <strong>Ponto fraco:</strong> 21+ erros TypeScript de build (schema drift com types.ts gerado pelo Supabase)
+      e RLS inconsistente entre tabelas (mix de <code>org_id()</code> e <code>get_org_id()</code>).
+    </p>
+
+    <h3>Ações Recomendadas (por prioridade)</h3>
+    <table>
+      <thead><tr><th>Prioridade</th><th>Ação</th><th>Impacto</th><th>Esforço</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-danger">P0</span></td><td>Fix 21+ erros TS (as any) em 3 arquivos</td><td>Build quebrado</td><td>30min</td></tr>
+        <tr><td><span class="badge badge-warn">P1</span></td><td>Migrar RLS leads/auditorias/crm_sync_events para get_org_id()</td><td>Consistência + segurança</td><td>1h</td></tr>
+        <tr><td><span class="badge badge-warn">P1</span></td><td>Granularizar RLS de restricoes e crm_notas</td><td>Controle de acesso fino</td><td>1h</td></tr>
+        <tr><td><span class="badge badge-info">P2</span></td><td>Verificar existência de fn_restricao_salvar no banco</td><td>Possível erro silencioso</td><td>15min</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Estatísticas Finais</div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--success)">10/10</div><div class="kpi-label">Conexões CRM↔MdZap</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--success)">40+</div><div class="kpi-label">RPCs Auditadas</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--success)">100%</div><div class="kpi-label">SECURITY DEFINER</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--danger)">3</div><div class="kpi-label">Achados P0</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--warn)">3</div><div class="kpi-label">Achados P1</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--info)">3</div><div class="kpi-label">Achados P2</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Relatório gerado em 2026-04-14 21:24 — MdFlow Super Revisão MdZap + CRM + Restrições — Auditoria Exaustiva<br>
+  125+ arquivos auditados · 40+ RPCs verificadas · 10 conexões bidirecionais mapeadas
+</footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM - Auditoria - Restricoes: Fluxo Tecnico Completo</title>
+<style>
+:root {
+  --bg: #0d0f18;
+  --surface: #161926;
+  --surface2: #1e2235;
+  --surface3: #252a40;
+  --border: #2a2f4a;
+  --accent: #7c6dff;
+  --accent2: #ff6b6b;
+  --accent3: #4fffb0;
+  --accent4: #ffd166;
+  --accent5: #5bc4f5;
+  --text: #e8eaf6;
+  --text-muted: #7a82a8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 0.88rem; line-height: 1.6; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 16px; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 30; }
+.sidebar-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 16px; font-weight: 600; }
+.sidebar nav a { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.8rem; margin-bottom: 2px; transition: all 0.2s; }
+.sidebar nav a:hover, .sidebar nav a.active { background: var(--surface2); color: var(--text); }
+.sidebar nav a .nav-num { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.7rem; color: var(--accent); min-width: 20px; }
+.main { flex: 1; margin-left: 260px; padding: 24px 40px; max-width: 1100px; }
+.hero { text-align: center; padding: 48px 24px 36px; }
+.hero-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+.gradient-text { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.hero-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 16px; }
+.badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3px; }
+.bp { background: rgba(124,109,255,0.15); color: var(--accent); border: 1px solid rgba(124,109,255,0.3); }
+.bg { background: rgba(79,255,176,0.1); color: var(--accent3); border: 1px solid rgba(79,255,176,0.25); }
+.by { background: rgba(255,209,102,0.1); color: var(--accent4); border: 1px solid rgba(255,209,102,0.25); }
+.br { background: rgba(255,107,107,0.1); color: var(--accent2); border: 1px solid rgba(255,107,107,0.25); }
+.bb { background: rgba(91,196,245,0.1); color: var(--accent5); border: 1px solid rgba(91,196,245,0.25); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.g5 { grid-template-columns: repeat(5, 1fr); }
+@media(max-width:768px) { .g2,.g3,.g4,.g5 { grid-template-columns: 1fr; } .sidebar { display: none; } .main { margin-left: 0; padding: 16px; } .hero { padding: 24px 16px 20px; } .gradient-text { font-size: 1.6rem; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.section { margin: 32px 0; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.section-icon { font-size: 1.2rem; }
+.section-header h2 { font-size: 1.1rem; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.status-pill { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; display: inline-block; }
+.sp-done { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.sp-run { background: rgba(91,196,245,0.1); color: var(--accent5); }
+.sp-pend { background: rgba(255,209,102,0.1); color: var(--accent4); }
+.sp-block { background: rgba(255,107,107,0.1); color: var(--accent2); }
+.code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--accent3); overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin: 12px 0; }
+.code .kw { color: var(--accent); }
+.code .str { color: var(--accent4); }
+.code .fn { color: var(--accent5); }
+.code .cm { color: var(--text-muted); }
+.code .num { color: var(--accent2); }
+.footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px; }
+.flow-diagram { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; margin: 24px 0; }
+.flow-step { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 140px; }
+.flow-step .step-num { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 4px; }
+.flow-step .step-title { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.flow-step .step-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+.flow-arrow { color: var(--accent); font-size: 1.2rem; padding: 0 6px; }
+.detail-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: flex-start; }
+.detail-label { font-size: 0.78rem; color: var(--text-muted); min-width: 130px; flex-shrink: 0; }
+.detail-value { font-size: 0.85rem; color: var(--text); }
+.detail-value.mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; color: var(--accent3); font-size: 0.8rem; }
+.subsection { margin: 20px 0; }
+.subsection h3 { font-size: 0.95rem; font-weight: 600; color: var(--accent5); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.subsection h3 .sub-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); background: rgba(124,109,255,0.15); padding: 2px 8px; border-radius: 6px; }
+.info-box { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; font-size: 0.83rem; }
+.info-box.warn { border-left-color: var(--accent4); }
+.info-box.success { border-left-color: var(--accent3); }
+.info-box.danger { border-left-color: var(--accent2); }
+.protection-list { list-style: none; counter-reset: prot; }
+.protection-list li { counter-increment: prot; padding: 8px 12px; margin-bottom: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.83rem; display: flex; align-items: flex-start; gap: 10px; }
+.protection-list li::before { content: counter(prot, decimal-leading-zero); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent3); background: rgba(79,255,176,0.1); padding: 2px 8px; border-radius: 6px; flex-shrink: 0; margin-top: 1px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600; margin-right: 4px; }
+.tag-fe { background: rgba(91,196,245,0.12); color: var(--accent5); }
+.tag-be { background: rgba(124,109,255,0.15); color: var(--accent); }
+.tag-n8n { background: rgba(255,209,102,0.12); color: var(--accent4); }
+.tag-rpc { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.toc-section { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-top: 16px; margin-bottom: 6px; padding-left: 12px; }
+.step-box { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.step-box .step-icon { min-width: 32px; height: 32px; background: rgba(124,109,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); flex-shrink: 0; }
+.step-box .step-icon.green { background: rgba(79,255,176,0.1); color: var(--accent3); }
+.step-box .step-content { flex: 1; }
+.step-box .step-content strong { font-size: 0.85rem; }
+.step-box .step-content p { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+.schema-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent3); }
+.schema-table td:nth-child(2) { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent4); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-title">Navegacao</div>
+    <nav>
+      <a href="#hero"><span class="nav-num">00</span> Topo</a>
+      <div class="toc-section">Pipeline</div>
+      <a href="#s1"><span class="nav-num">01</span> Visao Geral</a>
+      <a href="#s2"><span class="nav-num">02</span> Criacao do Lead</a>
+      <a href="#s3"><span class="nav-num">03</span> Auditoria CPF</a>
+      <a href="#s4"><span class="nav-num">04</span> Cadastro Restricoes</a>
+      <a href="#s5"><span class="nav-num">05</span> Triagem e Conversao</a>
+      <div class="toc-section">Referencia</div>
+      <a href="#s6"><span class="nav-num">06</span> Schema (Tabelas)</a>
+      <a href="#s7"><span class="nav-num">07</span> Webhooks e Contratos</a>
+      <a href="#s8"><span class="nav-num">08</span> Por Que Nao Quebra</a>
+      <a href="#s9"><span class="nav-num">09</span> Implicacoes MDZap</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="hero" id="hero">
+      <span class="hero-emoji">🐙</span>
+      <h1 class="gradient-text">CRM &rarr; Auditoria &rarr; Restricoes</h1>
+      <p class="hero-sub">Fluxo Tecnico Completo &mdash; Referencia para implementacao no MDZap | MdFlow v3.0</p>
+      <div class="badges">
+        <span class="badge bp">MdFlow CRM</span>
+        <span class="badge bg">9 Secoes</span>
+        <span class="badge bb">~25 min leitura</span>
+        <span class="badge by">2026-04-13</span>
+      </div>
+    </div>
+
+    <div class="grid g5" style="margin-bottom: 32px;">
+      <div class="stat-card">
+        <div class="stat-value">5</div>
+        <div class="stat-label">Etapas Pipeline</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">4</div>
+        <div class="stat-label">RPCs SECURITY DEFINER</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">6</div>
+        <div class="stat-label">Tabelas Core</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">5</div>
+        <div class="stat-label">Webhooks CRM</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">15</div>
+        <div class="stat-label">Mecanismos Protecao</div>
+      </div>
+    </div>
+
+    <!-- SECAO 1 -->
+    <div class="section" id="s1">
+      <div class="section-header">
+        <span class="section-icon">🔄</span>
+        <h2>Secao 1 &mdash; Visao Geral do Pipeline</h2>
+      </div>
+
+      <div class="flow-diagram">
+        <div class="flow-step">
+          <div class="step-num">Etapa 1</div>
+          <div class="step-title">Criar Lead</div>
+          <div class="step-sub">ModalNovoLead / MDZap</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step">
+          <div class="step-num">Etapa 2</div>
+          <div class="step-title">Auditar CPF</div>
+          <div class="step-sub">rpc_disparar_auditoria</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step">
+          <div class="step-num">Etapa 3</div>
+          <div class="step-title">Cadastrar Restricoes</div>
+          <div class="step-sub">fn_restricao_salvar</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step">
+          <div class="step-num">Etapa 4</div>
+          <div class="step-title">Triagem</div>
+          <div class="step-sub">rpc_crm_aprovar_triagem</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step">
+          <div class="step-num">Etapa 5</div>
+          <div class="step-title">Conversao</div>
+          <div class="step-sub">Lead &rarr; Cliente + Processos</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        O pipeline CRM transforma um contato bruto (lead) em um cliente com processos rascunho prontos para distribuicao. Cada etapa e atomica e pode falhar independentemente sem comprometer as anteriores. O mesmo pipeline sera replicado no MDZap, reutilizando RPCs e hooks compartilhados.
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">Camadas de responsabilidade</div>
+        <div class="grid g3" style="gap: 12px;">
+          <div style="padding: 12px; background: var(--surface2); border-radius: 8px;">
+            <div style="font-size: 0.72rem; color: var(--accent5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Frontend (React)</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Exibe dados, coleta input, dispara acoes via hooks. Nunca contem logica de negocio.</div>
+          </div>
+          <div style="padding: 12px; background: var(--surface2); border-radius: 8px;">
+            <div style="font-size: 0.72rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Backend (Supabase)</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Guarda dados, valida via RPC SECURITY DEFINER, garante atomicidade e RLS.</div>
+          </div>
+          <div style="padding: 12px; background: var(--surface2); border-radius: 8px;">
+            <div style="font-size: 0.72rem; color: var(--accent4); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Automacoes (n8n)</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Executa integracoes externas (bureaus), orquestra fluxos multi-step, consultas IA.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECAO 2 -->
+    <div class="section" id="s2">
+      <div class="section-header">
+        <span class="section-icon">👤</span>
+        <h2>Secao 2 &mdash; Etapa 1: Criacao do Lead</h2>
+      </div>
+
+      <div class="grid g2">
+        <div class="card">
+          <div class="card-title">Componentes Frontend</div>
+          <div class="detail-row"><span class="detail-label">Modal:</span><span class="detail-value mono">ModalNovoLead.tsx</span></div>
+          <div class="detail-row"><span class="detail-label">Linhas:</span><span class="detail-value">306</span></div>
+          <div class="detail-row"><span class="detail-label">Schema:</span><span class="detail-value mono">novo-lead.schema.ts</span></div>
+          <div class="detail-row"><span class="detail-label">Dedup:</span><span class="detail-value mono">checkDedupBeforeInsert()</span></div>
+          <div class="detail-row"><span class="detail-label">Invalidacao:</span><span class="detail-value mono">crm-leads-kanban, crm-colunas-contagem, crm-dashboard-kpis</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Defaults no Insert</div>
+          <div class="detail-row"><span class="detail-label">coluna_crm:</span><span class="detail-value mono">'novos'</span></div>
+          <div class="detail-row"><span class="detail-label">atendente_id:</span><span class="detail-value mono">currentUser</span></div>
+          <div class="detail-row"><span class="detail-label">created_by_id:</span><span class="detail-value mono">currentUser</span></div>
+          <div class="detail-row"><span class="detail-label">convertido:</span><span class="detail-value mono">false</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">2.1</span> Campos do Formulario</h3>
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-title">Obrigatorios</div>
+            <table>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">nome</td><td>TEXT NOT NULL</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">whatsapp</td><td>TEXT NOT NULL</td></tr>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-title">Opcionais</div>
+            <table>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">cpf</td><td>TEXT (11 digitos)</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">email</td><td>TEXT</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">origem_id</td><td>UUID ref origens</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">estado_id</td><td>UUID ref estados</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">atendente_id</td><td>UUID ref users</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">advogado_id</td><td>UUID ref users</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">captador_id</td><td>UUID</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">data_nascimento</td><td>DATE</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">sexo</td><td>TEXT CHECK</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">observacoes</td><td>TEXT</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">2.2</span> Deduplicacao</h3>
+        <div class="code"><span class="fn">checkDedupBeforeInsert</span>()
+<span class="cm">// 1. Busca por CPF exato (se fornecido)</span>
+<span class="cm">// 2. Busca por telefone exato (whatsapp)</span>
+<span class="cm">// 3. Se encontra match -> abre ModalDedup para confirmacao</span>
+<span class="cm">// 4. Usuario decide: criar novo OU vincular ao existente</span></div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">2.3</span> Auto-link Advogado por UF</h3>
+        <div class="info-box success">
+          Quando <strong>estado_id</strong> e selecionado, o sistema busca automaticamente o advogado ativo na tabela <code>advogados_distribuicao_uf</code>. Isso garante que nenhum lead fica sem advogado responsavel por omissao.
+        </div>
+        <div class="code"><span class="cm">// Trigger: onChange de estado_id</span>
+<span class="kw">const</span> { data } = <span class="kw">await</span> supabase
+  .<span class="fn">from</span>(<span class="str">'advogados_distribuicao_uf'</span>)
+  .<span class="fn">select</span>(<span class="str">'advogado_id'</span>)
+  .<span class="fn">eq</span>(<span class="str">'estado_id'</span>, estadoId)
+  .<span class="fn">eq</span>(<span class="str">'ativo'</span>, <span class="kw">true</span>)
+  .<span class="fn">single</span>();
+<span class="cm">// Se encontrou -> preenche advogado_id automaticamente</span></div>
+      </div>
+
+      <div class="info-box success">
+        <strong>Por que nao quebra:</strong> Deduplicacao previne duplicatas. Auto-link UF evita lead sem advogado. coluna_crm default garante que aparece no Kanban.
+      </div>
+    </div>
+
+    <!-- SECAO 3 -->
+    <div class="section" id="s3">
+      <div class="section-header">
+        <span class="section-icon">🔍</span>
+        <h2>Secao 3 &mdash; Etapa 2: Auditoria CPF (o mais complexo)</h2>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">3.1</span> Frontend &mdash; Disparo <span class="tag tag-fe">FRONTEND</span></h3>
+        <div class="card">
+          <div class="card-title">Componentes e Hooks</div>
+          <div class="detail-row"><span class="detail-label">Componente:</span><span class="detail-value mono">CrmAuditoriaPanel.tsx</span></div>
+          <div class="detail-row"><span class="detail-label">Localizacao:</span><span class="detail-value">Aba "Auditoria" no ClienteDrawer</span></div>
+          <div class="detail-row"><span class="detail-label">Hook:</span><span class="detail-value mono">useDispararAuditoria.ts</span></div>
+          <div class="detail-row"><span class="detail-label">Compartilhado:</span><span class="detail-value"><span class="status-pill sp-done">Sim &mdash; reutilizavel pelo MDZap</span></span></div>
+        </div>
+
+        <div class="code"><span class="cm">// Validacao: CPF deve ter 11 digitos (remove formatacao)</span>
+<span class="kw">const</span> cpfClean = cpf.<span class="fn">replace</span>(<span class="str">/\D/g</span>, <span class="str">''</span>);
+<span class="kw">if</span> (cpfClean.length !== <span class="num">11</span>) {
+  toast.<span class="fn">error</span>(<span class="str">'CPF invalido'</span>);
+  <span class="kw">return</span>;
+}
+
+<span class="cm">// Chamada RPC</span>
+<span class="kw">const</span> { data } = <span class="kw">await</span> supabase.<span class="fn">rpc</span>(<span class="str">'rpc_disparar_auditoria'</span>, {
+  <span class="str">p_organizacao_id</span>: orgId,
+  <span class="str">p_user_id</span>: userId,
+  <span class="str">p_cpf</span>: cpfClean,
+  <span class="str">p_lead_id</span>: leadId,
+  <span class="str">p_bureaus</span>: [<span class="str">'apifull_115'</span>]
+});
+
+<span class="cm">// Retorno: { success, auditoria_id, data: { auditoria_id } }</span>
+<span class="cm">// Apos disparo: toast.loading + progress bar visual (1.42%/s ate 85%)</span></div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">3.2</span> Backend &mdash; RPC rpc_disparar_auditoria <span class="tag tag-be">BACKEND</span><span class="tag tag-rpc">RPC</span></h3>
+        <div class="card">
+          <div class="card-title">Especificacao da RPC</div>
+          <table>
+            <tr><th>Propriedade</th><th>Valor</th></tr>
+            <tr><td>Tipo</td><td><span class="status-pill sp-done">SECURITY DEFINER</span></td></tr>
+            <tr><td>Retorno</td><td>JSONB envelope</td></tr>
+          </table>
+          <div style="margin-top: 12px;">
+            <div class="card-title">Parametros</div>
+            <table>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_organizacao_id</td><td>UUID</td><td>Org do tenant</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_user_id</td><td>UUID</td><td>Solicitante</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_cpf</td><td>TEXT</td><td>CPF limpo 11 digitos</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_lead_id</td><td>UUID</td><td>Lead vinculado</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_bureaus</td><td>TEXT[]</td><td>['apifull_115']</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="info-box">
+          A RPC cria registro na tabela <code>auditorias</code> com status='pendente' e dispara webhook n8n para processamento assincrono.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">3.3</span> n8n &mdash; Workflow AUDITORIAS-DISPARAR <span class="tag tag-n8n">N8N</span></h3>
+
+        <div class="flow-diagram" style="flex-direction: column; gap: 8px; align-items: stretch;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+            <div class="flow-step" style="border-color: var(--accent4);">
+              <div class="step-num">Node 1</div>
+              <div class="step-title">Webhook Trigger</div>
+              <div class="step-sub">POST /webhook/mdflow/auditorias/disparar</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">
+              <div class="step-num">Node 2</div>
+              <div class="step-title">Validate Payload</div>
+              <div class="step-sub">Envelope + CPF + bureaus</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">
+              <div class="step-num">Node 3</div>
+              <div class="step-title">IF Valid</div>
+              <div class="step-sub">Branch condicional</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+            <div class="flow-step">
+              <div class="step-num">Node 4</div>
+              <div class="step-title">Build Insert</div>
+              <div class="step-sub">1 row por bureau</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">
+              <div class="step-num">Node 5</div>
+              <div class="step-title">Insert Auditoria</div>
+              <div class="step-sub">status='processando'</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">
+              <div class="step-num">Node 6</div>
+              <div class="step-title">Process Bureaus</div>
+              <div class="step-sub">HTTP consulta</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step" style="border-color: var(--accent3);">
+              <div class="step-num">Node 7</div>
+              <div class="step-title">Update Results</div>
+              <div class="step-sub">status='concluida'</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Detalhes do Webhook</div>
+          <div class="detail-row"><span class="detail-label">Endpoint:</span><span class="detail-value mono">POST /webhook/mdflow/auditorias/disparar</span></div>
+          <div class="detail-row"><span class="detail-label">Auth:</span><span class="detail-value">Header <code>mdflow</code> validado no webhook</span></div>
+          <div class="detail-row"><span class="detail-label">Bureaus validos:</span><span class="detail-value mono">serasa, spc, boavista, quod, apifull_115</span></div>
+        </div>
+
+        <div class="code"><span class="cm">// Response canonica do n8n:</span>
+{
+  <span class="str">"success"</span>: <span class="kw">true</span>,
+  <span class="str">"action"</span>: <span class="str">"webhook_triggered"</span>,
+  <span class="str">"message"</span>: <span class="str">"Auditoria disparada com sucesso"</span>,
+  <span class="str">"data"</span>: {
+    <span class="str">"auditoria_id"</span>: <span class="str">"uuid-aqui"</span>,
+    <span class="str">"poll_interval_ms"</span>: <span class="num">3000</span>
+  },
+  <span class="str">"error_code"</span>: <span class="kw">null</span>
+}</div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">3.4</span> Frontend &mdash; Polling de Status <span class="tag tag-fe">FRONTEND</span></h3>
+        <div class="card">
+          <div class="card-title">Hook: useAuditoriaStatus.ts</div>
+          <div class="grid g2" style="gap: 12px;">
+            <div style="padding: 12px; background: var(--surface2); border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--accent3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Estrategia 1: Realtime</div>
+              <div class="code" style="margin: 0; font-size: 0.72rem;">channel.<span class="fn">on</span>(<span class="str">'postgres_changes'</span>, {
+  event: <span class="str">'UPDATE'</span>,
+  table: <span class="str">'auditorias'</span>,
+  filter: <span class="str">`id=eq.${auditoriaId}`</span>
+})</div>
+            </div>
+            <div style="padding: 12px; background: var(--surface2); border-radius: 8px;">
+              <div style="font-size: 0.72rem; color: var(--accent5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Estrategia 2: Polling Fallback</div>
+              <div class="code" style="margin: 0; font-size: 0.72rem;"><span class="fn">setInterval</span>(<span class="kw">async</span> () => {
+  <span class="kw">const</span> { data } = <span class="kw">await</span> supabase
+    .<span class="fn">from</span>(<span class="str">'auditorias'</span>)
+    .<span class="fn">select</span>(<span class="str">'status'</span>)
+    .<span class="fn">eq</span>(<span class="str">'id'</span>, auditoriaId);
+}, <span class="num">5000</span>); <span class="cm">// 5s</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <div class="card-title">Maquina de Estados</div>
+          <div class="flow-diagram" style="justify-content: flex-start;">
+            <div class="flow-step" style="min-width: 100px;"><div class="step-title" style="color: var(--text-muted);">pendente</div></div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step" style="min-width: 110px; border-color: var(--accent5);"><div class="step-title" style="color: var(--accent5);">processando</div></div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step" style="min-width: 100px; border-color: var(--accent3);"><div class="step-title" style="color: var(--accent3);">concluida</div></div>
+          </div>
+          <div style="text-align: center; margin: 4px 0;">
+            <span style="color: var(--text-muted); font-size: 0.75rem;">processando tambem pode transicionar para:</span>
+          </div>
+          <div class="flow-diagram" style="justify-content: center;">
+            <div class="flow-step" style="min-width: 100px; border-color: var(--accent2);"><div class="step-title" style="color: var(--accent2);">falha</div></div>
+            <span style="padding: 0 12px; color: var(--text-muted);">ou</span>
+            <div class="flow-step" style="min-width: 100px; border-color: var(--accent4);"><div class="step-title" style="color: var(--accent4);">cancelada</div></div>
+          </div>
+          <div style="margin-top: 8px; font-size: 0.8rem; color: var(--text-muted);">Ao concluir: <code>invalidateQueries(['crm-lead-detail', leadId])</code> + refetch automatico</div>
+        </div>
+      </div>
+
+      <div class="info-box success">
+        <strong>3.5 Por que nao quebra:</strong> Dupla estrategia (Realtime + Polling) cobre falhas de rede. Progress bar visual mantendo UX responsiva. Status machine com transicoes claras previne estados inconsistentes. AbortController com 60s no webhook. RPC SECURITY DEFINER garante permissao mesmo com RLS ativa.
+      </div>
+    </div>
+
+    <!-- SECAO 4 -->
+    <div class="section" id="s4">
+      <div class="section-header">
+        <span class="section-icon">⚡</span>
+        <h2>Secao 4 &mdash; Etapa 3: Cadastro de Restricoes (a magica)</h2>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">4.1</span> Hook: useCadastrarRestricoes <span class="tag tag-fe">FRONTEND</span></h3>
+        <div class="card">
+          <div class="detail-row"><span class="detail-label">Arquivo:</span><span class="detail-value mono">use_cadastrar_restricoes.ts</span></div>
+          <div class="detail-row"><span class="detail-label">Linhas:</span><span class="detail-value">449</span></div>
+          <div class="detail-row"><span class="detail-label">Load:</span><span class="detail-value mono">Promise.all([ fetch auditoria resultado_json, fetch empresas org ])</span></div>
+          <div class="detail-row"><span class="detail-label">Parsing:</span><span class="detail-value mono">resultado_json.restricoes &rarr; RestricaoRaw[]</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">4.2</span> Matching de Empresas (Fuzzy)</h3>
+        <div class="card">
+          <div class="card-title">Funcao: findBestMatch(credor, empresas)</div>
+          <table>
+            <tr>
+              <th>Prioridade</th>
+              <th>Algoritmo</th>
+              <th>Threshold</th>
+              <th>Confianca</th>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">1</td>
+              <td>Match exato normalizado em <code>nome_variacoes</code></td>
+              <td>score = 1.0</td>
+              <td><span class="status-pill sp-done">Alto</span></td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">2</td>
+              <td>Fuzzy tokenSimilarity em nome/razao_social/nome_fantasia</td>
+              <td>score &ge; 0.75</td>
+              <td><span class="status-pill sp-done">Alto</span></td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">3</td>
+              <td>Fuzzy em nome_variacoes (ja confirmado antes)</td>
+              <td>score &ge; 0.6</td>
+              <td><span class="status-pill sp-done">Alto</span></td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">4</td>
+              <td>Score entre thresholds</td>
+              <td>0.45 &le; score &lt; threshold</td>
+              <td><span class="status-pill sp-pend">Medio</span></td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">5</td>
+              <td>Nenhum match encontrado</td>
+              <td>score &lt; 0.45</td>
+              <td><span class="status-pill sp-block">Nenhum</span></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="code"><span class="cm">// normalizeText: lowercase, remove acentos, remove nao-alfanumericos</span>
+<span class="kw">function</span> <span class="fn">normalizeText</span>(text: string): string[] {
+  <span class="kw">return</span> text
+    .<span class="fn">toLowerCase</span>()
+    .<span class="fn">normalize</span>(<span class="str">'NFD'</span>)
+    .<span class="fn">replace</span>(<span class="str">/[\u0300-\u036f]/g</span>, <span class="str">''</span>)
+    .<span class="fn">replace</span>(<span class="str">/[^a-z0-9\s]/g</span>, <span class="str">''</span>)
+    .<span class="fn">split</span>(<span class="str">/\s+/</span>);
+}
+
+<span class="cm">// tokenSimilarity: Jaccard-like (intersecao / max dos sets)</span>
+<span class="kw">function</span> <span class="fn">tokenSimilarity</span>(a: string[], b: string[]): number {
+  <span class="kw">const</span> setA = <span class="kw">new</span> Set(a);
+  <span class="kw">const</span> setB = <span class="kw">new</span> Set(b);
+  <span class="kw">const</span> intersection = [...setA].<span class="fn">filter</span>(x => setB.<span class="fn">has</span>(x));
+  <span class="kw">return</span> intersection.length / Math.<span class="fn">max</span>(setA.size, setB.size);
+}</div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">4.3</span> Regra Boa Vista (especial)</h3>
+        <div class="info-box warn">
+          <strong>Regra critica:</strong> Restricoes da Boa Vista recebem tratamento especial. Alem dos itens individuais (1 por credor), o sistema adiciona 1 item EXTRA agrupado com a soma de todas restricoes Boa Vista.
+        </div>
+
+        <div class="card">
+          <div class="card-title">isOrgaoBoaVista &mdash; Deteccao</div>
+          <div class="code" style="margin-bottom: 0;"><span class="kw">const</span> boaVistaKeywords = [<span class="str">'scpc/boa vista'</span>, <span class="str">'scpc'</span>, <span class="str">'boa vista'</span>, <span class="str">'boavista'</span>];
+<span class="cm">// Qualquer match case-insensitive -> true</span></div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <div class="card-title">buildRestricaoItemsComRegras</div>
+          <table>
+            <tr><th>Regra</th><th>Descricao</th></tr>
+            <tr><td>1. Individuais</td><td>TODOS os itens ficam individuais (1 por credor) &mdash; NAO agrupa</td></tr>
+            <tr>
+              <td>2. Item Extra BV</td>
+              <td>
+                Se tem restricoes Boa Vista &rarr; adiciona 1 item EXTRA agrupado:<br>
+                <code>empresa = "Boa Vista"</code> | <code>valor = SOMA total BV</code> | <code>processavel = SEMPRE true</code> | <code>tipo = 'comprador'</code>
+              </td>
+            </tr>
+            <tr><td>Exemplo</td><td>16 restricoes apifull_115 &rarr; 16 individuais + 1 Boa Vista extra = <strong>17 total</strong></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">4.4</span> Mapeamento de Tipos e Orgaos</h3>
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-title">mapTipo</div>
+            <table>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">pendencia_financeira</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">comprador</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">comprador</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">comprador</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">devedor</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">devedor</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">avalista</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">avalista</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">default</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">comprador</td></tr>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-title">mapOrgao</div>
+            <table>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">serasa</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">Serasa</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">spc</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">SPC</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">scpc/boavista/apifull_115</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">SCPC/Boa Vista</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent4);">quod</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">Quod</td></tr>
+              <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">default</td><td>&rarr;</td><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">Outro</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="info-box" style="margin-top: 12px;">
+          <strong>parseDateToISO:</strong> <code>DD/MM/YYYY</code> &rarr; <code>YYYY-MM-DD</code> &mdash; Trata datas vindas dos bureaus em formato brasileiro
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">4.5</span> Salvamento (Loop) <span class="tag tag-rpc">RPC</span></h3>
+        <div class="card">
+          <div class="card-title">Para cada item com incluir=true</div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="step-box">
+              <div class="step-icon">01</div>
+              <div class="step-content">
+                <strong>Criar empresa se necessario</strong>
+                <p>Se empresa_id e null E tem empresa_nome &rarr; INSERT nova empresa. processavel herda do item. status_aprovacao baseado em processavel.</p>
+              </div>
+            </div>
+            <div class="step-box">
+              <div class="step-icon">02</div>
+              <div class="step-content">
+                <strong>RPC fn_restricao_salvar</strong>
+                <p>SECURITY DEFINER. Recebe todos os campos da restricao e persiste atomicamente.</p>
+              </div>
+            </div>
+            <div class="step-box">
+              <div class="step-icon green">03</div>
+              <div class="step-content">
+                <strong>Auto-aprendizado nome_variacoes</strong>
+                <p>Se o usuario selecionou empresa existente MAS credor tem nome diferente &rarr; adiciona credor em empresa.nome_variacoes. Na proxima vez, o matching sera automatico.</p>
+              </div>
+            </div>
+            <div class="step-box">
+              <div class="step-icon">04</div>
+              <div class="step-content">
+                <strong>Vincular auditoria ao lead</strong>
+                <p>Apos todos salvos &rarr; UPDATE auditorias SET lead_id = leadId. Garante rastreabilidade.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box success">
+        <strong>4.6 Por que nao quebra:</strong> RPC fn_restricao_salvar usa SECURITY DEFINER (bypassa RLS). Auto-aprendizado nome_variacoes faz o sistema ficar mais inteligente a cada uso. Criacao automatica de empresa nova quando credor desconhecido. Item por item no salvamento (falha parcial nao perde tudo). Vinculacao auditoria &rarr; lead garante rastreabilidade.
+      </div>
+    </div>
+
+    <!-- SECAO 5 -->
+    <div class="section" id="s5">
+      <div class="section-header">
+        <span class="section-icon">⚖️</span>
+        <h2>Secao 5 &mdash; Etapa 4: Triagem e Conversao</h2>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">5.1</span> Frontend &mdash; ModalTriagem <span class="tag tag-fe">FRONTEND</span></h3>
+        <div class="card">
+          <div class="card-title">Pre-condicoes</div>
+          <div class="detail-row"><span class="detail-label">coluna_crm:</span><span class="detail-value mono">'triagem'</span></div>
+          <div class="detail-row"><span class="detail-label">convertido:</span><span class="detail-value mono">false</span></div>
+          <div class="detail-row"><span class="detail-label">Interface:</span><span class="detail-value">Lista restricoes com checkboxes (selecionar/opt-out) + seletor de advogado</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">5.2</span> RPC rpc_crm_aprovar_triagem <span class="tag tag-be">BACKEND</span><span class="tag tag-rpc">RPC</span></h3>
+        <div class="card">
+          <div class="card-title">Especificacao</div>
+          <div class="detail-row"><span class="detail-label">Tipo:</span><span class="detail-value"><span class="status-pill sp-done">SECURITY DEFINER</span></span></div>
+          <div class="detail-row"><span class="detail-label">Retorno:</span><span class="detail-value">JSONB envelope</span></div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <div class="card-title">Parametros</div>
+          <table>
+            <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_lead_id</td><td>UUID</td><td>Lead a converter</td></tr>
+            <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_advogado_id</td><td>UUID</td><td>Advogado responsavel</td></tr>
+            <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_restricoes_selecionadas</td><td>UUID[]</td><td>Restricoes aprovadas</td></tr>
+            <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_restricoes_optout</td><td>UUID[]</td><td>Restricoes rejeitadas</td></tr>
+            <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">p_observacoes</td><td>TEXT</td><td>Notas da triagem</td></tr>
+          </table>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <div class="card-title">Fluxo Atomico (1 transacao PostgreSQL)</div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="step-box">
+              <div class="step-icon">01</div>
+              <div class="step-content"><strong>Validar lead</strong> &mdash; Existe, nao convertido, esta em 'triagem'. Erros: ALREADY_CONVERTED, INVALID_STAGE</div>
+            </div>
+            <div class="step-box">
+              <div class="step-icon">02</div>
+              <div class="step-content"><strong>Registrar opt-outs</strong> &mdash; INSERT em clientes_empresas_optout para restricoes rejeitadas</div>
+            </div>
+            <div class="step-box">
+              <div class="step-icon">03</div>
+              <div class="step-content"><strong>Criar ou reutilizar cliente</strong> &mdash; Busca por CPF. Se encontra &rarr; atualiza advogado. Se nao &rarr; INSERT novo cliente</div>
+            </div>
+            <div class="step-box">
+              <div class="step-icon">04</div>
+              <div class="step-content"><strong>Criar processos</strong> &mdash; Para cada restricao selecionada &rarr; INSERT processo (status='rascunho', origem_dados='crm_triagem')</div>
+            </div>
+            <div class="step-box">
+              <div class="step-icon">05</div>
+              <div class="step-content"><strong>Marcar lead</strong> &mdash; convertido=true, arquivado=true, coluna_crm='arquivados'</div>
+            </div>
+            <div class="step-box">
+              <div class="step-icon">06</div>
+              <div class="step-content"><strong>Log interacao</strong> &mdash; INSERT leads_interacoes (historico de operacoes)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code"><span class="cm">// Retorno da RPC:</span>
+{
+  <span class="str">"success"</span>: <span class="kw">true</span>,
+  <span class="str">"data"</span>: {
+    <span class="str">"cliente_id"</span>: <span class="str">"uuid"</span>,
+    <span class="str">"cliente_existente"</span>: <span class="kw">false</span>,
+    <span class="str">"processos_ids"</span>: [<span class="str">"uuid1"</span>, <span class="str">"uuid2"</span>, <span class="str">"uuid3"</span>]
+  }
+}</div>
+      </div>
+
+      <div class="info-box success">
+        <strong>5.3 Por que nao quebra:</strong> Transacao atomica (tudo ou nada). ALREADY_CONVERTED previne race condition. INVALID_STAGE garante estagio correto. Reutilizacao de cliente existente por CPF. SECURITY DEFINER bypassa RLS para INSERT multi-tabela.
+      </div>
+    </div>
+
+    <!-- SECAO 6 -->
+    <div class="section" id="s6">
+      <div class="section-header">
+        <span class="section-icon">🗄️</span>
+        <h2>Secao 6 &mdash; Tabelas Envolvidas (Schema)</h2>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-title">leads</div>
+        <table class="schema-table">
+          <tr><th>Campo</th><th>Tipo</th><th>Descricao</th></tr>
+          <tr><td>id</td><td>UUID PK</td><td>gen_random_uuid()</td></tr>
+          <tr><td>organizacao_id</td><td>UUID FK NOT NULL</td><td>Tenant isolation</td></tr>
+          <tr><td>nome</td><td>TEXT NOT NULL</td><td>Nome do lead</td></tr>
+          <tr><td>cpf</td><td>TEXT</td><td>11 digitos, sem formatacao</td></tr>
+          <tr><td>whatsapp</td><td>TEXT NOT NULL</td><td>Telefone principal</td></tr>
+          <tr><td>email</td><td>TEXT</td><td>E-mail opcional</td></tr>
+          <tr><td>coluna_crm</td><td>TEXT CHECK</td><td>novos | em_atendimento | aguardando | triagem | arquivados</td></tr>
+          <tr><td>restricoes</td><td>JSONB</td><td>Cache das restricoes encontradas</td></tr>
+          <tr><td>convertido</td><td>BOOLEAN</td><td>true apos triagem aprovada</td></tr>
+          <tr><td>arquivado</td><td>BOOLEAN</td><td>true apos conversao/rejeicao</td></tr>
+          <tr><td>cliente_id</td><td>UUID FK</td><td>Vinculo pos-conversao</td></tr>
+          <tr><td>atendente_id</td><td>UUID FK</td><td>Atendente responsavel</td></tr>
+          <tr><td>advogado_id</td><td>UUID FK</td><td>Advogado responsavel</td></tr>
+          <tr><td>origem_id</td><td>UUID FK</td><td>Origem do lead</td></tr>
+          <tr><td>estado_id</td><td>UUID FK</td><td>UF do lead</td></tr>
+          <tr><td>captador_id</td><td>UUID FK</td><td>Quem captou</td></tr>
+          <tr><td>data_nascimento</td><td>DATE</td><td>Data nascimento</td></tr>
+          <tr><td>sexo</td><td>TEXT CHECK</td><td>M | F</td></tr>
+          <tr><td>observacoes</td><td>TEXT</td><td>Notas livres</td></tr>
+          <tr><td>created_by_id</td><td>UUID FK</td><td>Criador do registro</td></tr>
+          <tr><td>created_at</td><td>TIMESTAMPTZ</td><td>Auto</td></tr>
+          <tr><td>updated_at</td><td>TIMESTAMPTZ</td><td>Auto (trigger)</td></tr>
+          <tr><td>deleted_at</td><td>TIMESTAMPTZ</td><td>Soft delete</td></tr>
+        </table>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-title">auditorias</div>
+        <table class="schema-table">
+          <tr><th>Campo</th><th>Tipo</th><th>Descricao</th></tr>
+          <tr><td>id</td><td>UUID PK</td><td>gen_random_uuid()</td></tr>
+          <tr><td>organizacao_id</td><td>UUID FK NOT NULL</td><td>Tenant</td></tr>
+          <tr><td>cpf</td><td>TEXT NOT NULL</td><td>CPF consultado</td></tr>
+          <tr><td>bureau</td><td>TEXT</td><td>serasa | spc | boavista | quod | apifull_115</td></tr>
+          <tr><td>status</td><td>TEXT CHECK</td><td>pendente | processando | concluida | falha | cancelada</td></tr>
+          <tr><td>data_consulta</td><td>TIMESTAMPTZ</td><td>Quando foi consultado</td></tr>
+          <tr><td>solicitante_user_id</td><td>UUID FK</td><td>Quem solicitou</td></tr>
+          <tr><td>lead_id</td><td>UUID FK</td><td>Lead vinculado</td></tr>
+          <tr><td>restricoes_encontradas</td><td>INT</td><td>Quantidade total</td></tr>
+          <tr><td>possui_restricoes</td><td>BOOLEAN</td><td>true se encontrou alguma</td></tr>
+          <tr><td>possui_restricoes_processaveis</td><td>BOOLEAN</td><td>true se alguma e processavel</td></tr>
+          <tr><td>resultado_json</td><td>JSONB</td><td>Resposta bruta do bureau</td></tr>
+          <tr><td>erro_mensagem</td><td>TEXT</td><td>Mensagem de erro se falha</td></tr>
+        </table>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-title">restricoes</div>
+        <table class="schema-table">
+          <tr><th>Campo</th><th>Tipo</th><th>Descricao</th></tr>
+          <tr><td>id</td><td>UUID PK</td><td>gen_random_uuid()</td></tr>
+          <tr><td>organizacao_id</td><td>UUID FK NOT NULL</td><td>Tenant</td></tr>
+          <tr><td>lead_id</td><td>UUID FK</td><td>Lead origem</td></tr>
+          <tr><td>cliente_id</td><td>UUID FK</td><td>Cliente (pos-conversao)</td></tr>
+          <tr><td>empresa_id</td><td>UUID FK</td><td>Empresa credora</td></tr>
+          <tr><td>empresa_nome</td><td>TEXT</td><td>Nome credor original do bureau</td></tr>
+          <tr><td>valor</td><td>INT8</td><td>Centavos (toCentavos)</td></tr>
+          <tr><td>processavel</td><td>BOOLEAN</td><td>Se pode virar processo</td></tr>
+          <tr><td>tipo</td><td>TEXT CHECK</td><td>comprador | devedor | avalista</td></tr>
+          <tr><td>orgao_nome</td><td>TEXT</td><td>Serasa | SPC | SCPC/Boa Vista | Quod</td></tr>
+          <tr><td>data_inclusao</td><td>DATE</td><td>Data da negativacao</td></tr>
+          <tr><td>contrato</td><td>TEXT</td><td>Numero do contrato</td></tr>
+        </table>
+      </div>
+
+      <div class="grid g2">
+        <div class="card">
+          <div class="card-title">empresas</div>
+          <table class="schema-table">
+            <tr><th>Campo</th><th>Tipo</th></tr>
+            <tr><td>id</td><td>UUID PK</td></tr>
+            <tr><td>organizacao_id</td><td>UUID FK NOT NULL</td></tr>
+            <tr><td>nome</td><td>TEXT NOT NULL</td></tr>
+            <tr><td>razao_social</td><td>TEXT</td></tr>
+            <tr><td>nome_fantasia</td><td>TEXT</td></tr>
+            <tr><td>nome_variacoes</td><td>TEXT[]</td></tr>
+            <tr><td>processavel</td><td>BOOLEAN</td></tr>
+            <tr><td>status_aprovacao</td><td>TEXT CHECK</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">clientes + processos (campos-chave)</div>
+          <table class="schema-table">
+            <tr><th>Campo</th><th>Tabela</th></tr>
+            <tr><td>cpf_cnpj</td><td>clientes (dedup key)</td></tr>
+            <tr><td>lead_id</td><td>clientes (rastreio)</td></tr>
+            <tr><td>advogado_responsavel_id</td><td>clientes</td></tr>
+            <tr><td>empresa_id</td><td>processos (reu)</td></tr>
+            <tr><td>reu_nome</td><td>processos</td></tr>
+            <tr><td>valor_causa</td><td>processos (INT8 centavos)</td></tr>
+            <tr><td>status</td><td>processos (rascunho)</td></tr>
+            <tr><td>origem_dados</td><td>processos (crm_triagem)</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECAO 7 -->
+    <div class="section" id="s7">
+      <div class="section-header">
+        <span class="section-icon">🔗</span>
+        <h2>Secao 7 &mdash; Webhooks e Contratos</h2>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">7.1</span> callWebhook (src/lib/webhook.ts)</h3>
+        <div class="card">
+          <div class="card-title">Headers Enviados</div>
+          <div class="code"><span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>
+<span class="str">'mdflow'</span>: <span class="str">'MdL1501@'</span>           <span class="cm">// Auth secret</span>
+<span class="str">'x-org-id'</span>: organizacao_id     <span class="cm">// Tenant</span>
+<span class="str">'x-user-id'</span>: actor_user_id     <span class="cm">// Quem disparou</span>
+<span class="str">'x-request-id'</span>: uuid            <span class="cm">// Rastreabilidade</span></div>
+        </div>
+
+        <div class="grid g2" style="margin-top: 12px;">
+          <div class="card">
+            <div class="card-title">Envelope Request</div>
+            <div class="code">{
+  <span class="str">"request_id"</span>: <span class="str">"uuid"</span>,
+  <span class="str">"contexto"</span>: <span class="str">"pagina.acao"</span>,
+  <span class="str">"organizacao_id"</span>: <span class="str">"uuid"</span>,
+  <span class="str">"actor_user_id"</span>: <span class="str">"uuid"</span>,
+  <span class="str">"origem_rota"</span>: <span class="str">"/pagina"</span>,
+  <span class="str">"data"</span>: { ... }
+}</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Envelope Response</div>
+            <div class="code">{
+  <span class="str">"success"</span>: <span class="kw">true</span>,
+  <span class="str">"action"</span>: <span class="str">"toast_refresh"</span>,
+  <span class="str">"message"</span>: <span class="str">"Operacao OK"</span>,
+  <span class="str">"data"</span>: { ... },
+  <span class="str">"error_code"</span>: <span class="kw">null</span>
+}</div>
+          </div>
+        </div>
+
+        <div class="info-box warn" style="margin-top: 12px;">
+          <strong>Action-Driven UI (INVIOLAVEL):</strong> O frontend NUNCA decide o que fazer com o response. Sempre usa <code>switch(response.action)</code> para executar. Actions: toast_refresh | toast_error | redirect | open_modal | close_modal | show_toast | download_file | update_state | noop | webhook_triggered | append_message | refresh
+        </div>
+
+        <div class="info-box" style="margin-top: 8px;">
+          <strong>Path prefix:</strong> callWebhook auto-adiciona <code>mdflow/</code> se o path nao comeca com <code>mdflow/</code> ou <code>mdzap/</code>. Paths OlivIA sao roteados via Edge Function olivia-proxy (token server-side).
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3><span class="sub-num">7.2</span> Webhooks CRM Registrados</h3>
+        <div class="card">
+          <table>
+            <tr>
+              <th>ID</th>
+              <th>Path</th>
+              <th>Status</th>
+              <th>Descricao</th>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">WH-CRM-01</td>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">crm/consulta_restricoes</td>
+              <td><span class="status-pill sp-done">Pronto</span></td>
+              <td>Trigger reservado para consulta de restricoes</td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">WH-CRM-02</td>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">crm/followup_lote</td>
+              <td><span class="status-pill sp-pend">Pendente n8n</span></td>
+              <td>Follow-up em lote via WhatsApp</td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">WH-CRM-03</td>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">crm/converter_lead</td>
+              <td><span class="status-pill sp-done">OK</span></td>
+              <td>Conversao de lead (dutlhkA8D0f4ndco)</td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">WH-CRM-04</td>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">crm/sync_mdzap</td>
+              <td><span class="status-pill sp-pend">Pendente</span></td>
+              <td>Sincronizacao CRM - MDZap</td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">WH-CRM-05</td>
+              <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">crm/envio_whatsapp</td>
+              <td><span class="status-pill sp-block">Requer MDZap</span></td>
+              <td>Envio direto de WhatsApp via CRM</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECAO 8 -->
+    <div class="section" id="s8">
+      <div class="section-header">
+        <span class="section-icon">🛡️</span>
+        <h2>Secao 8 &mdash; Por Que Nao Quebra: Resumo Consolidado</h2>
+      </div>
+
+      <ol class="protection-list">
+        <li>Deduplicacao de leads (CPF/telefone) previne duplicatas no Kanban</li>
+        <li>Validacao CPF 11 digitos em 3 camadas (frontend, RPC, n8n) &mdash; nunca chega invalido no bureau</li>
+        <li>Transacoes atomicas PostgreSQL nas RPCs SECURITY DEFINER &mdash; tudo ou nada</li>
+        <li>Dupla estrategia Realtime + Polling para status de auditoria &mdash; se Realtime cair, polling pega</li>
+        <li>Progress bar visual para UX durante espera &mdash; usuario nao fica no escuro</li>
+        <li>Auto-aprendizado de nome_variacoes &mdash; matching melhora progressivamente com cada uso</li>
+        <li>Criacao automatica de empresa nova quando credor e desconhecido &mdash; nunca trava</li>
+        <li>fn_restricao_salvar com SECURITY DEFINER &mdash; bypassa RLS, evita problemas de permissao</li>
+        <li>Race condition protegida com ALREADY_CONVERTED &mdash; 2 atendentes nao convertem o mesmo lead</li>
+        <li>Validacao de estagio INVALID_STAGE &mdash; lead deve estar no estagio correto para avancar</li>
+        <li>Reutilizacao de cliente existente por CPF &mdash; evita duplicar clientes no sistema</li>
+        <li>Salvamento item por item nas restricoes &mdash; falha parcial nao perde itens ja salvos</li>
+        <li>Soft delete em todas as tabelas &mdash; nunca perde dados, sempre recuperavel</li>
+        <li>AbortController timeout 60s nos webhooks &mdash; nao trava indefinidamente</li>
+        <li>Envelope canonico padronizado com request_id &mdash; rastreabilidade completa de ponta a ponta</li>
+      </ol>
+    </div>
+
+    <!-- SECAO 9 -->
+    <div class="section" id="s9">
+      <div class="section-header">
+        <span class="section-icon">📱</span>
+        <h2>Secao 9 &mdash; Implicacoes para o MDZap</h2>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-title">O que pode ser reutilizado diretamente</div>
+        <table>
+          <tr>
+            <th>Componente/Hook</th>
+            <th>Reutilizavel?</th>
+            <th>Notas</th>
+          </tr>
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">rpc_disparar_auditoria</td>
+            <td><span class="status-pill sp-done">Sim, compartilhado</span></td>
+            <td>Mesmo RPC, mesma tabela auditorias</td>
+          </tr>
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">useDispararAuditoria.ts</td>
+            <td><span class="status-pill sp-done">Sim, hook compartilhado</span></td>
+            <td>Ja abstrai toda a logica de disparo</td>
+          </tr>
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">CrmAuditoriaPanel.tsx</td>
+            <td><span class="status-pill sp-done">Sim</span></td>
+            <td>Ja tem prop <code>onCadastrarClick?: (auditoriaId) => void</code> para MDZap</td>
+          </tr>
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">CadastrarRestricoesDrawer</td>
+            <td><span class="status-pill sp-done">Sim</span></td>
+            <td>Ja importado pelo CrmAuditoriaPanel</td>
+          </tr>
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">useAuditoriaStatus.ts</td>
+            <td><span class="status-pill sp-done">Sim</span></td>
+            <td>Polling + Realtime reutilizaveis</td>
+          </tr>
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">fn_restricao_salvar</td>
+            <td><span class="status-pill sp-done">Sim, RPC compartilhada</span></td>
+            <td>Mesmo fluxo de salvamento</td>
+          </tr>
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent3);">useCadastrarRestricoes.ts</td>
+            <td><span class="status-pill sp-done">Sim</span></td>
+            <td>Fuzzy matching, regras BV, tudo reaproveitavel</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-title">O que falta implementar para o MDZap</div>
+        <table>
+          <tr>
+            <th>Item</th>
+            <th>Status</th>
+            <th>Descricao</th>
+          </tr>
+          <tr>
+            <td>Fluxo triagem/conversao via MDZap</td>
+            <td><span class="status-pill sp-pend">Pendente</span></td>
+            <td>Conectar ModalTriagem ao contexto MDZap</td>
+          </tr>
+          <tr>
+            <td>Garantir lead_id no disparo</td>
+            <td><span class="status-pill sp-block">Critico</span></td>
+            <td>MDZap DEVE enviar lead_id ao disparar auditoria &mdash; sem isso a vinculacao quebra</td>
+          </tr>
+          <tr>
+            <td>WH-CRM-04: crm/sync_mdzap</td>
+            <td><span class="status-pill sp-pend">Pendente n8n</span></td>
+            <td>Sincronizar estado do lead entre CRM e MDZap</td>
+          </tr>
+          <tr>
+            <td>WH-CRM-05: crm/envio_whatsapp</td>
+            <td><span class="status-pill sp-block">Requer MDZap</span></td>
+            <td>Enviar WhatsApp direto do CRM via MDZap</td>
+          </tr>
+          <tr>
+            <td>Criacao de lead via mensagem WhatsApp</td>
+            <td><span class="status-pill sp-run">Em andamento</span></td>
+            <td>MDZAP-LEADS-100: modo projeto, criar lead automaticamente ao receber mensagem</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="info-box danger">
+        <strong>ATENCAO CRITICA:</strong> O MDZap DEVE garantir que <code>lead_id</code> seja enviado no disparo da auditoria. Sem esse vinculo, restricoes ficam orfas e a triagem/conversao nao funciona. O fluxo e: MDZap cria/encontra lead &rarr; obtam lead_id &rarr; dispara auditoria com lead_id &rarr; restricoes vinculam ao lead automaticamente.
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">Fluxo proposto MDZap</div>
+        <div class="flow-diagram">
+          <div class="flow-step" style="border-color: var(--accent4);">
+            <div class="step-num">MDZap</div>
+            <div class="step-title">Mensagem WA</div>
+            <div class="step-sub">Lead criado/encontrado</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">
+            <div class="step-num">Compartilhado</div>
+            <div class="step-title">Auditoria CPF</div>
+            <div class="step-sub">useDispararAuditoria</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">
+            <div class="step-num">Compartilhado</div>
+            <div class="step-title">Restricoes</div>
+            <div class="step-sub">CadastrarRestricoesDrawer</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step" style="border-color: var(--accent3);">
+            <div class="step-num">Adaptar</div>
+            <div class="step-title">Triagem</div>
+            <div class="step-sub">Via MDZap ou CRM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      🐙 Jarbas 2.0 &mdash; MdLab LegalTech &middot; 2026-04-13
+    </div>
+  </main>
+</div>
+
+<script>
+(function() {
+  var sections = document.querySelectorAll('.section, .hero');
+  var navLinks = document.querySelectorAll('.sidebar nav a');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        navLinks.forEach(function(link) {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(function(s) { observer.observe(s); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap v2 — Break de Tarefas</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface2: #1e2236;
+    --border: #2a2f4a;
+    --accent: #7c6dff;
+    --accent2: #5a4ecc;
+    --green: #20c997;
+    --red: #ef4444;
+    --orange: #f97316;
+    --yellow: #eab308;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --text: #e8eaf6;
+    --muted: #6b7280;
+    --card-bg: #12142060;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.5; padding: 24px; }
+  h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  h2 { font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
+  h3 { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+  .header-meta { font-size: 12px; color: var(--muted); }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-p0 { background: #ef444420; color: #ef4444; border: 1px solid #ef444440; }
+  .badge-p1 { background: #f9731620; color: #f97316; border: 1px solid #f9731640; }
+  .badge-p2 { background: #eab30820; color: #eab308; border: 1px solid #eab30840; }
+  .badge-p3 { background: #6b728020; color: #9ca3af; border: 1px solid #6b728040; }
+  .badge-backend { background: #3b82f620; color: #3b82f6; border: 1px solid #3b82f640; }
+  .badge-n8n { background: #a855f720; color: #a855f7; border: 1px solid #a855f740; }
+  .badge-frontend { background: #20c99720; color: #20c997; border: 1px solid #20c99740; }
+  .badge-polish { background: #ec489920; color: #ec4899; border: 1px solid #ec489940; }
+  .badge-s { background: #22c55e20; color: #22c55e; font-size: 10px; }
+  .badge-m { background: #f9731620; color: #f97316; font-size: 10px; }
+  .badge-l { background: #ef444420; color: #ef4444; font-size: 10px; }
+
+  /* Stat cards */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .stat-val { font-size: 26px; font-weight: 700; color: #fff; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Terminals info */
+  .terminals-box { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 20px 24px; margin-bottom: 28px; }
+  .terminals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+  .terminal-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+  .terminal-num { font-size: 28px; font-weight: 800; color: var(--accent); }
+  .terminal-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .terminal-tasks { font-size: 12px; color: var(--text); margin-top: 8px; }
+
+  /* Waves */
+  .waves-section { margin-bottom: 28px; }
+  .wave-row { display: grid; grid-template-columns: 100px 1fr; gap: 16px; align-items: start; margin-bottom: 10px; }
+  .wave-label { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px; text-align: center; font-size: 11px; font-weight: 700; color: var(--accent); }
+  .wave-tasks { display: flex; flex-wrap: wrap; gap: 8px; }
+  .wave-task-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: var(--text); }
+
+  /* Task table */
+  .section { margin-bottom: 32px; }
+  .task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+  .task-header { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; cursor: pointer; }
+  .task-id { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--accent); }
+  .task-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .task-badges { display: flex; gap: 6px; align-items: center; }
+  .task-body { padding: 0 16px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .task-desc { font-size: 12px; color: var(--muted); grid-column: 1 / -1; padding-top: 4px; border-top: 1px solid var(--border); padding-top: 10px; }
+
+  /* Commands — the star */
+  .cmd-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; grid-column: 1 / -1; margin-top: 4px; }
+  .cmd-box { background: #0a0c14; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
+  .cmd-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .cmd-label.plan { color: var(--blue); }
+  .cmd-label.execute { color: var(--green); }
+  .cmd-text { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #e8eaf6; word-break: break-all; }
+  .cmd-text::selection { background: var(--accent); }
+  .copy-btn { display: inline-block; margin-top: 6px; padding: 3px 8px; font-size: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--muted); font-family: inherit; transition: all 0.15s; }
+  .copy-btn:hover { background: var(--accent2); color: #fff; border-color: var(--accent); }
+
+  .dep-info { font-size: 11px; color: var(--muted); }
+  .dep-info span { color: var(--accent); font-weight: 600; }
+
+  .wave-badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #7c6dff20; color: var(--accent); }
+
+  /* Category headers */
+  .cat-header { display: flex; align-items: center; gap: 10px; margin: 24px 0 14px; }
+  .cat-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* P0 highlight */
+  .task-card.p0 { border-color: #ef444440; }
+  .task-card.p1 { border-color: #f9731620; }
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  @media (max-width: 768px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .terminals-grid { grid-template-columns: repeat(2, 1fr); }
+    .cmd-pair { grid-template-columns: 1fr; }
+    .task-body { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>MdZap Evolução v2</h1>
+    <div class="header-meta">Break gerado em 2026-04-07 · /projeto mdzap break</div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-val">22</div>
+    <div class="stat-label">Tarefas totais</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#ef4444">5</div>
+    <div class="stat-label">P0 críticas</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#20c997">4</div>
+    <div class="stat-label">Waves de execução</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#7c6dff">4</div>
+    <div class="stat-label">Terminais em paralelo</div>
+  </div>
+</div>
+
+<!-- Terminals -->
+<div class="terminals-box">
+  <h2>Quantos terminais usar</h2>
+  <p style="color:var(--muted);font-size:13px;">Use <strong style="color:#fff">4 terminais em paralelo</strong> na Wave 1. Cada terminal trabalha em uma camada independente. Wave 2 em diante: máximo 3 paralelos.</p>
+  <div class="terminals-grid">
+    <div class="terminal-card">
+      <div class="terminal-num">1</div>
+      <div class="terminal-label" style="color:#3b82f6">Terminal Backend</div>
+      <div class="terminal-tasks">T01 → T02 → T03</div>
+    </div>
+    <div class="terminal-card">
+      <div class="terminal-num">2</div>
+      <div class="terminal-label" style="color:#a855f7">Terminal n8n</div>
+      <div class="terminal-tasks">T07 → T04 → T05 → T06</div>
+    </div>
+    <div class="terminal-card">
+      <div class="terminal-num">3</div>
+      <div class="terminal-label" style="color:#20c997">Terminal Front A</div>
+      <div class="terminal-tasks">T08 → T09 → T11 → T12</div>
+    </div>
+    <div class="terminal-card">
+      <div class="terminal-num">4</div>
+      <div class="terminal-label" style="color:#ec4899">Terminal Front B</div>
+      <div class="terminal-tasks">T15 → T16 → T21 → T10 → T13 → T14</div>
+    </div>
+  </div>
+</div>
+
+<!-- Waves -->
+<div class="waves-section">
+  <h2>Ordem de execução por waves</h2>
+  <div style="margin-top:14px">
+
+    <div class="wave-row">
+      <div class="wave-label">Wave 1<br><span style="color:var(--muted);font-weight:400;font-size:10px">SEM DEPS<br>9 tarefas</span></div>
+      <div class="wave-tasks">
+        <span class="wave-task-chip" style="border-color:#ef444440;color:#ef4444">T01 Migrations P0 🔴</span>
+        <span class="wave-task-chip" style="border-color:#3b82f640">T02 Migration ICP</span>
+        <span class="wave-task-chip" style="border-color:#ef444440;color:#ef4444">T03 Edge Func Mídia 🔴</span>
+        <span class="wave-task-chip" style="border-color:#a855f740">T07 Doc Reader Sonnet</span>
+        <span class="wave-task-chip">T08 Fix Overflow</span>
+        <span class="wave-task-chip">T09 Tabs 2 linhas</span>
+        <span class="wave-task-chip">T15 Badge CRM</span>
+        <span class="wave-task-chip">T16 Bulk Actions</span>
+        <span class="wave-task-chip">T21 Fix Restrições</span>
+      </div>
+    </div>
+
+    <div class="wave-row" style="margin-top:8px">
+      <div class="wave-label">Wave 2<br><span style="color:var(--muted);font-weight:400;font-size:10px">DEPS T01+T07<br>7 tarefas</span></div>
+      <div class="wave-tasks">
+        <span class="wave-task-chip" style="border-color:#ef444440;color:#ef4444">T04 Assumir/Devolver 🔴</span>
+        <span class="wave-task-chip">T05 Webhook Memória</span>
+        <span class="wave-task-chip">T06 Webhook ICP</span>
+        <span class="wave-task-chip" style="border-color:#ef444440;color:#ef4444">T10 UI Mídia Fix 🔴</span>
+        <span class="wave-task-chip">T17 Doc Reader Dados</span>
+        <span class="wave-task-chip">T18 pending_lead_data</span>
+        <span class="wave-task-chip">T19 Fluxo CTPS</span>
+      </div>
+    </div>
+
+    <div class="wave-row" style="margin-top:8px">
+      <div class="wave-label">Wave 3<br><span style="color:var(--muted);font-weight:400;font-size:10px">DEPS T04+T09<br>5 tarefas</span></div>
+      <div class="wave-tasks">
+        <span class="wave-task-chip">T11 LeadDadosTab</span>
+        <span class="wave-task-chip">T12 Aba Restrições</span>
+        <span class="wave-task-chip">T13 Aba Documentos</span>
+        <span class="wave-task-chip">T14 Aba Memória</span>
+        <span class="wave-task-chip">T20 ICP Tab</span>
+      </div>
+    </div>
+
+    <div class="wave-row" style="margin-top:8px">
+      <div class="wave-label">Wave 4<br><span style="color:var(--muted);font-weight:400;font-size:10px">DEPS T11-T14<br>1 tarefa</span></div>
+      <div class="wave-tasks">
+        <span class="wave-task-chip" style="border-color:#ec489940;color:#ec4899">T22 Polish/Responsividade</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Tasks with commands -->
+<div class="section">
+  <h2>Tarefas — comandos prontos para copiar</h2>
+
+  <!-- BACKEND -->
+  <div class="cat-header">
+    <span class="badge badge-backend">Backend</span>
+    <div class="cat-line"></div>
+    <span style="font-size:11px;color:var(--muted)">3 tarefas</span>
+  </div>
+
+  <!-- T01 -->
+  <div class="task-card p0">
+    <div class="task-header">
+      <div class="task-id">T01</div>
+      <div>
+        <div class="task-title">Migrations P0: deleted_at + updated_at + sync trigger</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">M-01 · M-02 · M-03 · Wave 1</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p0">P0</span>
+        <span class="badge badge-s">S</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma — pode começar agora</span> · Desbloqueia: <span>T04, T05</span></div>
+      <div class="dep-info">Skill: <span>mdflow-migration</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t01-plan">/projeto mdzap plan T01</div>
+          <button class="copy-btn" onclick="copy('cmd-t01-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t01-exec">/projeto mdzap execute T01</div>
+          <button class="copy-btn" onclick="copy('cmd-t01-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">ADD deleted_at em whatsapp_templates + índice. ADD updated_at em leads_atividades + trigger. CREATE FUNCTION sync_awaiting_human + trigger em leads (sincroniza awaiting_human ↔ aguardando_humano).</div>
+    </div>
+  </div>
+
+  <!-- T02 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T02</div>
+      <div>
+        <div class="task-title">Migration mdzap_icp_analises — nova tabela ICP</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">M-04 · Wave 1</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-s">S</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma — pode começar agora</span> · Desbloqueia: <span>T06</span></div>
+      <div class="dep-info">Skill: <span>mdflow-migration</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t02-plan">/projeto mdzap plan T02</div>
+          <button class="copy-btn" onclick="copy('cmd-t02-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t02-exec">/projeto mdzap execute T02</div>
+          <button class="copy-btn" onclick="copy('cmd-t02-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">CREATE TABLE mdzap_icp_analises: organizacao_id, data_analise DATE, periodo TEXT CHECK (daily|weekly), resultado JSONB, soft delete, RLS tenant_isolation, índice, trigger updated_at.</div>
+    </div>
+  </div>
+
+  <!-- T03 -->
+  <div class="task-card p0">
+    <div class="task-header">
+      <div class="task-id">T03</div>
+      <div>
+        <div class="task-title">Edge Function: fix mídia expirada — bucket policy + download retry</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-01 (backend) · Wave 1</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p0">P0</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma — pode começar agora</span> · Desbloqueia: <span>T10</span></div>
+      <div class="dep-info">Arquivo: <span>supabase/functions/mdzap-webhook/index.ts</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t03-plan">/projeto mdzap plan T03</div>
+          <button class="copy-btn" onclick="copy('cmd-t03-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t03-exec">/projeto mdzap execute T03</div>
+          <button class="copy-btn" onclick="copy('cmd-t03-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Fix download de mídia WhatsApp na Edge Function: bucket policy pública ou signed URLs. Adicionar retry automático ao receber 404. Salvar mídia com path correto no Storage.</div>
+    </div>
+  </div>
+
+  <!-- N8N -->
+  <div class="cat-header">
+    <span class="badge badge-n8n">n8n</span>
+    <div class="cat-line"></div>
+    <span style="font-size:11px;color:var(--muted)">4 tarefas</span>
+  </div>
+
+  <!-- T07 -->
+  <div class="task-card p1">
+    <div class="task-header">
+      <div class="task-id">T07</div>
+      <div>
+        <div class="task-title">Doc Reader: migrar Sonnet + super prompt v2 + score confiança</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-12 · Wave 1 (primeiro do n8n)</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p1">P1</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma — pode começar agora</span> · Desbloqueia: <span>T17, T18, T19</span></div>
+      <div class="dep-info">Skill: <span>mdflow-n8n</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t07-plan">/projeto mdzap plan T07</div>
+          <button class="copy-btn" onclick="copy('cmd-t07-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t07-exec">/projeto mdzap execute T07</div>
+          <button class="copy-btn" onclick="copy('cmd-t07-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Trocar claude-haiku por claude-sonnet-4-6 no workflow Doc Reader. Implementar super prompt v2 com schema por tipo (CNH/comprovante/CTPS). Campo confidence {campo: ALTO|MÉDIO|BAIXO} na saída.</div>
+    </div>
+  </div>
+
+  <!-- T04 -->
+  <div class="task-card p0">
+    <div class="task-header">
+      <div class="task-id">T04</div>
+      <div>
+        <div class="task-title">Webhook Assumir/Devolver Julia — completo + contexto</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-02 · Wave 2</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p0">P0</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W2</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T01</span> · Desbloqueia: <span>T11</span></div>
+      <div class="dep-info">Skill: <span>mdflow-n8n</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t04-plan">/projeto mdzap plan T04</div>
+          <button class="copy-btn" onclick="copy('cmd-t04-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t04-exec">/projeto mdzap execute T04</div>
+          <button class="copy-btn" onclick="copy('cmd-t04-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">2 webhooks n8n: mdzap/assumir-conversa (SET awaiting_human=true + log leads_atividades) e mdzap/devolver-julia (SET awaiting_human=false + contexto resumo). Envelope canônico. Action: toast_refresh.</div>
+    </div>
+  </div>
+
+  <!-- T05 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T05</div>
+      <div>
+        <div class="task-title">Webhook Memória — trigger + refetch</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-08 · Wave 2</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W2</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T01</span> · Desbloqueia: <span>T14</span></div>
+      <div class="dep-info">Skill: <span>mdflow-n8n</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t05-plan">/projeto mdzap plan T05</div>
+          <button class="copy-btn" onclick="copy('cmd-t05-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t05-exec">/projeto mdzap execute T05</div>
+          <button class="copy-btn" onclick="copy('cmd-t05-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Webhook mdzap/memoria: recebe lead_id + conversa_id → Sonnet extrai stage/score/interesses/objeções/notas → UPDATE whatsapp_conversas.metadata.memoria → action toast_refresh.</div>
+    </div>
+  </div>
+
+  <!-- T06 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T06</div>
+      <div>
+        <div class="task-title">Webhook ICP Análise — cron 19h + trigger manual</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-16 · Wave 2</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W2</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T02</span> · Desbloqueia: <span>T20</span></div>
+      <div class="dep-info">Skill: <span>mdflow-n8n</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t06-plan">/projeto mdzap plan T06</div>
+          <button class="copy-btn" onclick="copy('cmd-t06-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t06-exec">/projeto mdzap execute T06</div>
+          <button class="copy-btn" onclick="copy('cmd-t06-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Webhook mdzap/icp-analise (trigger manual) + cron 19h: busca leads qualificados → Sonnet análise ICP → INSERT mdzap_icp_analises com period: daily|weekly.</div>
+    </div>
+  </div>
+
+  <!-- FRONTEND -->
+  <div class="cat-header">
+    <span class="badge badge-frontend">Frontend</span>
+    <div class="cat-line"></div>
+    <span style="font-size:11px;color:var(--muted)">14 tarefas</span>
+  </div>
+
+  <!-- T08 -->
+  <div class="task-card p1">
+    <div class="task-header">
+      <div class="task-id">T08</div>
+      <div>
+        <div class="task-title">Fix overflow/clipping drawer</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-05 · Wave 1</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p1">P1</span>
+        <span class="badge badge-s">S</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma — pode começar agora</span></div>
+      <div class="dep-info">Arquivo: <span>MdzapLeadPanel.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t08-plan">/projeto mdzap plan T08</div>
+          <button class="copy-btn" onclick="copy('cmd-t08-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t08-exec">/projeto mdzap execute T08</div>
+          <button class="copy-btn" onclick="copy('cmd-t08-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Corrigir overflow/clipping no drawer MdzapLeadPanel: overflow-y, z-index, max-height, padding interno. Garantir scroll sem clip de conteúdo.</div>
+    </div>
+  </div>
+
+  <!-- T09 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T09</div>
+      <div>
+        <div class="task-title">Tabs drawer 2 linhas + remover aba Sentimento</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-03 + E-09 · Wave 1</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-s">S</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma</span> · Desbloqueia: <span>T11, T12, T13, T14</span></div>
+      <div class="dep-info">Arquivos: <span>MdzapLeadPanel.tsx · LeadSentimentoTab.tsx (deletar)</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t09-plan">/projeto mdzap plan T09</div>
+          <button class="copy-btn" onclick="copy('cmd-t09-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t09-exec">/projeto mdzap execute T09</div>
+          <button class="copy-btn" onclick="copy('cmd-t09-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Linha 1: [Dados|Restrições|Docs|Notas] · Linha 2: [Histórico|Memória]. DELETAR LeadSentimentoTab.tsx + remover import/referência.</div>
+    </div>
+  </div>
+
+  <!-- T10 -->
+  <div class="task-card p0">
+    <div class="task-header">
+      <div class="task-id">T10</div>
+      <div>
+        <div class="task-title">Fix mídia expirada UI — botão Recarregar + retry</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-01 (UI) · Wave 2</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p0">P0</span>
+        <span class="badge badge-s">S</span>
+        <span class="wave-badge">W2</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T03</span></div>
+      <div class="dep-info">Arquivo: <span>MdzapMsgBubble.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t10-plan">/projeto mdzap plan T10</div>
+          <button class="copy-btn" onclick="copy('cmd-t10-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t10-exec">/projeto mdzap execute T10</div>
+          <button class="copy-btn" onclick="copy('cmd-t10-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">MdzapMsgBubble: 404/expirado → botão "Recarregar" no lugar de "Expirado". Ao clicar → chamar Edge Function re-download + refetch URL.</div>
+    </div>
+  </div>
+
+  <!-- T11 -->
+  <div class="task-card p1">
+    <div class="task-header">
+      <div class="task-id">T11</div>
+      <div>
+        <div class="task-title">LeadDadosTab: campos completos + RG + Assumir/Devolver</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-04 · Wave 3</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p1">P1</span>
+        <span class="badge badge-l">L</span>
+        <span class="wave-badge">W3</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T04 + T09</span> · Desbloqueia: <span>T22</span></div>
+      <div class="dep-info">Arquivos: <span>LeadDadosTab.tsx · FormPessoais.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t11-plan">/projeto mdzap plan T11</div>
+          <button class="copy-btn" onclick="copy('cmd-t11-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t11-exec">/projeto mdzap execute T11</div>
+          <button class="copy-btn" onclick="copy('cmd-t11-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Largura 320px. Campo RG opcional abaixo CPF. Campos completos por spec. Dropdown coluna_crm. Botões Assumir/Devolver chamando webhooks T04. FormPessoais: ADD campo RG.</div>
+    </div>
+  </div>
+
+  <!-- T12 -->
+  <div class="task-card p1">
+    <div class="task-header">
+      <div class="task-id">T12</div>
+      <div>
+        <div class="task-title">Aba Restrições: auditoria + cadastro + regra Boa Vista</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-06 · Wave 3</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p1">P1</span>
+        <span class="badge badge-l">L</span>
+        <span class="wave-badge">W3</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T09</span> · Desbloqueia: <span>T22</span></div>
+      <div class="dep-info">Arquivos: <span>LeadRestricoesMdzapTab.tsx · CrmAuditoriaPanel.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t12-plan">/projeto mdzap plan T12</div>
+          <button class="copy-btn" onclick="copy('cmd-t12-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t12-exec">/projeto mdzap execute T12</div>
+          <button class="copy-btn" onclick="copy('cmd-t12-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Integrar CrmAuditoriaPanel + formulário cadastro. Regra Boa Vista: soma não processáveis → badge warning amarelo. Botão auditar → nova guia PDF.</div>
+    </div>
+  </div>
+
+  <!-- T13 -->
+  <div class="task-card p1">
+    <div class="task-header">
+      <div class="task-id">T13</div>
+      <div>
+        <div class="task-title">Aba Documentos: PDF automático + auditoria nova guia</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-07 · Wave 3</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p1">P1</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W3</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T09</span> · Desbloqueia: <span>T22</span></div>
+      <div class="dep-info">Arquivo: <span>LeadDocumentosTab.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t13-plan">/projeto mdzap plan T13</div>
+          <button class="copy-btn" onclick="copy('cmd-t13-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t13-exec">/projeto mdzap execute T13</div>
+          <button class="copy-btn" onclick="copy('cmd-t13-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Botão "Auditar PDF" → nova guia ANTES do cadastro (não bloqueante). PDF automático Doc Reader inserido automaticamente. Badge confiança por documento.</div>
+    </div>
+  </div>
+
+  <!-- T14 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T14</div>
+      <div>
+        <div class="task-title">Aba Memória: layout completo + botão Rodar Agora</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-08 · Wave 3</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W3</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T05 + T09</span> · Desbloqueia: <span>T22</span></div>
+      <div class="dep-info">Arquivo: <span>LeadMemoriaTab.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t14-plan">/projeto mdzap plan T14</div>
+          <button class="copy-btn" onclick="copy('cmd-t14-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t14-exec">/projeto mdzap execute T14</div>
+          <button class="copy-btn" onclick="copy('cmd-t14-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">5 seções: Stage, Score, Interesses, Objeções, Notas. Botão "Rodar Agora" → webhook T05 → refetch. Loading durante processamento. Empty state quando sem memória.</div>
+    </div>
+  </div>
+
+  <!-- T15 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T15</div>
+      <div>
+        <div class="task-title">Badge CRM header + dropdown mover lead</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-11 · Wave 1</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma</span></div>
+      <div class="dep-info">Arquivo: <span>MdzapThreadHeader.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t15-plan">/projeto mdzap plan T15</div>
+          <button class="copy-btn" onclick="copy('cmd-t15-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t15-exec">/projeto mdzap execute T15</div>
+          <button class="copy-btn" onclick="copy('cmd-t15-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Badge visual com label + cor da coluna_crm. Dropdown para mover lead (UPDATE leads.coluna_crm + INSERT leads_atividades). Ocultar badge se sem coluna_crm.</div>
+    </div>
+  </div>
+
+  <!-- T16 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T16</div>
+      <div>
+        <div class="task-title">Bulk actions: transferir responsável + marcar não lidas</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-10 · Wave 1</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma</span></div>
+      <div class="dep-info">Arquivo: <span>MdzapConversaList.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t16-plan">/projeto mdzap plan T16</div>
+          <button class="copy-btn" onclick="copy('cmd-t16-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t16-exec">/projeto mdzap execute T16</div>
+          <button class="copy-btn" onclick="copy('cmd-t16-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Checkbox multi-seleção. Barra bulk (visível quando >0): transferir responsável (dropdown usuários) + marcar não lida (UPDATE nao_lidas).</div>
+    </div>
+  </div>
+
+  <!-- T17 -->
+  <div class="task-card p1">
+    <div class="task-header">
+      <div class="task-id">T17</div>
+      <div>
+        <div class="task-title">Doc Reader frontend: update aba Dados + badges + conflitos</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-13 · Wave 2</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p1">P1</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W2</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T07</span></div>
+      <div class="dep-info">Arquivos: <span>LeadDadosTab.tsx · LeadDocumentosTab.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t17-plan">/projeto mdzap plan T17</div>
+          <button class="copy-btn" onclick="copy('cmd-t17-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t17-exec">/projeto mdzap execute T17</div>
+          <button class="copy-btn" onclick="copy('cmd-t17-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Após Doc Reader: atualizar aba Dados automaticamente. Badge ALTO/MÉDIO/BAIXO ao lado de cada campo preenchido. Alert de conflito se dado difere do existente.</div>
+    </div>
+  </div>
+
+  <!-- T18 -->
+  <div class="task-card p1">
+    <div class="task-header">
+      <div class="task-id">T18</div>
+      <div>
+        <div class="task-title">pending_lead_data: pre-fill formulário cadastro</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-14 · Wave 2</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p1">P1</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W2</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T07</span></div>
+      <div class="dep-info">Arquivos: <span>LeadDadosTab.tsx · useMdzapLeadPanel.ts</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t18-plan">/projeto mdzap plan T18</div>
+          <button class="copy-btn" onclick="copy('cmd-t18-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t18-exec">/projeto mdzap execute T18</div>
+          <button class="copy-btn" onclick="copy('cmd-t18-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Doc Reader salva em whatsapp_conversas.metadata.pending_lead_data. Formulário cadastro lê e pré-preenche campos. Dados editáveis antes de confirmar.</div>
+    </div>
+  </div>
+
+  <!-- T19 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T19</div>
+      <div>
+        <div class="task-title">Fluxo CTPS: contrato aberto vs fechado</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-15 · Wave 2</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-m">M</span>
+        <span class="wave-badge">W2</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T07</span></div>
+      <div class="dep-info">Arquivo: <span>LeadDadosTab.tsx</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t19-plan">/projeto mdzap plan T19</div>
+          <button class="copy-btn" onclick="copy('cmd-t19-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t19-exec">/projeto mdzap execute T19</div>
+          <button class="copy-btn" onclick="copy('cmd-t19-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Aberto → último vínculo ativo → UPDATE leads.profissao. Fechado → último registrado → UPDATE. UI mostra status contrato + datas.</div>
+    </div>
+  </div>
+
+  <!-- T20 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T20</div>
+      <div>
+        <div class="task-title">ICP/Telemetria: MdzapIcpTab + useMdzapIcp hook</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-16 · Wave 3</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p2">P2</span>
+        <span class="badge badge-l">L</span>
+        <span class="wave-badge">W3</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T06</span></div>
+      <div class="dep-info">Arquivos: <span>MdzapIcpTab.tsx (novo) · useMdzapIcp.ts (novo)</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t20-plan">/projeto mdzap plan T20</div>
+          <button class="copy-btn" onclick="copy('cmd-t20-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t20-exec">/projeto mdzap execute T20</div>
+          <button class="copy-btn" onclick="copy('cmd-t20-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Tab ICP exclusiva (por organização, não por lead): análise mais recente de mdzap_icp_analises. Botão "Rodar Agora" → T06. Gráficos Recharts. Hook useMdzapIcp com fetch paginado.</div>
+    </div>
+  </div>
+
+  <!-- T21 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T21</div>
+      <div>
+        <div class="task-title">Fix cadastro automático: valores restrições errados</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">E-17 · Wave 1</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p3">P3</span>
+        <span class="badge badge-s">S</span>
+        <span class="wave-badge">W1</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>nenhuma</span></div>
+      <div class="dep-info">Arquivo: <span>src/pages/mdzap/ (investigar)</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t21-plan">/projeto mdzap plan T21</div>
+          <button class="copy-btn" onclick="copy('cmd-t21-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t21-exec">/projeto mdzap execute T21</div>
+          <button class="copy-btn" onclick="copy('cmd-t21-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Investigar valores errados nas restrições durante cadastro automático Doc Reader. Verificar mapeamento de campos e validação antes do INSERT.</div>
+    </div>
+  </div>
+
+  <!-- POLISH -->
+  <div class="cat-header">
+    <span class="badge badge-polish">Polish</span>
+    <div class="cat-line"></div>
+    <span style="font-size:11px;color:var(--muted)">1 tarefa</span>
+  </div>
+
+  <!-- T22 -->
+  <div class="task-card">
+    <div class="task-header">
+      <div class="task-id">T22</div>
+      <div>
+        <div class="task-title">Loading/empty states gerais + responsividade 375-1440px</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">Wave 4 — última</div>
+      </div>
+      <div class="task-badges">
+        <span class="badge badge-p3">P3</span>
+        <span class="badge badge-s">S</span>
+        <span class="wave-badge">W4</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="dep-info">Deps: <span>T11 + T12 + T13 + T14 — aguardar Wave 3 concluir</span></div>
+      <div class="dep-info">Arquivos: <span>src/pages/mdzap/ (revisão geral)</span></div>
+      <div class="cmd-pair">
+        <div class="cmd-box">
+          <div class="cmd-label plan">1. Planejar</div>
+          <div class="cmd-text" id="cmd-t22-plan">/projeto mdzap plan T22</div>
+          <button class="copy-btn" onclick="copy('cmd-t22-plan', this)">Copiar</button>
+        </div>
+        <div class="cmd-box">
+          <div class="cmd-label execute">2. Executar</div>
+          <div class="cmd-text" id="cmd-t22-exec">/projeto mdzap execute T22</div>
+          <button class="copy-btn" onclick="copy('cmd-t22-exec', this)">Copiar</button>
+        </div>
+      </div>
+      <div class="task-desc">Loading skeletons em todas as abas do drawer. Empty states com ícone + mensagem. Responsividade 375px/640px/1024px/1440px. Touch targets 44px mobile.</div>
+    </div>
+  </div>
+
+</div>
+
+<div style="border-top:1px solid var(--border);padding-top:16px;color:var(--muted);font-size:11px;text-align:center">
+  MdZap v2 — 22 tarefas · 4 waves · 4 terminais paralelos · Gerado 2026-04-07
+</div>
+
+<script>
+function copy(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copiado!';
+    btn.style.color = '#20c997';
+    btn.style.borderColor = '#20c997';
+    setTimeout(() => {
+      btn.textContent = 'Copiar';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 1500);
+  });
+}
+</script>
+
+</body>
+</html>

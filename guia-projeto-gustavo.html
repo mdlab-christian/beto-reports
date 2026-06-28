@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia /projeto — Beto CC</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface2: #1e2235;
+    --surface3: #252a40;
+    --border: #2a2f4a;
+    --accent: #7c6dff;
+    --accent2: #ff6b6b;
+    --accent3: #4fffb0;
+    --accent4: #ffd166;
+    --accent5: #5bc4f5;
+    --text: #e8eaf6;
+    --text-muted: #7a82a8;
+    --font: 'Segoe UI', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0d0f18 0%, #12152a 50%, #0d0f18 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 40px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(ellipse, rgba(124,109,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(124,109,255,0.15);
+    border: 1px solid rgba(124,109,255,0.35);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--accent), var(--accent5));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 18px;
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* PIPELINE VISUAL */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 40px 24px;
+    flex-wrap: wrap;
+  }
+
+  .pipeline-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 28px;
+    text-align: center;
+    min-width: 160px;
+    position: relative;
+  }
+
+  .pipeline-step.active { border-color: var(--accent); }
+
+  .pipeline-step .step-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .pipeline-step .step-cmd {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .pipeline-step .step-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .pipeline-arrow {
+    color: var(--border);
+    font-size: 22px;
+    padding: 0 8px;
+    font-weight: 300;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 20px 0 40px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .section-icon.purple { background: rgba(124,109,255,0.15); }
+  .section-icon.green  { background: rgba(79,255,176,0.12); }
+  .section-icon.yellow { background: rgba(255,209,102,0.12); }
+  .section-icon.blue   { background: rgba(91,196,245,0.12); }
+  .section-icon.red    { background: rgba(255,107,107,0.12); }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    margin-top: 24px;
+  }
+
+  p {
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cmd-badge {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: rgba(124,109,255,0.2);
+    border: 1px solid rgba(124,109,255,0.4);
+    color: var(--accent);
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  /* COMMAND CARDS */
+  .cmd-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .cmd-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cmd-number {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .num-1 { background: rgba(124,109,255,0.2); color: var(--accent); }
+  .num-2 { background: rgba(91,196,245,0.15); color: var(--accent5); }
+  .num-3 { background: rgba(255,209,102,0.15); color: var(--accent4); }
+  .num-4 { background: rgba(79,255,176,0.12); color: var(--accent3); }
+
+  .cmd-card-header-text { flex: 1; }
+
+  .cmd-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .cmd-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .cmd-card-body {
+    padding: 20px 24px;
+  }
+
+  /* CODE */
+  code, .mono {
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 12px 0;
+    overflow-x: auto;
+  }
+
+  .code-block code {
+    color: var(--accent3);
+    display: block;
+    line-height: 1.8;
+    white-space: pre;
+  }
+
+  .code-block .comment { color: var(--text-muted); }
+  .code-block .cmd { color: var(--accent); }
+  .code-block .str { color: var(--accent4); }
+  .code-block .kw { color: var(--accent5); }
+
+  /* INLINE CODE */
+  .inline-code {
+    font-family: var(--mono);
+    background: rgba(124,109,255,0.12);
+    border: 1px solid rgba(124,109,255,0.2);
+    color: var(--accent);
+    padding: 1px 7px;
+    border-radius: 5px;
+    font-size: 13px;
+  }
+
+  /* STEPS */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 12px 0;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .step-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-dot.purple { background: rgba(124,109,255,0.2); color: var(--accent); }
+  .step-dot.blue   { background: rgba(91,196,245,0.15); color: var(--accent5); }
+  .step-dot.yellow { background: rgba(255,209,102,0.15); color: var(--accent4); }
+  .step-dot.green  { background: rgba(79,255,176,0.12); color: var(--accent3); }
+
+  .step-content { flex: 1; }
+  .step-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .step-detail {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* CALLOUTS */
+  .callout {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body { flex: 1; }
+  .callout-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .callout-text  { font-size: 13px; color: var(--text-muted); }
+
+  .callout.tip    { background: rgba(79,255,176,0.07); border: 1px solid rgba(79,255,176,0.2); }
+  .callout.tip .callout-title { color: var(--accent3); }
+
+  .callout.warn   { background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.2); }
+  .callout.warn .callout-title { color: var(--accent4); }
+
+  .callout.info   { background: rgba(91,196,245,0.07); border: 1px solid rgba(91,196,245,0.2); }
+  .callout.info .callout-title { color: var(--accent5); }
+
+  /* FILE TREE */
+  .file-tree {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 2;
+  }
+
+  .ft-folder { color: var(--accent5); font-weight: 600; }
+  .ft-file   { color: var(--text-muted); }
+  .ft-note   { color: var(--accent4); font-size: 11px; }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+
+  th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(42,47,74,0.5);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  td .mono { color: var(--accent); }
+  td .muted { color: var(--text-muted); font-size: 12px; }
+
+  /* CHEATSHEET */
+  .cheat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .cheat-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .cheat-cmd {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .cheat-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* STATUS LEGEND */
+  .status-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 12px 0;
+  }
+
+  .status-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .status-icon {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 8px 0 24px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 680px) {
+    h1 { font-size: 32px; }
+    .pipeline { gap: 0; }
+    .pipeline-step { min-width: 120px; padding: 14px 16px; }
+    .pipeline-arrow { display: none; }
+    .cheat-grid { grid-template-columns: 1fr; }
+    .hero { padding: 40px 20px 36px; }
+    .container { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Beto CC · Skill Guide</div>
+  <h1>/projeto</h1>
+  <p class="hero-sub">Workflow profissional de desenvolvimento em 4 fases — do zero ao código funcionando, sem improvisar.</p>
+  <div class="hero-badges">
+    <span class="badge">Anti-vibe-coding</span>
+    <span class="badge">Salva no beto-vault</span>
+    <span class="badge">Supabase + n8n integrado</span>
+    <span class="badge">Codex review automático</span>
+  </div>
+</div>
+
+<!-- PIPELINE VISUAL -->
+<div style="background: var(--surface); border-bottom: 1px solid var(--border);">
+  <div class="pipeline">
+    <div class="pipeline-step active">
+      <div class="step-num">Fase 1</div>
+      <div class="step-cmd">spec</div>
+      <div class="step-desc">Defina o que vai construir</div>
+    </div>
+    <div class="pipeline-arrow">→</div>
+    <div class="pipeline-step">
+      <div class="step-num">Fase 2</div>
+      <div class="step-cmd">break</div>
+      <div class="step-desc">Quebre em tarefas pequenas</div>
+    </div>
+    <div class="pipeline-arrow">→</div>
+    <div class="pipeline-step">
+      <div class="step-num">Fase 3</div>
+      <div class="step-cmd">plan</div>
+      <div class="step-desc">Planeje cada tarefa</div>
+    </div>
+    <div class="pipeline-arrow">→</div>
+    <div class="pipeline-step">
+      <div class="step-num">Fase 4</div>
+      <div class="step-cmd">execute</div>
+      <div class="step-desc">Implemente e faça commit</div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="padding-top: 40px;">
+
+  <!-- O QUE É -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon purple">💡</div>
+      <h2>O que é e por que usar</h2>
+    </div>
+
+    <p>O <span class="inline-code">/projeto</span> é uma skill do Beto CC que te força a <strong>planejar antes de implementar</strong>. Em vez de pedir pro Beto "faz a tela de audiências" e receber código aleatório, você passa por 4 fases estruturadas.</p>
+
+    <p>O resultado é código que segue as convenções do MdFlow, sem improviso, sem TODO, sem placeholder — exatamente o que foi especificado.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📂</div>
+      <div class="callout-body">
+        <div class="callout-title">Onde ficam os arquivos</div>
+        <div class="callout-text">Todos os projetos ficam em <strong>~/beto-vault/projetos/&lt;nome&gt;/</strong> — visíveis no seu Obsidian. Você consegue acompanhar o progresso, ler specs e planos direto no vault.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <code><span class="comment"># Sintaxe geral</span>
+<span class="cmd">/projeto</span> <span class="str">&lt;nome&gt;</span> <span class="str">&lt;comando&gt;</span> [args]
+
+<span class="comment"># Exemplos reais</span>
+<span class="cmd">/projeto</span> audiencias spec <span class="str">"nova tela de audiências com modal de criação"</span>
+<span class="cmd">/projeto</span> audiencias break
+<span class="cmd">/projeto</span> audiencias plan T01
+<span class="cmd">/projeto</span> audiencias execute T01
+<span class="cmd">/projeto</span> audiencias next</code>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- FASE 1: SPEC -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon purple">📋</div>
+      <h2>Fase 1 — spec</h2>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div class="cmd-number num-1">1</div>
+        <div class="cmd-card-header-text">
+          <div class="cmd-title">Criar a especificação</div>
+          <div class="cmd-subtitle">Define o que será construído — absorve CLAUDE.md, docs existentes, schema real do Supabase</div>
+        </div>
+        <span class="cmd-badge">spec</span>
+      </div>
+      <div class="cmd-card-body">
+
+        <div class="code-block">
+          <code><span class="cmd">/projeto</span> audiencias spec <span class="str">"nova tela de audiências com modal de criação, edição e cancelamento"</span></code>
+        </div>
+
+        <h3>O que o Beto faz:</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-dot purple">1</div>
+            <div class="step-content">
+              <div class="step-label">Lê o CLAUDE.md do MdFlow</div>
+              <div class="step-detail">Absorve arquitetura, Design System, convenções de código, regras de autonomia</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot purple">2</div>
+            <div class="step-content">
+              <div class="step-label">Verifica o schema real no Supabase</div>
+              <div class="step-detail">Confere tabelas, colunas, RPCs existentes antes de planejar qualquer coisa</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot purple">3</div>
+            <div class="step-content">
+              <div class="step-label">Lê docs existentes da feature</div>
+              <div class="step-detail">Se tem spec em ~/beta-mdflow/docs/, absorve em vez de reescrever</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot purple">4</div>
+            <div class="step-content">
+              <div class="step-label">Gera spec.md completo</div>
+              <div class="step-detail">Com objetivo, escopo, componentes, comportamentos, backend, automações</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <div class="callout-title">Revise antes de continuar</div>
+            <div class="callout-text">Depois do spec, leia o arquivo gerado. Se algo estiver errado aqui, vai errar em todas as fases seguintes. Corrija antes do break.</div>
+          </div>
+        </div>
+
+        <h3>Onde fica salvo:</h3>
+        <div class="file-tree">
+<span class="ft-folder">~/beto-vault/projetos/audiencias/</span>
+  ├── <span class="ft-file">spec.md</span>          <span class="ft-note">← gerado aqui</span>
+  └── <span class="ft-file">projeto.json</span>     <span class="ft-note">← metadados do projeto</span>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">✅</div>
+          <div class="callout-body">
+            <div class="callout-title">Faça /clear depois</div>
+            <div class="callout-text">Após revisar o spec, rode <strong>/clear</strong> no terminal do Beto antes de passar para o break. Context window limpo = output melhor.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- FASE 2: BREAK -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon blue">🔀</div>
+      <h2>Fase 2 — break</h2>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div class="cmd-number num-2">2</div>
+        <div class="cmd-card-header-text">
+          <div class="cmd-title">Quebrar em tarefas atômicas</div>
+          <div class="cmd-subtitle">Transforma a spec em tarefas pequenas, por camada, na ordem certa de implementação</div>
+        </div>
+        <span class="cmd-badge">break</span>
+      </div>
+      <div class="cmd-card-body">
+
+        <div class="code-block">
+          <code><span class="cmd">/projeto</span> audiencias break</code>
+        </div>
+
+        <h3>Ordem obrigatória de camadas:</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Camada</th>
+              <th>O que inclui</th>
+              <th>Por que primeiro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="mono">backend</span></td>
+              <td>Migrations, RPCs, RLS, triggers, índices</td>
+              <td class="muted">Banco é lei. Frontend só existe se o backend está certo</td>
+            </tr>
+            <tr>
+              <td><span class="mono">frontend</span></td>
+              <td>Pages, componentes, hooks, types</td>
+              <td class="muted">Depende do banco estar pronto</td>
+            </tr>
+            <tr>
+              <td><span class="mono">n8n</span></td>
+              <td>Webhooks, cenários, automações</td>
+              <td class="muted">Orquestração depois da estrutura</td>
+            </tr>
+            <tr>
+              <td><span class="mono">polish</span></td>
+              <td>Loading states, empty states, responsividade, a11y</td>
+              <td class="muted">Último porque depende de tudo</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Regra de tamanho:</h3>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="status-icon" style="color: var(--accent3);">S</span>
+            <span>1–2 arquivos — pode ir direto</span>
+          </div>
+          <div class="status-item">
+            <span class="status-icon" style="color: var(--accent4);">M</span>
+            <span>3–5 arquivos — plan + execute</span>
+          </div>
+          <div class="status-item">
+            <span class="status-icon" style="color: var(--accent2);">L</span>
+            <span>5+ arquivos — dividir primeiro</span>
+          </div>
+        </div>
+
+        <h3>Exemplo de saída:</h3>
+        <div class="code-block">
+          <code><span class="comment">## Backend</span>
+[ ] <span class="kw">T01</span> — Migration tabela audiencias          (S)
+[ ] <span class="kw">T02</span> — RPC get_audiencias_por_processo      (S) — Depende: T01
+[ ] <span class="kw">T03</span> — RPC criar_audiencia                  (S) — Depende: T01
+
+<span class="comment">## Frontend</span>
+[ ] <span class="kw">T04</span> — Página /audiencias layout + tabela    (M) — Depende: T01, T02
+[ ] <span class="kw">T05</span> — Modal criar/editar audiência          (M) — Depende: T03, T04
+
+<span class="comment">## n8n</span>
+[ ] <span class="kw">T06</span> — Webhook notificação nova audiência    (M) — Depende: T01
+
+<span class="comment">## Polish</span>
+[ ] <span class="kw">T07</span> — Loading/empty states + mobile        (S) — Depende: T04, T05</code>
+        </div>
+
+        <h3>Onde fica salvo:</h3>
+        <div class="file-tree">
+<span class="ft-folder">~/beto-vault/projetos/audiencias/</span>
+  ├── <span class="ft-file">tasks.md</span>         <span class="ft-note">← legível no Obsidian</span>
+  └── <span class="ft-file">tasks.json</span>       <span class="ft-note">← usado pelo Beto nas fases seguintes</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- FASE 3: PLAN -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon yellow">🗺️</div>
+      <h2>Fase 3 — plan</h2>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div class="cmd-number num-3">3</div>
+        <div class="cmd-card-header-text">
+          <div class="cmd-title">Planejar UMA tarefa</div>
+          <div class="cmd-subtitle">Pesquisa no codebase, verifica banco, roda revisão Codex — antes de escrever 1 linha de código</div>
+        </div>
+        <span class="cmd-badge">plan &lt;ID&gt;</span>
+      </div>
+      <div class="cmd-card-body">
+
+        <div class="code-block">
+          <code><span class="cmd">/projeto</span> audiencias plan T04</code>
+        </div>
+
+        <h3>O que o Beto faz:</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-dot yellow">1</div>
+            <div class="step-content">
+              <div class="step-label">Verifica dependências</div>
+              <div class="step-detail">T04 depende de T01 e T02. Se não estiverem concluídas, avisa antes de continuar</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot yellow">2</div>
+            <div class="step-content">
+              <div class="step-label">Pesquisa no codebase</div>
+              <div class="step-detail">Acha componentes similares, hooks reutilizáveis, patterns que já existem no projeto</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot yellow">3</div>
+            <div class="step-content">
+              <div class="step-label">Roda Codex Pre-Review (o4-mini)</div>
+              <div class="step-detail">Revisa os arquivos que serão modificados antes de tocar em qualquer coisa. Detecta any implícito, hex hardcoded, console.log, arquivos >500 linhas, queries sem organizacao_id</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot yellow">4</div>
+            <div class="step-content">
+              <div class="step-label">Gera plano passo a passo</div>
+              <div class="step-detail">Lista exatamente: qual arquivo, que ação, o que fazer — sem espaço para improviso</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout tip">
+          <div class="callout-icon">🔍</div>
+          <div class="callout-body">
+            <div class="callout-title">Codex Pre-Review</div>
+            <div class="callout-text">Antes de implementar, o Beto roda uma revisão automática com o4-mini nos arquivos que serão tocados. Se encontrar problemas sérios (P0/P1), ele avisa e bloqueia até você decidir o que fazer.</div>
+          </div>
+        </div>
+
+        <h3>Onde fica salvo:</h3>
+        <div class="file-tree">
+<span class="ft-folder">~/beto-vault/projetos/audiencias/plans/</span>
+  └── <span class="ft-file">task-T04.md</span>      <span class="ft-note">← plano detalhado passo a passo</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- FASE 4: EXECUTE -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon green">⚡</div>
+      <h2>Fase 4 — execute</h2>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div class="cmd-number num-4">4</div>
+        <div class="cmd-card-header-text">
+          <div class="cmd-title">Implementar EXATAMENTE o plano</div>
+          <div class="cmd-subtitle">Código → build check → Codex Post-Review → commit → push. Nada fora do plano.</div>
+        </div>
+        <span class="cmd-badge">execute &lt;ID&gt;</span>
+      </div>
+      <div class="cmd-card-body">
+
+        <div class="code-block">
+          <code><span class="cmd">/projeto</span> audiencias execute T04</code>
+        </div>
+
+        <h3>O que o Beto faz:</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-dot green">1</div>
+            <div class="step-content">
+              <div class="step-label">Lê o plano da tarefa</div>
+              <div class="step-detail">Apenas o task-T04.md. Não improvisa nada que não esteja ali</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot green">2</div>
+            <div class="step-content">
+              <div class="step-label">Implementa passo a passo</div>
+              <div class="step-detail">Cria/modifica os arquivos especificados. Se encontrar algo inesperado, documenta e pausa</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot green">3</div>
+            <div class="step-content">
+              <div class="step-label">Verifica o build</div>
+              <div class="step-detail">npm run build após cada arquivo. Não avança com erro de TypeScript</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot green">4</div>
+            <div class="step-content">
+              <div class="step-label">Codex Post-Review</div>
+              <div class="step-detail">Revisão automática dos arquivos modificados. Se achar P0/P1, corrige antes do commit</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot green">5</div>
+            <div class="step-content">
+              <div class="step-label">Commit + Push</div>
+              <div class="step-detail">git add -A → commit com mensagem padrão → push origin main</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Onde fica salvo:</h3>
+        <div class="file-tree">
+<span class="ft-folder">~/beto-vault/projetos/audiencias/logs/</span>
+  └── <span class="ft-file">task-T04-result.md</span>  <span class="ft-note">← o que foi feito, arquivos, como testar</span>
+        </div>
+
+        <div class="callout warn">
+          <div class="callout-icon">🚫</div>
+          <div class="callout-body">
+            <div class="callout-title">Execute só implementa o que está no plano</div>
+            <div class="callout-text">Se o plano não cobre algo que parece necessário, o Beto para e documenta — não improvisa. Se quiser adicionar algo, volte ao plan e atualize.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ATALHOS -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon blue">⚡</div>
+      <h2>Atalhos do dia a dia</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="cmd-badge">next</span>
+        Próxima tarefa — atalho mais usado
+      </div>
+      <p>Encontra a próxima tarefa disponível (dependências satisfeitas) e faz plan + execute automaticamente.</p>
+      <div class="code-block">
+        <code><span class="cmd">/projeto</span> audiencias next
+
+<span class="comment"># Beto vai:
+# 1. Ler tasks.json
+# 2. Encontrar T05 (próxima com deps OK)
+# 3. Fazer plan T05 + execute T05 na mesma sessão
+# 4. Commitar e reportar progresso</span></code>
+      </div>
+      <div class="callout tip">
+        <div class="callout-icon">💡</div>
+        <div class="callout-body">
+          <div class="callout-title">Workflow recomendado</div>
+          <div class="callout-text">Depois de revisar spec e break, fica só usando <strong>/projeto audiencias next</strong> em cada sessão. O Beto gerencia a fila de tarefas automaticamente.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="cmd-badge">status</span>
+        Ver progresso visual
+      </div>
+      <div class="code-block">
+        <code><span class="cmd">/projeto</span> audiencias status    <span class="comment"># 1 projeto específico</span>
+<span class="cmd">/projeto</span> status              <span class="comment"># TODOS os projetos no vault</span>
+
+<span class="comment"># Exemplo de saída:</span>
+<span class="kw">## Projeto: audiencias</span>
+Stack: React+TS | Fase: execute | Progresso: 4/7 (57%)
+
+<span class="kw">### Backend (3/3) ✓</span>
+  [v] T01 — Migration tabela        (S) — validada
+  [v] T02 — RPC get_audiencias      (S) — validada
+  [v] T03 — RPC criar_audiencia     (S) — validada
+
+<span class="kw">### Frontend (1/2)</span>
+  [x] T04 — Página layout + tabela  (M) — concluída
+  [ ] T05 — Modal criar/editar      (M) — pendente (dep: T03 ✓)
+
+<span class="kw">### Próximo</span>
+/projeto audiencias next → T05 (deps OK, frontend, M)</code>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="cmd-badge">list</span>
+        Listar todos os projetos ativos
+      </div>
+      <div class="code-block">
+        <code><span class="cmd">/projeto</span> list
+
+<span class="comment"># Saída:</span>
+<span class="kw">## Projetos em ~/beto-vault/projetos/</span>
+
+  audiencias  | execute | 4/7  (57%) | frontend em andamento
+  crm-leads   | break   | 0/0  (0%)  | aguardando break
+  execucoes   | spec    | —         | spec criada</code>
+      </div>
+    </div>
+
+  </section>
+
+  <hr class="divider">
+
+  <!-- REGRAS IMPORTANTES -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon red">📌</div>
+      <h2>Regras importantes</h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Regra</th>
+          <th>Por quê</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Nome do projeto sempre obrigatório</strong><br><span class="muted">/projeto audiencias spec "..."</span></td>
+          <td class="muted">Suporta múltiplos projetos em paralelo sem colisão</td>
+        </tr>
+        <tr>
+          <td><strong>/clear entre fases</strong><br><span class="muted">spec → /clear → break → /clear → plan</span></td>
+          <td class="muted">Context window limpo = output muito melhor. Cada fase lê apenas seus arquivos</td>
+        </tr>
+        <tr>
+          <td><strong>Revisar spec antes do break</strong><br><span class="muted">Erros no spec se propagam para todas as fases</span></td>
+          <td class="muted">É mais fácil corrigir a spec que refazer 7 tarefas</td>
+        </tr>
+        <tr>
+          <td><strong>Execute não improvisa</strong><br><span class="muted">Se falta algo no plano, para e reporta</span></td>
+          <td class="muted">Evita código inesperado em produção</td>
+        </tr>
+        <tr>
+          <td><strong>Tarefa falhou 2x → parar</strong><br><span class="muted">Beto reporta com contexto completo</span></td>
+          <td class="muted">Melhor escalar do que entrar em loop</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- LEGENDA STATUS -->
+    <h3>Legenda de status das tarefas</h3>
+    <div class="status-grid">
+      <div class="status-item">
+        <span class="status-icon" style="color: var(--text-muted);">[ ]</span>
+        <span>Pendente</span>
+      </div>
+      <div class="status-item">
+        <span class="status-icon" style="color: var(--accent5);">[~]</span>
+        <span>Planejada (plan feito)</span>
+      </div>
+      <div class="status-item">
+        <span class="status-icon" style="color: var(--accent);">[x]</span>
+        <span>Concluída (execute feito)</span>
+      </div>
+      <div class="status-item">
+        <span class="status-icon" style="color: var(--accent3);">[v]</span>
+        <span>Validada</span>
+      </div>
+      <div class="status-item">
+        <span class="status-icon" style="color: var(--accent2);">[!]</span>
+        <span>Falhou</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- EXEMPLO COMPLETO -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon purple">🚀</div>
+      <h2>Exemplo completo — do zero ao código</h2>
+    </div>
+
+    <p>Cenário: você quer criar a tela de <strong>Audiências</strong> no MdFlow.</p>
+
+    <div class="code-block">
+      <code><span class="comment">— SESSÃO 1: Spec —</span>
+<span class="cmd">/projeto</span> audiencias spec <span class="str">"tela de audiências: tabela por processo, modal criar/editar/cancelar"</span>
+
+<span class="comment"># Beto lê CLAUDE.md, verifica Supabase, gera spec.md
+# Você lê ~/beto-vault/projetos/audiencias/spec.md no Obsidian
+# Faz ajustes se necessário
+# Depois:</span>
+/clear
+
+
+<span class="comment">— SESSÃO 2: Break —</span>
+<span class="cmd">/projeto</span> audiencias break
+
+<span class="comment"># Beto gera 7 tarefas: T01-T07
+# Você lê tasks.md no Obsidian, aprova
+# Depois:</span>
+/clear
+
+
+<span class="comment">— SESSÃO 3: Primeira tarefa —</span>
+<span class="cmd">/projeto</span> audiencias next
+
+<span class="comment"># Beto: plan T01 (migration) + execute T01 + commit
+# Output: "T01 concluída (1/7 = 14%). Próximo: /clear → /projeto audiencias next"</span>
+/clear
+
+
+<span class="comment">— SESSÃO 4, 5, 6... —</span>
+<span class="cmd">/projeto</span> audiencias next   <span class="comment"># repete até todas concluídas</span>
+
+
+<span class="comment">— A qualquer momento —</span>
+<span class="cmd">/projeto</span> audiencias status  <span class="comment"># ver progresso</span>
+<span class="cmd">/projeto</span> audiencias html    <span class="comment"># gerar relatório em ~/beto-reports/</span></code>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHEAT SHEET -->
+  <section>
+    <div class="section-header">
+      <div class="section-icon yellow">📖</div>
+      <h2>Cheat sheet — referência rápida</h2>
+    </div>
+
+    <div class="cheat-grid">
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; spec "desc"</div>
+        <div class="cheat-desc">Criar spec absorvendo contexto</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; break</div>
+        <div class="cheat-desc">Quebrar spec em tarefas por camada</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; plan T01</div>
+        <div class="cheat-desc">Planejar tarefa específica + Codex review</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; execute T01</div>
+        <div class="cheat-desc">Implementar, commit e push</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; next</div>
+        <div class="cheat-desc">Próxima tarefa → plan + execute</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; status</div>
+        <div class="cheat-desc">Ver progresso visual do projeto</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto status</div>
+        <div class="cheat-desc">Ver todos os projetos ativos</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto list</div>
+        <div class="cheat-desc">Listar projetos no beto-vault</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; validate T01</div>
+        <div class="cheat-desc">Validar tarefa (banco + build + visual)</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; html</div>
+        <div class="cheat-desc">Gerar relatório HTML em ~/beto-reports/</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/projeto &lt;nome&gt; reset</div>
+        <div class="cheat-desc">Limpar e recomeçar do zero</div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-cmd">/clear (entre fases)</div>
+        <div class="cheat-desc">Limpar context window — obrigatório</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Beto CC · Skill /projeto · MdLab LegalTech · 2026-04-07
+</footer>
+
+</body>
+</html>

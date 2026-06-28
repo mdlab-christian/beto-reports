@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Revisão Profunda — CRM | MdFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e; --surface: #1a1714; --card: #201d1a;
+  --border: #2e2b27; --primary: #20c997; --primary-dim: #20c99720;
+  --primary-border: #20c99740; --warn: #f59e0b; --danger: #ef4444;
+  --success: #22c55e; --info: #60a5fa; --text: #f5f0eb; --muted: #9e9890;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; font-size: 14px; line-height: 1.6; }
+.layout { display: flex; gap: 2rem; max-width: 1400px; margin: 0 auto; padding: 2rem; }
+.sidebar { width: 240px; position: sticky; top: 24px; height: fit-content; flex-shrink: 0; }
+.sidebar a { display: block; padding: 6px 12px; color: var(--muted); text-decoration: none; font-size: 12px; border-left: 2px solid transparent; transition: all 0.2s; }
+.sidebar a:hover, .sidebar a.active { color: var(--primary); border-left-color: var(--primary); background: var(--primary-dim); }
+.sidebar .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding: 12px 12px 4px; font-weight: 600; }
+main { flex: 1; max-width: 960px; }
+@media (max-width: 720px) { .sidebar { display: none; } .layout { padding: 1rem; } }
+
+h1 { font-family: Manrope, sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+h2 { font-family: Manrope, sans-serif; font-size: 20px; font-weight: 700; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--primary); }
+h3 { font-size: 15px; font-weight: 600; margin: 20px 0 10px; }
+h4 { font-size: 13px; font-weight: 600; margin: 14px 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.header { margin-bottom: 32px; }
+.subtitle { color: var(--muted); font-size: 14px; }
+.meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.meta-chip { background: var(--card); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 11px; color: var(--muted); }
+.meta-chip.primary { border-color: var(--primary-border); color: var(--primary); }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+.badge-primary { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary-border); }
+.badge-success { background: #22c55e20; color: var(--success); border: 1px solid #22c55e40; }
+.badge-warn { background: #f59e0b20; color: var(--warn); border: 1px solid #f59e0b40; }
+.badge-danger { background: #ef444420; color: var(--danger); border: 1px solid #ef444440; }
+.badge-info { background: #60a5fa20; color: var(--info); border: 1px solid #60a5fa40; }
+.badge-neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0; }
+th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--border); color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:hover td { background: var(--surface); }
+.mono { font-family: var(--mono); font-size: 12px; }
+
+.score-ring { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; font-family: Manrope; font-weight: 700; font-size: 16px; }
+.score-good { border: 3px solid var(--success); color: var(--success); }
+.score-ok { border: 3px solid var(--warn); color: var(--warn); }
+.score-bad { border: 3px solid var(--danger); color: var(--danger); }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+.pending-item { padding: 10px 14px; border-radius: 8px; border-left: 4px solid; margin-bottom: 8px; background: var(--surface); }
+.pending-item.p0 { border-left-color: var(--danger); }
+.pending-item.p1 { border-left-color: var(--warn); }
+.pending-item.p2 { border-left-color: var(--info); }
+.pending-content { font-size: 12px; }
+.pending-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.p0 .pending-label { color: var(--danger); }
+.p1 .pending-label { color: var(--warn); }
+.p2 .pending-label { color: var(--info); }
+
+.code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-family: var(--mono); font-size: 12px; overflow-x: auto; white-space: pre; margin: 8px 0; }
+.ok { color: var(--success); } .fail { color: var(--danger); } .partial { color: var(--warn); }
+
+footer { margin-top: 48px; padding: 16px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 11px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="section-label">Visão Geral</div>
+  <a href="#overview">Resumo Executivo</a>
+  <a href="#scores">Scorecard de Saúde</a>
+  <a href="#inventory">Inventário de Arquivos</a>
+  <div class="section-label">Arquitetura</div>
+  <a href="#page-arch">CrmPage — Arquitetura</a>
+  <a href="#kanban">Kanban + DnD</a>
+  <a href="#radar">Radar</a>
+  <a href="#dashboard">Dashboard</a>
+  <a href="#list-view">ListView</a>
+  <a href="#arquivados">Arquivados</a>
+  <div class="section-label">Modais</div>
+  <a href="#modals">12 Modais — Auditoria</a>
+  <div class="section-label">Hooks</div>
+  <a href="#hooks">13 Hooks — Revisão</a>
+  <div class="section-label">Banco de Dados</div>
+  <a href="#db-tables">Tabelas (24)</a>
+  <a href="#db-views">Views (4)</a>
+  <a href="#db-rpcs">RPCs (16)</a>
+  <a href="#db-triggers">Triggers (5)</a>
+  <a href="#db-indexes">Índices (33)</a>
+  <a href="#db-rls">RLS Policies</a>
+  <div class="section-label">Qualidade</div>
+  <a href="#findings">Achados P0/P1/P2</a>
+  <a href="#strengths">Pontos Fortes</a>
+  <a href="#recommendations">Recomendações</a>
+</aside>
+
+<main>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="header" id="overview">
+  <h1>Super Revisão Profunda — CRM</h1>
+  <p class="subtitle">Auditoria exaustiva de todos os componentes, hooks, modais, banco de dados, RPCs, RLS, views e triggers do CRM de Leads</p>
+  <div class="meta-row">
+    <span class="meta-chip primary">MdFlow CRM</span>
+    <span class="meta-chip">14/04/2026 21:52</span>
+    <span class="meta-chip">14 componentes</span>
+    <span class="meta-chip">13 hooks</span>
+    <span class="meta-chip">12 modais</span>
+    <span class="meta-chip">24 tabelas</span>
+    <span class="meta-chip">4 views</span>
+    <span class="meta-chip">16 RPCs</span>
+    <span class="meta-chip">5 triggers</span>
+    <span class="meta-chip">33 índices</span>
+  </div>
+</div>
+
+<!-- ═══════════════ SCORECARD ═══════════════ -->
+<h2 id="scores">Scorecard de Saúde</h2>
+<div class="grid3">
+  <div class="card" style="text-align:center">
+    <div class="score-ring score-good">9</div>
+    <p style="margin-top:8px;font-size:12px;font-weight:600">Componentes</p>
+    <p style="font-size:10px;color:var(--muted)">14 componentes, 0 erros TS</p>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="score-ring score-good">9</div>
+    <p style="margin-top:8px;font-size:12px;font-weight:600">Hooks</p>
+    <p style="font-size:10px;color:var(--muted)">13 hooks, queries tipadas</p>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="score-ring score-good">9</div>
+    <p style="margin-top:8px;font-size:12px;font-weight:600">Modais</p>
+    <p style="font-size:10px;color:var(--muted)">12 modais, dirty-state OK</p>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="score-ring score-good">9</div>
+    <p style="margin-top:8px;font-size:12px;font-weight:600">RPCs</p>
+    <p style="font-size:10px;color:var(--muted)">16 RPCs, 100% SECURITY DEFINER</p>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="score-ring score-ok">7</div>
+    <p style="margin-top:8px;font-size:12px;font-weight:600">RLS</p>
+    <p style="font-size:10px;color:var(--muted)">Mix org_id()/get_org_id()</p>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="score-ring score-ok">7</div>
+    <p style="margin-top:8px;font-size:12px;font-weight:600">Triggers</p>
+    <p style="font-size:10px;color:var(--muted)">5 triggers, faltam em auxiliares</p>
+  </div>
+</div>
+<div class="card" style="text-align:center;margin-top:8px">
+  <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Nota Geral CRM</span>
+  <div style="margin-top:4px"><span class="score-ring score-good" style="width:64px;height:64px;font-size:22px">8.5</span></div>
+  <p style="margin-top:8px;font-size:12px;color:var(--muted)">Build: 0 erros TS nos arquivos CRM | Frontend robusto | RLS precisa padronização</p>
+</div>
+
+<!-- ═══════════════ INVENTÁRIO ═══════════════ -->
+<h2 id="inventory">Inventário de Arquivos</h2>
+
+<h3>Componentes CRM (14 arquivos)</h3>
+<table>
+<tr><th>Arquivo</th><th>Linhas</th><th>Responsabilidade</th></tr>
+<tr><td class="mono">CrmKanban.tsx</td><td>463</td><td>Board kanban 5 colunas com DnD, seleção bulk, filtros client-side</td></tr>
+<tr><td class="mono">CrmLeadCard.tsx</td><td>331</td><td>Card do lead no kanban — score, restrições, MdZap badge, notas, etiquetas</td></tr>
+<tr><td class="mono">CrmDashboard.tsx</td><td>134</td><td>KPIs + charts (Funnel, Origens, Trend, ICP)</td></tr>
+<tr><td class="mono">CrmFilterBar.tsx</td><td>292</td><td>Filtros: busca debounced, atendente, origem, estado, score, awaiting</td></tr>
+<tr><td class="mono">CrmRadar.tsx</td><td>118</td><td>Leads aguardando resposta — 3 faixas (crítico/atenção/ok)</td></tr>
+<tr><td class="mono">CrmRadarLeadCard.tsx</td><td>110</td><td>Card do radar com urgência, tempo formatado, WhatsApp direto</td></tr>
+<tr><td class="mono">CrmArquivados.tsx</td><td>309</td><td>Tabela paginada de leads arquivados + restaurar</td></tr>
+<tr><td class="mono">CrmListView.tsx</td><td>288</td><td>Visão lista com accordion por etapa + "carregar mais"</td></tr>
+<tr><td class="mono">CrmBulkActionBar.tsx</td><td>67</td><td>Floating bar para ações em massa (mover, atribuir, arquivar)</td></tr>
+<tr><td class="mono">CrmLeadNotas.tsx</td><td>177</td><td>Notas compartilhadas CRM ↔ MdZap via crm_notas</td></tr>
+<tr><td class="mono">CrmIcpPanel.tsx</td><td>80</td><td>Perfil de Cliente Ideal — threshold 20 conversões</td></tr>
+<tr><td class="mono">CrmAuditoriaPanel.tsx</td><td>~150</td><td>Painel de auditoria Boa Vista integrado</td></tr>
+<tr><td class="mono">charts/CrmFunnelChart.tsx</td><td>81</td><td>Gráfico de barras horizontal — funil de conversão</td></tr>
+<tr><td class="mono">charts/CrmOrigensChart.tsx</td><td>95</td><td>Pie chart — leads por origem</td></tr>
+</table>
+
+<h3>Página CRM (2 arquivos)</h3>
+<table>
+<tr><th>Arquivo</th><th>Linhas</th><th>Responsabilidade</th></tr>
+<tr><td class="mono">CrmPage.tsx</td><td>488</td><td>Orquestrador: 4 tabs, filtros via URL, 12 modais, deep-links, atalhos</td></tr>
+<tr><td class="mono">index.tsx</td><td>1</td><td>Re-export</td></tr>
+</table>
+
+<h3>Hooks CRM (13 arquivos)</h3>
+<table>
+<tr><th>Hook</th><th>Linhas</th><th>Responsabilidade</th></tr>
+<tr><td class="mono">useCrmKanban.ts</td><td>259</td><td>DnD handler, optimistic update, undo stack, realtime UPDATE, timeline</td></tr>
+<tr><td class="mono">useCrmRealtime.ts</td><td>70</td><td>2 canais RT: crm_channel_events + leads INSERT/DELETE</td></tr>
+<tr><td class="mono">useLeadFilters.ts</td><td>137</td><td>Filtros via URL params — compartilháveis via link</td></tr>
+<tr><td class="mono">useLeadBulkActions.ts</td><td>57</td><td>Seleção múltipla com toggle/selectAll/deselectAll</td></tr>
+<tr><td class="mono">useCrmDashboard.ts</td><td>36</td><td>KPIs via rpc_crm_dashboard_kpis</td></tr>
+<tr><td class="mono">useCrmRadar.ts</td><td>90</td><td>view_crm_radar + filtros client-side + countdown</td></tr>
+<tr><td class="mono">useCrmIcp.ts</td><td>29</td><td>ICP report da tabela icp_reports</td></tr>
+<tr><td class="mono">useCrmModals.ts</td><td>93</td><td>State manager para 12 modais simultâneos</td></tr>
+<tr><td class="mono">useLeads.ts</td><td>89</td><td>CRUD genérico de leads com filters server-side</td></tr>
+<tr><td class="mono">useLeadFollowup.ts</td><td>155</td><td>Follow-up: histórico + config + registro</td></tr>
+<tr><td class="mono">useDispararAuditoria.ts</td><td>63</td><td>RPC rpc_disparar_auditoria — shared CRM/MdZap</td></tr>
+<tr><td class="mono">useSugestaoDistribuicao.ts</td><td>36</td><td>Round-robin de advogados por UF</td></tr>
+<tr><td class="mono">useWebhookPolling.ts</td><td>105</td><td>Polling genérico de webhook_requests</td></tr>
+</table>
+
+<h3>Modais CRM (15 arquivos)</h3>
+<table>
+<tr><th>Modal</th><th>Linhas</th><th>Dirty-state</th><th>Função</th></tr>
+<tr><td class="mono">ModalNovoLead.tsx</td><td>305</td><td class="ok">✅</td><td>Criação de lead com dedup (CPF + WhatsApp), auto-link advogado por UF</td></tr>
+<tr><td class="mono">ModalTriagem.tsx</td><td>494</td><td class="ok">✅</td><td>Aprovação jurídica — seleciona advogado + restrições → rpc_crm_aprovar_triagem → confetti</td></tr>
+<tr><td class="mono">ModalArquivar.tsx</td><td>208</td><td class="ok">✅</td><td>Arquivamento com motivo obrigatório + obs, suporta bulk</td></tr>
+<tr><td class="mono">ModalEditarLead.tsx</td><td>~200</td><td class="ok">✅</td><td>Wrapper para formulário de edição multi-tab</td></tr>
+<tr><td class="mono">ModalSelecionarEtapa.tsx</td><td>~80</td><td>—</td><td>Bulk: mover leads para outra etapa</td></tr>
+<tr><td class="mono">ModalSelecionarAtendente.tsx</td><td>~90</td><td>—</td><td>Bulk: atribuir atendente</td></tr>
+<tr><td class="mono">ModalAIReport.tsx</td><td>256</td><td>—</td><td>Exibe relatório IA do lead (score, sentiment, next action)</td></tr>
+<tr><td class="mono">ModalDistribuirLead.tsx</td><td>249</td><td>—</td><td>Distribuição de restrições via webhook n8n</td></tr>
+<tr><td class="mono">ModalVincularAdvogado.tsx</td><td>303</td><td>—</td><td>Vincular advogado com sugestão automática por UF</td></tr>
+<tr><td class="mono">ModalNovaAuditoria.tsx</td><td>100</td><td>—</td><td>Disparar auditoria Boa Vista — reusa AuditoriaFormCard</td></tr>
+<tr><td class="mono">ModalDedup.tsx</td><td>~120</td><td>—</td><td>Alerta de duplicata antes de criar lead</td></tr>
+<tr><td class="mono">ModalAuditar.tsx</td><td>~80</td><td>—</td><td>Wrapper para auditoria rápida</td></tr>
+<tr><td class="mono">ModalDistribuicao.tsx</td><td>~150</td><td>—</td><td>Distribuição alternativa via drawer</td></tr>
+<tr><td class="mono">FormNovoLead.tsx</td><td>~180</td><td>—</td><td>Formulário compartilhado do novo lead</td></tr>
+<tr><td class="mono">editar-lead/ (6 files)</td><td>~400</td><td>—</td><td>Sub-forms: Pessoais, Contato, Endereço, CRM + helpers + schema</td></tr>
+</table>
+
+<!-- ═══════════════ ARQUITETURA ═══════════════ -->
+<h2 id="page-arch">CrmPage — Arquitetura</h2>
+<div class="card">
+<div class="card-title">Layout e Responsabilidade</div>
+<div class="code-block">CrmPage.tsx (488 linhas — orquestrador principal)
+├── PageHeader + Actions (Novo Lead, OlivIA, Nova Auditoria)
+├── Tabs: Dashboard | Pipeline | Radar | Arquivados
+│   ├── Dashboard → CrmDashboard → 4 KPIs + 3 Charts + ICP
+│   ├── Pipeline → CrmKanban (kanban) | CrmListView (lista)
+│   │   ├── CrmFilterBar (busca + filtros inline/sheet mobile)
+│   │   ├── CrmLeadCard (card individual)
+│   │   └── CrmBulkActionBar (floating bar)
+│   ├── Radar → CrmRadar → CrmRadarLeadCard
+│   └── Arquivados → CrmArquivados (tabela + paginação)
+├── 12 Modais (lazy, condicionais)
+└── ClienteDrawer (Sheet lateral — context='crm')</div>
+</div>
+
+<h3>Features Avançadas</h3>
+<div class="grid2">
+<div class="card">
+<div class="card-title">Deep Links via URL</div>
+<p style="font-size:12px">
+<code>?tab=pipeline</code> — aba ativa<br>
+<code>?lead=uuid</code> — abre drawer automaticamente<br>
+<code>?modal=novo</code> — abre ModalNovoLead<br>
+<code>?etapa=triagem</code> — scroll + highlight na coluna<br>
+<code>?drawer_tab=dados</code> — aba do drawer<br>
+<code>?q=joão&atendente=meus</code> — filtros compartilháveis
+</p>
+</div>
+<div class="card">
+<div class="card-title">Atalhos de Teclado</div>
+<p style="font-size:12px">
+<code>N</code> — Novo Lead (respeitando modais abertos)<br>
+<code>Ctrl+Enter</code> — Salvar nota rapidamente<br>
+Drag &amp; drop com Touch (250ms delay) + Pointer (8px distance)
+</p>
+</div>
+</div>
+
+<!-- KANBAN -->
+<h2 id="kanban">Kanban + Drag & Drop</h2>
+<div class="card">
+<div class="card-title">useCrmKanban — Motor do Board</div>
+<table>
+<tr><th>Feature</th><th>Implementação</th><th>Status</th></tr>
+<tr><td>Optimistic update</td><td>setQueryData imediato → mutation → rollback on error</td><td class="ok">✅</td></tr>
+<tr><td>Undo stack</td><td>5s timeout, max 10 itens, toast com action</td><td class="ok">✅</td></tr>
+<tr><td>Validação WhatsApp</td><td>Bloqueia avanço sem WhatsApp (em_atendimento+)</td><td class="ok">✅</td></tr>
+<tr><td>Validação advogado</td><td>Bloqueia triagem sem advogado_id</td><td class="ok">✅</td></tr>
+<tr><td>Registro histórico</td><td>INSERT leads_atividades fire-and-forget</td><td class="ok">✅</td></tr>
+<tr><td>Timeline conversa</td><td>INSERT mdzap_conversas_timeline fire-and-forget</td><td class="ok">✅</td></tr>
+<tr><td>Realtime UPDATE</td><td>Canal crm-leads-update-realtime + toast awaiting_human</td><td class="ok">✅</td></tr>
+<tr><td>Background sync</td><td>invalidateQueries após 2s delay</td><td class="ok">✅</td></tr>
+<tr><td>Fallback polling</td><td>refetchInterval: 60s</td><td class="ok">✅</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="card-title">CrmLeadCard — Densidade de Informação</div>
+<p style="font-size:12px">O card exibe 9 linhas de informação em espaço compacto:</p>
+<ol style="font-size:12px;margin:8px 0 0 16px">
+<li>Nome + checkbox de seleção</li>
+<li>CPF formatado (JetBrains Mono)</li>
+<li>WhatsApp formatado</li>
+<li>Advogado (OAB) + Atendente</li>
+<li>Estado + Origem + Score IA</li>
+<li>Restrições (count + processáveis + pulse animado)</li>
+<li>Notas count + tooltip da última nota</li>
+<li>MdZap badge status + send button</li>
+<li>Etiquetas (max 3 + overflow)</li>
+</ol>
+</div>
+
+<!-- RADAR -->
+<h2 id="radar">Radar de Atendimento</h2>
+<div class="card">
+<div class="card-title">view_crm_radar → useCrmRadar</div>
+<table>
+<tr><th>Feature</th><th>Detalhe</th><th>Status</th></tr>
+<tr><td>View materializada</td><td>view_crm_radar com tempo_sem_resposta_minutos e urgencia</td><td class="ok">✅</td></tr>
+<tr><td>3 faixas</td><td>critico (>4h) | atenção (>1h) | ok (&lt;1h)</td><td class="ok">✅</td></tr>
+<tr><td>Auto-refresh</td><td>refetchInterval: 60s + countdown visual</td><td class="ok">✅</td></tr>
+<tr><td>Filtros</td><td>Atendente, busca, tempo_sem_resposta — client-side</td><td class="ok">✅</td></tr>
+<tr><td>Summary cards</td><td>3 cards com contagem por urgência</td><td class="ok">✅</td></tr>
+</table>
+</div>
+
+<!-- DASHBOARD -->
+<h2 id="dashboard">Dashboard</h2>
+<div class="card">
+<div class="card-title">Composição</div>
+<table>
+<tr><th>Componente</th><th>Fonte de dados</th><th>Status</th></tr>
+<tr><td>4 KPI Cards</td><td>rpc_crm_dashboard_kpis (SECURITY DEFINER)</td><td class="ok">✅</td></tr>
+<tr><td>CrmFunnelChart</td><td>view_crm_colunas_contagem</td><td class="ok">✅</td></tr>
+<tr><td>CrmOrigensChart</td><td>leads table (client-side aggregation)</td><td class="partial">⚠️</td></tr>
+<tr><td>CrmTrendChart</td><td>leads.created_at (últimos 90 dias)</td><td class="partial">⚠️</td></tr>
+<tr><td>CrmIcpPanel</td><td>icp_reports (threshold 20 conversões)</td><td class="ok">✅</td></tr>
+</table>
+<p style="font-size:11px;color:var(--warn);margin-top:8px">
+⚠️ CrmOrigensChart e CrmTrendChart fazem SELECT em toda a tabela leads (sem paginação).
+Atualmente ~31 leads ativos — sem impacto. Mas com 10k+ leads, precisará de RPCs server-side.
+</p>
+</div>
+
+<!-- LIST VIEW -->
+<h2 id="list-view">ListView</h2>
+<div class="card">
+<div class="card-title">CrmListView — Visão Alternativa</div>
+<p style="font-size:12px">Accordion por etapa com grid de 8 colunas (Nome, Status, Score, Restrições, Advogado, Data, Último contato, Ações).
+Paginação client-side com "Carregar mais" (10 por vez). Filtros aplicados server-side (atendente, origem, estado, score)
++ busca client-side com normalizeSearch.</p>
+<table>
+<tr><th>Aspecto</th><th>Status</th></tr>
+<tr><td>Filtros server-side</td><td class="ok">✅</td></tr>
+<tr><td>Busca accent-insensitive</td><td class="ok">✅</td></tr>
+<tr><td>Responsividade (min-w-[640px])</td><td class="partial">⚠️ Scroll horizontal em mobile</td></tr>
+<tr><td>Limite query</td><td>.limit(500) — adequado</td></tr>
+</table>
+</div>
+
+<!-- ARQUIVADOS -->
+<h2 id="arquivados">Arquivados</h2>
+<div class="card">
+<div class="card-title">CrmArquivados</div>
+<p style="font-size:12px">Tabela paginada (25/página) com server-side filtering (atendente, origem, estado).
+Busca client-side quando ativa (range expandida para 0-999). Restauração com AlertDialog de confirmação.
+JOIN com leads_arquivamento_motivo para exibir motivo.</p>
+<table>
+<tr><th>Aspecto</th><th>Status</th></tr>
+<tr><td>Paginação server-side</td><td class="ok">✅</td></tr>
+<tr><td>Filtros server-side</td><td class="ok">✅</td></tr>
+<tr><td>Restaurar → coluna "novos"</td><td class="ok">✅</td></tr>
+<tr><td>Invalidação de queries</td><td class="ok">✅ kanban + arquivados + kpis + radar + contagem</td></tr>
+<tr><td>Soft delete respeitado</td><td class="ok">✅ .is('deleted_at', null)</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ MODAIS ═══════════════ -->
+<h2 id="modals">12 Modais — Auditoria Detalhada</h2>
+
+<h3>ModalNovoLead</h3>
+<div class="card">
+<table>
+<tr><th>Aspecto</th><th>Status</th><th>Detalhe</th></tr>
+<tr><td>Validação Zod</td><td class="ok">✅</td><td>novoLeadSchema: nome, CPF, WhatsApp, email com masks</td></tr>
+<tr><td>Dedup CPF + WhatsApp</td><td class="ok">✅</td><td>Busca duplicatas antes de inserir → ModalDedup</td></tr>
+<tr><td>Auto-link advogado</td><td class="ok">✅</td><td>Selecionar estado → busca advogados_distribuicao_uf</td></tr>
+<tr><td>Atendente padrão</td><td class="ok">✅</td><td>user_id do usuário logado</td></tr>
+<tr><td>Dirty-state</td><td class="ok">✅</td><td>AlertDialog "Descartar alterações?" ao fechar</td></tr>
+<tr><td>Nome uppercase</td><td class="ok">✅</td><td>.toUpperCase() no payload</td></tr>
+<tr><td>Invalidação</td><td class="ok">✅</td><td>kanban + contagem + kpis</td></tr>
+<tr><td>Tratamento duplicata</td><td class="ok">✅</td><td>Detecta erro 23505 → toast específico</td></tr>
+</table>
+</div>
+
+<h3>ModalTriagem (Aprovação Jurídica)</h3>
+<div class="card">
+<table>
+<tr><th>Aspecto</th><th>Status</th><th>Detalhe</th></tr>
+<tr><td>RPC</td><td class="ok">✅</td><td>rpc_crm_aprovar_triagem (SECURITY DEFINER)</td></tr>
+<tr><td>Validações</td><td class="ok">✅</td><td>Requer advogado + ≥1 restrição selecionada</td></tr>
+<tr><td>Restrições da tabela</td><td class="ok">✅</td><td>Query direta em restricoes (não JSONB denormalizado)</td></tr>
+<tr><td>Confetti</td><td class="ok">✅</td><td>canvas-confetti na conversão</td></tr>
+<tr><td>Toast com ação</td><td class="ok">✅</td><td>"Ver Cliente" → navigate</td></tr>
+<tr><td>Erros tipados</td><td class="ok">✅</td><td>ALREADY_CONVERTED, INVALID_STAGE</td></tr>
+<tr><td>Dirty-state</td><td class="ok">✅</td><td>AlertDialog ao fechar com dados preenchidos</td></tr>
+</table>
+</div>
+
+<h3>ModalArquivar</h3>
+<div class="card">
+<table>
+<tr><th>Aspecto</th><th>Status</th><th>Detalhe</th></tr>
+<tr><td>Bulk support</td><td class="ok">✅</td><td>leadIds[] — individual ou massa</td></tr>
+<tr><td>RPC</td><td class="ok">✅</td><td>rpc_crm_bulk_action (p_action='arquivar')</td></tr>
+<tr><td>Motivo obrigatório</td><td class="ok">✅</td><td>Select de leads_arquivamento_motivo</td></tr>
+<tr><td>Dirty-state</td><td class="ok">✅</td><td>AlertDialog ao fechar</td></tr>
+</table>
+</div>
+
+<h3>Outros Modais</h3>
+<div class="card">
+<table>
+<tr><th>Modal</th><th>Key Features</th><th>Status</th></tr>
+<tr><td>ModalVincularAdvogado</td><td>Sugestão automática por UF via useSugestaoDistribuicao, RadioGroup</td><td class="ok">✅</td></tr>
+<tr><td>ModalDistribuirLead</td><td>Lista restrições processáveis sem processo_id, webhook n8n</td><td class="ok">✅</td></tr>
+<tr><td>ModalNovaAuditoria</td><td>Reusa AuditoriaFormCard + StatusModal + ResultModal</td><td class="ok">✅</td></tr>
+<tr><td>ModalAIReport</td><td>Exibe ai_report JSONB (score, sentiment, pain_points, next_action)</td><td class="ok">✅</td></tr>
+<tr><td>ModalSelecionarEtapa</td><td>Bulk: mover leads para outra coluna via rpc_crm_bulk_action</td><td class="ok">✅</td></tr>
+<tr><td>ModalSelecionarAtendente</td><td>Bulk: atribuir atendente via rpc_crm_bulk_action</td><td class="ok">✅</td></tr>
+<tr><td>ModalDedup</td><td>Exibe duplicatas encontradas com CPF/WhatsApp match</td><td class="ok">✅</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ HOOKS ═══════════════ -->
+<h2 id="hooks">13 Hooks — Revisão Detalhada</h2>
+
+<div class="card">
+<div class="card-title">Padrões Observados</div>
+<table>
+<tr><th>Padrão</th><th>Adotado?</th><th>Detalhe</th></tr>
+<tr><td>staleTime: 30_000</td><td class="ok">✅</td><td>Presente em todos os hooks de dados</td></tr>
+<tr><td>organizacao_id check</td><td class="ok">✅</td><td>enabled: !!organizacaoId em todas as queries</td></tr>
+<tr><td>deleted_at IS NULL</td><td class="ok">✅</td><td>Aplicado em useLeads, CrmArquivados, CrmLeadNotas</td></tr>
+<tr><td>as any type casting</td><td class="partial">⚠️</td><td>~35 instâncias em hooks CRM — convenção aceita para schema drift</td></tr>
+<tr><td>Error handling</td><td class="ok">✅</td><td>throw error em todas as queries</td></tr>
+<tr><td>Realtime cleanup</td><td class="ok">✅</td><td>removeChannel no return do useEffect</td></tr>
+</table>
+</div>
+
+<h3>Análise por Hook</h3>
+<div class="card">
+<table>
+<tr><th>Hook</th><th>Query Keys</th><th>staleTime</th><th>Problemas</th></tr>
+<tr><td class="mono">useCrmKanban</td><td>['crm-leads-kanban', orgId]</td><td>30s</td><td>—</td></tr>
+<tr><td class="mono">useCrmRealtime</td><td>Invalida: kanban + list + radar + radar-count</td><td>—</td><td>—</td></tr>
+<tr><td class="mono">useLeadFilters</td><td>URL params (q, atendente, origem, estado, score, awaiting, tempo)</td><td>—</td><td>periodo não serializado</td></tr>
+<tr><td class="mono">useLeadBulkActions</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td class="mono">useCrmDashboard</td><td>['crm-dashboard-kpis', orgId, inicio]</td><td>5min</td><td>—</td></tr>
+<tr><td class="mono">useCrmRadar</td><td>['crm-radar', orgId]</td><td>60s</td><td>—</td></tr>
+<tr><td class="mono">useCrmIcp</td><td>['crm-icp-report', orgId]</td><td>5min</td><td>—</td></tr>
+<tr><td class="mono">useCrmModals</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td class="mono">useLeads</td><td>['leads', orgId, filters]</td><td>30s</td><td>—</td></tr>
+<tr><td class="mono">useLeadFollowup</td><td>['followup-*', leadId/orgId]</td><td>30s/5min</td><td>—</td></tr>
+<tr><td class="mono">useDispararAuditoria</td><td>Invalida: crm-lead-detail + restricoes</td><td>—</td><td>—</td></tr>
+<tr><td class="mono">useSugestaoDistribuicao</td><td>['sugestao-advogado', orgId, uf]</td><td>10s</td><td>—</td></tr>
+<tr><td class="mono">useWebhookPolling</td><td>Polling webhook_requests por request_id</td><td>—</td><td>—</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ BANCO DE DADOS ═══════════════ -->
+<h2 id="db-tables">Banco de Dados — Tabelas</h2>
+
+<h3>Tabela <code>leads</code> — 64 colunas</h3>
+<div class="card">
+<p style="font-size:12px">Tabela principal do CRM com 64 colunas cobrindo dados pessoais, endereço, estado CRM,
+integrações MdZap (wa_status, wa_conversation_id, mdzap_contact_id), score IA, restrições denormalizadas,
+follow-up, e auditoria.</p>
+<table>
+<tr><th>Campo</th><th>Tipo</th><th>Nota</th></tr>
+<tr><td class="mono">id</td><td>uuid</td><td>PK, gen_random_uuid()</td></tr>
+<tr><td class="mono">organizacao_id</td><td>uuid NOT NULL</td><td>FK organizacoes</td></tr>
+<tr><td class="mono">coluna_crm</td><td>text NOT NULL</td><td>Default 'novos'</td></tr>
+<tr><td class="mono">arquivado</td><td>boolean</td><td>Default false</td></tr>
+<tr><td class="mono">convertido</td><td>boolean</td><td>Default false</td></tr>
+<tr><td class="mono">awaiting_human</td><td>boolean</td><td>Default false</td></tr>
+<tr><td class="mono">score</td><td>integer</td><td>Score IA 0-100</td></tr>
+<tr><td class="mono">valor_estimado</td><td>bigint</td><td class="ok">✅ centavos</td></tr>
+<tr><td class="mono">ai_report</td><td>jsonb</td><td>Default '{}'</td></tr>
+<tr><td class="mono">restricoes</td><td>jsonb</td><td>Denormalizado (cópia da tabela)</td></tr>
+<tr><td class="mono">etiquetas</td><td>ARRAY</td><td>Tags custom</td></tr>
+<tr><td class="mono">deleted_at</td><td>timestamptz</td><td class="ok">✅ soft delete</td></tr>
+<tr><td class="mono">created_at / updated_at</td><td>timestamptz</td><td class="ok">✅ NOT NULL</td></tr>
+</table>
+<p style="font-size:11px;color:var(--muted);margin-top:8px">33 índices no total — excelente cobertura para queries do CRM</p>
+</div>
+
+<h3>Tabelas Auxiliares CRM (23 tabelas)</h3>
+<div class="card">
+<table>
+<tr><th>Tabela</th><th>Uso</th><th>RLS</th></tr>
+<tr><td class="mono">leads_origens</td><td>Origens de lead (Facebook, Instagram, etc.)</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">leads_atividades</td><td>Histórico de atividades (stage_change, followup)</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">leads_interacoes</td><td>Interações com atualização de ultimo_contato</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">leads_arquivamento_motivo</td><td>Motivos de arquivamento configuráveis</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">crm_notas</td><td>Notas compartilhadas CRM/MdZap</td><td class="partial">⚠️ ALL only</td></tr>
+<tr><td class="mono">crm_channel_events</td><td>Eventos de canal (WhatsApp, email) → RT invalidação</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">crm_sync_events</td><td>Sync bidirecional CRM ↔ MdZap</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">crm_followup_config</td><td>Configuração de follow-up por coluna</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">crm_estagios_funil</td><td>Estágios do funil (configurável)</td><td>—</td></tr>
+<tr><td class="mono">icp_reports</td><td>Relatório ICP calculado</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">captadores</td><td>Captadores de leads</td><td class="ok">✅ CRUD</td></tr>
+<tr><td class="mono">vendedores</td><td>Vendedores (SDR)</td><td>—</td></tr>
+<tr><td class="mono">restricoes</td><td>Restrições Boa Vista por lead</td><td class="partial">⚠️ ALL only</td></tr>
+</table>
+</div>
+
+<!-- VIEWS -->
+<h2 id="db-views">Views (4)</h2>
+<div class="card">
+<table>
+<tr><th>View</th><th>Usada por</th><th>Campos-chave</th></tr>
+<tr><td class="mono">view_crm_leads_kanban</td><td>CrmKanban, CrmListView</td><td>lead + advogado_nome/oab + atendente_nome + origem_nome + estado_sigla + restricoes_count + notas_count + etiquetas + observacoes</td></tr>
+<tr><td class="mono">view_crm_colunas_contagem</td><td>CrmPage, CrmFunnelChart</td><td>coluna_crm, total (GROUP BY)</td></tr>
+<tr><td class="mono">view_crm_radar</td><td>CrmRadar, CrmRadarLeadCard</td><td>lead + tempo_sem_resposta_minutos + urgencia + last_inbound_at + atendente_nome</td></tr>
+<tr><td class="mono">view_vendedores_metricas</td><td>CrmFilterBar</td><td>user_id, user_nome, ativo</td></tr>
+</table>
+</div>
+
+<!-- RPCs -->
+<h2 id="db-rpcs">RPCs (16)</h2>
+<div class="card">
+<table>
+<tr><th>RPC</th><th>SECURITY DEFINER</th><th>Uso</th></tr>
+<tr><td class="mono">rpc_crm_aprovar_triagem</td><td class="ok">✅</td><td>Conversão lead→cliente+processos</td></tr>
+<tr><td class="mono">rpc_crm_bulk_action</td><td class="ok">✅</td><td>Ações em massa (arquivar, mover, atribuir)</td></tr>
+<tr><td class="mono">rpc_crm_dashboard_kpis</td><td class="ok">✅</td><td>KPIs: ativos, novos, conversões, awaiting</td></tr>
+<tr><td class="mono">rpc_disparar_auditoria</td><td class="ok">✅</td><td>Consulta Boa Vista</td></tr>
+<tr><td class="mono">rpc_cadastrar_lead_boa_vista</td><td class="ok">✅</td><td>Cria lead a partir de resultado Boa Vista</td></tr>
+<tr><td class="mono">rpc_devolver_crm</td><td class="ok">✅</td><td>Devolve processo para CRM</td></tr>
+<tr><td class="mono">fn_crm_stats</td><td class="ok">✅</td><td>Estatísticas gerais CRM</td></tr>
+<tr><td class="mono">fn_crm_funil</td><td class="ok">✅</td><td>Dados do funil por período</td></tr>
+<tr><td class="mono">fn_link_conversa_to_lead</td><td class="ok">✅</td><td>Vincula conversa WhatsApp ao lead</td></tr>
+<tr><td class="mono">set_conversa_pending_lead_data</td><td class="ok">✅</td><td>Salva dados pendentes do lead na conversa</td></tr>
+<tr><td class="mono">set_lead_convertido</td><td class="ok">✅</td><td>Marca lead como convertido</td></tr>
+<tr><td class="mono">set_lead_tratado</td><td class="ok">✅</td><td>Marca lead como tratado</td></tr>
+<tr><td class="mono">distribuir_lead_completo</td><td class="ok">✅</td><td>Distribuição completa do lead</td></tr>
+<tr><td class="mono">fn_dashboard_leads_funil</td><td class="ok">✅</td><td>Funil para dashboard geral</td></tr>
+<tr><td class="mono">fn_indicacoes_converter_lead</td><td class="ok">✅</td><td>Converte indicação em lead</td></tr>
+<tr><td class="mono">fn_admin_create_lead</td><td class="ok">✅</td><td>Criação administrativa de lead</td></tr>
+</table>
+<p style="font-size:12px;color:var(--success);margin-top:8px">✅ 100% das RPCs com SECURITY DEFINER — excelente</p>
+</div>
+
+<!-- TRIGGERS -->
+<h2 id="db-triggers">Triggers na tabela leads (5)</h2>
+<div class="card">
+<table>
+<tr><th>Trigger</th><th>Evento</th><th>Função</th></tr>
+<tr><td class="mono">trg_lead_historico_entrada</td><td>INSERT</td><td>trg_lead_historico_entrada — registra entrada no histórico</td></tr>
+<tr><td class="mono">trg_lead_historico_update</td><td>UPDATE</td><td>trg_lead_historico_update — registra mudanças no histórico JSONB</td></tr>
+<tr><td class="mono">trg_leads_data_conversao</td><td>UPDATE</td><td>fn_trg_leads_data_conversao — seta data_conversao ao converter</td></tr>
+<tr><td class="mono">trg_leads_mdzap_sync</td><td>UPDATE</td><td>fn_trg_leads_mdzap_sync — sync bidirecional CRM↔MdZap</td></tr>
+<tr><td class="mono">trg_leads_updated_at</td><td>UPDATE</td><td>update_updated_at — atualiza updated_at automaticamente</td></tr>
+</table>
+<p style="font-size:12px;color:var(--success);margin-top:8px">✅ 5 triggers ativos — cobertura completa para INSERT e UPDATE</p>
+</div>
+
+<!-- ÍNDICES -->
+<h2 id="db-indexes">Índices (33)</h2>
+<div class="card">
+<p style="font-size:12px;margin-bottom:8px">A tabela leads possui 33 índices, cobrindo todos os campos de busca e filtro usados pelo frontend.</p>
+<div class="grid2">
+<div>
+<h4>Índices de Busca</h4>
+<table>
+<tr><td class="mono">idx_leads_nome</td><td>Busca por nome</td></tr>
+<tr><td class="mono">idx_leads_org_cpf</td><td>Busca por CPF + org</td></tr>
+<tr><td class="mono">idx_leads_cpf_unique_ativo</td><td>UNIQUE CPF ativo</td></tr>
+<tr><td class="mono">idx_leads_whatsapp_unique_ativo</td><td>UNIQUE WhatsApp ativo</td></tr>
+</table>
+</div>
+<div>
+<h4>Índices de Filtro</h4>
+<table>
+<tr><td class="mono">idx_leads_active</td><td>Leads ativos (deleted_at IS NULL)</td></tr>
+<tr><td class="mono">idx_leads_coluna</td><td>Filtro por coluna_crm</td></tr>
+<tr><td class="mono">idx_leads_atendente_org</td><td>Atendente + org</td></tr>
+<tr><td class="mono">idx_leads_awaiting_human</td><td>Leads awaiting</td></tr>
+<tr><td class="mono">idx_leads_funil</td><td>Funil de vendas</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- RLS -->
+<h2 id="db-rls">RLS Policies</h2>
+<div class="card">
+<table>
+<tr><th>Tabela</th><th>RLS</th><th>Função</th><th>Modelo</th><th>Problema</th></tr>
+<tr><td class="mono">leads</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">crm_notas</td><td class="ok">✅ ON</td><td>get_org_id()</td><td>ALL (1 policy)</td><td class="partial">⚠️ Sem CRUD granular</td></tr>
+<tr><td class="mono">leads_atividades</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">leads_origens</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">leads_interacoes</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">leads_arquivamento_motivo</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">captadores</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD + portal</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">crm_channel_events</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">crm_sync_events</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">crm_followup_config</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">icp_reports</td><td class="ok">✅ ON</td><td>org_id()</td><td>CRUD (4 policies)</td><td class="partial">⚠️ Usa org_id() deprecated</td></tr>
+<tr><td class="mono">restricoes</td><td class="ok">✅ ON</td><td>get_org_id()</td><td>ALL (1 policy)</td><td class="partial">⚠️ Sem CRUD granular</td></tr>
+</table>
+<p style="font-size:12px;color:var(--warn);margin-top:8px">
+⚠️ A maioria das tabelas CRM usa <code>org_id()</code> (deprecated) em vez de <code>get_org_id()</code> (padrão atual).
+Ambas funções existem e funcionam, mas a padronização para <code>get_org_id()</code> é recomendada.
+</p>
+</div>
+
+<!-- ═══════════════ ACHADOS ═══════════════ -->
+<h2 id="findings">Achados P0 / P1 / P2</h2>
+
+<h3>P0 — Críticos (0)</h3>
+<div class="card" style="border-left: 4px solid var(--success)">
+<p style="font-size:13px;color:var(--success);font-weight:600">Nenhum achado P0 no CRM. Build limpo, sem erros TS nos arquivos CRM.</p>
+</div>
+
+<h3>P1 — Importantes (6)</h3>
+
+<div class="pending-item p1">
+<div class="pending-label">P1-01: RLS usa org_id() deprecated em 10 tabelas</div>
+<div class="pending-content">
+Tabelas <code>leads</code>, <code>leads_atividades</code>, <code>leads_origens</code>, <code>leads_interacoes</code>,
+<code>leads_arquivamento_motivo</code>, <code>captadores</code>, <code>crm_channel_events</code>,
+<code>crm_sync_events</code>, <code>crm_followup_config</code>, <code>icp_reports</code>
+usam <code>org_id()</code> em vez de <code>get_org_id()</code>.<br>
+<strong>Impacto:</strong> Funcional, mas inconsistente com padrão do projeto.<br>
+<strong>Fix:</strong> Migration para trocar policies.
+</div>
+</div>
+
+<div class="pending-item p1">
+<div class="pending-label">P1-02: crm_notas RLS genérica (ALL policy)</div>
+<div class="pending-content">
+<code>crm_notas</code> tem apenas 1 policy ALL com <code>get_org_id()</code>. Sem granularidade CRUD.
+INSERT não valida WITH CHECK.<br>
+<strong>Fix:</strong> Trocar por 4 policies (SELECT/INSERT/UPDATE/DELETE).
+</div>
+</div>
+
+<div class="pending-item p1">
+<div class="pending-label">P1-03: restricoes RLS genérica (ALL policy)</div>
+<div class="pending-content">
+<code>restricoes</code> tem apenas 1 policy ALL. Sem granularidade CRUD.<br>
+<strong>Fix:</strong> Trocar por 4 policies CRUD.
+</div>
+</div>
+
+<div class="pending-item p1">
+<div class="pending-label">P1-04: CrmOrigensChart faz SELECT completo em leads</div>
+<div class="pending-content">
+<code>CrmOrigensChart</code> seleciona TODOS os leads ativos e faz aggregation client-side.
+Atualmente ~31 leads — sem impacto. Com 10k+ leads, será lento.<br>
+<strong>Fix:</strong> Criar RPC <code>fn_crm_origens_chart</code> com GROUP BY server-side.
+</div>
+</div>
+
+<div class="pending-item p1">
+<div class="pending-label">P1-05: CrmTrendChart faz SELECT em 90 dias de leads</div>
+<div class="pending-content">
+<code>CrmTrendChart</code> seleciona created_at de TODOS os leads nos últimos 90 dias e agrupa por semana client-side.<br>
+<strong>Fix:</strong> Criar RPC <code>fn_crm_trend_chart</code> com date_trunc server-side.
+</div>
+</div>
+
+<div class="pending-item p1">
+<div class="pending-label">P1-06: Tabelas auxiliares CRM sem triggers set_updated_at</div>
+<div class="pending-content">
+<code>crm_notas</code>, <code>leads_atividades</code>, <code>leads_origens</code>, <code>leads_interacoes</code>,
+<code>crm_channel_events</code> — não possuem trigger <code>set_updated_at</code>.<br>
+<strong>Fix:</strong> Adicionar trigger BEFORE UPDATE em cada tabela.
+</div>
+</div>
+
+<h3>P2 — Tech Debt (4)</h3>
+
+<div class="pending-item p2">
+<div class="pending-label">P2-01: CrmPage.tsx com 488 linhas</div>
+<div class="pending-content">Próximo do limite de 500 linhas. Extrair lógica de contagens e deep-links para hooks.</div>
+</div>
+
+<div class="pending-item p2">
+<div class="pending-label">P2-02: ~35 instâncias de "as any" nos hooks CRM</div>
+<div class="pending-content">Convenção aceita para schema drift, mas alvo é reduzir para &lt;15.</div>
+</div>
+
+<div class="pending-item p2">
+<div class="pending-label">P2-03: CrmListView scroll horizontal em mobile</div>
+<div class="pending-content">Grid com min-w-[640px] causa scroll horizontal em telas &lt;640px. Considerar layout alternativo.</div>
+</div>
+
+<div class="pending-item p2">
+<div class="pending-label">P2-04: Filtro "periodo" não serializado na URL</div>
+<div class="pending-content">useLeadFilters comenta "objeto complexo, não vale serializar". 
+Considerar serialização ISO para compartilhamento completo.</div>
+</div>
+
+<!-- ═══════════════ PONTOS FORTES ═══════════════ -->
+<h2 id="strengths">Pontos Fortes</h2>
+<div class="card">
+<table>
+<tr><th>#</th><th>Feature</th><th>Detalhe</th></tr>
+<tr><td>1</td><td>Kanban DnD robusto</td><td>Optimistic update + undo + validação + histórico + timeline — melhor prática</td></tr>
+<tr><td>2</td><td>Dedup no cadastro</td><td>Verifica CPF + WhatsApp ANTES de inserir, com modal de decisão</td></tr>
+<tr><td>3</td><td>Triagem com confetti</td><td>RPC atômica + UI celebratória + toast com navegação</td></tr>
+<tr><td>4</td><td>Deep-links completos</td><td>6 params de URL compartilháveis — melhor DX do projeto</td></tr>
+<tr><td>5</td><td>Realtime 3 canais</td><td>crm_channel_events + leads UPDATE + leads INSERT/DELETE</td></tr>
+<tr><td>6</td><td>Fallback polling</td><td>refetchInterval: 60s como backup do WebSocket</td></tr>
+<tr><td>7</td><td>Bulk actions</td><td>Floating bar + rpc_crm_bulk_action para mover/atribuir/arquivar em massa</td></tr>
+<tr><td>8</td><td>Radar com countdown</td><td>Auto-refresh visual com contagem regressiva</td></tr>
+<tr><td>9</td><td>CrmLeadCard denso</td><td>9 linhas de informação em espaço compacto — design exemplar</td></tr>
+<tr><td>10</td><td>Auto-link advogado</td><td>Selecionar estado → busca distribuição UF → preenche advogado</td></tr>
+<tr><td>11</td><td>Dirty-state universal</td><td>3 modais principais com AlertDialog de confirmação</td></tr>
+<tr><td>12</td><td>100% RPCs SECURITY DEFINER</td><td>16 RPCs — todas com search_path = public</td></tr>
+<tr><td>13</td><td>33 índices na leads</td><td>Cobertura excepcional para todos os padrões de query</td></tr>
+<tr><td>14</td><td>Notas compartilhadas</td><td>crm_notas com origem CRM/MdZap — exibição unificada</td></tr>
+<tr><td>15</td><td>ErrorBoundary por tab</td><td>Cada TabsContent envolvido em ErrorBoundary isolado</td></tr>
+<tr><td>16</td><td>Keyboard shortcut N</td><td>Novo Lead via teclado com proteção contra inputs/modais abertos</td></tr>
+<tr><td>17</td><td>Mobile responsive</td><td>Sheet de filtros no mobile, DropdownMenu overflow no header</td></tr>
+<tr><td>18</td><td>ICP com threshold</td><td>Mostra progresso antes de ter dados suficientes — UX transparente</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ RECOMENDAÇÕES ═══════════════ -->
+<h2 id="recommendations">Recomendações Priorizadas</h2>
+
+<div class="card">
+<h4>P1 — Importantes</h4>
+<ol style="font-size:12px;margin-left:16px">
+<li><strong>Padronizar RLS para get_org_id()</strong> — migration em 10 tabelas CRM</li>
+<li><strong>crm_notas + restricoes:</strong> trocar ALL policy por 4 CRUD policies</li>
+<li><strong>CrmOrigensChart:</strong> criar fn_crm_origens_chart com GROUP BY server-side</li>
+<li><strong>CrmTrendChart:</strong> criar fn_crm_trend_chart com date_trunc server-side</li>
+<li><strong>Triggers set_updated_at:</strong> adicionar em crm_notas, leads_atividades, leads_origens, etc.</li>
+</ol>
+</div>
+
+<div class="card">
+<h4>P2 — Tech Debt</h4>
+<ol style="font-size:12px;margin-left:16px">
+<li><strong>CrmPage.tsx:</strong> extrair useCrmContagens() e useCrmDeepLinks() para reduzir de 488 para ~300 linhas</li>
+<li><strong>Reduzir "as any":</strong> alvo &lt;15 instâncias nos hooks CRM (atualmente ~35)</li>
+<li><strong>CrmListView mobile:</strong> layout card em &lt;640px em vez de grid com scroll</li>
+<li><strong>Filtro periodo:</strong> serializar datas ISO na URL para compartilhamento completo</li>
+</ol>
+</div>
+
+<footer>
+  Super Revisão Profunda CRM — MdFlow | MDX LegalTech | Gerado em 14/04/2026 21:52
+</footer>
+</main>
+</div>
+</body>
+</html>

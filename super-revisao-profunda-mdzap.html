@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Revisão Profunda — MDZap — 14/04/2026 21:35</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e; --surface: #1a1714; --card: #201d1a; --border: #2e2b27;
+  --primary: #20c997; --primary-dim: #20c99720; --primary-border: #20c99740;
+  --warn: #f59e0b; --danger: #ef4444; --success: #22c55e; --info: #60a5fa;
+  --text: #f5f0eb; --muted: #9e9890;
+  --chart2: #a78bfa; --chart3: #f59e0b; --chart5: #0ea5e9;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; font-size:14px; line-height:1.6; }
+.layout { display:flex; min-height:100vh; }
+.sidebar { width:240px; position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--surface); border-right:1px solid var(--border); padding:20px 0; flex-shrink:0; }
+.sidebar h3 { font-family:'Manrope',sans-serif; font-size:12px; color:var(--primary); text-transform:uppercase; letter-spacing:1.5px; padding:0 16px; margin:16px 0 8px; }
+.sidebar a { display:block; padding:6px 16px; color:var(--muted); text-decoration:none; font-size:12px; transition:all .15s; border-left:2px solid transparent; }
+.sidebar a:hover { color:var(--text); background:var(--card); border-left-color:var(--primary); }
+.sidebar .logo { font-family:'Manrope',sans-serif; font-size:16px; font-weight:700; color:var(--primary); padding:0 16px 16px; border-bottom:1px solid var(--border); }
+main { flex:1; max-width:1000px; padding:32px 40px; }
+h1 { font-family:'Manrope',sans-serif; font-size:28px; font-weight:800; margin-bottom:8px; }
+h2 { font-family:'Manrope',sans-serif; font-size:20px; font-weight:700; margin:40px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border); color:var(--primary); }
+h3 { font-family:'Manrope',sans-serif; font-size:15px; font-weight:700; margin:24px 0 10px; color:var(--text); }
+h4 { font-size:13px; font-weight:600; margin:16px 0 8px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+.subtitle { color:var(--muted); font-size:14px; margin-bottom:24px; }
+.meta-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+.chip { background:var(--card); border:1px solid var(--border); border-radius:6px; padding:3px 10px; font-size:11px; color:var(--muted); }
+.chip.primary { border-color:var(--primary-border); color:var(--primary); background:var(--primary-dim); }
+.chip.danger { border-color:#ef444440; color:var(--danger); background:#ef444420; }
+.chip.warn { border-color:#f59e0b40; color:var(--warn); background:#f59e0b20; }
+.chip.success { border-color:#22c55e40; color:var(--success); background:#22c55e20; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 20px; margin-bottom:12px; }
+.card-title { font-family:'Manrope',sans-serif; font-weight:600; font-size:14px; margin-bottom:8px; }
+table { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0; }
+th { text-align:left; padding:8px 12px; background:var(--surface); border:1px solid var(--border); font-weight:600; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
+td { padding:8px 12px; border:1px solid var(--border); vertical-align:top; }
+tr:hover td { background:var(--surface); }
+.badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; }
+.badge-p0 { background:#ef444425; color:#ef4444; border:1px solid #ef444440; }
+.badge-p1 { background:#f59e0b25; color:#f59e0b; border:1px solid #f59e0b40; }
+.badge-p2 { background:var(--card); color:var(--muted); border:1px solid var(--border); }
+.badge-ok { background:#22c55e20; color:#22c55e; border:1px solid #22c55e40; }
+.code { font-family:var(--mono); font-size:12px; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:12px 16px; overflow-x:auto; white-space:pre; margin:8px 0; line-height:1.5; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.score-ring { width:120px; height:120px; margin:0 auto 12px; }
+.kpi { text-align:center; }
+.kpi .num { font-family:'Manrope',sans-serif; font-size:32px; font-weight:800; }
+.kpi .label { font-size:11px; color:var(--muted); }
+.pending { border-left:3px solid; padding:8px 12px; margin:8px 0; border-radius:0 6px 6px 0; background:var(--card); }
+.pending.p0 { border-color:var(--danger); }
+.pending.p1 { border-color:var(--warn); }
+.pending.p2 { border-color:var(--border); }
+footer { margin-top:60px; padding:20px 0; border-top:1px solid var(--border); color:var(--muted); font-size:11px; text-align:center; }
+@media(max-width:768px) { .sidebar { display:none; } main { padding:16px; } .grid2,.grid3 { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="logo">MDZap Deep Review</div>
+  <h3>Arquitetura</h3>
+  <a href="#overview">Visão Geral</a>
+  <a href="#routing">Roteamento & Pages</a>
+  <a href="#layout">Layout 3 Colunas</a>
+  <a href="#sdr">Multi-Agente SDR</a>
+  <h3>Componentes</h3>
+  <a href="#components">Inventário (55 arquivos)</a>
+  <a href="#chatpanel">MdzapChatPanel</a>
+  <a href="#msgthread">MdzapMsgThread</a>
+  <a href="#leadpanel">MdzapLeadPanel</a>
+  <a href="#julialab">MdzapJuliaLab</a>
+  <a href="#dashboard">Dashboard & Telemetria</a>
+  <a href="#gestao">Gestão & Templates</a>
+  <h3>Hooks</h3>
+  <a href="#hooks">Inventário (22 hooks)</a>
+  <a href="#hook-conversas">useMdzapConversas</a>
+  <a href="#hook-mensagens">useMdzapMensagens</a>
+  <a href="#hook-send">useMdzapSendMessage</a>
+  <a href="#hook-status">useMdzapStatus</a>
+  <a href="#hook-others">Outros Hooks</a>
+  <h3>Backend</h3>
+  <a href="#tables">Tabelas (21)</a>
+  <a href="#rpcs">RPCs (5)</a>
+  <a href="#rls">RLS Policies</a>
+  <a href="#indices">Índices</a>
+  <a href="#webhooks">Webhooks n8n</a>
+  <h3>Realtime</h3>
+  <a href="#realtime">Canais (6+)</a>
+  <h3>Tipos</h3>
+  <a href="#types">mdzap.types.ts</a>
+  <h3>Problemas</h3>
+  <a href="#build-errors">Build Errors (P0)</a>
+  <a href="#issues">Achados P1/P2</a>
+  <a href="#security">Segurança</a>
+  <h3>Veredicto</h3>
+  <a href="#verdict">Nota Final</a>
+  <a href="#recommendations">Recomendações</a>
+</aside>
+
+<main>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<h1>Super Revisão Profunda — MDZap</h1>
+<p class="subtitle">Auditoria exaustiva de 55 componentes, 22 hooks, 21 tabelas, 5 RPCs e 6+ canais Realtime</p>
+<div class="meta-row">
+  <span class="chip primary">Gerado: 14/04/2026 21:35</span>
+  <span class="chip">Componentes: 55</span>
+  <span class="chip">Hooks: 22</span>
+  <span class="chip">Tabelas: 21</span>
+  <span class="chip">RPCs: 5</span>
+  <span class="chip danger">Build Errors: 23</span>
+  <span class="chip warn">Achados P1: 8</span>
+</div>
+
+<!-- ═══════════════ SCORES ═══════════════ -->
+<div class="grid3" style="margin-bottom:32px;">
+  <div class="card kpi">
+    <div class="num" style="color:var(--warn);">6.5</div>
+    <div class="label">Nota Geral /10</div>
+  </div>
+  <div class="card kpi">
+    <div class="num" style="color:var(--danger);">23</div>
+    <div class="label">Build Errors TS</div>
+  </div>
+  <div class="card kpi">
+    <div class="num" style="color:var(--success);">21</div>
+    <div class="label">Tabelas Mapeadas</div>
+  </div>
+</div>
+<div class="grid2" style="margin-bottom:32px;">
+  <div class="card">
+    <div class="card-title">Scores por Área</div>
+    <table>
+      <tr><td>Arquitetura & Layout</td><td><span class="badge badge-ok">9/10</span></td></tr>
+      <tr><td>Componentes & UI</td><td><span class="badge badge-ok">8/10</span></td></tr>
+      <tr><td>Hooks & State</td><td><span class="badge badge-ok">8/10</span></td></tr>
+      <tr><td>Type Safety</td><td><span class="badge badge-p0">3/10</span></td></tr>
+      <tr><td>Backend Schema</td><td><span class="badge badge-ok">8/10</span></td></tr>
+      <tr><td>RLS & Segurança</td><td><span class="badge badge-p1">7/10</span></td></tr>
+      <tr><td>Realtime</td><td><span class="badge badge-ok">9/10</span></td></tr>
+      <tr><td>Webhooks n8n</td><td><span class="badge badge-ok">8/10</span></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">Bloqueadores P0</div>
+    <div class="pending p0">
+      <strong>MdzapJuliaLab.tsx</strong> — 18 erros TypeScript. Todas operações Supabase (select, insert, update) rejeitadas pelo type system. Tabela <code>mdzap_julia_lab_sessoes</code> não está no types.ts gerado ou schema diverge.
+    </div>
+    <div class="pending p0">
+      <strong>MdzapMsgThread.tsx</strong> — 3 erros TS na linha 187. Update de metadata em whatsapp_conversas e .eq() com string incompatível.
+    </div>
+    <div class="pending p0">
+      <strong>useLeadFormData.ts</strong> — 4 erros TS. .eq() em advogados e leads_origens com tipos incompatíveis.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SEÇÃO 1: VISÃO GERAL ═══════════════ -->
+<h2 id="overview">1. Visão Geral da Arquitetura</h2>
+
+<div class="card">
+<div class="card-title">O que é o MDZap</div>
+<p>Sistema de mensageria WhatsApp integrado ao CRM MdFlow. Gerencia conversas com leads via WhatsApp usando IA (Julia) como SDR automatizado, com capacidade de handoff para humanos.</p>
+</div>
+
+<h3 id="routing">1.1 Roteamento & Pages</h3>
+<table>
+<tr><th>Rota</th><th>Arquivo</th><th>Layout</th><th>Descrição</th></tr>
+<tr><td><code>/mdzap</code></td><td>src/pages/mdzap/index.tsx</td><td>AppLayout</td><td>Router: redireciona mobile→/mdzap/app, desktop→Hub ou agente padrão (localStorage)</td></tr>
+<tr><td><code>/mdzap/leads</code></td><td>src/pages/mdzap/leads/index.tsx</td><td>AppLayout</td><td>Desktop: MdzapChatPanel com hideSdrToggle. Mobile: redirect→/mdzap/app</td></tr>
+<tr><td><code>/mdzap/app</code></td><td>src/pages/MdzapAppPage.tsx</td><td>Standalone (280 linhas)</td><td>Layout mobile-first: 3 telas stack (list|thread|lead) + BottomNav. Desktop: 3 colunas</td></tr>
+<tr><td><code>/mdzap</code> (Hub)</td><td>src/pages/mdzap/hub.tsx</td><td>AppLayout</td><td>Card grid: 4 agentes (sdr_leads ativo, 3 disabled). Favoritar agente padrão via localStorage</td></tr>
+</table>
+
+<h3 id="layout">1.2 Layout 3 Colunas (Desktop)</h3>
+<div class="code">┌─────────────┬─────────────────────────┬──────────────┐
+│ Coluna 1    │ Coluna 2                │ Coluna 3     │
+│ 320px fixo  │ flex-1                  │ 360px toggle │
+│             │                         │              │
+│ ConversaList│ MsgThread               │ LeadPanel    │
+│  - Busca    │  - ThreadHeader         │  - Dados     │
+│  - Fila/    │  - ContextBar (CPF/CRM) │  - Restr.    │
+│    Minhas/  │  - Bubbles + separators │  - Docs      │
+│    Todas    │  - SmartReplies         │  - Notas     │
+│  - Filtros  │  - ReplyBanner          │  - Memória   │
+│  - Cards    │  - MsgInput [📎][✨]   │  - Nav ←→    │
+│  - Contatos │  - [Textarea][🎙️][▶]  │              │
+│  - Bulk bar │  - TypingIndicator      │              │
+└─────────────┴─────────────────────────┴──────────────┘</div>
+
+<h3 id="sdr">1.3 Arquitetura Multi-Agente SDR</h3>
+<table>
+<tr><th>Agente</th><th>Slug</th><th>Status</th><th>Cor</th><th>Rota</th></tr>
+<tr><td>Julia SDR Leads</td><td>sdr_leads</td><td><span class="badge badge-ok">Ativo</span></td><td>primary (#20c997)</td><td>/mdzap/leads</td></tr>
+<tr><td>Docs Pendentes</td><td>sdr_docs_pendentes</td><td><span class="badge badge-p2">Disabled</span></td><td>chart-5 (#0ea5e9)</td><td>/mdzap/docs</td></tr>
+<tr><td>Acordos CP</td><td>sdr_acordos_cp</td><td><span class="badge badge-p2">Disabled</span></td><td>chart-2 (#a78bfa)</td><td>/mdzap/acordos-cp</td></tr>
+<tr><td>Acordos HM</td><td>sdr_acordos_hm</td><td><span class="badge badge-p2">Disabled</span></td><td>chart-3 (#f59e0b)</td><td>/mdzap/acordos-hm</td></tr>
+</table>
+<p>Filtragem por agente usa <code>COALESCE(metadata->>'agente_slug', wn.agente_slug, 'sdr_leads')</code> na RPC fn_mdzap_conversas. Default: sdr_leads.</p>
+
+<!-- ═══════════════ SEÇÃO 2: COMPONENTES ═══════════════ -->
+<h2 id="components">2. Inventário Completo de Componentes</h2>
+
+<h3>2.1 Componentes Raiz (src/components/mdzap/)</h3>
+<table>
+<tr><th>Arquivo</th><th>Linhas</th><th>Responsabilidade</th><th>Status</th></tr>
+<tr><td>MdzapChatPanel.tsx</td><td>258</td><td>Orquestrador principal: tabs, SDR toggle, 3 colunas desktop, mobile stack</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMsgThread.tsx</td><td>328</td><td>Thread de mensagens: bubbles, drag&drop, reply, input, search, scroll infinito</td><td><span class="badge badge-p0">3 erros TS</span></td></tr>
+<tr><td>MdzapConversaList.tsx</td><td>296</td><td>Lista de conversas: Fila/Minhas/Todas, filtros, bulk, contatos</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapLeadPanel.tsx</td><td>290</td><td>Painel lateral: 5 tabs (Dados/Restr./Docs/Notas/Memória), nav guiada</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapJuliaLab.tsx</td><td>271</td><td>Lab de testes Julia: sessões persistidas, modo refinamento, webhook</td><td><span class="badge badge-p0">18 erros TS</span></td></tr>
+<tr><td>MdzapDashboard.tsx</td><td>399</td><td>KPIs + charts: conversas, tempo resposta, sentimento, ICP</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapGestaoPanel.tsx</td><td>47</td><td>Wrapper: Prompts Julia + Números + UserMaps + StageMaps + Recentes</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapTelemetriaPanel.tsx</td><td>170</td><td>Telemetria: KPIs operacionais + charts de distribuição</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMsgBubble.tsx</td><td>238</td><td>Bolhas: entrada/saída, status ticks, reply swipe, feedback, ContextBar</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMsgInput.tsx</td><td>276</td><td>Input: textarea, template "/", áudio, anexos, AI composer, link</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapThreadHeader.tsx</td><td>217</td><td>Header thread: avatar, nome, SDR mode dropdown, assumir/devolver, CRM mover</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapConversaFilters.tsx</td><td>~100</td><td>Filtros avançados: status, atendimento, responsável, não lidas, SDR</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapConversaCardList.tsx</td><td>~150</td><td>Renderiza cards de conversas com swipe actions</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapConversaBulkBar.tsx</td><td>~80</td><td>Barra de ações em lote: arquivar, transferir, atribuir</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapSearchBar.tsx</td><td>~60</td><td>Barra de busca dentro da thread com navegação prev/next</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapSmartReplies.tsx</td><td>~80</td><td>Sugestões de resposta rápida via RPC fn_mdzap_smart_replies</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMediaPreview.tsx</td><td>~100</td><td>Preview modal de mídia antes do envio (imagem/vídeo/doc)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapDragOverlay.tsx</td><td>~30</td><td>Overlay visual de drag&drop sobre a thread</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapReplyBanner.tsx</td><td>~40</td><td>Banner de resposta citada acima do input</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapAudioRecorder.tsx</td><td>~120</td><td>Gravador de áudio inline com waveform visual</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapAIComposer.tsx</td><td>~100</td><td>Botão ✨: gera texto via webhook mdzap/ai-composer</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapAttachmentMenu.tsx</td><td>~80</td><td>Menu 📎: imagem, vídeo, documento, múltiplos arquivos</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapLinkInput.tsx</td><td>~60</td><td>Input de link com preview (título, descrição, imagem)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMsgAudio.tsx</td><td>~80</td><td>Player de áudio inline nas bolhas</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMsgMedia.tsx</td><td>~60</td><td>Renderiza imagens/vídeos/documentos nas bolhas</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMsgText.tsx</td><td>~40</td><td>Renderiza texto com link highlighting e markdown básico</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMsgTemplate.tsx</td><td>~50</td><td>Renderiza templates com variáveis substituídas</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapMsgFeedback.tsx</td><td>~60</td><td>Feedback thumbs up/down por mensagem da Julia</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapContextCard.tsx</td><td>~50</td><td>Card de contexto de lead na lista de conversas</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapBadgeStatus.tsx</td><td>~40</td><td>Badge de 9 níveis de status (wa_blocked→fallback)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapConnectionIndicator.tsx</td><td>~50</td><td>Indicador de conexão WhatsApp (badge/tooltip)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapSendButton.tsx</td><td>~30</td><td>Botão "Enviar WhatsApp" usado no CRM</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapSwipeableCard.tsx</td><td>~120</td><td>Card de conversa com swipe left/right actions</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapContatosList.tsx</td><td>~80</td><td>Lista de contatos convertidos (leads com cliente_id)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapBottomNav.tsx</td><td>~60</td><td>Nav mobile: Conversas/Dashboard/Julia/Templates/Gestão</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapTabNav.tsx</td><td>~50</td><td>Tabs desktop extraídas do ChatPanel</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>SdrModeToggle.tsx</td><td>~60</td><td>Toggle SDR Leads/Docs/Acordos com counts</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapTransferModal.tsx</td><td>~80</td><td>Modal de transferência de conversa para outro membro</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapImageLightbox.tsx</td><td>~40</td><td>Lightbox fullscreen para imagens</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapKpiWidget.tsx</td><td>~30</td><td>Widget de KPI reutilizável</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapLeadCadastroDrawer.tsx</td><td>~200</td><td>Drawer 2 fases: Dados → Restrições (pós-auditoria)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapLeadMemoryPanel.tsx</td><td>~60</td><td>Memória da Julia sobre o lead (mdzap_lead_memory)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapAdminIA.tsx</td><td>~150</td><td>Gerenciamento dos AI modules (prompts Julia por slug)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>MdzapIcpTab.tsx</td><td>~80</td><td>Tab ICP: perfil ideal de cliente com análise diária</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>TemplatesManagerDialog.tsx</td><td>~150</td><td>CRUD de templates WhatsApp</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>AlertDialogBulkDocuments.tsx</td><td>~100</td><td>Dialog de envio em lote de cobranças de documentos</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>AlertDialogBulkNegotiations.tsx</td><td>~100</td><td>Dialog de envio em lote de negociações/acordos</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>mdzap-display-utils.ts</td><td>12</td><td>Helpers: isValidName, humanizeColuna</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>mdzap-text-utils.tsx</td><td>~30</td><td>Helpers de texto: highlight search, markdown lite</td><td><span class="badge badge-ok">OK</span></td></tr>
+</table>
+
+<h3>2.2 Sub-diretórios</h3>
+
+<h4>lead-panel/ (13 arquivos)</h4>
+<table>
+<tr><th>Arquivo</th><th>Responsabilidade</th><th>Status</th></tr>
+<tr><td>useLeadFormData.ts</td><td>State do form + queries advogados/origens + dirty state</td><td><span class="badge badge-p0">4 erros TS</span></td></tr>
+<tr><td>useLeadMutations.ts</td><td>saveLead, criarLead, criarLeadEAuditarInline</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useDocReaderMapping.ts</td><td>Preenchimento automático via Doc Reader (pending_lead_data)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useLeadPanelActions.ts</td><td>Orquestrador: combina formData + mutations + docReader</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>LeadDadosTab.tsx</td><td>Tab Dados: formulário completo com campos, Doc Reader, botões</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>LeadDadosFields.tsx</td><td>Campos do formulário: nome, CPF, RG, endereço, etc.</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>LeadRestricoesMdzapTab.tsx</td><td>Tab Restrições: auditoria Boa Vista + lista de restrições</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>LeadDocumentosTab.tsx</td><td>Tab Documentos: mensagens de mídia da conversa</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>LeadNotasTab.tsx</td><td>Tab Notas: notas internas compartilhadas via crm_notas</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>LeadMemoriaTab.tsx</td><td>Tab Memória: memória da Julia sobre o lead</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>FieldConfidenceBadge.tsx</td><td>Badge de confiança do Doc Reader (alto/médio/baixo)</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>doc-reader-helpers.ts</td><td>Parser de dados do Doc Reader</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>types.ts</td><td>LeadDados, LEAD_EMPTY, validarCPF, formatarCPF</td><td><span class="badge badge-ok">OK</span></td></tr>
+</table>
+
+<h4>julia-lab/ (6 arquivos)</h4>
+<table>
+<tr><th>Arquivo</th><th>Responsabilidade</th></tr>
+<tr><td>JuliaLabSessaoList.tsx</td><td>Lista lateral de sessões com create/delete</td></tr>
+<tr><td>JuliaLabChatHeader.tsx</td><td>Header com seletor de módulo e contexto (nome, empresa)</td></tr>
+<tr><td>JuliaLabChatArea.tsx</td><td>Área de chat com bolhas user/julia</td></tr>
+<tr><td>JuliaLabChatInput.tsx</td><td>Input com toggle refinamento, copiar, resetar</td></tr>
+<tr><td>JuliaLabMsgBubble.tsx</td><td>Bolha individual com tokens, latência, versão prompt</td></tr>
+<tr><td>types.ts</td><td>Modulo, SimMsg, JuliaLabSessao</td></tr>
+</table>
+
+<h4>gestao-panel/ (5+1 arquivos)</h4>
+<table>
+<tr><th>Arquivo</th><th>Responsabilidade</th></tr>
+<tr><td>GestaoNumerosSection.tsx</td><td>Lista de números WhatsApp com status/heartbeat</td></tr>
+<tr><td>GestaoUserMapsSection.tsx</td><td>Mapeamento MdZap user → MDFlow user</td></tr>
+<tr><td>GestaoStageMapsSection.tsx</td><td>Mapeamento MdZap stage → CRM coluna</td></tr>
+<tr><td>GestaoMensagensRecentesSection.tsx</td><td>Últimas 20 mensagens recebidas</td></tr>
+<tr><td>SectionHeader.tsx</td><td>Header reutilizável para seções</td></tr>
+<tr><td>types.ts</td><td>Tipos locais do painel de gestão</td></tr>
+</table>
+
+<h4>cadastro/ (2 arquivos)</h4>
+<table>
+<tr><th>Arquivo</th><th>Responsabilidade</th></tr>
+<tr><td>CadastroRestricoesPhase.tsx</td><td>Fase 2 do drawer: lista de restrições para cadastro</td></tr>
+<tr><td>CadastroRestricaoCard.tsx</td><td>Card individual de restrição no cadastro</td></tr>
+</table>
+
+<!-- ═══════════════ SEÇÃO 3: HOOKS ═══════════════ -->
+<h2 id="hooks">3. Inventário Completo de Hooks</h2>
+
+<table>
+<tr><th>Hook</th><th>Arquivo</th><th>Responsabilidade</th><th>Dependências</th><th>Status</th></tr>
+<tr id="hook-conversas"><td><strong>useMdzapConversas</strong></td><td>src/hooks/useMdzapConversas.ts</td><td>RPC fn_mdzap_conversas + realtime 3 canais (conversas/mensagens/leads) + cache otimista + markAsRead + maps lead/cliente + polling fallback</td><td>useAuth, supabase, react-query</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr id="hook-mensagens"><td><strong>useMdzapMensagens</strong></td><td>src/hooks/mdzap/useMdzapMensagens.ts</td><td>Query direta whatsapp_mensagens + scroll infinito (50/página) + realtime INSERT/UPDATE + merge inteligente + debounce 300ms</td><td>supabase, react-query</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr id="hook-send"><td><strong>useMdzapSendMessage</strong></td><td>src/hooks/mdzap/useMdzapSendMessage.ts</td><td>Envio centralizado: sendText, sendFile, sendMultipleFiles, sendLink. INSERT otimista → webhook n8n. Upload para bucket mdzap-media. Limites por tipo (5MB img, 16MB vídeo, 100MB doc)</td><td>useAuth, useMdzapStatus, callWebhook</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr id="hook-status"><td><strong>useMdzapStatus</strong></td><td>src/hooks/useMdzapStatus.ts</td><td>Query whatsapp_numeros + heartbeat 10min + cloud_api exception + realtime UPDATE + primaryNumero (proposito='comercial')</td><td>useAuth, supabase</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useConversaAssumirDevolver</td><td>src/hooks/mdzap/useConversaAssumirDevolver.ts</td><td>Webhook mdzap/assumir-conversa e mdzap/devolver-julia + Action-Driven UI (switch res.action)</td><td>callWebhook, useMdzapStatus</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapThreadActions</td><td>src/hooks/mdzap/useMdzapThreadActions.ts</td><td>Handlers: assumir, devolver, envio áudio gravado (upload→webhook), mover lead CRM (update + atividade + timeline)</td><td>useConversaAssumirDevolver, supabase</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapTyping</td><td>src/hooks/mdzap/useMdzapTyping.ts</td><td>Indicador de digitação via Supabase Broadcast (canal private). Timeout 3s auto-cleanup. sendTyping debounced 2.5s</td><td>supabase, useAuth</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapSearch</td><td>src/hooks/mdzap/useMdzapSearch.ts</td><td>Busca dentro da thread: match indices, navegação prev/next, highlight, scroll to match</td><td>useState, useRef</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapScroll</td><td>src/hooks/mdzap/useMdzapScroll.ts</td><td>Auto-scroll ao bottom, detecção isAtBottom, hasNewMsg badge, loadMore ao chegar no topo</td><td>useRef, useCallback</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapDragDrop</td><td>src/hooks/mdzap/useMdzapDragDrop.ts</td><td>Drag&drop de arquivos na thread: dragEnter/Leave/Over/Drop, filterDroppedFiles</td><td>MdzapMsgInput helpers</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapSmartReplies</td><td>src/hooks/mdzap/useMdzapSmartReplies.ts</td><td>RPC fn_mdzap_smart_replies + cache TTL 5min + fallback hardcoded</td><td>supabase</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapFaviconBadge</td><td>src/hooks/mdzap/useMdzapFaviconBadge.ts</td><td>Altera favicon com badge de contagem de não lidas</td><td>useEffect</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapNewMessageToast</td><td>src/hooks/mdzap/useMdzapNewMessageToast.ts</td><td>Toast sonner para novas mensagens de entrada (quando conversa não selecionada)</td><td>sonner, useMdzapConversas</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapNotificationSound</td><td>src/hooks/mdzap/useMdzapNotificationSound.ts</td><td>Reproduz som de notificação para mensagens de entrada</td><td>Audio API</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapKeyboardShortcuts</td><td>src/hooks/mdzap/useMdzapKeyboardShortcuts.ts</td><td>Atalhos: Ctrl+K (busca), Esc (fechar painel), ↑↓ (navegar conversas)</td><td>useEffect</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapContatos</td><td>src/hooks/mdzap/useMdzapContatos.ts</td><td>Query whatsapp_contatos → lista de contatos convertidos para aba Contatos</td><td>supabase, react-query</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapMembros</td><td>src/hooks/mdzap/useMdzapMembros.ts</td><td>RPC fn_mdzap_listar_membros → lista de membros para filtro/transferência</td><td>supabase, react-query</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapTemplates</td><td>src/hooks/mdzap/useMdzapTemplates.ts</td><td>CRUD de templates whatsapp_templates</td><td>supabase, react-query</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapJuliaPrompts</td><td>src/hooks/mdzap/useMdzapJuliaPrompts.ts</td><td>Query mdzap_julia_prompts (7 tipos) para admin IA</td><td>supabase, react-query</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapTelemetria</td><td>src/hooks/mdzap/useMdzapTelemetria.ts</td><td>Métricas agregadas para painel de telemetria</td><td>supabase, react-query</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapIcp</td><td>src/hooks/mdzap/useMdzapIcp.ts</td><td>Query mdzap_icp_analises para perfil ICP</td><td>supabase, react-query</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td>useMdzapConversaEffects</td><td>src/hooks/mdzap/useMdzapConversaEffects.ts</td><td>Side effects: feedbacks por msg, refetch ao trocar conversa</td><td>supabase</td><td><span class="badge badge-ok">OK</span></td></tr>
+</table>
+
+<!-- ═══════════════ SEÇÃO 4: BACKEND ═══════════════ -->
+<h2 id="tables">4. Tabelas do Banco de Dados (21)</h2>
+
+<h3>4.1 Tabelas Core WhatsApp</h3>
+<table>
+<tr><th>Tabela</th><th>Colunas</th><th>RLS</th><th>Triggers</th><th>Índices</th></tr>
+<tr><td><code>whatsapp_conversas</code></td><td>14 (id, org, numero_id, contato_numero, contato_nome, cliente_id, lead_id, ultimo_msg_at, nao_lidas, status, created/updated/deleted_at, metadata JSONB)</td><td><span class="badge badge-ok">4 policies (CRUD)</span></td><td>—</td><td>10 (org, numero, lead, cliente, contato, metadata GIN, deleted_at)</td></tr>
+<tr><td><code>whatsapp_mensagens</code></td><td>15 (id, org, conversa_id, direcao, tipo, media_url, wa_message_id, status, enviado_por, metadata JSONB, remetente_nome/tipo, created/updated/deleted_at)</td><td><span class="badge badge-ok">4 policies (CRUD)</span></td><td>—</td><td>8 (org, conversa, created, wa_id, status, org_conversa_created, deleted_at)</td></tr>
+<tr><td><code>whatsapp_numeros</code></td><td>~18 (id, org, numero, nome, proposito, status, heartbeat, api_key/type, instance_ids, config, ai_enabled, agente_slug, created/updated/deleted_at)</td><td><span class="badge badge-ok">4 policies (CRUD)</span></td><td>—</td><td>5 (org, mdzap_instance_id, wa_instance_id, org_active)</td></tr>
+<tr><td><code>whatsapp_templates</code></td><td>~14 (id, org, nome, titulo, categoria, conteudo, variaveis, meta_template_id, meta_status, ativo, created/updated_at)</td><td>—</td><td>—</td><td>—</td></tr>
+</table>
+
+<h3>4.2 Tabelas MdZap Auxiliares</h3>
+<table>
+<tr><th>Tabela</th><th>Descrição</th><th>Colunas-chave</th></tr>
+<tr><td><code>mdzap_ai_modules</code></td><td>Configuração IA por slug (sdr_leads, sdr_docs, etc.)</td><td>slug, system_prompt, modelo, temperatura, max_tokens, ativo</td></tr>
+<tr><td><code>mdzap_julia_prompts</code></td><td>Prompts da Julia (7 tipos)</td><td>tipo, prompt, versao</td></tr>
+<tr><td><code>mdzap_julia_lab_sessoes</code></td><td>Sessões do Julia Lab</td><td>titulo, modulo, historico JSONB, usuario_id</td></tr>
+<tr><td><code>mdzap_conversas_timeline</code></td><td>Eventos timeline (assumir, devolver, crm_stage_change)</td><td>conversa_id, tipo, descricao, actor_id, metadata</td></tr>
+<tr><td><code>mdzap_lead_memory</code></td><td>Memória da Julia sobre leads</td><td>conversa_id, dados_extras JSONB</td></tr>
+<tr><td><code>mdzap_icp_analises</code></td><td>Análise ICP diária (snapshot cron)</td><td>data_analise, periodo, resultado JSONB</td></tr>
+<tr><td><code>mdzap_stage_map</code></td><td>Mapeamento MdZap stage → CRM coluna</td><td>mdzap_stage, coluna_crm, mdzap_stage_id/name, mdflow_coluna_crm</td></tr>
+<tr><td><code>mdzap_user_map</code></td><td>Mapeamento MdZap user → MDFlow user</td><td>mdzap_user_id (text), mdflow_user_id (uuid)</td></tr>
+<tr><td><code>mdzap_audio_messages</code></td><td>Áudios gerados (TTS)</td><td>mensagem_id, texto_original, audio_url, voice_id, duracao_s, status</td></tr>
+<tr><td><code>mdzap_message_queue</code></td><td>Fila de mensagens (reprocessamento)</td><td>conversa_id, wamid, numero_id, tipo, status, media_url, expires_at</td></tr>
+<tr><td><code>whatsapp_contatos</code></td><td>Contatos WA com lead/cliente vinculado</td><td>numero_e164, nome, lead_id, cliente_id</td></tr>
+<tr><td><code>whatsapp_followups</code></td><td>Follow-ups agendados</td><td>conversa_id, scheduled_at, mensagem, tipo</td></tr>
+<tr><td><code>whatsapp_msg_feedback</code></td><td>Feedback thumbs up/down nas msgs Julia</td><td>mensagem_id, tipo (positive/negative), comentario</td></tr>
+<tr><td><code>whatsapp_notas_internas</code></td><td>Notas internas da conversa</td><td>conversa_id, autor_id, texto</td></tr>
+<tr><td><code>whatsapp_numeros_autorizados</code></td><td>Números autorizados para envio</td><td>numero_id, numero_e164</td></tr>
+<tr><td><code>whatsapp_numeros_usuarios</code></td><td>Associação número→usuário</td><td>numero_id, user_id</td></tr>
+<tr><td><code>crm_sync_events</code></td><td>Eventos de sincronização CRM↔MdZap</td><td>event_type, direction, source, payload</td></tr>
+</table>
+
+<h2 id="rpcs">5. RPCs (Functions)</h2>
+<table>
+<tr><th>RPC</th><th>Params</th><th>SECURITY DEFINER</th><th>Descrição</th><th>Status</th></tr>
+<tr><td><code>fn_mdzap_conversas</code></td><td>p_org_id, p_page, p_per_page, p_numero_id, p_status, p_search, p_agente_slug</td><td><span class="badge badge-ok">✅ Sim</span></td><td>Lista conversas com JOIN leads/clientes/numeros. Paginação server-side. Busca unaccent. Retorna envelope {data, total, page, per_page}</td><td><span class="badge badge-ok">Excelente</span></td></tr>
+<tr><td><code>fn_mdzap_stats</code></td><td>p_org_id</td><td><span class="badge badge-ok">✅ Sim</span></td><td>KPIs: total conversas, ativas, aguardando humano, tempo médio resposta, taxa handoff, números conectados</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td><code>fn_mdzap_smart_replies</code></td><td>p_org_id, p_conversa_id, p_ultima_mensagem</td><td><span class="badge badge-ok">✅ Sim</span></td><td>Gera sugestões de resposta rápida baseadas no contexto</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td><code>fn_mdzap_listar_membros</code></td><td>p_organizacao_id</td><td><span class="badge badge-ok">✅ Sim</span></td><td>Lista membros da org para filtro de responsável e transferência</td><td><span class="badge badge-ok">OK</span></td></tr>
+<tr><td><code>fn_trg_leads_mdzap_sync</code></td><td>— (trigger)</td><td><span class="badge badge-ok">✅ Sim</span></td><td>Trigger: sincroniza mudanças de leads (stage, assignee) para crm_sync_events</td><td><span class="badge badge-ok">OK</span></td></tr>
+</table>
+
+<h3>5.1 Análise da fn_mdzap_conversas (RPC Principal)</h3>
+<div class="card">
+<div class="card-title">Pontos Positivos</div>
+<ul>
+<li>✅ SECURITY DEFINER + SET search_path = public</li>
+<li>✅ Paginação server-side com LIMIT/OFFSET (max 100)</li>
+<li>✅ Busca com unaccent(lower()) — suporta acentos</li>
+<li>✅ Filtragem por agente_slug com COALESCE (fallback sdr_leads)</li>
+<li>✅ Filtro deleted_at IS NULL</li>
+<li>✅ JOINs com leads, clientes e whatsapp_numeros para dados completos</li>
+<li>✅ Retorna envelope JSONB padrão {data, total, page, per_page}</li>
+</ul>
+</div>
+<div class="card">
+<div class="card-title">Pontos de Atenção</div>
+<ul>
+<li>⚠️ O frontend (useMdzapConversas) extrai (rpcResult as any)?.data — funciona mas perde type safety</li>
+<li>⚠️ Não filtra por lead.deleted_at — pode retornar conversas com leads soft-deleted</li>
+<li>⚠️ COUNT(*) + SELECT separados (2 queries) — poderia usar window function para 1 query</li>
+</ul>
+</div>
+
+<h2 id="rls">6. RLS Policies</h2>
+
+<div class="card">
+<div class="card-title">Resumo RLS — Todas as Tabelas Core</div>
+<table>
+<tr><th>Tabela</th><th>SELECT</th><th>INSERT</th><th>UPDATE</th><th>DELETE</th><th>Avaliação</th></tr>
+<tr><td>whatsapp_conversas</td><td>✅ get_org_id() + deleted_at IS NULL</td><td>✅ WITH CHECK get_org_id()</td><td>✅ USING + WITH CHECK</td><td>✅ admin only</td><td><span class="badge badge-ok">Completo</span></td></tr>
+<tr><td>whatsapp_mensagens</td><td>✅ get_org_id() + deleted_at IS NULL</td><td>✅ WITH CHECK get_org_id()</td><td>✅ USING + WITH CHECK</td><td>✅ admin only</td><td><span class="badge badge-ok">Completo</span></td></tr>
+<tr><td>whatsapp_numeros</td><td>✅ get_org_id() + deleted_at IS NULL</td><td>✅ WITH CHECK get_org_id()</td><td>✅ USING + WITH CHECK</td><td>✅ admin only</td><td><span class="badge badge-ok">Completo</span></td></tr>
+<tr><td>mdzap_ai_modules</td><td>✅ get_org_id() + deleted_at IS NULL</td><td>✅ WITH CHECK</td><td>✅ USING + WITH CHECK</td><td>✅ admin only</td><td><span class="badge badge-ok">Completo</span></td></tr>
+<tr><td>mdzap_julia_lab_sessoes</td><td>✅ ALL policy org + deleted_at</td><td>✅ WITH CHECK</td><td>—</td><td>—</td><td><span class="badge badge-p1">ALL genérica</span></td></tr>
+<tr><td>mdzap_conversas_timeline</td><td>✅ ALL policy org</td><td>—</td><td>—</td><td>—</td><td><span class="badge badge-p1">ALL genérica, sem deleted_at</span></td></tr>
+<tr><td>mdzap_lead_memory</td><td>✅ ALL policy org + deleted_at</td><td>✅ WITH CHECK</td><td>—</td><td>—</td><td><span class="badge badge-ok">Adequado</span></td></tr>
+</table>
+</div>
+
+<h2 id="indices">7. Índices</h2>
+<div class="card">
+<div class="card-title">whatsapp_conversas (10 índices)</div>
+<p>✅ Cobertura excelente: org, numero, lead, cliente, contato, metadata GIN, deleted_at. Suporta todos os filtros da RPC fn_mdzap_conversas.</p>
+</div>
+<div class="card">
+<div class="card-title">whatsapp_mensagens (8 índices)</div>
+<p>✅ Cobertura excelente: org, conversa, created, wa_id, status, composto org+conversa+created, deleted_at. Suporta scroll infinito e busca por wa_message_id.</p>
+</div>
+
+<h2 id="webhooks">8. Webhooks n8n</h2>
+<table>
+<tr><th>Webhook</th><th>Contexto</th><th>Chamador</th><th>Descrição</th></tr>
+<tr><td><code>mdzap/enviar-mensagem</code></td><td>mdzap.enviar_mensagem / mdzap.enviar_midia / mdzap.enviar_link</td><td>useMdzapSendMessage, useMdzapThreadActions</td><td>Envia mensagem via WhatsApp API. Recebe mensagem_id → faz UPDATE (não INSERT) salvando wa_message_id real</td></tr>
+<tr><td><code>mdzap/assumir-conversa</code></td><td>mdzap.assumir</td><td>useConversaAssumirDevolver</td><td>Marca conversa como atendida por humano. Action-Driven UI (switch res.action)</td></tr>
+<tr><td><code>mdzap/devolver-julia</code></td><td>mdzap.devolver</td><td>useConversaAssumirDevolver</td><td>Devolve conversa para Julia IA. Action-Driven UI</td></tr>
+<tr><td><code>mdzap/ai-composer</code></td><td>mdzap.ai_composer</td><td>MdzapAIComposer</td><td>Gera texto via IA para o input (SEM prefixo mdflow/)</td></tr>
+<tr><td><code>mdzap/julia-lab</code></td><td>mdzap.julia_lab</td><td>MdzapJuliaLab</td><td>Chat de testes com Julia — envia histórico, recebe resposta IA</td></tr>
+<tr><td><code>mdzap/julia-lab-refine</code></td><td>mdzap.julia_lab_refine</td><td>MdzapJuliaLab</td><td>Refinamento de prompt — salva nova versão do system prompt</td></tr>
+</table>
+
+<h2 id="realtime">9. Canais Realtime</h2>
+<table>
+<tr><th>Canal</th><th>Tabela</th><th>Eventos</th><th>Filtro</th><th>Hook</th><th>Ação</th></tr>
+<tr><td><code>mdzap-conversas-rt-{orgId}</code></td><td>whatsapp_conversas</td><td>INSERT, UPDATE</td><td>organizacao_id=eq.{orgId}</td><td>useMdzapConversas</td><td>UPDATE: cache otimista (nao_lidas, status, metadata). INSERT: invalidate full</td></tr>
+<tr><td><code>mdzap-mensagens-preview-{orgId}</code></td><td>whatsapp_mensagens</td><td>INSERT</td><td>organizacao_id=eq.{orgId}</td><td>useMdzapConversas</td><td>Entrada: invalidate conversas. Saída: update ultimo_msg_at cache</td></tr>
+<tr><td><code>mdzap-leads-rt-{orgId}</code></td><td>leads</td><td>UPDATE</td><td>organizacao_id=eq.{orgId}</td><td>useMdzapConversas</td><td>Invalidate conversas (awaiting_human mudou)</td></tr>
+<tr><td><code>mdzap-thread:{conversaId}</code></td><td>whatsapp_mensagens</td><td>INSERT, UPDATE</td><td>conversa_id=eq.{conversaId}</td><td>useMdzapMensagens</td><td>Debounced refetch 300ms com merge inteligente</td></tr>
+<tr><td><code>mdzap-numeros-rt-{orgId}</code></td><td>whatsapp_numeros</td><td>UPDATE</td><td>organizacao_id=eq.{orgId}</td><td>useMdzapStatus</td><td>Invalidate query números (heartbeat/status)</td></tr>
+<tr><td><code>mdzap-typing:{conversaId}</code></td><td>— (Broadcast)</td><td>typing</td><td>— (private)</td><td>useMdzapTyping</td><td>Broadcast: mostra "X está digitando..." com auto-cleanup 3s</td></tr>
+</table>
+<div class="card">
+<div class="card-title">Polling Fallback</div>
+<p>useMdzapConversas implementa <code>refetchInterval: realtimeAtivo ? false : 8_000</code> — se todos os 3 canais falharem (TIMED_OUT/CLOSED/CHANNEL_ERROR), volta para polling a cada 8s automaticamente. <strong>Muito bem implementado.</strong></p>
+</div>
+
+<!-- ═══════════════ SEÇÃO 5: TIPOS ═══════════════ -->
+<h2 id="types">10. Sistema de Tipos (mdzap.types.ts)</h2>
+
+<div class="card">
+<div class="card-title">Union Types (14 tipos)</div>
+<p>Todos os union types correspondem a TEXT CHECK no banco: WhatsappNumeroProposito, WhatsappNumeroStatus, WhatsappConversaStatus, WhatsappMensagemDirecao, WhatsappMensagemTipo, WhatsappMensagemStatus, WhatsappRemetenteTipo, WhatsappTemplateCategoria, WhatsappTemplateMetaStatus, WaNegotiationStatus, WaCobrancaStatus, CrmSyncDirection, CrmSyncSource, EventDispatchStatus.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Interfaces de Dados (12 interfaces)</div>
+<p>WhatsappNumero (22 campos), WhatsappConversa (14 campos), WhatsappMensagem (13 campos), WhatsappTemplate (14 campos), MdzapConversaComContexto (21 campos — retorno da RPC), MdzapContato (7 campos), MdzapStats (7 KPIs), PendingLeadData (15 campos de pré-cadastro), WhatsappConversaMetadata (11 campos nested), MdzapHandoffReport (4 campos).</p>
+</div>
+
+<div class="card">
+<div class="card-title">Badge Status Hierarchy (9 níveis)</div>
+<table>
+<tr><th>Prioridade</th><th>Code</th><th>Label</th><th>Cor</th></tr>
+<tr><td>1 (máxima)</td><td>wa_blocked</td><td>WA Inválido</td><td>destructive</td></tr>
+<tr><td>2</td><td>sem_conversa</td><td>Sem conversa</td><td>muted</td></tr>
+<tr><td>3</td><td>encerrada</td><td>Encerrada</td><td>muted</td></tr>
+<tr><td>4</td><td>aguardando_humano</td><td>Aguard. Humano</td><td>warning</td></tr>
+<tr><td>5</td><td>humano_atendendo</td><td>Humano</td><td>destructive</td></tr>
+<tr><td>6</td><td>ia_ativa</td><td>Julia Ativa</td><td>success</td></tr>
+<tr><td>7</td><td>follow_up</td><td>Follow-up</td><td>chart-5</td></tr>
+<tr><td>8</td><td>handoff_ready</td><td>Pronto p/ Handoff</td><td>chart-2</td></tr>
+<tr><td>9 (mínima)</td><td>fallback</td><td>WhatsApp</td><td>primary</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ SEÇÃO 6: PROBLEMAS ═══════════════ -->
+<h2 id="build-errors">11. Build Errors P0 (23 erros TypeScript)</h2>
+
+<div class="pending p0">
+<strong>MdzapJuliaLab.tsx — 18 erros</strong><br>
+Causa raiz: tabela <code>mdzap_julia_lab_sessoes</code> não está corretamente definida no <code>types.ts</code> gerado pelo Supabase, ou os tipos das colunas (historico, organizacao_id) não batem com o que o TypeScript espera.<br><br>
+<strong>Operações afetadas:</strong>
+<ul>
+<li>Linha 41: <code>.eq('organizacao_id', organizacao_id!)</code> — tipo string incompatível</li>
+<li>Linha 46: <code>...s</code> — spread de tipo que pode ser SelectQueryError</li>
+<li>Linha 47: <code>s.historico</code> — propriedade não existe em SelectQueryError union</li>
+<li>Linha 63: <code>.insert({...})</code> — propriedades não reconhecidas</li>
+<li>Linhas 76-78, 127-129, 178-180, 208-210: <code>.update().eq().eq()</code> — mesmos erros em 4 locais de update</li>
+</ul>
+<strong>Fix:</strong> Adicionar <code>as any</code> em todas as operações Supabase desta tabela (padrão aceito do projeto — ver memory/tech/supabase-type-safety-exceptions).
+</div>
+
+<div class="pending p0">
+<strong>MdzapMsgThread.tsx — 3 erros (linha 187)</strong><br>
+Causa: <code>supabase.from('whatsapp_conversas').update({ metadata: novaMetadata as unknown as Json }).eq('id', conversa.id).eq('organizacao_id', organizacao_id!)</code><br>
+<strong>Fix:</strong> Adicionar <code>as any</code> nos parâmetros de .update() e .eq().
+</div>
+
+<div class="pending p0">
+<strong>useLeadFormData.ts — 4 erros (linhas 26-27, 44-45)</strong><br>
+Causa: <code>.eq('organizacao_id', organizacao_id!)</code> e <code>.eq('ativo', true)</code> em tabelas advogados e leads_origens.<br>
+<strong>Fix:</strong> Adicionar <code>as any</code> nos parâmetros de .eq().
+</div>
+
+<h2 id="issues">12. Achados P1/P2</h2>
+
+<div class="pending p1">
+<strong>P1-01: RLS genérica em mdzap_julia_lab_sessoes</strong><br>
+Usa ALL policy em vez de policies CRUD separadas. Sem user_id filter — qualquer membro da org pode ver/editar sessões de outros.
+</div>
+
+<div class="pending p1">
+<strong>P1-02: mdzap_conversas_timeline sem deleted_at no RLS</strong><br>
+Policy ALL sem filtro deleted_at — retorna registros soft-deleted.
+</div>
+
+<div class="pending p1">
+<strong>P1-03: Triggers ausentes em tabelas core</strong><br>
+Nenhum trigger set_updated_at encontrado em whatsapp_conversas, whatsapp_mensagens ou whatsapp_numeros. Padrão MdFlow exige trigger em toda tabela com updated_at.
+</div>
+
+<div class="pending p1">
+<strong>P1-04: fn_mdzap_conversas não filtra lead.deleted_at</strong><br>
+LEFT JOIN com leads sem filtro deleted_at — pode retornar dados de leads soft-deleted.
+</div>
+
+<div class="pending p1">
+<strong>P1-05: whatsapp_templates sem RLS</strong><br>
+Tabela de templates sem policies de RLS visíveis. Qualquer authenticated pode acessar templates de qualquer org.
+</div>
+
+<div class="pending p1">
+<strong>P1-06: useMdzapSmartReplies tem fallback hardcoded</strong><br>
+Se RPC falha no load inicial, exibe 3 frases hardcoded em português. Deveria exibir estado vazio ou retry.
+</div>
+
+<div class="pending p1">
+<strong>P1-07: MdzapAppPage.tsx duplica lógica do MdzapChatPanel</strong><br>
+280 linhas que replicam boa parte da lógica do ChatPanel (258 linhas). Viola DRY — deveria usar ChatPanel internamente.
+</div>
+
+<div class="pending p1">
+<strong>P1-08: Hub.tsx usa cores hardcoded em botão favoritar</strong><br>
+<code>text-yellow-400</code> e <code>text-yellow-300</code> — deveria ser <code>text-warning</code>.
+</div>
+
+<div class="pending p2">
+<strong>P2-01: useMdzapConversas usa <code>as any</code> em 3 locais</strong><br>
+markAsRead e QUERY_KEY dependency — aceito pelo padrão do projeto mas não ideal.
+</div>
+
+<div class="pending p2">
+<strong>P2-02: mdzap_message_queue sem uso no frontend</strong><br>
+Tabela existe no banco mas nenhum componente ou hook a referencia. Possivelmente usado apenas pelo n8n.
+</div>
+
+<div class="pending p2">
+<strong>P2-03: whatsapp_followups sem uso no frontend</strong><br>
+Mesma situação — tabela sem referência no frontend. Reservada para funcionalidade futura.
+</div>
+
+<!-- ═══════════════ SEÇÃO 7: SEGURANÇA ═══════════════ -->
+<h2 id="security">13. Segurança</h2>
+
+<div class="card">
+<div class="card-title">Pontos Positivos</div>
+<ul>
+<li>✅ Todas RPCs são SECURITY DEFINER com SET search_path = public</li>
+<li>✅ RLS habilitado em todas as tabelas core (conversas, mensagens, números)</li>
+<li>✅ DELETE restrito a perfil admin via JWT check</li>
+<li>✅ get_org_id() usado consistentemente (não org_id() deprecated)</li>
+<li>✅ Webhooks usam callWebhook() com header mdflow auth</li>
+<li>✅ Upload de mídia usa bucket mdzap-media com path organizacao_id/conversa_id/</li>
+<li>✅ INSERT otimista inclui organizacao_id em todas as inserções</li>
+<li>✅ Canal de typing usa config private: true</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title">Pontos de Atenção</div>
+<ul>
+<li>⚠️ Canais Realtime filtram por organizacao_id — correto, mas não validam que o user pertence à org (depende do RLS da tabela)</li>
+<li>⚠️ whatsapp_templates sem RLS — risco de acesso cross-tenant</li>
+<li>⚠️ mdzap_julia_lab_sessoes sem isolamento por user — qualquer membro da org pode ler sessões de teste de outro</li>
+<li>⚠️ useMdzapSendMessage usa <code>as any</code> em INSERTs — perde validação de tipos</li>
+</ul>
+</div>
+
+<!-- ═══════════════ SEÇÃO 8: FLUXOS ═══════════════ -->
+<h2>14. Fluxos Detalhados</h2>
+
+<h3>14.1 Fluxo de Envio de Mensagem</h3>
+<div class="code">1. Usuário digita texto e clica Enviar
+2. useMdzapSendMessage.sendText() chamado
+3. INSERT otimista em whatsapp_mensagens (status: 'pending', remetente_tipo: 'human')
+4. invalidateQueries → useMdzapMensagens refetch → msg aparece na thread
+5. callWebhook('mdzap/enviar-mensagem') com mensagem_id
+6. n8n recebe → envia via WhatsApp API → UPDATE mensagem com wa_message_id + status='sent'
+7. Realtime canal mdzap-thread:conversaId detecta UPDATE → debounce 300ms → refetch
+8. Thread atualiza: tick ✓ muda para ✓✓ (delivered) e eventualmente ✓✓ azul (read)</div>
+
+<h3>14.2 Fluxo de Assumir Conversa (Handoff Julia → Humano)</h3>
+<div class="code">1. Usuário clica "Assumir" no ThreadHeader
+2. useConversaAssumirDevolver.handleAssumir() chamado
+3. callWebhook('mdzap/assumir-conversa') com conversa_id + numero_id
+4. n8n: marca lead awaiting_human=true, salva assigned_user_id em metadata
+5. Resposta: action='toast_refresh' → toast.success + invalidateQueries
+6. Realtime canal mdzap-leads-rt detecta UPDATE em leads → invalidate conversas
+7. ConversaList: card mostra badge "Humano" (prioridade 5)
+8. ThreadHeader: mostra badge "Atendido por [Nome]" + botão "Devolver para Julia"</div>
+
+<h3>14.3 Fluxo de Criação de Lead + Auditoria Inline</h3>
+<div class="code">1. Usuário no LeadPanel → tab Dados → preenche formulário
+2. Se lead não existe: botão "Criar Lead & Auditar"
+3. useLeadMutations.criarLeadEAuditarInline() chamado
+4. INSERT em leads com dados do form + telefone da conversa
+5. UPDATE whatsapp_conversas SET lead_id = novo_lead_id
+6. RPC rpc_disparar_auditoria (Boa Vista) com CPF do lead
+7. Retorna auditoriaId → setLocalAuditoriaId
+8. Tab muda para "Restrições" automaticamente
+9. LeadRestricoesMdzapTab mostra CrmAuditoriaPanel com polling de status
+10. Quando auditoria conclui → lista de restrições aparece</div>
+
+<h3>14.4 Fluxo de Pending Lead Data (Doc Reader)</h3>
+<div class="code">1. Julia recebe documento (CTPS, RG, etc.) do lead no WhatsApp
+2. n8n processa via Doc Reader → extrai dados (nome, CPF, etc.)
+3. UPDATE whatsapp_conversas SET metadata.pending_lead_data = {...dados...}
+4. Realtime canal mdzap-conversas-rt detecta UPDATE
+5. useMdzapConversas atualiza cache → conversa.metadata.pending_lead_data populado
+6. useLeadFormData detecta pending_lead_data → pré-preenche formulário
+7. LeadDadosTab mostra badge "Doc Reader" com campos auto-preenchidos
+8. FieldConfidenceBadge mostra confiança (alto/médio/baixo) por campo
+9. Usuário revisa → clica "Salvar" ou "Criar Lead"</div>
+
+<!-- ═══════════════ SEÇÃO 9: VEREDICTO ═══════════════ -->
+<h2 id="verdict">15. Veredicto Final</h2>
+
+<div class="card" style="border-color:var(--warn);">
+<div class="card-title" style="font-size:18px;">Nota: 6.5/10 — Arquitetura excelente, bloqueado por type safety</div>
+<p style="margin-top:12px;">
+O MDZap possui uma <strong>arquitetura muito bem desenhada</strong>: layout responsivo 3 colunas, realtime com fallback polling, scroll infinito, INSERT otimista, Action-Driven UI, 9 níveis de badge status, canal de typing broadcast, e fluxo Doc Reader→Lead automatizado.
+</p>
+<p style="margin-top:8px;">
+O que impede nota 9+: <strong>23 erros de build TypeScript</strong> em 3 arquivos críticos (JuliaLab, MsgThread, useLeadFormData). Todos são causados pelo mesmo problema: o types.ts gerado pelo Supabase não reflete corretamente as tabelas mdzap_julia_lab_sessoes, advogados e leads_origens. O fix é trivial (<code>as any</code> nos parâmetros) mas bloqueia o build.
+</p>
+<p style="margin-top:8px;">
+Sem os build errors, a nota seria <strong>8.5/10</strong> (P1s restantes: RLS templates, triggers faltando, DRY violado em AppPage, hardcode yellow no Hub).
+</p>
+</div>
+
+<h2 id="recommendations">16. Recomendações Priorizadas</h2>
+
+<h3>P0 — Bloqueantes (fix imediato)</h3>
+<ol>
+<li><strong>Fix 23 build errors TS:</strong> Adicionar <code>as any</code> nos parâmetros de .eq(), .update(), .insert() e .select() nos 3 arquivos afetados (MdzapJuliaLab.tsx, MdzapMsgThread.tsx, useLeadFormData.ts)</li>
+</ol>
+
+<h3>P1 — Importantes</h3>
+<ol>
+<li><strong>Adicionar RLS a whatsapp_templates:</strong> Policy tenant_isolation padrão com get_org_id()</li>
+<li><strong>Adicionar triggers set_updated_at:</strong> Em whatsapp_conversas, whatsapp_mensagens e whatsapp_numeros</li>
+<li><strong>fn_mdzap_conversas:</strong> Adicionar <code>AND (l.deleted_at IS NULL OR l.id IS NULL)</code> no JOIN com leads</li>
+<li><strong>mdzap_conversas_timeline RLS:</strong> Adicionar filtro deleted_at IS NULL no SELECT</li>
+<li><strong>mdzap_julia_lab_sessoes RLS:</strong> Trocar ALL policy por 4 policies CRUD + adicionar filtro user_id para isolamento</li>
+<li><strong>Hub.tsx:</strong> Substituir <code>text-yellow-400/300</code> por <code>text-warning</code></li>
+<li><strong>MdzapAppPage.tsx:</strong> Avaliar refactor para reusar MdzapChatPanel internamente</li>
+</ol>
+
+<h3>P2 — Tech Debt</h3>
+<ol>
+<li>Remover fallback hardcoded de useMdzapSmartReplies — usar empty state</li>
+<li>Auditar tabelas sem uso no frontend (mdzap_message_queue, whatsapp_followups) — documentar se n8n-only</li>
+<li>Reduzir <code>as any</code> em useMdzapSendMessage quando types.ts for regenerado</li>
+</ol>
+
+<footer>
+Super Revisão Profunda MDZap · MdFlow v5 · Gerada em 14/04/2026 21:35 · 55 componentes, 22 hooks, 21 tabelas, 5 RPCs, 6 canais Realtime auditados
+</footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MdZap v3 — Break & Command Center</title>
+<style>
+  :root {
+    --bg: #0d0f18;
+    --surface: #161926;
+    --surface2: #1e2235;
+    --border: #2a2f45;
+    --accent: #7c6dff;
+    --accent2: #5f4fff;
+    --text: #e8eaf0;
+    --muted: #6b7194;
+    --p0: #ef4444;
+    --p1: #f59e0b;
+    --p2: #6b7194;
+    --success: #22c55e;
+    --n8n: #ea580c;
+    --backend: #8b5cf6;
+    --frontend: #0ea5e9;
+    --polish: #10b981;
+    --wave1: #1a1f35;
+    --wave2: #1c1f30;
+    --wave3: #1a2030;
+    --copy-btn: #2a2f45;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.5; }
+
+  /* HEADER */
+  .header { background: linear-gradient(135deg, #0f1225 0%, #1a1035 100%); border-bottom: 1px solid var(--border); padding: 28px 32px; display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+  .header-title { display: flex; flex-direction: column; gap: 6px; }
+  .header-badge { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: var(--accent); text-transform: uppercase; }
+  .header h1 { font-size: 26px; font-weight: 700; color: #fff; }
+  .header-sub { font-size: 13px; color: var(--muted); }
+  .header-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+  .stat { background: rgba(124,109,255,.1); border: 1px solid rgba(124,109,255,.2); border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 80px; }
+  .stat-num { font-size: 24px; font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .stat.p0 { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); }
+  .stat.p0 .stat-num { color: var(--p0); }
+
+  /* ALERT */
+  .alert { margin: 20px 32px; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25); border-radius: 10px; padding: 14px 18px; display: flex; gap: 12px; align-items: flex-start; }
+  .alert-icon { font-size: 18px; flex-shrink: 0; }
+  .alert h3 { font-size: 13px; font-weight: 600; color: #fca5a5; margin-bottom: 4px; }
+  .alert p { font-size: 12px; color: #f87171; }
+
+  /* NAV */
+  .nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; gap: 0; overflow-x: auto; }
+  .nav-btn { background: none; border: none; border-bottom: 2px solid transparent; padding: 14px 18px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; white-space: nowrap; transition: all .2s; }
+  .nav-btn:hover { color: var(--text); }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* SECTIONS */
+  .section { padding: 24px 32px; display: none; }
+  .section.active { display: block; }
+
+  /* WAVE MAP */
+  .wave-grid { display: flex; flex-direction: column; gap: 20px; }
+  .wave-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .wave-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .wave-title { display: flex; align-items: center; gap: 12px; }
+  .wave-num { background: var(--accent); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .wave-name { font-size: 14px; font-weight: 600; }
+  .wave-meta { display: flex; gap: 10px; align-items: center; }
+  .wave-terminals { background: rgba(124,109,255,.15); color: var(--accent); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+  .wave-count { font-size: 12px; color: var(--muted); }
+  .wave-tasks { padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .wave-task-pill { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 6px; border: 1px solid transparent; }
+  .wave-task-pill:hover { transform: translateY(-1px); }
+  .wave-task-pill.backend { background: rgba(139,92,246,.12); border-color: rgba(139,92,246,.3); color: #a78bfa; }
+  .wave-task-pill.n8n { background: rgba(234,88,12,.12); border-color: rgba(234,88,12,.3); color: #fb923c; }
+  .wave-task-pill.frontend { background: rgba(14,165,233,.12); border-color: rgba(14,165,233,.3); color: #38bdf8; }
+  .wave-task-pill.polish { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.3); color: #34d399; }
+  .prio-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .prio-dot.P0 { background: var(--p0); }
+  .prio-dot.P1 { background: var(--p1); }
+  .prio-dot.P2 { background: var(--p2); }
+
+  /* TERMINAL GROUPS */
+  .terminal-groups { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 12px; flex-wrap: wrap; }
+  .terminal-group { flex: 1; min-width: 200px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .terminal-group-header { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .terminal-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px rgba(34,197,94,.4); }
+  .terminal-tasks { font-size: 12px; color: var(--muted); }
+  .terminal-tasks span { color: var(--text); font-weight: 500; }
+
+  /* TASKS LIST */
+  .tasks-grid { display: flex; flex-direction: column; gap: 12px; }
+  .task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .task-card.priority-P0 { border-left: 3px solid var(--p0); }
+  .task-card.priority-P1 { border-left: 3px solid var(--p1); }
+  .task-card.priority-P2 { border-left: 3px solid var(--p2); }
+  .task-header { padding: 14px 18px; display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; }
+  .task-header:hover { background: rgba(255,255,255,.02); }
+  .task-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--accent); min-width: 36px; }
+  .task-info { flex: 1; }
+  .task-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .task-desc { font-size: 12px; color: var(--muted); }
+  .task-badges { display: flex; gap: 6px; align-items: center; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+  .badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+  .badge.cat-backend { background: rgba(139,92,246,.15); color: #a78bfa; }
+  .badge.cat-n8n { background: rgba(234,88,12,.15); color: #fb923c; }
+  .badge.cat-frontend { background: rgba(14,165,233,.15); color: #38bdf8; }
+  .badge.cat-polish { background: rgba(16,185,129,.15); color: #34d399; }
+  .badge.prio-P0 { background: rgba(239,68,68,.15); color: #fca5a5; }
+  .badge.prio-P1 { background: rgba(245,158,11,.15); color: #fcd34d; }
+  .badge.prio-P2 { background: rgba(107,113,148,.15); color: #9ca3af; }
+  .badge.complexity { background: rgba(255,255,255,.05); color: var(--muted); }
+  .badge.wave { background: rgba(124,109,255,.1); color: var(--accent); }
+  .chevron { color: var(--muted); transition: transform .2s; flex-shrink: 0; }
+  .task-card.open .chevron { transform: rotate(90deg); }
+
+  .task-body { display: none; padding: 0 18px 18px; border-top: 1px solid var(--border); }
+  .task-card.open .task-body { display: block; }
+
+  .task-section { margin-top: 16px; }
+  .task-section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+  .dep-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .dep-chip { background: rgba(124,109,255,.1); border: 1px solid rgba(124,109,255,.2); color: var(--accent); font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; font-family: monospace; }
+  .dep-chip.none { background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.2); color: #4ade80; }
+
+  /* COMMAND BLOCKS */
+  .cmd-pipeline { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .cmd-step { display: flex; flex-direction: column; gap: 6px; }
+  .cmd-step-header { display: flex; align-items: center; gap: 8px; }
+  .cmd-step-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .cmd-step-num.step1 { background: rgba(124,109,255,.2); color: var(--accent); }
+  .cmd-step-num.step2 { background: rgba(14,165,233,.2); color: #38bdf8; }
+  .cmd-step-num.step3 { background: rgba(245,158,11,.2); color: #fcd34d; }
+  .cmd-step-num.stepL { background: rgba(239,68,68,.2); color: #fca5a5; }
+  .cmd-step-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .cmd-step-sublabel { font-size: 11px; color: var(--muted); }
+  .cmd-block { background: #0a0c16; border: 1px solid #2a2f45; border-radius: 8px; padding: 10px 14px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 12px; color: #c0c8e8; position: relative; cursor: pointer; transition: border-color .2s; }
+  .cmd-block:hover { border-color: var(--accent); }
+  .cmd-block.review { border-color: rgba(245,158,11,.3); background: #0d0b14; }
+  .cmd-block.loop { border-color: rgba(239,68,68,.3); background: #120a0a; }
+  .cmd-copy { position: absolute; top: 8px; right: 8px; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+  .cmd-copy:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .cmd-copy.copied { background: var(--success); color: #fff; border-color: var(--success); }
+
+  .loop-indicator { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 8px 12px; background: rgba(239,68,68,.06); border: 1px solid rgba(239,68,68,.15); border-radius: 6px; }
+  .loop-icon { font-size: 14px; }
+  .loop-text { font-size: 11px; color: #fca5a5; }
+
+  /* REVIEW PROTOCOL */
+  .review-box { background: rgba(245,158,11,.04); border: 1px solid rgba(245,158,11,.2); border-radius: 8px; padding: 12px 14px; margin-top: 8px; }
+  .review-box h4 { font-size: 12px; font-weight: 600; color: #fcd34d; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .review-checklist { display: flex; flex-direction: column; gap: 4px; }
+  .review-item { font-size: 11px; color: var(--muted); display: flex; align-items: flex-start; gap: 6px; }
+  .review-item::before { content: '◦'; color: #fcd34d; flex-shrink: 0; margin-top: 1px; }
+  .review-item.critical { color: #fca5a5; }
+  .review-item.critical::before { content: '⚠'; color: #ef4444; }
+
+  /* DEAD WEBHOOKS */
+  .dead-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .dead-card { background: var(--surface); border: 1px solid rgba(239,68,68,.2); border-radius: 10px; padding: 16px; }
+  .dead-card.reativar { border-color: rgba(34,197,94,.2); }
+  .dead-card.avaliar { border-color: rgba(245,158,11,.2); }
+  .dead-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .dead-action { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; text-transform: uppercase; }
+  .dead-action.deletar { background: rgba(239,68,68,.15); color: #fca5a5; }
+  .dead-action.reativar { background: rgba(34,197,94,.15); color: #4ade80; }
+  .dead-action.avaliar { background: rgba(245,158,11,.15); color: #fcd34d; }
+  .dead-desc { font-size: 11px; color: var(--muted); }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-btn { background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all .15s; }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: rgba(124,109,255,.15); border-color: var(--accent); color: var(--accent); }
+
+  /* METRICS */
+  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .metric-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .metric-icon { font-size: 20px; }
+  .metric-trend { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+  .metric-trend.up { background: rgba(239,68,68,.1); color: var(--p0); }
+  .metric-trend.target { background: rgba(34,197,94,.1); color: var(--success); }
+  .metric-name { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .metric-val { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .metric-bar-bg { height: 4px; background: rgba(255,255,255,.06); border-radius: 2px; margin-top: 12px; }
+  .metric-bar-fill { height: 100%; border-radius: 2px; transition: width .8s; }
+
+  /* SECTION TITLE */
+  .section-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .section-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .section-divider { height: 1px; background: var(--border); margin: 24px 0; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* APPROACH BOX */
+  .approach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .approach-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .approach-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .approach-card ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .approach-card ul li { font-size: 12px; color: var(--muted); padding-left: 14px; position: relative; }
+  .approach-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+
+  /* E2E PROTOCOL */
+  .e2e-box { background: rgba(14,165,233,.04); border: 1px solid rgba(14,165,233,.2); border-radius: 8px; padding: 12px 14px; margin-top: 8px; }
+  .e2e-box h4 { font-size: 12px; font-weight: 600; color: #38bdf8; margin-bottom: 8px; }
+  .e2e-steps { display: flex; flex-direction: column; gap: 4px; }
+  .e2e-step { font-size: 11px; color: var(--muted); display: flex; gap: 8px; }
+  .e2e-step-num { color: #38bdf8; font-weight: 700; min-width: 16px; }
+
+  /* TOAST */
+  #toast { position: fixed; bottom: 24px; right: 24px; background: #22c55e; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; transform: translateY(100px); opacity: 0; transition: all .3s; z-index: 999; pointer-events: none; }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 768px) {
+    .header { flex-direction: column; padding: 20px; }
+    .section { padding: 16px 20px; }
+    .wave-tasks { gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <div class="header-badge">MdFlow / MdZap v3</div>
+    <h1>Break & Command Center</h1>
+    <div class="header-sub">42 tarefas · 5 ondas · máx 3 terminais simultâneos · meta >9/10</div>
+  </div>
+  <div class="header-stats">
+    <div class="stat"><div class="stat-num">42</div><div class="stat-label">Tasks Total</div></div>
+    <div class="stat p0"><div class="stat-num">23</div><div class="stat-label">P0 Críticos</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Ondas</div></div>
+    <div class="stat"><div class="stat-num">4.9</div><div class="stat-label">Nota Atual</div></div>
+    <div class="stat"><div class="stat-num" style="color:#22c55e">9+</div><div class="stat-label">Meta</div></div>
+  </div>
+</div>
+
+<div class="alert">
+  <div class="alert-icon">⚠️</div>
+  <div>
+    <h3>23 P0s ativos — nenhum pode sobreviver para a nota atingir >9</h3>
+    <p>Prioridade máxima: T06 (service_role hardcoded em 10+ nodes), T08 (assumir-conversa INEXISTENTE — Julia não para), T02 (badge CRM nunca mostra), T15 (Doc Reader não existe). Comece pela Onda 1.</p>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('waves')">🌊 Ondas</button>
+  <button class="nav-btn" onclick="showSection('tasks')">📋 Tarefas</button>
+  <button class="nav-btn" onclick="showSection('webhooks')">🔌 Webhooks Mortos</button>
+  <button class="nav-btn" onclick="showSection('metrics')">📊 Métricas</button>
+  <button class="nav-btn" onclick="showSection('protocol')">🔄 Protocolo Loop</button>
+</div>
+
+<!-- ===== ONDAS ===== -->
+<div id="section-waves" class="section active">
+  <div class="section-title">Mapa de Ondas de Execução</div>
+  <div class="section-sub">Cada onda pode ter múltiplos terminais em paralelo. Inicie a próxima onda somente quando TODAS as tasks da onda anterior estiverem <strong>validadas</strong>.</div>
+
+  <div class="wave-grid">
+
+    <!-- ONDA 1 -->
+    <div class="wave-card">
+      <div class="wave-header">
+        <div class="wave-title">
+          <div class="wave-num">1</div>
+          <div>
+            <div class="wave-name">Base — Backend + n8n Segurança + Code Fixes</div>
+            <div style="font-size:12px;color:var(--muted)">Sem dependências — tudo pode rodar em paralelo</div>
+          </div>
+        </div>
+        <div class="wave-meta">
+          <div class="wave-terminals">3 terminais simultâneos</div>
+          <div class="wave-count">11 tasks</div>
+        </div>
+      </div>
+      <div class="terminal-groups">
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#8b5cf6;box-shadow:0 0 6px rgba(139,92,246,.4)"></div>Terminal A — Backend</div>
+          <div class="terminal-tasks"><span>T01</span> verify rpc · <span>T02</span> fn lead_coluna · <span>T03</span> pgsodium · <span>T04</span> índice cpf · <span>T05</span> soft delete nums</div>
+        </div>
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#ea580c;box-shadow:0 0 6px rgba(234,88,12,.4)"></div>Terminal B — n8n Segurança</div>
+          <div class="terminal-tasks"><span>T06</span> remove service_role · <span>T09</span> deletar wf legado</div>
+        </div>
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#0ea5e9;box-shadow:0 0 6px rgba(14,165,233,.4)"></div>Terminal C — Code Fixes Frontend</div>
+          <div class="terminal-tasks"><span>T19</span> bureau fix · <span>T20</span> docMensagens → useQuery · <span>T21</span> advogados → useQuery · <span>T22</span> query keys</div>
+        </div>
+      </div>
+      <div class="wave-tasks">
+        <div class="wave-task-pill backend" onclick="goToTask('T01')"><div class="prio-dot P0"></div>T01 fn_link_conversa</div>
+        <div class="wave-task-pill backend" onclick="goToTask('T02')"><div class="prio-dot P0"></div>T02 fn lead_coluna</div>
+        <div class="wave-task-pill backend" onclick="goToTask('T03')"><div class="prio-dot P0"></div>T03 pgsodium</div>
+        <div class="wave-task-pill backend" onclick="goToTask('T04')"><div class="prio-dot P2"></div>T04 idx cpf</div>
+        <div class="wave-task-pill backend" onclick="goToTask('T05')"><div class="prio-dot P2"></div>T05 soft delete</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T06')"><div class="prio-dot P0"></div>T06 service_role</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T09')"><div class="prio-dot P0"></div>T09 wf legado</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T19')"><div class="prio-dot P0"></div>T19 bureau fix</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T20')"><div class="prio-dot P0"></div>T20 useQuery doc</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T21')"><div class="prio-dot P1"></div>T21 useQuery adv</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T22')"><div class="prio-dot P1"></div>T22 query keys</div>
+      </div>
+    </div>
+
+    <!-- ONDA 2 -->
+    <div class="wave-card">
+      <div class="wave-header">
+        <div class="wave-title">
+          <div class="wave-num">2</div>
+          <div>
+            <div class="wave-name">n8n Quality + Frontend v2 Pendentes</div>
+            <div style="font-size:12px;color:var(--muted)">Dep: T02 (badge CRM), T06 (env vars n8n), T09 (path limpo)</div>
+          </div>
+        </div>
+        <div class="wave-meta">
+          <div class="wave-terminals">3 terminais simultâneos</div>
+          <div class="wave-count">11 tasks</div>
+        </div>
+      </div>
+      <div class="terminal-groups">
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#ea580c;box-shadow:0 0 6px rgba(234,88,12,.4)"></div>Terminal A — n8n Auth + WFs</div>
+          <div class="terminal-tasks"><span>T07</span> auth julia-prompt · <span>T08</span> CRIAR assumir-conversa · <span>T10</span> cleanup 21 inativos</div>
+        </div>
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#ea580c;box-shadow:0 0 6px rgba(234,88,12,.4)"></div>Terminal B — n8n Padrões</div>
+          <div class="terminal-tasks"><span>T11</span> sticky notes · <span>T12</span> envelope canônico · <span>T13</span> webhook_requests · <span>T14</span> retry DLQ</div>
+        </div>
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#0ea5e9;box-shadow:0 0 6px rgba(14,165,233,.4)"></div>Terminal C — Frontend</div>
+          <div class="terminal-tasks"><span>T16</span> followup fix · <span>T23</span> LeadDocs refactor · <span>T25</span> aba dados · <span>T26</span> badge CRM + CPF</div>
+        </div>
+      </div>
+      <div class="wave-tasks">
+        <div class="wave-task-pill n8n" onclick="goToTask('T07')"><div class="prio-dot P0"></div>T07 auth prompt</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T08')"><div class="prio-dot P0"></div>T08 assumir-conversa ★</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T10')"><div class="prio-dot P0"></div>T10 cleanup inativos</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T11')"><div class="prio-dot P0"></div>T11 sticky notes</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T12')"><div class="prio-dot P0"></div>T12 envelope canônico</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T13')"><div class="prio-dot P0"></div>T13 webhook_requests</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T14')"><div class="prio-dot P0"></div>T14 retry DLQ</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T16')"><div class="prio-dot P1"></div>T16 followup bug</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T23')"><div class="prio-dot P1"></div>T23 LeadDocs refactor</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T25')"><div class="prio-dot P1"></div>T25 aba dados</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T26')"><div class="prio-dot P0"></div>T26 badge+CPF</div>
+      </div>
+    </div>
+
+    <!-- ONDA 3 -->
+    <div class="wave-card">
+      <div class="wave-header">
+        <div class="wave-title">
+          <div class="wave-num">3</div>
+          <div>
+            <div class="wave-name">n8n Features + Frontend Core</div>
+            <div style="font-size:12px;color:var(--muted)">Dep: T08 (assumir WF), T12 (envelope padrão), T02+T26 (badge ok)</div>
+          </div>
+        </div>
+        <div class="wave-meta">
+          <div class="wave-terminals">3 terminais simultâneos</div>
+          <div class="wave-count">7 tasks</div>
+        </div>
+      </div>
+      <div class="terminal-groups">
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#ea580c;box-shadow:0 0 6px rgba(234,88,12,.4)"></div>Terminal A — n8n Features Grandes</div>
+          <div class="terminal-tasks"><span>T15</span> CRIAR doc-reader ★ · <span>T17</span> audio real</div>
+        </div>
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#ea580c;box-shadow:0 0 6px rgba(234,88,12,.4)"></div>Terminal B — n8n Feature</div>
+          <div class="terminal-tasks"><span>T18</span> template real</div>
+        </div>
+        <div class="terminal-group">
+          <div class="terminal-group-header"><div class="terminal-dot" style="background:#0ea5e9;box-shadow:0 0 6px rgba(14,165,233,.4)"></div>Terminal C — Frontend Features</div>
+          <div class="terminal-tasks"><span>T24</span> unificar hook · <span>T27</span> badge auditoria · <span>T29</span> indicador responsável · <span>T30</span> redesign tabs</div>
+        </div>
+      </div>
+      <div class="wave-tasks">
+        <div class="wave-task-pill n8n" onclick="goToTask('T15')"><div class="prio-dot P0"></div>T15 doc-reader ★</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T17')"><div class="prio-dot P0"></div>T17 audio real</div>
+        <div class="wave-task-pill n8n" onclick="goToTask('T18')"><div class="prio-dot P1"></div>T18 template real</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T24')"><div class="prio-dot P0"></div>T24 unif hook</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T27')"><div class="prio-dot P1"></div>T27 notif audit</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T29')"><div class="prio-dot P1"></div>T29 responsável</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T30')"><div class="prio-dot P0"></div>T30 tabs redesign</div>
+      </div>
+    </div>
+
+    <!-- ONDA 4 -->
+    <div class="wave-card">
+      <div class="wave-header">
+        <div class="wave-title">
+          <div class="wave-num">4</div>
+          <div>
+            <div class="wave-name">UX Sprint 3 + Splits</div>
+            <div style="font-size:12px;color:var(--muted)">Dep: ondas anteriores completas. Mobile, bugs visuais, splits.</div>
+          </div>
+        </div>
+        <div class="wave-meta">
+          <div class="wave-terminals">2 terminais simultâneos</div>
+          <div class="wave-count">9 tasks</div>
+        </div>
+      </div>
+      <div class="wave-tasks">
+        <div class="wave-task-pill frontend" onclick="goToTask('T28')"><div class="prio-dot P2"></div>T28 loading states</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T31')"><div class="prio-dot P1"></div>T31 mobile</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T32')"><div class="prio-dot P1"></div>T32 timeline CRM</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T33')"><div class="prio-dot P1"></div>T33 progress audit</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T34')"><div class="prio-dot P1"></div>T34 flow guiado</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T35')"><div class="prio-dot P2"></div>T35 14 bugs visuais</div>
+        <div class="wave-task-pill frontend" onclick="goToTask('T36')"><div class="prio-dot P1"></div>T36 doc-reader fields</div>
+        <div class="wave-task-pill polish" onclick="goToTask('T37')"><div class="prio-dot P2"></div>T37 split MsgBubble</div>
+        <div class="wave-task-pill polish" onclick="goToTask('T38')"><div class="prio-dot P2"></div>T38 split JuliaLab</div>
+      </div>
+    </div>
+
+    <!-- ONDA 5 -->
+    <div class="wave-card">
+      <div class="wave-header">
+        <div class="wave-title">
+          <div class="wave-num">5</div>
+          <div>
+            <div class="wave-name">Polish & Tech Debt</div>
+            <div style="font-size:12px;color:var(--muted)">Último ajuste de qualidade. 2 terminais.</div>
+          </div>
+        </div>
+        <div class="wave-meta">
+          <div class="wave-terminals">2 terminais simultâneos</div>
+          <div class="wave-count">4 tasks</div>
+        </div>
+      </div>
+      <div class="wave-tasks">
+        <div class="wave-task-pill polish" onclick="goToTask('T39')"><div class="prio-dot P2"></div>T39 split LeadPanel</div>
+        <div class="wave-task-pill polish" onclick="goToTask('T40')"><div class="prio-dot P2"></div>T40 split ConversaList</div>
+        <div class="wave-task-pill polish" onclick="goToTask('T41')"><div class="prio-dot P2"></div>T41 query keys</div>
+        <div class="wave-task-pill polish" onclick="goToTask('T42')"><div class="prio-dot P1"></div>T42 polling realtime</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== TAREFAS ===== -->
+<div id="section-tasks" class="section">
+  <div class="section-title">42 Tarefas Detalhadas</div>
+  <div class="section-sub">Clique em qualquer task para ver os comandos de plan → execute → review e o protocolo de validação.</div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterTasks('all',this)">Todas (42)</button>
+    <button class="filter-btn" onclick="filterTasks('backend',this)" style="color:#a78bfa">● Backend</button>
+    <button class="filter-btn" onclick="filterTasks('n8n',this)" style="color:#fb923c">● n8n</button>
+    <button class="filter-btn" onclick="filterTasks('frontend',this)" style="color:#38bdf8">● Frontend</button>
+    <button class="filter-btn" onclick="filterTasks('polish',this)" style="color:#34d399">● Polish</button>
+    <button class="filter-btn" onclick="filterTasks('P0',this)" style="color:#fca5a5">● P0 críticos</button>
+  </div>
+
+  <div class="tasks-grid" id="tasks-grid">
+  </div>
+</div>
+
+<!-- ===== WEBHOOKS MORTOS ===== -->
+<div id="section-webhooks" class="section">
+  <div class="section-title">Limpeza de Webhooks Mortos (n8n)</div>
+  <div class="section-sub">21 workflows inativos identificados. Ação obrigatória em T10. Deletar protótipos e stubs. Reativar os 3 úteis.</div>
+
+  <div style="margin-bottom:20px">
+    <div class="cmd-block" onclick="copyCmd(this)">
+      <div class="cmd-copy">COPIAR</div>
+      /clear && /projeto mdzap-v3 plan T10
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:15px;margin-bottom:12px">Reativar (3 workflows)</div>
+  <div class="dead-grid" style="margin-bottom:24px">
+    <div class="dead-card reativar">
+      <div class="dead-title"><span class="dead-action reativar">REATIVAR</span> Document Received</div>
+      <div class="dead-desc">Recebe notificação quando cliente envia documento. Necessário para pipeline Doc Reader (T15).</div>
+    </div>
+    <div class="dead-card reativar">
+      <div class="dead-title"><span class="dead-action reativar">REATIVAR</span> Transferir Conversa</div>
+      <div class="dead-desc">Transferência de conversa entre atendentes. Frontend chama mdzap/transferir-conversa.</div>
+    </div>
+    <div class="dead-card reativar">
+      <div class="dead-title"><span class="dead-action reativar">REATIVAR</span> Lead Sync</div>
+      <div class="dead-desc">Sincronização de dados de lead entre MdZap e CRM. Necessário para integridade.</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:15px;margin-bottom:12px">Avaliar antes de deletar (1 workflow)</div>
+  <div class="dead-grid" style="margin-bottom:24px">
+    <div class="dead-card avaliar">
+      <div class="dead-title"><span class="dead-action avaliar">AVALIAR</span> Triagem</div>
+      <div class="dead-desc">Verificar se Message Grouper cobre auto-reply de triagem. Se sim, deletar. Se não, reativar.</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:15px;margin-bottom:12px">Deletar (17 workflows) — confirmar antes de cada um</div>
+  <div class="dead-grid">
+    <div class="dead-card">
+      <div class="dead-title"><span class="dead-action deletar">DELETAR</span> MDZAP-DEVOLVER-JULIA</div>
+      <div class="dead-desc">P0-07: legado com mesmo path que novo devolver-julia. Conflito de path. Manter apenas o novo.</div>
+    </div>
+    <div class="dead-card">
+      <div class="dead-title"><span class="dead-action deletar">DELETAR</span> Stubs vazios (3)</div>
+      <div class="dead-desc">Bulk Documentos, Bulk Negociações, Enviar Template (antigo). Retornam success sem fazer nada. T17 e T18 substituem.</div>
+    </div>
+    <div class="dead-card">
+      <div class="dead-title"><span class="dead-action deletar">DELETAR</span> Protótipos Gustavo/Matheus</div>
+      <div class="dead-desc">Workflows de teste e protótipos não utilizados. Verificar nome por nome via n8n MCP antes de deletar.</div>
+    </div>
+    <div class="dead-card">
+      <div class="dead-title"><span class="dead-action deletar">DELETAR</span> Audio TTS</div>
+      <div class="dead-desc">ElevenLabs key hardcoded, nunca executado. Substituído por T17 (Meta Cloud API).</div>
+    </div>
+    <div class="dead-card">
+      <div class="dead-title"><span class="dead-action deletar">DELETAR</span> Z-API Teste</div>
+      <div class="dead-desc">1 referência Z-API em workflow de teste inativo. Z-API foi descontinuado no projeto.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px" class="review-box">
+    <h4>🔌 Protocolo E2E para cada webhook ativo</h4>
+    <div class="review-checklist">
+      <div class="review-item">1. Via n8n MCP: verificar workflow existe e está ATIVO</div>
+      <div class="review-item">2. Verificar header auth: webhook trigger tem headerAuth ativado com mdflow=MdL1501@</div>
+      <div class="review-item">3. Verificar sticky note: tem documentação do fluxo</div>
+      <div class="review-item">4. Verificar envelope: request_id, contexto, organizacao_id presentes</div>
+      <div class="review-item">5. Verificar resposta: action presente (toast_refresh, redirect, etc)</div>
+      <div class="review-item">6. Verificar sem service_role hardcoded: buscar 'eyJ' nos nodes</div>
+      <div class="review-item">7. Executar teste real: disparar webhook com dados reais de produção</div>
+      <div class="review-item critical">Se QUALQUER item falhar → tarefa não validada → loop execute</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MÉTRICAS ===== -->
+<div id="section-metrics" class="section">
+  <div class="section-title">Mapa de Qualidade — Atual vs Meta</div>
+  <div class="section-sub">A nota consolidada reflete a média ponderada de 4 dimensões. Para chegar a >9, todas as dimensões precisam subir.</div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-header">
+        <div class="metric-icon">🗄️</div>
+        <div class="metric-trend up">atual 5.2</div>
+      </div>
+      <div class="metric-name">Backend</div>
+      <div class="metric-val" style="color:#8b5cf6">→ 8.5</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:52%;background:#8b5cf6"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <div class="metric-icon">⚡</div>
+        <div class="metric-trend up">atual 4.8</div>
+      </div>
+      <div class="metric-name">Code Quality</div>
+      <div class="metric-val" style="color:#0ea5e9">→ 9.0</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:48%;background:#0ea5e9"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <div class="metric-icon">🔄</div>
+        <div class="metric-trend up">atual 3.5</div>
+      </div>
+      <div class="metric-name">n8n Automações</div>
+      <div class="metric-val" style="color:#ea580c">→ 9.0</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:35%;background:#ea580c"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <div class="metric-icon">🖥️</div>
+        <div class="metric-trend up">atual 6.2</div>
+      </div>
+      <div class="metric-name">Frontend UX</div>
+      <div class="metric-val" style="color:#22c55e">→ 9.5</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:62%;background:#22c55e"></div></div>
+    </div>
+    <div class="metric-card" style="border-color:rgba(124,109,255,.4)">
+      <div class="metric-header">
+        <div class="metric-icon">📊</div>
+        <div class="metric-trend target">meta >9.0</div>
+      </div>
+      <div class="metric-name">Nota Consolidada</div>
+      <div class="metric-val" style="color:var(--p0)">4.9</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:49%;background:var(--p0)"></div></div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section-title" style="font-size:16px;margin-bottom:12px">O que move a agulha mais rápido</div>
+  <div class="approach-grid">
+    <div class="approach-card">
+      <h3>🔴 n8n (3.5 → 9.0) — maior salto</h3>
+      <ul>
+        <li>T06: remove service_role hardcoded (+2.0)</li>
+        <li>T08: assumir-conversa webhook (+1.5)</li>
+        <li>T12: envelope canônico 100% (+1.5)</li>
+        <li>T15: doc-reader implementado (+1.0)</li>
+        <li>T10: cleanup inativos (+0.5)</li>
+      </ul>
+    </div>
+    <div class="approach-card">
+      <h3>🟠 Code (4.8 → 9.0)</h3>
+      <ul>
+        <li>T19-T22: useQuery + query keys (+1.5)</li>
+        <li>T23: LeadDocs reusa CRM (+1.0)</li>
+        <li>T24: hook unificado (+0.5)</li>
+        <li>T37-T40: splits <500 linhas (+1.0)</li>
+        <li>T41: query keys padronizados (+0.5)</li>
+      </ul>
+    </div>
+    <div class="approach-card">
+      <h3>🟡 Backend (5.2 → 8.5)</h3>
+      <ul>
+        <li>T03: pgsodium z_api_token (+1.5)</li>
+        <li>T02: fn lead_coluna (+1.0)</li>
+        <li>T04-T05: índices + soft delete (+0.5)</li>
+        <li>T01: rpc verificada (+0.3)</li>
+      </ul>
+    </div>
+    <div class="approach-card">
+      <h3>🟢 Frontend (6.2 → 9.5)</h3>
+      <ul>
+        <li>T30: hierarquia tabs (+1.0)</li>
+        <li>T31: mobile responsivo (+0.8)</li>
+        <li>T34: flow guiado (+0.5)</li>
+        <li>T35: 14 bugs visuais (+0.5)</li>
+        <li>T26: badge CRM + CPF (+0.5)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROTOCOLO LOOP ===== -->
+<div id="section-protocol" class="section">
+  <div class="section-title">Protocolo de Loop por Pendência</div>
+  <div class="section-sub">Cada tarefa passa por este ciclo até atingir 95% de certeza de aprovação. Tarefas P0 têm revisão 10x mais rigorosa.</div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px">
+    <h3 style="margin-bottom:16px;font-size:15px">Loop por tarefa (copiar template abaixo)</h3>
+    <div class="cmd-pipeline">
+      <div class="cmd-step">
+        <div class="cmd-step-header"><div class="cmd-step-num step1">1</div><div><div class="cmd-step-label">PLAN — Contexto + Codex Pre-Review</div><div class="cmd-step-sublabel">Nova sessão limpa. Ler spec + planejar + revisar arquivos antes de tocar.</div></div></div>
+        <div class="cmd-block" onclick="copyCmd(this)"><div class="cmd-copy">COPIAR</div>/clear
+cat ~/beto-vault/projetos/mdzap-v3/plans/task-T??.md 2>/dev/null || true
+/projeto mdzap-v3 plan T??</div>
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:20px;padding:4px 0">↓</div>
+      <div class="cmd-step">
+        <div class="cmd-step-header"><div class="cmd-step-num step2">2</div><div><div class="cmd-step-label">EXECUTE — Implementar EXATAMENTE o plano</div><div class="cmd-step-sublabel">Nova sessão limpa. Ler plano → implementar → Codex post-review → commit.</div></div></div>
+        <div class="cmd-block" onclick="copyCmd(this)"><div class="cmd-copy">COPIAR</div>/clear
+/projeto mdzap-v3 execute T??</div>
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:20px;padding:4px 0">↓</div>
+      <div class="cmd-step">
+        <div class="cmd-step-header"><div class="cmd-step-num step3">3</div><div><div class="cmd-step-label">REVIEW ESPECÍFICO — Revisão burocrática profunda</div><div class="cmd-step-sublabel">Ler log de execução + spec + plano. Verificar cada critério de aceite.</div></div></div>
+        <div class="cmd-block review" onclick="copyCmd(this)"><div class="cmd-copy">COPIAR</div>/clear
+Você é um revisor sênior do MdZap v3. Sua tarefa é revisar a execução da T??.
+
+Leia estes arquivos em sequência:
+1. ~/beto-vault/projetos/mdzap-v3/spec.md (seção relevante para T??)
+2. ~/beto-vault/projetos/mdzap-v3/plans/task-T??.md
+3. ~/beto-vault/projetos/mdzap-v3/logs/task-T??-result.md
+4. Os arquivos modificados listados no log
+
+Contexto da pendência T??: [INSERIR TÍTULO DA TASK]
+
+Execute o checklist COMPLETO:
+□ O que foi feito corresponde exatamente ao plano?
+□ Todos os critérios de aceite foram atingidos?
+□ Build passa sem erros TypeScript?
+□ Sem hex hardcoded (#xxxxxx)? Usando CSS tokens?
+□ Sem console.log/console.error residuais?
+□ Sem `as any` casts não seguros?
+□ organizacao_id em todas as queries Supabase?
+□ deleted_at IS NULL nos filtros?
+□ staleTime: 30_000 em todos useQuery?
+
+[ADICIONAR CHECKS ESPECÍFICOS DA CATEGORIA — ver abaixo]
+
+Veredicto: APROVADO (95%+ certeza) | PENDÊNCIAS (listar exatamente o que falta)</div>
+      </div>
+      <div style="text-align:center;font-size:20px;padding:4px 0">⬇</div>
+      <div class="loop-indicator">
+        <div class="loop-icon">🔄</div>
+        <div class="loop-text"><strong>Se PENDÊNCIAS encontradas:</strong> voltar ao passo 2 com o fix específico apontado. Repetir até APROVADO.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:16px;margin-bottom:12px">Checks adicionais por categoria</div>
+
+  <div class="approach-grid">
+    <div class="approach-card" style="border-left:3px solid #ea580c">
+      <h3>🔄 n8n Webhook (review E2E)</h3>
+      <ul>
+        <li>Header auth mdflow: MdL1501@ validado?</li>
+        <li>Registro em webhook_requests feito?</li>
+        <li>Sticky notes com descrição do fluxo?</li>
+        <li>Envelope canônico: request_id + contexto + organizacao_id?</li>
+        <li>Response: action presente? HTTP 200 sempre?</li>
+        <li>Sem service_role hardcoded (buscar 'eyJ')?</li>
+        <li>Testar REAL: curl com header correto, verificar Supabase</li>
+        <li>Testar ERRO: curl sem header → deve retornar 401/403</li>
+      </ul>
+    </div>
+    <div class="approach-card" style="border-left:3px solid #8b5cf6">
+      <h3>🗄️ Backend RPC/Migration</h3>
+      <ul>
+        <li>SECURITY DEFINER presente?</li>
+        <li>SET search_path TO 'public'?</li>
+        <li>RETURNS JSON/JSONB com success+error?</li>
+        <li>Verificar via Supabase MCP: SELECT routine</li>
+        <li>Testar com UUIDs reais de produção</li>
+        <li>RLS não quebra? Testar com anon key</li>
+        <li>Migration não destrói dados existentes?</li>
+      </ul>
+    </div>
+    <div class="approach-card" style="border-left:3px solid #0ea5e9">
+      <h3>⚛️ Frontend Component</h3>
+      <ul>
+        <li>Build TypeScript sem erros?</li>
+        <li>Sem hex hardcoded?</li>
+        <li>useQuery com staleTime:30_000?</li>
+        <li>organizacao_id em todas as queries?</li>
+        <li>deleted_at IS NULL nos filtros?</li>
+        <li>Loading state implementado?</li>
+        <li>Empty state implementado?</li>
+        <li>Componente ≤500 linhas?</li>
+        <li>onSuccess invalida queries corretas?</li>
+      </ul>
+    </div>
+    <div class="approach-card" style="border-left:3px solid #ef4444">
+      <h3>⚠️ Tarefas P0 — Revisão Tripla</h3>
+      <ul>
+        <li>T06: verificar CADA node de CADA WF ativo via MCP</li>
+        <li>T08: testar assumir → Julia para → devolver → Julia volta</li>
+        <li>T02: verificar com conversa real que tem lead vinculado</li>
+        <li>T15: testar com foto real de CNH → campos extraídos corretos</li>
+        <li>T03: testar decrypt — chave acessível?</li>
+        <li>T12: 100% dos WFs com envelope correto — conferir um a um</li>
+        <li>Após P0: rodar audit simplificado para confirmar nota subiu</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="toast">✓ Copiado!</div>
+
+<script>
+const TASKS_DATA = [
+  {id:"T01",title:"Verificar fn_link_conversa_to_lead + SECURITY DEFINER",cat:"backend",prio:"P0",complex:"S",wave:1,deps:[],desc:"Confirmar que fn_link_conversa_to_lead existe em produção com SECURITY DEFINER. Testar via MCP.",files:["supabase/migrations/"],review_type:"backend"},
+  {id:"T02",title:"Fix fn_mdzap_conversas: retornar lead_coluna no SELECT",cat:"backend",prio:"P0",complex:"S",wave:1,deps:[],desc:"Causa raiz do badge CRM não aparecer (BUG-02). A RPC deve retornar leads.coluna_crm AS lead_coluna.",files:["supabase/migrations/"],review_type:"backend_rpc"},
+  {id:"T03",title:"Encriptar z_api_token com pgsodium vault",cat:"backend",prio:"P0",complex:"M",wave:1,deps:[],desc:"P0-17: z_api_token em TEXT plano é risco de segurança. Usar pgsodium.create_secret().",files:["supabase/migrations/"],review_type:"backend"},
+  {id:"T04",title:"Índice em leads(cpf) WHERE deleted_at IS NULL",cat:"backend",prio:"P2",complex:"S",wave:1,deps:[],desc:"P2-12: busca por CPF sem índice é lenta.",files:["supabase/migrations/"],review_type:"backend"},
+  {id:"T05",title:"Soft delete em whatsapp_numeros + whatsapp_contatos",cat:"backend",prio:"P2",complex:"S",wave:1,deps:[],desc:"whatsapp_numeros e whatsapp_contatos não têm deleted_at.",files:["supabase/migrations/"],review_type:"backend"},
+  {id:"T06",title:"Remover service_role hardcoded de 10+ nodes n8n",cat:"n8n",prio:"P0",complex:"M",wave:1,deps:[],desc:"P0-09: substituir todas as service_role keys hardcoded por $env.SUPABASE_KEY em todos WFs ativos.",files:[],review_type:"n8n_security"},
+  {id:"T07",title:"Auth header em julia-prompt-save",cat:"n8n",prio:"P0",complex:"S",wave:2,deps:["T06"],desc:"P0-11: mdzap/julia-prompt-save é webhook público. Adicionar validação: {{ $headers.mdflow }} === MdL1501@.",files:[],review_type:"n8n_webhook"},
+  {id:"T08",title:"CRIAR workflow mdzap/assumir-conversa",cat:"n8n",prio:"P0",complex:"M",wave:2,deps:["T06"],desc:"P0-06: webhook INEXISTENTE — Julia não para de responder. Criar fluxo completo com auth → registro → UPDATE → response.",files:[],review_type:"n8n_webhook"},
+  {id:"T09",title:"Deletar devolver-julia legado — resolver conflito path",cat:"n8n",prio:"P0",complex:"S",wave:1,deps:[],desc:"P0-07: 2 WFs com path mdzap/devolver-julia. Identificar legado (MDZAP-DEVOLVER-JULIA), deletar.",files:[],review_type:"n8n_webhook"},
+  {id:"T10",title:"Cleanup 21 workflows inativos n8n",cat:"n8n",prio:"P0",complex:"M",wave:2,deps:["T09"],desc:"P0-12: Deletar 17, Reativar 3 (Document Received, Transferir, Lead Sync). Avaliar Triagem.",files:[],review_type:"n8n_cleanup"},
+  {id:"T11",title:"Sticky notes em todos WFs ativos",cat:"n8n",prio:"P0",complex:"M",wave:2,deps:["T06"],desc:"P0-14: 11 WFs ativos sem sticky notes de documentação.",files:[],review_type:"n8n_quality"},
+  {id:"T12",title:"Padronizar envelope canônico em todos WFs ativos",cat:"n8n",prio:"P0",complex:"L",wave:2,deps:["T06"],desc:"P0-13: 60% dos WFs sem envelope canônico. REQUEST e RESPONSE padronizados. Action obrigatório.",files:[],review_type:"n8n_canonical"},
+  {id:"T13",title:"Registrar webhook_requests em WFs faltantes",cat:"n8n",prio:"P0",complex:"M",wave:2,deps:["T06"],desc:"P0-15: audit trail. INSERT webhook_requests no início de cada WF que ainda não registra.",files:[],review_type:"n8n_quality"},
+  {id:"T14",title:"Retry + DLQ no fire-and-forget orquestrador Julia",cat:"n8n",prio:"P0",complex:"M",wave:2,deps:["T06"],desc:"P0-02: orquestrador Julia é fire-and-forget sem retry. 3 tentativas com backoff + mdzap_message_queue.",files:["supabase/functions/mdzap-webhook/index.ts"],review_type:"n8n_reliability"},
+  {id:"T15",title:"CRIAR workflow mdzap/doc-reader completo",cat:"n8n",prio:"P0",complex:"L",wave:3,deps:["T06","T12"],desc:"P0-04: Doc Reader inexistente. Claude Sonnet extrai CNH/comprovante/CTPS. Pipeline completo.",files:[],review_type:"n8n_webhook"},
+  {id:"T16",title:"Fix FOLLOWUP-ZAPSIGN IF node type bug",cat:"n8n",prio:"P1",complex:"S",wave:2,deps:[],desc:"P1-17: nó IF do FOLLOWUP-ZAPSIGN tem bug de tipo na expressão condicional.",files:[],review_type:"n8n_webhook"},
+  {id:"T17",title:"Implementar envio áudio real via Meta Cloud API",cat:"n8n",prio:"P0",complex:"M",wave:3,deps:["T06"],desc:"P0-10: mdzap/enviar-audio é stub. Implementar upload Meta Media API + envio via Messages API.",files:[],review_type:"n8n_webhook"},
+  {id:"T18",title:"Implementar enviar-template HSM real",cat:"n8n",prio:"P1",complex:"M",wave:3,deps:["T06","T12"],desc:"mdzap/enviar-template é stub vazio. Implementar envio real via Meta Messages API.",files:[],review_type:"n8n_webhook"},
+  {id:"T19",title:"Fix CODE-01: bureau mismatch boavista→apifull_115",cat:"frontend",prio:"P0",complex:"S",wave:1,deps:[],desc:"CODE-01: useLeadPanelActions usa p_bureaus:['boavista'] mas CRM usa p_bureaus:['apifull_115'].",files:["src/components/mdzap/lead-panel/useLeadPanelActions.ts"],review_type:"frontend"},
+  {id:"T20",title:"Fix CODE-02: docMensagens useEffect → useQuery",cat:"frontend",prio:"P0",complex:"S",wave:1,deps:[],desc:"CODE-02: docMensagens busca via useEffect+.then sem cache, retry, invalidation.",files:["src/components/mdzap/lead-panel/useLeadPanelActions.ts"],review_type:"frontend"},
+  {id:"T21",title:"Fix CODE-03: advogados useEffect → useQuery",cat:"frontend",prio:"P1",complex:"S",wave:1,deps:[],desc:"CODE-03: advogados fetcha em cada render via useEffect.",files:["src/components/mdzap/lead-panel/useLeadPanelActions.ts"],review_type:"frontend"},
+  {id:"T22",title:"Fix CODE-04+05: query key mismatch + criarLead invalidation",cat:"frontend",prio:"P1",complex:"S",wave:1,deps:[],desc:"CODE-04: saveLead invalida errado. CODE-05: criarLead não invalida mdzap-conversas.",files:["src/components/mdzap/lead-panel/useLeadPanelActions.ts"],review_type:"frontend"},
+  {id:"T23",title:"Refatorar LeadDocumentosTab → reusar ClienteDrawerTabDocumentos",cat:"frontend",prio:"P1",complex:"M",wave:2,deps:[],desc:"CODE-06: 301 linhas reimplementando CRM sem Drive sync e realtime. Reusar o componente CRM.",files:["src/components/mdzap/lead-panel/LeadDocumentosTab.tsx","src/components/shared/cliente_drawer/tabs/ClienteDrawerTabDocumentos.tsx"],review_type:"frontend"},
+  {id:"T24",title:"Unificar hook assumir/devolver (P0-08)",cat:"frontend",prio:"P0",complex:"M",wave:3,deps:["T08","T09"],desc:"P0-08: assumir/devolver duplicado. Implementação canônica em useMdzapThreadActions.",files:["src/hooks/mdzap/useMdzapThreadActions.ts","src/components/mdzap/lead-panel/useLeadPanelActions.ts"],review_type:"frontend"},
+  {id:"T25",title:"Aba Dados: simplificar campos e botões",cat:"frontend",prio:"P1",complex:"M",wave:2,deps:[],desc:"T04-v2: remover botões CRM/Assumir, remover campos desnecessários. Manter dados essenciais.",files:["src/components/mdzap/lead-panel/LeadDadosTab.tsx","src/components/mdzap/lead-panel/LeadDadosFields.tsx"],review_type:"frontend"},
+  {id:"T26",title:"Fix badge CRM dropdown + CPF mascarado",cat:"frontend",prio:"P0",complex:"M",wave:2,deps:["T02"],desc:"T05-v2/BUG-01+02: buscar CPF mascarado, fix badge CRM que não aparecia por lead_coluna null.",files:["src/components/mdzap/MdzapThreadHeader.tsx","src/components/mdzap/MdzapMsgThread.tsx"],review_type:"frontend"},
+  {id:"T27",title:"Badge notificação auditoria pendente na lista",cat:"frontend",prio:"P1",complex:"S",wave:3,deps:[],desc:"T09-v2: indicador visual para conversas com lead em em_atendimento aguardando auditoria.",files:["src/components/mdzap/MdzapConversaList.tsx"],review_type:"frontend"},
+  {id:"T28",title:"Loading/empty states pós-mudanças drawer",cat:"frontend",prio:"P2",complex:"S",wave:4,deps:["T23","T25","T26"],desc:"T11-v2: verificar estados de carregamento após alterações. Skeleton + empty state com ação.",files:["src/components/mdzap/lead-panel/"],review_type:"frontend"},
+  {id:"T29",title:"Indicador visual de responsável no thread header",cat:"frontend",prio:"P1",complex:"S",wave:3,deps:["T26"],desc:"P1-11: exibir nome/avatar de quem está atendendo no header da conversa.",files:["src/components/mdzap/MdzapThreadHeader.tsx"],review_type:"frontend"},
+  {id:"T30",title:"Redesign hierarquia tabs /mdzap (P0-16)",cat:"frontend",prio:"P0",complex:"M",wave:3,deps:[],desc:"P0-16: 6 tabs sem hierarquia. Ordem: Conversas→Dashboard→Telemetria→JuliaLab→Templates→Gestão.",files:["src/components/mdzap/MdzapTabNav.tsx","src/pages/mdzap/index.tsx"],review_type:"frontend"},
+  {id:"T31",title:"Responsividade mobile P1-03",cat:"frontend",prio:"P1",complex:"L",wave:4,deps:["T25"],desc:"P1-03: mobile 4.0/10. Drawer→modal, input fixo, touch 44px, testar 375px e 414px.",files:["src/components/mdzap/MdzapChatPanel.tsx","src/pages/MdzapAppPage.tsx"],review_type:"frontend"},
+  {id:"T32",title:"Timeline event ao mover coluna CRM",cat:"frontend",prio:"P1",complex:"S",wave:4,deps:["T26"],desc:"P1-14: INSERT mdzap_conversas_timeline ao mover lead de coluna via badge CRM dropdown.",files:["src/components/mdzap/MdzapThreadHeader.tsx"],review_type:"frontend"},
+  {id:"T33",title:"Progress indicator na auditoria bureau",cat:"frontend",prio:"P1",complex:"S",wave:4,deps:["T19"],desc:"P1-07: auditoria leva 10-30s sem feedback. Spinner + textos de progresso.",files:["src/components/mdzap/lead-panel/LeadRestricoesMdzapTab.tsx"],review_type:"frontend"},
+  {id:"T34",title:"Flow guiado no Lead Panel (P1-18)",cat:"frontend",prio:"P1",complex:"M",wave:4,deps:["T23","T25"],desc:"P1-18: ordem lógica Dados→Restrições→Docs→Notas→Memória→Histórico. Indicador de completude.",files:["src/components/mdzap/MdzapLeadPanel.tsx"],review_type:"frontend"},
+  {id:"T35",title:"Corrigir 14 bugs visuais VIS-01 a VIS-14",cat:"frontend",prio:"P2",complex:"M",wave:4,deps:[],desc:"P2-11: 14 bugs catalogados no frontend audit. Ler HTML do audit, corrigir com CSS tokens.",files:["src/components/mdzap/"],review_type:"frontend"},
+  {id:"T36",title:"Frontend: integrar LeadDadosFields com doc-reader",cat:"frontend",prio:"P1",complex:"M",wave:4,deps:["T15","T25"],desc:"P1-05: quando doc-reader retorna action:update_state, preencher campos automaticamente.",files:["src/components/mdzap/lead-panel/LeadDadosFields.tsx"],review_type:"frontend"},
+  {id:"T37",title:"Split MdzapMsgBubble 494→sub-componentes",cat:"polish",prio:"P2",complex:"M",wave:4,deps:[],desc:"P2-05: 494 linhas. Split: MsgBubbleText, MsgBubbleMedia, MsgBubbleAudio, MsgBubbleTemplate.",files:["src/components/mdzap/MdzapMsgBubble.tsx"],review_type:"frontend"},
+  {id:"T38",title:"Split MdzapJuliaLab 497→sub-componentes",cat:"polish",prio:"P2",complex:"M",wave:4,deps:[],desc:"P2-06: 497 linhas (maior componente). Split em 4 sub-componentes.",files:["src/components/mdzap/MdzapJuliaLab.tsx"],review_type:"frontend"},
+  {id:"T39",title:"Split useLeadPanelActions em hooks especializados",cat:"polish",prio:"P2",complex:"M",wave:5,deps:["T24"],desc:"P2-09: 404 linhas, 8+ responsabilidades. Split em useLeadSave, useLeadCreate, useLeadAuditoria, useLeadDocs.",files:["src/components/mdzap/lead-panel/useLeadPanelActions.ts"],review_type:"frontend"},
+  {id:"T40",title:"Split MdzapConversaList em sub-componentes",cat:"polish",prio:"P2",complex:"M",wave:5,deps:["T27"],desc:"P2-10: 410 linhas. Extrair: ConversaListHeader, ConversaListBulk, ConversaListItem.",files:["src/components/mdzap/MdzapConversaList.tsx"],review_type:"frontend"},
+  {id:"T41",title:"Padronizar namespace query keys",cat:"polish",prio:"P2",complex:"S",wave:5,deps:["T20","T21","T22"],desc:"P2-08: inconsistência mdzap/* vs mdzap-*. Padronizar todos para ['mdzap',entidade,orgId].",files:["src/hooks/mdzap/"],review_type:"frontend"},
+  {id:"T42",title:"Desabilitar polling 8s quando Realtime ativo",cat:"polish",prio:"P1",complex:"S",wave:5,deps:[],desc:"P1-04: polling 8s e Realtime correm simultaneamente. Desabilitar polling se Realtime conectado.",files:["src/hooks/useMdzapConversas.ts"],review_type:"frontend"}
+];
+
+let currentFilter = 'all';
+
+function renderTasks(filter) {
+  const grid = document.getElementById('tasks-grid');
+  grid.innerHTML = '';
+  const filtered = filter === 'all' ? TASKS_DATA :
+    TASKS_DATA.filter(t => filter === 'P0' ? t.prio === 'P0' : t.cat === filter);
+
+  filtered.forEach(task => {
+    const reviewChecks = getReviewChecks(task);
+    const card = document.createElement('div');
+    card.className = `task-card priority-${task.prio}`;
+    card.id = `task-${task.id}`;
+    card.innerHTML = `
+      <div class="task-header" onclick="toggleTask('${task.id}')">
+        <div class="task-id">${task.id}</div>
+        <div class="task-info">
+          <div class="task-title">${task.title}</div>
+          <div class="task-desc">${task.desc}</div>
+        </div>
+        <div class="task-badges">
+          <span class="badge prio-${task.prio}">${task.prio}</span>
+          <span class="badge cat-${task.cat}">${task.cat}</span>
+          <span class="badge complexity">${task.complex}</span>
+          <span class="badge wave">Onda ${task.wave}</span>
+        </div>
+        <div class="chevron">▶</div>
+      </div>
+      <div class="task-body">
+        <div class="task-section">
+          <div class="task-section-label">Dependências</div>
+          <div class="dep-chips">
+            ${task.deps.length === 0
+              ? '<span class="dep-chip none">✓ Nenhuma — pode começar agora</span>'
+              : task.deps.map(d => `<span class="dep-chip">${d}</span>`).join('')}
+          </div>
+        </div>
+        ${task.files.length > 0 ? `
+        <div class="task-section">
+          <div class="task-section-label">Arquivos Afetados</div>
+          <div style="font-size:11px;color:var(--muted);font-family:monospace;line-height:1.8">
+            ${task.files.map(f => `<div>→ ${f}</div>`).join('')}
+          </div>
+        </div>` : ''}
+        <div class="task-section">
+          <div class="task-section-label">Pipeline de Execução — Copie e cole no terminal</div>
+          <div class="cmd-pipeline">
+            <div class="cmd-step">
+              <div class="cmd-step-header">
+                <div class="cmd-step-num step1">1</div>
+                <div><div class="cmd-step-label">PLAN</div><div class="cmd-step-sublabel">Nova sessão limpa</div></div>
+              </div>
+              <div class="cmd-block" onclick="copyCmd(this)">
+                <div class="cmd-copy">COPIAR</div>/clear
+/projeto mdzap-v3 plan ${task.id}</div>
+            </div>
+            <div style="text-align:center;color:var(--muted);padding:2px 0">↓ após revisar o plano</div>
+            <div class="cmd-step">
+              <div class="cmd-step-header">
+                <div class="cmd-step-num step2">2</div>
+                <div><div class="cmd-step-label">EXECUTE</div><div class="cmd-step-sublabel">Nova sessão limpa</div></div>
+              </div>
+              <div class="cmd-block" onclick="copyCmd(this)">
+                <div class="cmd-copy">COPIAR</div>/clear
+/projeto mdzap-v3 execute ${task.id}</div>
+            </div>
+            <div style="text-align:center;color:var(--muted);padding:2px 0">↓ após executar</div>
+            <div class="cmd-step">
+              <div class="cmd-step-header">
+                <div class="cmd-step-num step3">3</div>
+                <div><div class="cmd-step-label">REVIEW ESPECÍFICO</div><div class="cmd-step-sublabel">Cole este prompt na nova sessão</div></div>
+              </div>
+              <div class="cmd-block review" onclick="copyCmd(this)">
+                <div class="cmd-copy">COPIAR</div>/clear
+Você é revisor sênior MdZap v3. Revisar execução de ${task.id}: "${task.title}".
+
+Leia em sequência:
+1. ~/beto-vault/projetos/mdzap-v3/spec.md (seção ${task.cat})
+2. ~/beto-vault/projetos/mdzap-v3/plans/task-${task.id}.md
+3. ~/beto-vault/projetos/mdzap-v3/logs/task-${task.id}-result.md
+4. Arquivos modificados: ${task.files.join(', ') || 'ver log'}
+
+CHECKLIST OBRIGATÓRIO:
+${reviewChecks}
+
+Veredicto: APROVADO (95%+) | PENDÊNCIAS (listar o que falta exatamente)</div>
+            </div>
+          </div>
+          <div class="loop-indicator" style="margin-top:8px">
+            <div class="loop-icon">🔄</div>
+            <div class="loop-text">Se PENDÊNCIAS → /clear → /projeto mdzap-v3 execute ${task.id} → novo review. Repetir até APROVADO.</div>
+          </div>
+        </div>
+        ${getE2EBox(task)}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function getReviewChecks(task) {
+  const base = [
+    '□ O que foi feito corresponde ao plano?',
+    '□ Todos critérios de aceite atingidos?',
+    '□ Build TypeScript sem erros?',
+    '□ Sem console.log residuais?',
+  ];
+  if (task.cat === 'n8n') {
+    return [
+      '□ Header auth validado: mdflow: MdL1501@?',
+      '□ Webhook_requests registrado no início?',
+      '□ Sticky notes com descrição do fluxo?',
+      '□ Envelope: request_id + contexto + organizacao_id?',
+      '□ Response: action presente? HTTP 200 sempre?',
+      '□ Sem service_role hardcoded (buscar "eyJ")?',
+      '□ Teste REAL: disparar webhook, verificar Supabase',
+      '□ Teste ERRO: sem header → 401/403?',
+    ].join('\n');
+  }
+  if (task.cat === 'backend') {
+    return [
+      '□ SECURITY DEFINER + SET search_path TO "public"?',
+      '□ RETURNS JSON com success+error?',
+      '□ Testar via Supabase MCP com UUIDs reais',
+      '□ RLS não quebra? Testar com anon key',
+      '□ Migration não destrói dados existentes?',
+      '□ Índices criados? Verificar via MCP',
+    ].join('\n');
+  }
+  // frontend/polish
+  return [
+    ...base,
+    '□ Sem hex hardcoded (#xxxxxx)?',
+    '□ Sem `as any` casts inseguros?',
+    '□ organizacao_id em todas queries Supabase?',
+    '□ deleted_at IS NULL nos filtros?',
+    '□ staleTime: 30_000 em useQuery?',
+    '□ Loading state implementado?',
+    '□ Empty state implementado?',
+    '□ Componente ≤500 linhas?',
+    '□ onSuccess invalida queries corretas?',
+  ].join('\n');
+}
+
+function getE2EBox(task) {
+  if (task.review_type === 'n8n_webhook' || task.review_type === 'n8n_security' || task.review_type === 'n8n_canonical') {
+    return `
+      <div class="e2e-box" style="margin-top:12px">
+        <h4>🔌 Protocolo E2E — ${task.id}</h4>
+        <div class="e2e-steps">
+          <div class="e2e-step"><div class="e2e-step-num">1.</div>Via n8n MCP: confirmar workflow existe e ativo</div>
+          <div class="e2e-step"><div class="e2e-step-num">2.</div>Verificar headerAuth configurado com mdflow=MdL1501@</div>
+          <div class="e2e-step"><div class="e2e-step-num">3.</div>Testar: POST /webhook/mdzap/${task.id.toLowerCase()} com header correto + body {request_id,contexto,organizacao_id,data:{}}</div>
+          <div class="e2e-step"><div class="e2e-step-num">4.</div>Verificar response: {success:true, action:"...", data:{}}</div>
+          <div class="e2e-step"><div class="e2e-step-num">5.</div>Verificar Supabase: dados salvos corretamente?</div>
+          <div class="e2e-step"><div class="e2e-step-num">6.</div>Testar sem header → deve rejeitar</div>
+        </div>
+      </div>`;
+  }
+  if (task.review_type === 'backend_rpc') {
+    return `
+      <div class="e2e-box" style="margin-top:12px">
+        <h4>🗄️ Teste E2E Supabase — ${task.id}</h4>
+        <div class="e2e-steps">
+          <div class="e2e-step"><div class="e2e-step-num">1.</div>SELECT * FROM information_schema.routines WHERE routine_name = 'fn_mdzap_conversas'</div>
+          <div class="e2e-step"><div class="e2e-step-num">2.</div>SELECT fn_mdzap_conversas('[ORG_ID]', 1, 10) — verificar lead_coluna no JSON retornado</div>
+          <div class="e2e-step"><div class="e2e-step-num">3.</div>Abrir /mdzap no browser — badge CRM deve aparecer nas conversas com lead</div>
+          <div class="e2e-step"><div class="e2e-step-num">4.</div>Verificar Ana Beatriz Santos (conversa com lead vinculado) mostra badge 'em_atendimento'</div>
+        </div>
+      </div>`;
+  }
+  return '';
+}
+
+function toggleTask(id) {
+  const card = document.getElementById(`task-${id}`);
+  card.classList.toggle('open');
+}
+
+function filterTasks(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTasks(filter);
+}
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`section-${name}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function goToTask(id) {
+  showSection('tasks');
+  document.querySelectorAll('.nav-btn').forEach((b,i) => { if(i===1) b.classList.add('active'); else b.classList.remove('active'); });
+  renderTasks('all');
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    if(b.textContent.startsWith('Todas')) { b.classList.add('active'); } else { b.classList.remove('active'); }
+  });
+  setTimeout(() => {
+    const el = document.getElementById(`task-${id}`);
+    if (el) { el.scrollIntoView({behavior:'smooth',block:'center'}); el.classList.add('open'); }
+  }, 100);
+}
+
+function copyCmd(el) {
+  const text = el.innerText.replace('COPIAR','').replace('Copiado!','').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.querySelector('.cmd-copy');
+    if (btn) { btn.textContent = 'Copiado!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'COPIAR'; btn.classList.remove('copied'); }, 2000); }
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  });
+}
+
+// Init
+renderTasks('all');
+</script>
+</body>
+</html>
