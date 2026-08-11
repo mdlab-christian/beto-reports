@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Julia — Super Handoff Completo (2026-08-11)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e; --surface: #1a1714; --card: #201d1a; --border: #2e2b27;
+  --primary: #20c997; --primary-dim: #20c99720; --primary-border: #20c99740;
+  --warn: #f59e0b; --danger: #ef4444; --success: #22c55e; --info: #60a5fa;
+  --text: #f5f0eb; --muted: #9e9890;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; font-size: 14px; line-height: 1.65; padding: 2rem; max-width: 1280px; margin: 0 auto; }
+h1, h2, h3 { font-family: Manrope, Inter, sans-serif; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: .75rem; }
+h3 { font-size: 1.02rem; font-weight: 700; margin: 1.1rem 0 .5rem; color: var(--primary); }
+h4 { font-size: .92rem; font-weight: 600; margin: .9rem 0 .4rem; }
+a { color: var(--info); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, .mono { font-family: var(--mono); font-size: .85em; background: #26221e; padding: .1em .35em; border-radius: 4px; color: #7dd3b9; word-break: break-word; }
+.layout { display: flex; gap: 2rem; }
+.sidebar { width: 235px; position: sticky; top: 20px; height: fit-content; max-height: calc(100vh - 40px); overflow-y: auto; flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+.sidebar .nav-group { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: .9rem 0 .3rem; font-weight: 600; }
+.sidebar .nav-group:first-child { margin-top: 0; }
+.sidebar a { display: block; padding: .22rem .45rem; border-radius: 6px; color: var(--text); font-size: .8rem; }
+.sidebar a:hover { background: var(--primary-dim); text-decoration: none; color: var(--primary); }
+main { flex: 1; min-width: 0; }
+@media (max-width: 760px) { .sidebar { display: none; } body { padding: 1rem; } }
+header { margin-bottom: 1.6rem; }
+.subtitle { color: var(--muted); margin-top: .35rem; max-width: 70ch; }
+.meta-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+.meta-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: .25rem .75rem; font-size: .75rem; color: var(--muted); }
+.meta-chip b { color: var(--text); font-weight: 600; }
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem 1.5rem; margin-bottom: 1.4rem; }
+.section-header { display: flex; align-items: center; gap: .6rem; margin-bottom: .9rem; border-bottom: 1px solid var(--border); padding-bottom: .7rem; }
+.section-icon { font-size: 1.25rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: .95rem 1.1rem; margin: .7rem 0; }
+.card-title { font-weight: 600; margin-bottom: .4rem; font-size: .92rem; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; }
+@media (max-width: 900px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+.badge { display: inline-block; padding: .12rem .55rem; border-radius: 999px; font-size: .7rem; font-weight: 600; vertical-align: middle; }
+.badge-primary { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary-border); }
+.badge-warn { background: #f59e0b1c; color: var(--warn); border: 1px solid #f59e0b40; }
+.badge-danger { background: #ef44441c; color: var(--danger); border: 1px solid #ef444440; }
+.badge-success { background: #22c55e1c; color: var(--success); border: 1px solid #22c55e40; }
+.badge-info { background: #60a5fa1c; color: var(--info); border: 1px solid #60a5fa40; }
+.badge-neutral { background: #9e989018; color: var(--muted); border: 1px solid var(--border); }
+.tbl-wrap { overflow-x: auto; margin: .6rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+th { text-align: left; padding: .5rem .6rem; background: var(--card); color: var(--muted); font-weight: 600; border-bottom: 2px solid var(--border); white-space: nowrap; }
+td { padding: .45rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+.code-block { background: #0d0b0a; border: 1px solid var(--border); border-radius: 8px; padding: .8rem 1rem; font-family: var(--mono); font-size: .78rem; overflow-x: auto; margin: .6rem 0; white-space: pre; line-height: 1.55; color: #d8d2ca; }
+.quote { border-left: 3px solid var(--primary); background: var(--primary-dim); border-radius: 0 8px 8px 0; padding: .7rem .95rem; margin: .6rem 0; font-size: .86rem; }
+.quote.warn { border-left-color: var(--warn); background: #f59e0b12; }
+.quote.danger { border-left-color: var(--danger); background: #ef444412; }
+.pending-item { display: flex; gap: .7rem; padding: .65rem .8rem; border-radius: 8px; margin: .45rem 0; background: var(--card); border: 1px solid var(--border); }
+.pending-item.p0 { border-left: 4px solid var(--danger); }
+.pending-item.p1 { border-left: 4px solid var(--warn); }
+.pending-item.p2 { border-left: 4px solid var(--info); }
+.pending-icon { flex-shrink: 0; font-size: 1rem; }
+.pending-content b { display: block; margin-bottom: .15rem; }
+.pending-content { font-size: .84rem; }
+ul, ol { padding-left: 1.3rem; margin: .4rem 0; }
+li { margin: .22rem 0; }
+p { margin: .45rem 0; }
+.muted { color: var(--muted); }
+.small { font-size: .8rem; }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .8rem; margin: .8rem 0; }
+.kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: .8rem; text-align: center; }
+.kpi .v { font-family: Manrope; font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+.kpi .l { font-size: .72rem; color: var(--muted); margin-top: .15rem; }
+.flow { display: flex; flex-direction: column; gap: .45rem; margin: .7rem 0; }
+.flow-step { display: flex; gap: .8rem; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: .55rem .8rem; font-size: .84rem; }
+.flow-step .n { flex-shrink: 0; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--primary-dim); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .78rem; border: 1px solid var(--primary-border); }
+.flow-step.gate { border-left: 3px solid var(--warn); }
+.flow-step.ia { border-left: 3px solid var(--info); }
+.flow-step.out { border-left: 3px solid var(--success); }
+footer { text-align: center; color: var(--muted); font-size: .75rem; margin-top: 2.2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<header>
+  <h1>🧠 Julia — Super Handoff Completo</h1>
+  <p class="subtitle">Tudo sobre a Julia num documento só: onde ela vive (paths, server, vault Obsidian, treinamentos), como funciona por dentro, as regras de cada documento e o que fazer em cada caso-limite, o workflow de auditorias e o matching automático de restrições por nome — backend e front do MdZap.</p>
+  <div class="meta-row">
+    <span class="meta-chip">📅 <b>2026-08-11</b></span>
+    <span class="meta-chip">Servidor: <b>julia-server · Mac Mini · porta 8787</b></span>
+    <span class="meta-chip">Modelo conversa: <b>Claude Sonnet 4.6</b></span>
+    <span class="meta-chip">Fontes: <b>código vivo + vault + Supabase produção</b></span>
+    <span class="meta-chip">⚠️ Status: <b>Julia OFF (WABA banida — ver dossiê Meta)</b></span>
+  </div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="nav-group">Onde ela vive</div>
+  <a href="#fisico">1 · Mapa físico (paths)</a>
+  <a href="#visao">2 · Visão geral & números</a>
+  <div class="nav-group">Como funciona</div>
+  <a href="#jornada">3 · A jornada da mensagem</a>
+  <a href="#fases">4 · Máquina de fases & roteador</a>
+  <a href="#arquitetura">5 · Server: jobs, flags, switches</a>
+  <div class="nav-group">Vault Obsidian</div>
+  <a href="#vault">6 · Todos os arquivos do vault</a>
+  <a href="#conexao">7 · Conexão server ↔ vault</a>
+  <a href="#treinos">8 · Treinamentos, exemplos & RAG</a>
+  <div class="nav-group">Documentos</div>
+  <a href="#docs-visao">9 · Funil de documentos</a>
+  <a href="#doc-id">10 · Identidade (RG/CNH)</a>
+  <a href="#doc-comprovante">11 · Comprovante de residência</a>
+  <a href="#doc-ctps">12 · CTPS / renda</a>
+  <a href="#edge">13 · Casos-limite & respostas</a>
+  <a href="#reader">14 · O reader por dentro</a>
+  <a href="#hsm">15 · Tipos de resposta & HSM</a>
+  <div class="nav-group">Auditorias</div>
+  <a href="#auditoria">16 · Workflow de auditoria</a>
+  <a href="#matching">17 · Matching por nome</a>
+  <a href="#front">18 · Front MdZap</a>
+  <div class="nav-group">Fecho</div>
+  <a href="#atencao">19 · Pontos de atenção</a>
+</aside>
+<main>
+<!-- ============ 1 MAPA FÍSICO ============ -->
+<div class="section" id="fisico">
+  <div class="section-header"><span class="section-icon">🗺️</span><h2>1 · Mapa físico — onde a Julia está salva</h2></div>
+  <p>Tudo da Julia vive no <b>Mac Mini M4</b>, no usuário de sistema <code>julia</code> (UID 509). São 2 diretórios principais + 1 LaunchDaemon + 1 túnel:</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>O quê</th><th>Path / identificador</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td><b>Código do servidor</b></td><td><code>/Users/julia/julia-server/</code></td><td>Express + TypeScript. Fonte em <code>src/</code>, roda o compilado <code>dist/index.js</code> (build via <code>tsc</code>)</td></tr>
+      <tr><td><b>Vault Obsidian (cérebro)</b></td><td><code>/Users/julia/julia-vault/</code></td><td>Skills, identidade, treinamentos — seção 6. ⚠️ O MANUAL.md antigo cita <code>~/Documents/julia-vault</code>: path DEFASADO</td></tr>
+      <tr><td><b>LaunchDaemon</b></td><td><code>/Library/LaunchDaemons/com.midas.julia.plist</code></td><td><code>node dist/index.js</code> como user <code>julia</code>, <code>KeepAlive</code> (reinicia se cair), <code>NODE_ENV=production</code></td></tr>
+      <tr><td><b>Túnel Cloudflare</b></td><td><code>/Library/LaunchDaemons/com.cloudflare.tunnel.julia.plist</code></td><td>Expõe a porta 8787 pra edge function chamar o Mac Mini. Log: <code>/var/log/cloudflared-julia.log</code></td></tr>
+      <tr><td><b>Logs</b></td><td><code>/Users/julia/logs/julia.out.log</code> · <code>julia.err.log</code></td><td>out.log é grande (~340MB) — usar <code>tail</code>/<code>grep</code>, nunca abrir inteiro</td></tr>
+      <tr><td><b>Porta / rota principal</b></td><td><code>POST http://localhost:8787/inbound</code></td><td>Header de auth <code>mdflow</code> (mesmo padrão do n8n)</td></tr>
+      <tr><td><b>Staging de deploy</b></td><td><code>/Users/beto/.tmp-julia-v3/</code></td><td>Padrão de trabalho: CC prepara stage + script <code>deploy-*.sh</code>; Gustavo roda com <code>sudo</code>. Backups <code>.bak-*</code> ficam ao lado dos arquivos</td></tr>
+      <tr><td><b>Backups de configuração</b></td><td><code>~/.tmp-julia-audit-14d/backup-numero-*.json</code></td><td>Snapshots de <code>whatsapp_numeros.config</code> antes de cada virada de número</td></tr>
+      <tr><td><b>Banco</b></td><td>Supabase <code>qdivfairxhdihaqqypgb</code></td><td>Tabelas: <code>leads</code>, <code>whatsapp_conversas/mensagens/numeros/templates</code>, <code>auditorias</code>, <code>restricoes</code>, <code>procuracoes</code>, <code>julia_*</code> (config, pdfs_gerados, skills_audit_log, doc_reader_cache, sentinela_alertas)</td></tr>
+      <tr><td><b>Edge function de entrada</b></td><td><code>supabase/functions/mdzap-webhook</code></td><td>Meta chama ela; ela salva a msg e repassa pro julia-server. Deploy SEMPRE com <code>--no-verify-jwt</code></td></tr>
+      <tr><td><b>Front</b></td><td><code>~/beta-mdflow/src/components/mdzap/</code> + <code>src/pages/mdzap/</code></td><td>MdZap (rota <code>/mdzap/sdr_leads</code>)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card"><div class="card-title">Comandos operacionais essenciais</div>
+  <div class="code-block">> restart do servidor (única forma de recarregar código e limpar cache de skills via terminal):
+sudo launchctl kickstart -k system/com.midas.julia
+
+> ver log ao vivo:
+sudo tail -f /Users/julia/logs/julia.out.log
+
+> editar vault por terminal (precisa do user julia):
+sudo -u julia nano /Users/julia/julia-vault/01_skills/recepcao.md
+# ⚠️ editar por terminal/Obsidian NÃO limpa o cache do prompt — ver seção 7</div></div>
+</div>
+
+<!-- ============ 2 VISÃO GERAL ============ -->
+<div class="section" id="visao">
+  <div class="section-header"><span class="section-icon">👩‍💼</span><h2>2 · Visão geral — o que é a Julia</h2></div>
+  <p>A Julia é a <b>recepcionista IA da Midas no WhatsApp</b> (número <code>sdr_leads</code>). Ela atende leads que chegam do <b>Diagnóstico Financeiro</b> (anúncio Meta → wizard no site → link <code>wa.me</code> com <code>[Codigo atendimento: CPF]</code>), coleta os documentos, dispara a auditoria de restrições e entrega o lead qualificado pro especialista humano (Vinicius). Persona: feminina, "tu" gaúcho discreto, nunca diz que é IA (nem afirma ser humana — desvia), honestidade radical, zero promessa.</p>
+  <p><b>O desenho central:</b> a IA é só 1 passo de 14 — todo o resto é script determinístico (gates, roteador, filtros, máquina de fases). <i>Script decide ESTADO e VERDADE; prompt decide LINGUAGEM. Quando discordam, o script ganha — sempre.</i></p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="v">6.288</div><div class="l">leads com identidade no slot</div></div>
+    <div class="kpi"><div class="v">2.690</div><div class="l">com comprovante de residência</div></div>
+    <div class="kpi"><div class="v">1.325</div><div class="l">com CTPS/renda</div></div>
+    <div class="kpi"><div class="v">2.227</div><div class="l">em documentos_completos</div></div>
+    <div class="kpi"><div class="v">6.882</div><div class="l">auditorias na tabela</div></div>
+    <div class="kpi"><div class="v">15.451</div><div class="l">restrições ativas</div></div>
+  </div>
+  <div class="card"><div class="card-title">Os 3 agentes irmãos no mesmo servidor</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Agente</th><th>slug</th><th>Papel</th><th>Vault</th></tr></thead>
+    <tbody>
+      <tr><td><b>Julia</b></td><td><code>sdr_leads</code></td><td>Recepção de leads (pré-venda) — tabu total de termos jurídicos</td><td><code>julia-vault/</code> (raiz)</td></tr>
+      <tr><td><b>Tânia</b></td><td><code>atendimento_cp</code></td><td>Pós-venda Dr. Christian Paz — PODE falar processo/juiz/advogado</td><td><code>julia-vault/05_tania/</code></td></tr>
+      <tr><td><b>Raquel</b></td><td><code>atendimento_hm</code></td><td>Pós-venda Dra. Heloísa — idem</td><td><code>julia-vault/06_raquel/</code></td></tr>
+      <tr><td><b>Bia</b></td><td><code>bia</code></td><td>Assessora financeira do portal midascredito.app (pós-conversão). Assume ser IA, fala "você"</td><td><code>julia-vault/04_bia/</code></td></tr>
+    </tbody>
+  </table></div></div>
+  <div class="quote warn"><b>⚠️ Estado em 11/08/2026:</b> a Julia está <b>desligada</b> (kill-switches <code>julia_config.ai_enabled=false</code> + <code>whatsapp_numeros.ai_enabled=false</code>) porque todos os números Meta estão com phone status BANNED (ver dossiê Meta em <code>~/beto-vault/02_projetos/midas-diagnostico/DOSSIE-META-WABA-2026/</code>). O sistema inteiro segue pronto — religar = os 2 switches + warm-up.</div>
+</div>
+<!-- ============ 3 JORNADA ============ -->
+<div class="section" id="jornada">
+  <div class="section-header"><span class="section-icon">📨</span><h2>3 · A jornada da mensagem — input → output em 14 passos</h2></div>
+  <p class="small muted">Borda âmbar = gate de script (pode parar tudo) · azul = IA · verde = saída.</p>
+  <div class="flow">
+    <div class="flow-step"><span class="n">1</span><div><b>Lead envia a mensagem</b> — texto, foto, PDF ou áudio, via WhatsApp.</div></div>
+    <div class="flow-step"><span class="n">2</span><div><b>Meta Cloud API dispara o webhook</b> — chama a Edge Function <code>mdzap-webhook</code> no Supabase.</div></div>
+    <div class="flow-step"><span class="n">3</span><div><b>mdzap-webhook salva e repassa</b> — grava em <code>whatsapp_mensagens</code> (por isso aparece no MdZap mesmo se a Julia falhar), acha/cria a conversa, baixa mídia da Meta pro bucket <code>mdzap-media</code> (com lock anti-429), e faz <code>POST /inbound</code> no julia-server (timeout 25s).</div></div>
+    <div class="flow-step gate"><span class="n">4</span><div><b>GATES DE ENTRADA</b> — em sequência: eco da própria Julia? → ignora · 1ª msg sem <code>[Codigo atendimento: CPF]</code>? → escala e cala · <code>awaiting_human=true</code>? → cala · humano respondeu há &lt;12h? → cala · foto fora de fase de coleta? → "vou chamar alguém" + escala · auditoria com erro? → mensagem honesta + escala. <b>Se qualquer gate dispara, o Claude nem é chamado.</b> Também roda a serialização por conversa (turnos paralelos duplicados morrem — pacote 05/08).</div></div>
+    <div class="flow-step"><span class="n">5</span><div><b>Carrega o estado do lead</b> — <code>memoria_julia</code> (fase, contadores), documentos já recebidos (slots), CPF, histórico das últimas 15 msgs, PDF de auditoria.</div></div>
+    <div class="flow-step"><span class="n">6</span><div><b>ZapSign</b> — atendente mandou link? salva token em <code>procuracoes</code>. Lead em <code>aguardando_assinatura</code>? consulta a API na hora; assinou → confirma e encerra o ciclo Julia.</div></div>
+    <div class="flow-step gate"><span class="n">7</span><div><b>Processamento de mídia</b> — áudio → Whisper local (~2s). Foto/PDF em fase de coleta → <b>doc-reader</b> (Sonnet 4.6 + fallback GPT-4.1-mini): tipo, lado, legibilidade, nome/CPF. Gates de documento rodam aqui (par frente+verso? terceiro? PJ?). Salva no slot via <code>fn_atualizar_documento_lead</code>. Detalhe completo na seção 14.</div></div>
+    <div class="flow-step"><span class="n">8</span><div><b>Roteador escolhe A skill</b> — pela fase + tipo de msg + detector de objeção (regex). Só UMA skill por turno. <b>Objeção vence a fase</b> — lead em coleta que escreve "é golpe?" cai em <code>objecao.md</code> naquele turno.</div></div>
+    <div class="flow-step"><span class="n">9</span><div><b>Monta o prompt</b> — System = SOUL + PUBLICO + STYLE + skill + formato JSON. User = brief do DF + histórico + <b>STATUS DOCUMENTOS LEAD</b> ("ID: JÁ RECEBIDO. NÃO peça de novo.") + ~15 injeções <code>[SISTEMA]</code> possíveis + a mensagem.</div></div>
+    <div class="flow-step ia"><span class="n">10</span><div><b>Claude responde</b> — Sonnet gera <code>{bolhas, delays_ms}</code> + markers escondidos. Circuit breaker 30s, máx 5 chamadas simultâneas.</div></div>
+    <div class="flow-step gate"><span class="n">11</span><div><b>FILTROS DE SAÍDA</b> — (a) anti-alucinação: lead mandou só TEXTO e a Julia "confirmou documento"? → reescreve pedindo a foto; (b) processa e remove os 5 markers; (c) forbidden filter: palavra-tabu (tribunal, advogado, garantia…) → bloqueia, bolha neutra, escala; (d) <code>sanitizarHandoff</code> remove 📞 e "vai te chamar".</div></div>
+    <div class="flow-step out"><span class="n">12</span><div><b>Envia bolha por bolha</b> via Meta Graph API — delays 1,2-2,2s simulando digitação. Cada bolha vira linha em <code>whatsapp_mensagens</code> (MdZap mostra em realtime).</div></div>
+    <div class="flow-step"><span class="n">13</span><div><b>Atualiza o estado</b> — nova fase (markers OU gates determinísticos), contadores, handoff imediato quando entra em <code>aguardando_ctps</code> (<code>awaiting_human=true</code>). Dispara auditoria em background se foi o turno do comprovante aceito.</div></div>
+    <div class="flow-step"><span class="n">14</span><div><b>Trilha de auditoria</b> — tudo em <code>julia_skills_audit_log</code> + logs do servidor.</div></div>
+  </div>
+</div>
+
+<!-- ============ 4 FASES ============ -->
+<div class="section" id="fases">
+  <div class="section-header"><span class="section-icon">🎯</span><h2>4 · Máquina de fases & roteador de skills</h2></div>
+  <p>A fase mora em <code>leads.memoria_julia.fase</code> — <b>só o script escreve nela</b> e ela decide qual skill carrega. Fluxo positivo:</p>
+  <div class="code-block">null (1ª msg) → aguardando_id → [RG frente+verso OK]
+  → aguardando_comprovante → [comprovante OK → COMPROVANTE_OK → AUDITORIA roda + PDF]
+  → aguardando_ctps  ← lead JÁ sobe pro Ag. Humano aqui (handoff imediato)
+  → documentos_completos → humano (Vinicius) → ZapSign → procuracao_assinada → convertido
+
+Desvios: confirmando_cancelamento → arquivado  ·  cpf_limpo → arquivado (vira indicação)
+Paralelos: awaiting_human (humano assumiu → Julia cala)  ·  coluna_crm (kanban do CRM)</div>
+  <h3>O roteador — ordem real de prioridade</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>#</th><th>Condição</th><th>Skill carregada</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td><code>agentSlug !== 'sdr_leads'</code> (Tânia/Raquel)</td><td><code>recepcao.md</code> do vault delas, fixa</td></tr>
+      <tr><td>1</td><td>fase <code>confirmando_cancelamento</code></td><td><code>cancelamento.md</code></td></tr>
+      <tr><td>2</td><td><b>objeção detectada por regex</b></td><td><code>objecao.md</code> — <span class="badge badge-warn">vence a fase!</span></td></tr>
+      <tr><td>3</td><td><code>documentos_completos</code></td><td><code>transicao_humano.md</code></td></tr>
+      <tr><td>4</td><td><code>aguardando_comprovante</code></td><td><code>comprovante_residencia.md</code></td></tr>
+      <tr><td>5</td><td><code>aguardando_id</code> / <code>coleta_documentos</code></td><td><code>coleta_documentos.md</code></td></tr>
+      <tr><td>6</td><td><code>aguardando_ctps</code></td><td><code>coleta_ctps.md</code></td></tr>
+      <tr><td>7</td><td>CPF limpo + não-1ª msg</td><td><code>cpf_limpo.md</code></td></tr>
+      <tr><td>8</td><td>tem PDF + não-1ª msg</td><td><code>pos_pdf.md</code></td></tr>
+      <tr><td>9</td><td>default</td><td><code>recepcao.md</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="quote warn"><b>Armadilha nº 1 do editor de skills:</b> objeção vence fase. Um lead em <code>aguardando_comprovante</code> que escreve "é golpe?" carrega <code>objecao.md</code> — as regras do <code>comprovante_residencia.md</code> <b>não existem naquele turno</b>.</div>
+  <h3>Os 5 markers — a API entre o LLM e o script</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Marker</th><th>Efeito</th><th>Quem emite</th></tr></thead>
+    <tbody>
+      <tr><td><code>[AUDITORIA_AUTORIZADA]</code></td><td>dispara auditoria / reenvia PDF (hoje é redundância — o gatilho real é determinístico no doc-reader)</td><td>coleta_documentos</td></tr>
+      <tr><td><code>[COMPROVANTE_OK]</code></td><td>avança <code>aguardando_comprovante → aguardando_ctps</code> — <b>só funciona vindo da skill comprovante_residencia</b>; handoff imediato junto</td><td>comprovante_residencia</td></tr>
+      <tr><td><code>[ESCALAR_HUMANO]</code></td><td><code>awaiting_human=true</code> + <code>coluna_crm='triagem'</code> — funciona de qualquer skill</td><td>5 skills</td></tr>
+      <tr><td><code>[CONFIRMAR_CANCELAMENTO]</code></td><td>fase → <code>confirmando_cancelamento</code>, de qualquer skill</td><td>injeção do detector de desistência</td></tr>
+      <tr><td><code>[ARQUIVAR_LEAD]</code></td><td><code>coluna_crm='arquivado'</code> + <code>awaiting_human=false</code></td><td>cancelamento</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">Safety net: qualquer <code>[A-Z_]</code> residual é logado (<code>marker_residual_removido</code>) e removido antes do envio.</p>
+</div>
+<!-- ============ 5 ARQUITETURA SERVER ============ -->
+<div class="section" id="arquitetura">
+  <div class="section-header"><span class="section-icon">⚙️</span><h2>5 · O servidor por dentro — jobs, flags e kill-switches</h2></div>
+  <p>Express 5 / Node 20 TypeScript ESM. Produção roda o <b>compilado</b> (<code>dist/index.js</code>) — <b>editar <code>src/</code> não tem efeito sem <code>npm run build</code> + restart</b>. Exposição pública via Cloudflare Tunnel → <code>https://julia.jarbas-mdlab.com</code>. Rotas: <code>/health</code> · <code>/inbound</code> · <code>/admin/*</code> · <code>/transcrever</code> · <code>/telegram/webhook</code> · <code>/bia/*</code> · <code>/portal/send-otp</code> (todas exceto health exigem o header de auth).</p>
+  <div class="quote warn"><b>Estado operacional verificado (11/08):</b> processo no ar (<code>/health</code> ok), deploy mode <code>full</code>. <b>Mas os 4 crons proativos (followup, funil, HSM, auditoria-drain) estão bloqueados pelo flag <code>.followup-paused</code> desde 07/07</b> — a Julia responde inbound, porém não cobra ninguém proativamente. E no nível Meta o número está banido (dossiê Meta) — o sistema está pronto, aguardando o desban + religada.</div>
+
+  <h3>Serialização, dedup e stale-guard</h3>
+  <ul>
+    <li><b>Serialização por conversa</b> (<code>inbound.routes.ts:17-33</code>): <code>Map&lt;conversa_id, Promise&gt;</code> — 2º turno espera o 1º (teto 120s). Lock em memória, não no Postgres.</li>
+    <li><b>Dedup em 6 camadas</b>: echo em memória (90s) · echo em banco · claim por input (60s) · claim por output (30s) · "gêmea" por conteúdo · repetição 6h (bolha idêntica ≥2×).</li>
+    <li><b>Stale guard</b>: se chegou mensagem nova do lead antes/durante a geração, o turno atual aborta — só o mais recente responde.</li>
+    <li><b>Debounce de documentos</b>: toda imagem em fase de coleta dorme <b>60s</b> (<code>JULIA_DOC_GROUP_DELAY_MS</code>); se chegar outra mídia no meio, só o último turno responde, fazendo catch-up do lote (mata o "mandei frente e verso e ela respondeu 2×").</li>
+    <li><b>31 gates de entrada/saída</b> catalogados no controller — do <code>julia_off</code> ao <code>test_mode</code> (gera mas não envia).</li>
+  </ul>
+
+  <h3>Os 13 crons (e o que está pausado)</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Cron</th><th>Horário (BRT)</th><th>Faz</th><th>Hoje</th></tr></thead><tbody>
+    <tr><td><code>julia-quality-sensor</code></td><td>hora em hora (:07) + boot</td><td>lê qualidade/status/tier de TODOS os números na Graph API; número da Julia fora do verde → <b>cria <code>.followup-paused</code> sozinho</b></td><td><span class="badge badge-success">ativo</span></td></tr>
+    <tr><td><code>julia-sentinela-saldo</code></td><td>*/10min</td><td>≥2 auditorias falhas em 40min = saldo ApiFull → alerta P0 + Telegram</td><td><span class="badge badge-success">ativo</span></td></tr>
+    <tr><td><code>zapsign-polling</code></td><td>*/5min</td><td>caça assinaturas de procuração; assinou → confirma + move CRM</td><td><span class="badge badge-success">ativo</span></td></tr>
+    <tr><td><code>julia-recuperar-ghosted</code></td><td>*/4min</td><td>destrava leads presos em awaiting_human indevido</td><td><span class="badge badge-success">ativo</span></td></tr>
+    <tr><td><code>video-assinatura</code></td><td>*/2min</td><td>envia o vídeo institucional junto do link ZapSign (flag próprio)</td><td><span class="badge badge-success">ativo</span></td></tr>
+    <tr><td><code>bia-*</code> (3)</td><td>vários</td><td>notificações/pós-venda/insights da Bia</td><td><span class="badge badge-success">ativo</span></td></tr>
+    <tr><td><code>julia-memory-consolidator</code></td><td>dom 3h</td><td>consolida histórico de cada lead em <code>contexto_consolidado</code></td><td><span class="badge badge-success">ativo</span></td></tr>
+    <tr><td><code>julia-followup</code></td><td>09,12,15,18 seg-sex</td><td>reengajamento de silenciosos (IA decide enviar/skip)</td><td><span class="badge badge-danger">pausado</span></td></tr>
+    <tr><td><code>julia-followup-funil</code></td><td>09,14,19</td><td>cobrança por estágio (cotas anti-starvation)</td><td><span class="badge badge-danger">pausado</span></td></tr>
+    <tr><td><code>julia-followup-hsm</code></td><td>08,11,14,17,20</td><td>leads fora da janela 24h → template HSM</td><td><span class="badge badge-danger">pausado</span></td></tr>
+    <tr><td><code>julia-auditoria-drain</code></td><td>*/15min 8-21h</td><td>PDFs concluídos nunca entregues (seção 16)</td><td><span class="badge badge-danger">pausado</span></td></tr>
+  </tbody></table></div>
+  <p class="small muted">Locks de cron: tabela <code>julia_cron_locks</code> com TTL 600s via RPCs (o <code>pg_advisory_lock</code> vazava no pool e travava 40-60% dos ticks — trocado).</p>
+
+  <h3>Flags de arquivo (raiz do julia-server)</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Flag</th><th>Hoje</th><th>Efeito</th></tr></thead><tbody>
+    <tr><td><code>.followup-paused</code></td><td><span class="badge badge-danger">existe (07/07)</span></td><td>bloqueia o registro dos 4 crons proativos. <b>Lido só no BOOT</b> — criar/remover exige restart pra valer. O quality-sensor CRIA sozinho (nunca remove — religar é decisão humana)</td></tr>
+    <tr><td><code>.video-institucional-ativo</code></td><td><span class="badge badge-success">existe (04/08)</span></td><td>libera o vídeo institucional junto do link ZapSign</td></tr>
+    <tr><td><code>.destrave-juridico-ativo</code></td><td><span class="badge badge-neutral">ausente</span></td><td>troca a mensagem pós-assinatura pelo roteiro do "escritório parceiro" (segurada até os números dos advogados existirem)</td></tr>
+  </tbody></table></div>
+
+  <h3>Kill-switches (do maior pro menor)</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Switch</th><th>Escopo</th><th>Detalhe</th></tr></thead><tbody>
+    <tr><td><code>julia_config.ai_enabled</code></td><td><b>só sdr_leads</b> (global da Julia)</td><td>cache 10s, fail-open. Comando <code>/julia:off</code> do Telegram. Crons continuam capturando dados, só não enviam. Desde 06/08 (fase 2 multi-api) é <b>escopado ao slug</b> — não derruba mais Tânia/Raquel</td></tr>
+    <tr><td><code>whatsapp_numeros.ai_enabled</code></td><td>por número</td><td>gate na edge, antes do fanout — a Julia nem fica sabendo da mensagem</td></tr>
+    <tr><td><code>conversa.metadata.mode='human'</code></td><td>por conversa</td><td>atendente assumiu aquela conversa</td></tr>
+    <tr><td><code>leads.awaiting_human</code></td><td>por lead</td><td>setado em 11 pontos distintos do código</td></tr>
+    <tr><td><code>test_mode</code></td><td>por request</td><td>gera a resposta real mas não envia à Meta</td></tr>
+    <tr><td><code>JULIA_DEPLOY_MODE</code></td><td>global</td><td><code>shadow</code> (loga sem enviar) / <code>canary</code> (10%) / <code>full</code> — hoje <b>full</b></td></tr>
+  </tbody></table></div>
+
+  <h3>Caps anti-strike (pós-bans de 30/06 e 07/07)</h3>
+  <ul>
+    <li><b>HSM: cap 20/dia</b> (era ~500/dia) + jitter 45-120s entre envios + cooldown 7 dias por template por lead.</li>
+    <li><b>Funil: 3×/dia</b> (era 8×) + cooldown 4h entre cobranças (45min se a Julia acabou de falar; 60min se humano falou).</li>
+    <li><b>Consolidação anti-spam</b>: as bolhas geradas são unidas numa mensagem só antes do envio — na prática hoje sai 1 mensagem por turno (a arquitetura multi-bolha existe mas está neutralizada de propósito).</li>
+    <li><b>Janela</b>: follow-up livre até 23h; 24h-7d é território do HSM; &gt;7d nenhum cron alcança.</li>
+  </ul>
+
+  <h3>IA e proteções</h3>
+  <p>Modelo de conversa: <code>claude-sonnet-4-6</code>, max_tokens 1500, prompt caching ephemeral. <code>p-limit(5)</code> + circuit breaker 30s (visão tem <code>p-limit(4)</code> sem breaker — PDF pesado passa de 30s). 1 chamada de geração por turno + 1 retry se o JSON vier irrecuperável. <b>Sem tool use</b> — a "API" da IA são os markers textuais. Saída passa por: 7 gates anti-alucinação (ex.: "recebi o documento" com slot vazio → reescreve), forbidden filter (15+ regex com cláusula <code>unless</code> pra ressalvas honestas) e <code>sanitizarHandoff</code>.</p>
+  <p class="small">Extra úteis: bot Telegram <code>@Julia_mdbot</code> (<code>/julia:status</code>, <code>/julia:off</code>, <code>/julia:on</code>, <code>/julia:skills</code>, <code>/julia:mode</code>, <code>/julia:vault</code>) · endpoints admin (<code>GET /admin/crons</code>, <code>POST /admin/run-followup-hsm</code> com <code>lead_ids</code> pra cobrança cirúrgica, <code>POST /admin/sugerir-resposta</code> — co-pilot do Vinicius) · logs pino com redação de CPF/telefone/token · OTP do portal sai pelo número da Julia.</p>
+  <div class="quote warn"><b>Avisos de arquitetura:</b> (1) <code>inbound.controller.ts</code> é um monólito de 4.385 linhas; (2) o save de <code>memoria_julia</code> é fire-and-forget — as 4 reconciliações de fase no início do turno existem pra curar isso (lead zumbi rebaixado, preso promovido etc.); (3) há DOIS plists instalados apontando pro mesmo dist (LaunchDaemon + LaunchAgent) — risco de dupla instância; (4) dependências de sistema hardcoded no macOS (sips, pdftoppm, qpdf, whisper-cli local com modelo large-v3-turbo); (5) <code>julia_pdfs_gerados</code> está com 0 linhas — <code>hasPdf</code> e a skill <code>pos_pdf.md</code> estão efetivamente inativas hoje; (6) dupla leitura de visão por turno (media-processor + doc-reader) = custo dobrado.</div>
+</div>
+
+
+<!-- ============ 6 VAULT ============ -->
+<div class="section" id="vault">
+  <div class="section-header"><span class="section-icon">📁</span><h2>6 · O vault Obsidian — todos os arquivos</h2></div>
+  <p>Raiz: <code>/Users/julia/julia-vault/</code>. É o "cérebro editável" da Julia: identidade, estilo e roteiros de conversa em Markdown puro. ⚠️ O vault tem ~40 pastas <code>.bak*</code> e centenas de <code>.md.bak-*</code> de deploys antigos — abaixo só o que está <b>vivo</b>.</p>
+
+  <h3>Raiz</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Arquivo</th><th>O que é</th></tr></thead><tbody>
+    <tr><td><code>MANUAL.md</code></td><td>Manual operacional v2.1.1 (19,5KB) — como a Julia funciona, onde ajustar o quê, troubleshooting. <span class="badge badge-warn">DEFASADO</span>: cita path antigo (<code>~/Documents/julia-vault</code>), skills que já não existem e o fluxo pré-doc-first. O documento atual de verdade é <code>HIERARQUIA.md</code> + as skills.</td></tr>
+    <tr><td><code>Bem-vindo.md</code></td><td>Nota padrão do Obsidian. Lixo inofensivo.</td></tr>
+  </tbody></table></div>
+
+  <h3>00_cerebro/ — identidade e doutrina (15 arquivos)</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Arquivo</th><th>Conteúdo</th><th>Vai no prompt?</th></tr></thead><tbody>
+    <tr><td><code>SOUL.md</code></td><td><b>QUEM ela é</b> (13,8KB, v3): persona, 6 princípios invioláveis, frases-âncora do vídeo do DF, 🔒 lista canônica de TABUS (fonte única), regra fina do "é IA?" (nunca diz que é IA E é proibida de afirmar que é humana — desvia; insistiu → escala), regra "confie no bloco STATUS DOCUMENTOS, não releia a conversa"</td><td><span class="badge badge-success">✅ sempre</span></td></tr>
+    <tr><td><code>STYLE.md</code></td><td><b>COMO ela fala</b> (8,5KB): "tu" gaúcho, multi-bolha ≤140 chars (máx 4), 1 emoji/bolha, paleta de emojis, frases banidas de chatbot, vocabulário canônico da gratuidade, REGRA DE HONESTIDADE NO HANDOFF (05/08)</td><td><span class="badge badge-success">✅ sempre</span></td></tr>
+    <tr><td><code>PUBLICO.md</code></td><td><b>QUEM é o lead</b> (2KB): 35-50 anos (média 42), classe C/D, leigo digital (ensinar a fotografar faz parte), muito medo de golpe ("desconfiança é DEFESA"), imediatista (quem assina, assina em mediana <b>9 minutos</b>)</td><td><span class="badge badge-success">✅ sempre</span></td></tr>
+    <tr><td><code>HIERARQUIA.md</code></td><td>A doutrina de precedência script × prompt (11KB) — <b>o documento mais importante pra saber o que dá pra mudar editando o vault</b>. Pipeline de 6 camadas, máquina de estados, roteador, armadilhas do editor</td><td>❌ doc humana</td></tr>
+    <tr><td><code>MARKERS.md</code></td><td>Tabela canônica dos 5 markers (seção 4)</td><td>❌ doc humana</td></tr>
+    <tr><td><code>ARCHITECTURE.md</code></td><td>Stack, 10 tabelas <code>julia_*</code>, RPCs, integrações, contratos do /inbound, deploy, segurança</td><td>❌</td></tr>
+    <tr><td><code>CLAUDE.md</code> · <code>MEMORY.md</code> · <code>TOOLS.md</code> · <code>GLOSSARY.md</code> · <code>ERRORS.md</code> · <code>EXAMPLES.md</code> · <code>INDEX.md</code> · <code>README.md</code></td><td>Documentação de apoio: master instructions curtas, memória sticky, endpoints/RPCs, glossário de fases, workarounds, índice dos few-shots</td><td>❌</td></tr>
+    <tr><td><code>HOT.md</code></td><td>Cache "quente" planejado — <b>vazio, nunca populado</b></td><td>❌</td></tr>
+  </tbody></table></div>
+
+  <h3>01_skills/ — os roteiros de conversa (14 vivos + 3 arquivadas)</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Skill</th><th>Quando roda</th><th>O que tem dentro</th></tr></thead><tbody>
+    <tr><td><code>recepcao.md</code></td><td>1ª msg com código DF · default · fixa p/ Tânia/Raquel</td><td>Saudação com 1º nome + pedido do RG/CNH frente E verso já na 1ª resposta (doc-first: NÃO pede autorização de auditoria), modo lead retornante, nunca pedir CPF, "Midas é do RS e atende todo o Brasil, 100% online"</td></tr>
+    <tr><td><code>coleta_documentos.md</code></td><td>fase <code>aguardando_id</code></td><td>REGRA ABSOLUTA texto≠documento, par frente+verso, caminho do PDF oficial (gov.br / app CNH), anti-looping de foto ruim (3 variantes 1× cada), estados prontos — seção 10</td></tr>
+    <tr><td><code>comprovante_residencia.md</code></td><td>fase <code>aguardando_comprovante</code></td><td>🔒 LISTA ÚNICA de comprovantes aceitos/recusados + 🔒 REGRA DO TERCEIRO (redação-fonte) — seção 11</td></tr>
+    <tr><td><code>coleta_ctps.md</code></td><td>fase <code>aguardando_ctps</code></td><td>CTPS/renda best-effort, captura de profissão, casos autônomo/aposentado/desempregado, regra "nunca prender o lead" — seção 12</td></tr>
+    <tr><td><code>objecao.md</code></td><td>regex de objeção — <b>vence a fase</b></td><td>13 playbooks (#1 gratuito … #13 "meu nome já limpou?"), prioridade de empate, redação canônica do prazo ("em torno de 60 dias pro primeiro resultado" + não é certo)</td></tr>
+    <tr><td><code>pos_pdf.md</code></td><td>lead tem PDF + nenhuma coleta ativa</td><td>A "vendedora educada": cola oficial do serviço (custo R$0, quem paga é a empresa que negativou), 8+ FAQs, nunca resumir as restrições de novo. ⚠️ Contém versão ANTIGA da regra do terceiro (conflito — seção 19)</td></tr>
+    <tr><td><code>cpf_limpo.md</code></td><td>PDF com 0 restrições</td><td>Boa notícia + pedido de indicação; sem indicação → arquiva sozinho</td></tr>
+    <tr><td><code>cancelamento.md</code></td><td>fase <code>confirmando_cancelamento</code></td><td>Desistência com respeito, zero pressão, porta aberta, <code>[ARQUIVAR_LEAD]</code> só com confirmação explícita</td></tr>
+    <tr><td><code>transicao_humano.md</code></td><td>fase <code>documentos_completos</code></td><td>Fechamento elegante + REGRA DO SILÊNCIO pós-handoff (microfone é do humano)</td></tr>
+    <tr><td><code>auditoria.md</code></td><td>motor de auditoria (não roteada)</td><td>Bolhas de entrega do PDF com highlights numéricos, 4 tons por classificação (alta/média/baixa/limpo)</td></tr>
+    <tr><td><code>followup.md</code> · <code>followup_docs.md</code> · <code>followup_funil.md</code></td><td>engines de cron (não roteadas)</td><td>Reengajamento genérico · lembrete de doc pendente · cobrança por estágio até a assinatura (única exceção ao silêncio pós-handoff: cobrança de assinatura, D9)</td></tr>
+    <tr><td><code>recepcao_v2_backup.md</code></td><td>—</td><td><span class="badge badge-warn">lixo</span> backup sem sufixo .bak no meio das vivas (aparece na listagem do Telegram)</td></tr>
+    <tr><td><code>_arquivadas/</code></td><td>—</td><td><code>docs.md</code>, <code>escalada.md</code>, <code>atendimento_cliente.md</code> — mortas, movidas na faxina</td></tr>
+  </tbody></table></div>
+
+  <h3>02_personas/ — vozes de atendentes humanos</h3>
+  <p><code>christian.md</code> (CTO, <code>override_ativo: false</code> — só permissões) e <code>vinicius.md</code> (SDR humano, <code>override_ativo: true</code>: gaúcho informal, <b>280 chars/bolha</b> vs 140 da Julia, seg-sex 9-19h + sáb 9-13h). Quando o lead está <code>em_atendimento</code> com o Vinicius, a Julia <b>reusa a voz dele</b> naquele lead — mas continua obedecendo o SOUL. Não existe persona da Heloísa (removida por decisão CTO).</p>
+
+  <h3>05_tania/ e 06_raquel/ — os vaults do pós-venda</h3>
+  <p>Mesmo modelo, 4 arquivos vivos cada: <code>00_cerebro/{SOUL,STYLE,PUBLICO}.md</code> + <code>01_skills/recepcao.md</code> (byte-idêntico entre as duas, 25,7KB). Diferença fundamental vs Julia: são <b>pós-venda</b> — o cliente já contratou — então <b>podem falar "processo", "juiz", "andamento", "procuração"</b> e citar o advogado. Estrutura do SOUL delas: TIER 0 invioláveis (9 regras, incl. anti-manipulação e "pode dizer: não tem custo nenhum / até uns 45 dias pra primeira resposta") + TIER 1 do padrão-ouro de 178 conversas reais. Têm lista de <b>escala DIRETA E SILENCIOSA</b> (só o marker, sem mensagem): luto/falecimento · "já paguei/reembolso" · quer falar com o advogado · preso/internado · menor/incapaz · pergunta de VALOR · golpe insistente · hostilidade. Documentos que cobram (vêm do backend, não inventam): IR (print Meu Imposto de Renda) · Registrato/CCS · declaração de contas inativas · extrato 3 meses · declaração de profissão/renda OU CTPS · comprovante de residência · procuração.</p>
+  <div class="tbl-wrap"><table><thead><tr><th></th><th>Tânia</th><th>Raquel</th></tr></thead><tbody>
+    <tr><td>Advogado</td><td>Dr. Christian Paz</td><td>Dra. Heloísa</td></tr>
+    <tr><td>slug / linha</td><td><code>atendimento_cp</code></td><td><code>atendimento_hm</code></td></tr>
+    <tr><td>versão do vault</td><td>v5.1 (2026-06-29)</td><td>v5.1 (2026-06-29)</td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ============ 7 CONEXÃO ============ -->
+<div class="section" id="conexao">
+  <div class="section-header"><span class="section-icon">🔌</span><h2>7 · Conexão server ↔ vault — como a Julia lê os arquivos</h2></div>
+  <h3>O mapa agente → vault (código vivo)</h3>
+  <div class="code-block">// /Users/julia/julia-server/src/config/agent-config.ts
+export const AGENT_VAULT_MAP: Record&lt;string, string&gt; = {
+  'sdr_leads':      '/Users/julia/julia-vault',
+  'atendimento_cp': '/Users/julia/julia-vault/05_tania',
+  'atendimento_hm': '/Users/julia/julia-vault/06_raquel',
+  'bia':            '/Users/julia/julia-vault/04_bia',
+};  // fallback: slug desconhecido → vault da Julia</div>
+  <h3>Montagem do system prompt (4 arquivos por turno)</h3>
+  <div class="code-block">// inbound.controller.ts:479-506
+system = "# JULIA v2 SYSTEM PROMPT"
+       + 00_cerebro/SOUL.md
+       + 00_cerebro/PUBLICO.md        ← best-effort (.catch(() => ''))
+       + 00_cerebro/STYLE.md
+       + "═══ SKILL ATIVA: &lt;NOME&gt; ═══"
+       + 01_skills/&lt;skill-da-vez&gt;.md
+       + MULTI_BUBBLE_INSTRUCTION     (formato JSON {bolhas, delays_ms})</div>
+  <p><code>03_examples/</code>, <code>02_personas/</code>, <code>HIERARQUIA.md</code>, <code>MARKERS.md</code>, <code>MANUAL.md</code> etc. <b>não entram no prompt</b> — são documentação humana.</p>
+  <h3>Cache e hot-reload — a pegadinha</h3>
+  <div class="quote danger"><b>⚠️ O cache do prompt é um <code>Map</code> em memória SEM TTL</b> (chave <code>agentSlug:skillFile</code>). Editar pelo Obsidian ou por terminal <b>não recarrega nada</b> — a mudança só vale após: (a) salvar pela <b>aba Gestão do MdZap</b> (o <code>PUT /admin/vault/file</code> chama <code>clearSystemCache()</code>), ou (b) restart do servidor (<code>launchctl kickstart</code>). A doc antiga fala em "cache de 5min" — não existe mais expiração por tempo.</div>
+  <p><b>Exceção:</b> os engines de follow-up (<code>followup_docs</code>, <code>followup_funil</code>) e a Bia leem o vault <b>direto do disco, sem cache</b> — mudança vale na hora.</p>
+  <h3>API de edição (usada pela aba Gestão do MdZap)</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Endpoint</th><th>Faz</th></tr></thead><tbody>
+    <tr><td><code>GET /admin/vault/files</code></td><td>lista a allowlist de arquivos editáveis</td></tr>
+    <tr><td><code>GET /admin/vault/file?path=…</code></td><td>lê um arquivo</td></tr>
+    <tr><td><code>PUT /admin/vault/file</code></td><td>grava + limpa o cache do prompt (log <code>vault_file_saved_cache_cleared</code>)</td></tr>
+  </tbody></table></div>
+  <p class="small">Allowlist (18 entradas em <code>admin.routes.ts:295</code>): <code>SOUL/STYLE/MEMORY</code> + 15 skills. Proteção path-traversal embutida. <span class="badge badge-warn">bugs conhecidos</span> — 2 entradas fantasma (<code>escalada.md</code>, <code>docs.md</code>, que foram pra <code>_arquivadas/</code>: abrir pela UI dá erro) e <code>PUBLICO.md</code> fora da lista (vai em todo prompt mas não é editável pela UI).</p>
+  <p class="small muted">O socket <code>/Users/julia/.obsidian-cli.sock</code> é resíduo — o plugin obsidian-cli não está instalado nesse vault. Acesso real: <code>sudo -u julia</code> no filesystem ou a API acima.</p>
+</div>
+
+<!-- ============ 8 TREINAMENTOS ============ -->
+<div class="section" id="treinos">
+  <div class="section-header"><span class="section-icon">🎓</span><h2>8 · Treinamentos, exemplos e "RAG"</h2></div>
+  <div class="quote"><b>Importante:</b> a Julia <b>não usa RAG vetorial</b> (sem embeddings, sem busca semântica). O "conhecimento" dela entra por 3 vias: (1) os 4 arquivos do vault injetados por turno; (2) as ~15 injeções <code>[SISTEMA]</code> montadas pelo script; (3) redes determinísticas em código que nasceram de casos reais (cada bug de conversa virou regex/gate com o nome do lead no comentário). O treinamento é <b>curadoria de Markdown + gates</b>, não fine-tuning nem vetor.</div>
+  <h3>03_examples/ — os 12 few-shots (conversas-modelo)</h3>
+  <p class="small muted">Referência humana e matéria-prima de eval — <b>não são carregados no prompt</b>.</p>
+  <div class="tbl-wrap"><table><thead><tr><th>Arquivo</th><th>Cenário</th></tr></thead><tbody>
+    <tr><td><code>recepcao-feliz.md</code> / <code>recepcao-feliz-DF.md</code></td><td>caminho ouro (lead novo / pós-Diagnóstico)</td></tr>
+    <tr><td><code>recepcao-fora-janela-24h.md</code></td><td>lead volta após 24h+ (janela Meta)</td></tr>
+    <tr><td><code>recepcao-frio-reativado.md</code></td><td>sumiu 8 dias e voltou sozinho</td></tr>
+    <tr><td><code>recepcao-desempregado.md</code></td><td>"tô desempregado, será que dá?"</td></tr>
+    <tr><td><code>recepcao-objecao-golpe.md</code> / <code>recepcao-objecao-preco.md</code></td><td>objeções golpe / preço</td></tr>
+    <tr><td><code>recepcao-pensar-esposa.md</code></td><td>objeção #8 — Julia não insiste</td></tr>
+    <tr><td><code>objecoes-classicas.md</code></td><td>preço / demora / descrédito</td></tr>
+    <tr><td><code>escalada-vinicius.md</code> / <code>escalada-fechamento-completo.md</code></td><td>handoff / jornada integral com objeção no meio</td></tr>
+    <tr><td><code>pos_pdf-classificacao-baixa.md</code></td><td>"ah, só isso?" (1-2 restrições)</td></tr>
+  </tbody></table></div>
+  <h3>04_bia/ — o vault-treinamento da Bia (39 arquivos)</h3>
+  <p>A Bia é o agente do portal <code>midascredito.app</code> (pós-conversão). Contraste deliberado com a Julia: <b>assume que é IA</b>, fala <b>"você"</b>, e <b>pode dizer "Midas Advocacia"</b>.</p>
+  <ul>
+    <li><b><code>00_soul/bia-soul.md</code></b> (12KB, v2)</li>
+    <li><b><code>01_skills/</code></b> — 13 skills: <code>auditoria_basica</code>, <code>auditoria_recuperador</code>, <code>chat_cliente</code>, <code>insights_mensais</code>, <code>juridica_basica</code>, <code>onboarding</code>, <code>plano_trilha</code>, <code>pos_venda_documentos</code>, <code>pos_venda_escalada</code>, <code>pos_venda_status_processo</code>, <code>recomendar_bancos</code>, <code>relacionamento_bancario</code>, <code>suporte_midas</code></li>
+    <li><b><code>03_treinamentos/</code></b> — a biblioteca de conhecimento (14 arquivos): <code>bia2107-T1-score-2026</code>, <code>T2-cadastro-positivo</code>, <code>T3-produtos-negativado</code>, <code>T4-golpes-protecao</code>, <code>T5-direitos-consumidor</code>, <code>T6-orcamento-baixa-renda</code>, <code>T7-faq-20-duvidas</code>, <code>T7b-reconstrucao-credito</code>, <code>wal-macedo-10-passos</code>, <code>videos-youtube-aprendizados</code>, <code>web-research-pt-en</code>, <code>pos-venda-templates</code>, <code>templates-hsm-meta-pendentes</code>, <code>README-conhecimento</code></li>
+    <li><b><code>HANDOFF-GUSTAVO/</code></b> — 11 docs de spec e operação: <code>COMO-ADICIONAR-TREINAMENTOS.md</code>, <code>COMO-EDITAR-SKILLS.md</code>, <code>LISTA-SKILLS-COMPLETA.md</code>, <code>LISTA-TREINAMENTOS-COMPLETA.md</code>, <code>SPEC-FINAL.md</code>, <code>spec-banco-dados.md</code>, <code>spec-frontend-wireframe.md</code>, <code>decisoes-aprovadas.md</code>, <code>BIA-V2-OVERVIEW.md</code>, <code>00-roadmap.md</code>, <code>06-pos-venda-midas-playbook.md</code> (61 conversas reais, 1.193 msgs)</li>
+  </ul>
+  <h3>Outras fontes de "memória"</h3>
+  <ul>
+    <li><b><code>julia_doc_reader_cache</code></b> (Supabase) — cache de visão por sha256 da imagem (não re-analisa doc repetido).</li>
+    <li><b><code>julia-memory-consolidator</code></b> (cron domingo 3h) — consolida o histórico de cada lead em <code>contexto_consolidado</code>.</li>
+    <li><b>Golden set do reader</b> — 38 casos reais de documentos para a malha de teste (seção 14).</li>
+    <li><b><code>julia_skills_audit_log</code></b> — trilha de qual skill respondeu o quê (matéria-prima de tuning).</li>
+  </ul>
+</div>
+<!-- ============ 9 FUNIL DOCS ============ -->
+<div class="section" id="docs-visao">
+  <div class="section-header"><span class="section-icon">📋</span><h2>9 · O funil de documentos — visão geral</h2></div>
+  <div class="code-block">CPF (código do site) → IDENTIDADE (RG/CNH frente+verso)
+   → [confirma ID e pede comprovante NA MESMA mensagem]
+   → COMPROVANTE DE RESIDÊNCIA validado → [COMPROVANTE_OK]
+   → ✨ AUDITORIA roda (sistema, não a IA) → PDF entregue ao lead
+   → CTPS/RENDA pedida JUNTO com o PDF (best-effort)
+   → [ESCALAR_HUMANO] → documentos_completos → humano gera PROCURAÇÃO (ZapSign)</div>
+  <div class="tbl-wrap"><table><thead><tr><th>Fase</th><th>Leads hoje</th><th>Documento</th><th>Skill</th></tr></thead><tbody>
+    <tr><td><code>aguardando_id</code></td><td>5.014</td><td>RG ou CNH — frente E verso</td><td>coleta_documentos</td></tr>
+    <tr><td><code>aguardando_comprovante</code></td><td>3.503</td><td>Comprovante de residência (+ declaração de terceiro se preciso)</td><td>comprovante_residencia</td></tr>
+    <tr><td><code>aguardando_ctps</code></td><td>808</td><td>CTPS ou comprovante de renda</td><td>coleta_ctps</td></tr>
+    <tr><td><code>documentos_completos</code></td><td>2.227</td><td>— (handoff → procuração)</td><td>transicao_humano</td></tr>
+  </tbody></table></div>
+  <div class="quote danger"><b>Achado estrutural:</b> a tabela <code>lead_documentos</code> existe no schema com CHECKs completos mas está <b>VAZIA (0 linhas)</b>. A fonte da verdade real é <code>leads.documentos</code> (JSONB) com 3 slots — <code>identidade</code>, <code>comprovante_residencia</code>, <code>ctps</code> — escritos pela RPC <code>fn_atualizar_documento_lead</code>, mais <code>memoria_julia.progresso.{identidade,comprovante,renda}.status</code> e os contadores <code>tentativas_*</code> (máx 3). Qualquer integração que assuma <code>lead_documentos</code> está errada.</div>
+  <p><b>O que a Julia NUNCA pede:</b> selfie como requisito, comprovante de renda antes da fase CTPS, procuração (é o humano que gera). Existe régua de documentos <b>por agente</b> em banco (<code>mdzap_agente_doc_regras</code> via <code>doc-regras.ts</code>) — usada pelo pós-venda.</p>
+</div>
+
+<!-- ============ 10 IDENTIDADE ============ -->
+<div class="section" id="doc-id">
+  <div class="section-header"><span class="section-icon">🪪</span><h2>10 · Identidade (RG/CNH) — regras completas</h2></div>
+  <h3>Regra absoluta: texto nunca é documento</h3>
+  <div class="quote">⚠️ Quando o sistema indica <code>tipoMsg=text</code>, a Julia NÃO recebeu nada. Não importa o que o lead escreva ("já mandei", "enviei agora", "meu RG é 123…"): <b>NUNCA</b> dizer "recebi teu documento", <b>NUNCA</b> aceitar dados digitados — o documento tem valor legal e só vale como <b>foto/imagem real</b>. Resposta: avisar com gentileza que a foto não chegou e pedir a imagem. (Motivo interno é jurídico, mas pro lead nunca se fala "Justiça/processo" — tabu; diz-se "faz parte do procedimento".)</div>
+  <h3>Frente e verso — como o sistema controla o par</h3>
+  <ul>
+    <li><b>A FRENTE (lado com a FOTO) é obrigatória.</b> Verso sozinho (filiação, CPF, sem foto) <b>não valida</b> — pede a frente. Verso sem dados = OK, mas só conta junto com a frente.</li>
+    <li><b>PDF = documento completo</b> (vem frente+verso) → não pedir o outro lado. 1 imagem com os 2 lados também = completo.</li>
+    <li><b>CNH:</b> foto do rosto é <b>opcional</b> — não exigir. CNH digital / foto única cai em <code>lado='ambos'</code> e valida na hora.</li>
+    <li><b>Rastreio em 3 camadas:</b> o reader classifica <code>lado: frente|verso|ambos|desconhecido</code>; fallback determinístico <code>derivarLadoPorDados</code> (nascimento/sexo→frente, filiação→verso — corrige o "desconhecido" que travava lead na procuração); acumulação no slot (<code>mesclarLadoIdentidade</code> + a própria RPC promovem frente+verso→<code>ambos</code>).</li>
+    <li><b>Gate</b> (<code>doc-reader.ts:201-222</code>): valida só com <code>ambos</code> ou par frente+verso acumulado; cada lado sozinho devolve "aguardando o outro".</li>
+  </ul>
+  <h3>Aceito / recusado</h3>
+  <div class="grid2">
+    <div class="card"><div class="card-title">✅ Aceito</div><ul>
+      <li>RG físico ou digital (PDF do gov.br)</li>
+      <li>CNH aberta (2 lados numa foto) ou fotos separadas · CNH digital (PDF do app Carteira Digital de Trânsito)</li>
+      <li><b>Selfie segurando o documento</b> — a skill diz que não, mas o prompt do reader aceita como identidade válida e <b>o reader vence</b> (divergência registrada, seção 19)</li>
+    </ul></div>
+    <div class="card"><div class="card-title">❌ Recusado</div><ul>
+      <li>Foto embaçada/ilegível (feedback específico, seção 13)</li>
+      <li>Print de tela (screenshot)</li>
+      <li><b>Cartão de CPF avulso / Comprovante de Situação Cadastral da Receita</b> — só número+nome, sem foto: classificado como "outro" (decisão Gustavo 20/06 — a petição exige RG/CNH/CIN com foto). Complementa, não substitui.</li>
+    </ul></div>
+  </div>
+  <h3>Caminho premium quando a foto vem ruim</h3>
+  <p class="quote">"Se preferir, dá pra mandar em PDF: o RG sai no site do <b>gov.br</b> e a CNH no app <b>Carteira Digital de Trânsito</b> — geralmente fica perfeito. 😊" (oferecido após 2 tentativas ruins)</p>
+</div>
+
+<!-- ============ 11 COMPROVANTE ============ -->
+<div class="section" id="doc-comprovante">
+  <div class="section-header"><span class="section-icon">🏠</span><h2>11 · Comprovante de residência — a regra mais sensível do funil</h2></div>
+  <h3>Regra-chave (Gustavo, 20/06)</h3>
+  <div class="quote">Serve <b>qualquer documento que mostre o NOME ou o CPF do lead + o ENDEREÇO COMPLETO</b> (rua, número, idealmente CEP/cidade/UF). Não basta ser "do banco" — o endereço tem que estar impresso no documento.</div>
+  <h3>🔒 Lista única canônica (fonte: <code>comprovante_residencia.md</code> — proibido duplicar em outra skill)</h3>
+  <div class="grid2">
+    <div class="card"><div class="card-title">✅ Aceitos</div><ul>
+      <li>Conta de <b>luz, água, gás, telefone fixo</b> (inclusive como NF-e/NF3e/DANF3E — é a conta de consumo)</li>
+      <li><b>Internet/TV a cabo</b> com endereço</li>
+      <li><b>Boleto do banco</b> com endereço e data</li>
+      <li><b>Fatura de cartão</b> que mostre o endereço</li>
+      <li><b>Contrato de locação/aluguel</b> vigente (a regra dos 90 dias NÃO se aplica)</li>
+      <li><b>Correspondência endereçada</b> (carta/envelope de banco, loja, órgão)</li>
+      <li><b>Documento de veículo</b> (CRLV/ATPVe) ou qualquer documento oficial com nome/CPF + endereço completo</li>
+    </ul></div>
+    <div class="card"><div class="card-title">❌ Recusados</div><ul>
+      <li><b>Extrato bancário</b> — não serve (lista de transações, não mostra residência). "Pelo banco, o que vale é o boleto, não o extrato."</li>
+      <li>Print de tela (screenshot)</li>
+      <li>IPTU</li>
+      <li>Boleto sem data</li>
+      <li>Comprovante com <b>mais de 3 meses</b> (exceto contrato de locação vigente)</li>
+      <li><b>Titular pessoa jurídica</b> (LTDA/EIRELI/MEI/EPP/ME/S.A.) — reprovado por código</li>
+    </ul></div>
+  </div>
+  <h3>Regras finas de validação (código)</h3>
+  <ul>
+    <li><b>Validade:</b> 90 dias com <b>margem de 7 dias</b>. Só reprova com <b>certeza</b> (data parseável e &gt;3 meses); data ausente/ilegível NÃO reprova. Sem data: pede 1× um comprovante datado; se o lead não tiver, usa esse mesmo.</li>
+    <li><b>Nome bate?</b> (<code>comprovanteEhDoLead</code>): é do lead se nome OU CPF casar com <b>qualquer titular</b> (inclui <code>outros_titulares</code>/<code>outros_cpfs</code> — resolve locação com vários locatários e conta conjunta). Fuzzy: sobrenome faltando/abreviação aceitos (mesmo prenome + ≥2 tokens). Sem nome no doc → NÃO acusa terceiro. Cadastro só com apelido de 1 token → não acusa (caso LÊH).</li>
+    <li><b>Gate do reader:</b> endereço extraído não-vazio é o critério ("endereço completo obrigatório; nome do titular NÃO obrigatório — terceiro é tratado depois"). A régua regex de endereço foi removida porque rejeitava comprovante legítimo.</li>
+    <li><b>Ao pedir, SEMPRE dizer "no SEU nome"</b> — e já abrir que, se for de outra pessoa, dá pra usar com declaração + RG do titular.</li>
+  </ul>
+  <h3>⭐ "O comprovante não está no meu nome" — o fluxo do terceiro (redação-fonte, virada 20/06)</h3>
+  <div class="quote"><b>A Julia resolve SOZINHA, sem escalar.</b> A conferência da declaração acontece depois, na distribuição (Davi/Mia). Só escala em fraude evidente ou "não tenho nada e nem familiar". Exceção de formato: aqui a bolha pode passar de 140 chars (ideal 1, máx 2 bolhas).</div>
+  <div class="flow">
+    <div class="flow-step"><span class="n">1</span><div><b>Insistir 1× pelo dele:</b> "Não tem nenhum tipo de comprovante de residência no teu nome? Pode ser conta de luz, água, internet, gás ou um boleto do banco — desde que mostre o teu nome e o endereço. 😊"</div></div>
+    <div class="flow-step"><span class="n">2</span><div><b>Abrir o caminho do terceiro</b> (SEM mandar o modelo ainda): "Sem problema! Pode ser o comprovante de uma pessoa que mora com você (mãe, pai, cônjuge...). Pra isso eu preciso de uma declaração assinada por ela — com o nome de quem o comprovante está — e o RG ou CNH dela." + "Ficou com alguma dúvida sobre como fazer a declaração? 😊"</div></div>
+    <div class="flow-step"><span class="n">3</span><div><b>SÓ se o lead tiver dúvida → o modelo:</b> "A pessoa escreve assim num papel, preenche os dados e assina:" → <i>"Eu, [nome da pessoa], CPF [CPF dela], declaro que [teu nome], CPF [teu CPF], mora comigo neste endereço."</i> → "Aí me manda a foto da declaração assinada + o RG ou CNH dela. 📄"</div></div>
+    <div class="flow-step out"><span class="n">4</span><div><b>Recebeu declaração + RG do titular → CONFIRMA</b> com <code>[COMPROVANTE_OK]</code> e a auditoria roda. <b>NÃO escala.</b></div></div>
+  </div>
+  <ul>
+    <li>Itens podem vir juntos ou separados, em qualquer ordem — agradecer cada envio.</li>
+    <li>NÃO repetir o pedido "no seu nome" depois que o lead disse que não tem. NUNCA pedir confirmação de endereço de comprovante de terceiro.</li>
+    <li><b>Cônjuge</b> = mesmo fluxo ("pessoa que mora com você"). Anti-padrão explícito: rejeitar comprovante de cônjuge sem oferecer a declaração.</li>
+    <li><b>Detecção determinística por texto</b> (o LLM escapava 31% das vezes): regex reconhece "não está no meu nome", parentes (mãe/pai/esposa/marido/sogra/…), "moro com", "de favor", "moro de aluguel", "casa é alugada" → injeta a instrução do fluxo no prompt.</li>
+    <li><b>Validação da declaração</b> (<code>avaliarDeclaracao</code>): quem assina = titular do comprovante; pessoa declarada = lead; <b>endereço NÃO precisa bater</b>. Declaração manuscrita/ilegível (confiança &lt;70) → <b>ACEITA</b> assim mesmo (sem pedir RG do declarante de novo). Nome declarado errado → pede corrigir; assinante ≠ titular → pede o titular assinar.</li>
+    <li><b>Guard "boleto 1×"</b>: sugeriu emitir boleto uma vez → não sugere de novo; se o lead não conseguiu, abre direto o caminho do terceiro.</li>
+    <li>Lead <b>digita</b> CPF/endereço em texto: "Pra valer como comprovante, eu preciso do documento mesmo — só o texto não serve. 😊"</li>
+  </ul>
+</div>
+
+<!-- ============ 12 CTPS ============ -->
+<div class="section" id="doc-ctps">
+  <div class="section-header"><span class="section-icon">💼</span><h2>12 · CTPS / comprovante de renda — best-effort, nunca prende o lead</h2></div>
+  <p>Última etapa antes do especialista. O lead <b>já subiu pro Ag. Humano</b> quando entra aqui (handoff imediato). A CTPS é <b>desejável, não obrigatória</b> — recusa também fecha o ciclo.</p>
+  <h3>O que serve</h3>
+  <div class="grid2">
+    <div class="card"><div class="card-title">✅ Aceito</div><ul>
+      <li><b>CTPS física</b> — foto da página com foto/qualificação; "manda todas as páginas que tenham algo escrito". <b>Vale mesmo VAZIA ou com contrato fechado</b> (regra em 3 camadas: skill, prompt do reader, gate)</li>
+      <li><b>CTPS digital</b> — <b>PDF oficial exportado</b> do app/gov.br (válida mesmo sem nenhum vínculo, com 1 página)</li>
+      <li>Holerite, contracheque, recibo de pagamento</li>
+      <li>Comprovante/extrato de <b>benefício INSS</b> (aposentadoria, pensão)</li>
+      <li>Declaração de renda</li>
+      <li><b>Benefícios sociais contam como renda</b> (rede determinística): Bolsa Família, BPC/LOAS, auxílio, seguro-desemprego, PIS/PASEP, abono, Cartão Cidadão — mesmo quando o reader classifica "outro"</li>
+      <li><b>Fallback (último caso):</b> extrato bancário dos <b>ÚLTIMOS 3 MESES</b> — só quando não há nada acima</li>
+    </ul></div>
+    <div class="card"><div class="card-title">❌ Recusado / regras duras</div><ul>
+      <li><b>Print da TELA do app</b> CTPS Digital (só o PDF exportado vale) — e telas de login/menu de apps em geral</li>
+      <li><b>Renda de terceiro NÃO serve</b> — regra absoluta, diferente do comprovante de residência</li>
+      <li>Proibido mencionar restrições/auditoria/CPF nesta fase</li>
+      <li>Na dúvida se o que chegou serve → sobe pro humano</li>
+    </ul></div>
+  </div>
+  <h3>Profissão — capturar SEMPRE (ponto crítico do caso jurídico)</h3>
+  <div class="quote">Se o documento não mostra a profissão, a Julia pergunta com naturalidade: <i>"Só pra completar aqui: tu tá trabalhando atualmente? Com o quê? Ou tá autônomo / desempregado? 😊"</i> — Regra do campo: profissão é <b>só o CARGO</b>, nunca o empregador; contrato encerrado não preenche profissão (fallback "último vínculo" foi removido porque a EMPRESA virava profissão no cadastro).</div>
+  <h3>⭐ "Trabalho como autônomo" / "não tenho carteira assinada" — o playbook</h3>
+  <div class="flow">
+    <div class="flow-step"><span class="n">1</span><div><b>Capturar a profissão:</b> "Entendi! Com o que tu trabalhas exatamente?" — serve <b>recibo</b>, ou a <b>CTPS mesmo vazia</b>; último caso, extrato dos últimos 3 meses. <b>NUNCA travar por situação de trabalho.</b></div></div>
+    <div class="flow-step"><span class="n">2</span><div><b>1 reforço (UMA vez só):</b> "Entendo! 😊 Mas esse comprovante de renda ajuda bastante no teu caso. Me diz: tu tá autônomo, desempregado, ou trabalhando em algo?" + "Se tiver QUALQUER comprovante de renda — holerite, recibo, benefício do INSS, aposentadoria — manda aqui. Se não tiver nada disso mesmo, dá pra usar um extrato do banco dos ÚLTIMOS 3 MESES que mostre as entradas."</div></div>
+    <div class="flow-step out"><span class="n">3</span><div><b>Reafirmou que não tem nada → escala sem prender:</b> "Sem problema nenhum! 😊 Isso a gente resolve com o especialista." + "Já vou te encaminhar pra ele seguir contigo por aqui mesmo. <code>[ESCALAR_HUMANO]</code>" — ⚠️ e o lead fica em <code>aguardando_ctps</code> com a tag "Só falta CTPS" (NÃO marca <code>documentos_completos</code>, senão entraria na fila de procuração sem CTPS — caso Jéssica).</div></div>
+  </div>
+  <h3>Outros casos nominais</h3>
+  <ul>
+    <li><b>Aposentado:</b> comprovante/extrato/carta do INSS serve; CTPS vazia também; ajudar a tirar pelo Meu INSS ou app do banco.</li>
+    <li><b>Desempregado / dona de casa:</b> 1 reforço por qualquer renda (INSS, Bolsa Família, pensão) → depois escala.</li>
+    <li><b>Doc errado</b> (mandou a conta de luz de novo): "Recebi, mas essa é a conta de luz que já está com a gente! 😊 Agora preciso da tua Carteira de Trabalho ou um comprovante de renda…" — próximo errado → escala.</li>
+    <li><b>Lead manda LINK</b> (CPFL, OneDrive, Adobe): "Não consigo abrir links por aqui 😅 — me manda a FOTO ou o PDF do documento direto no chat."</li>
+    <li><b>"Por que preciso disso?"</b>: "É só pra completar teu cadastro com um comprovante de renda. Pode ser foto ou PDF; se não tiver agora, sigo com o especialista. 😊"</li>
+    <li><b>Rede por nome de arquivo</b> (caso Wilson): filename com <code>ctps | carteira de trabalho | rescisão | holerite | contracheque | fgts | seguro desemprego | benefício…</code> entra como pista forte — a CTPS que o lead mandou JÁ CONTA, mesmo que o reader leia só o cabeçalho.</li>
+  </ul>
+</div>
+<!-- ============ 13 EDGE CASES ============ -->
+<div class="section" id="edge">
+  <div class="section-header"><span class="section-icon">🧩</span><h2>13 · Casos-limite transversais & o que a Julia responde</h2></div>
+
+  <h3>Documento ilegível / amassado / cortado / distante</h3>
+  <ul>
+    <li><b>Feedback ESPECÍFICO, cada variante 1× (anti-looping):</b> <i>luz/foco</i> → "Recebi a foto, mas percebi que não está totalmente legível." + "Procura tirar a foto num lugar mais iluminado e com o documento mais enquadrado. 📸" · <i>cortado</i> → "…algumas informações vieram cortadas." + "Procura tirar a foto com um pouco mais de distância, mostrando o documento inteiro. 📸" · <i>distante</i> → "…ficou muito distante e os dados ficaram pequenos." + "Tira mais centralizada no documento e num ambiente mais iluminado. 📸"</li>
+    <li><b>2ª falha</b> → oferece o caminho do PDF oficial (gov.br / app CNH).</li>
+    <li><b>3ª falha → gate determinístico escala SOZINHO</b>, com mensagem FIXA enviada sem passar pelo LLM (que às vezes ignorava a injeção): "Tive dificuldade com esse documento — vou chamar alguém da equipe pra te ajudar pessoalmente, tá? 😊". Se a escalada foi por comprovante em outro nome, a mensagem é honesta: "O comprovante parece estar em outro nome — pra não te deixar travado, vou chamar alguém da equipe pra conferir isso contigo direitinho, tá? 😊". (Antes desse gate, 222 leads ficaram presos em loop — extremos de 19 tentativas.)</li>
+    <li><b>Progresso real reseta o contador</b> — ID completo, lado novo, comprovante legível não contam como tentativa falha (casos Valmor/Jonatha/Alisson: mandavam frente+verso e escalava).</li>
+    <li><b>Foto amassada/em ângulo (regra 05/08):</b> campos-chave (nome, endereço completo, data) não TODOS nítidos → <code>legivel=false</code>; proibido extrapolar texto borrado. ⚠️ Tensiona com a "regra de ouro" do reader ("na dúvida prefira TRUE — proibido recusar doc válido por foto ruim") — precisa de arbitragem (seção 19).</li>
+  </ul>
+
+  <h3>PDF com senha</h3>
+  <p>Ordem de tentativa (via <code>qpdf --decrypt</code>): senha que o lead informou → CPF completo → últimos 5 dígitos → primeiros 5. Sucesso é aferido pela <b>existência do arquivo de saída</b>, nunca pelo exit code (senha certa em PDF imperfeito era rejeitada). Nenhuma abriu → <code>flag_humano</code> com motivo específico (pedir a senha de novo / foto / atendimento humano).</p>
+
+  <h3>"Já mandei" (mas nada chegou) — 41% viravam atrito</h3>
+  <p class="quote">"Hmm, não chegou nenhuma foto por aqui ainda. 🤔" · "Pode tentar mandar de novo? Às vezes o WhatsApp trava o envio." · "Usa o ícone de câmera ou o clipes (📎) aqui no chat e manda a foto direto! 📸"</p>
+
+  <h3>"Não tenho agora / mando depois"</h3>
+  <p class="quote">"Sem problema! Pode me mandar quando tiver com o documento. Estarei por aqui 😊" — e <b>NÃO repete o pedido</b>. Rede determinística (caso Douglas): a partir do 2º "não tenho", para de re-perguntar "qual dos dois você tem?". ("Não tenho CNH" no singular = tem o outro → não dispara.)</p>
+
+  <h3>Lead confirma endereço por texto ("Sim, é esse mesmo")</h3>
+  <p>Vale como confirmação do comprovante JÁ RECEBIDO → confirma e pede a CTPS na MESMA mensagem com <code>[COMPROVANTE_OK]</code>. (Texto só não vale como documento — confirmação de endereço vale.)</p>
+
+  <h3>Pós-procuração sem comprovante (Gustavo 22/06)</h3>
+  <p class="quote small">Injeção: "este lead JÁ assinou a procuração — NÃO peça pra assinar de novo. Falta apenas o COMPROVANTE DE RESIDÊNCIA. Abra reconhecendo que a procuração está certinha e peça só a FOTO do comprovante. NÃO peça RG nem CTPS de novo, NÃO fale em 'documentação' genérica, NÃO use 📞."</p>
+
+  <h3>O bloco STATUS DOCUMENTOS LEAD — a memória anti-repetição</h3>
+  <p>Injetado em todo turno de coleta (<code>inbound.controller.ts:2836-2929</code>); as skills são instruídas a <b>confiar nele e não reler a conversa</b>. Exemplos de linhas: "Documento de identidade: JÁ RECEBIDO. NÃO peça verso. NÃO peça novamente." · "Comprovante: AINDA NÃO RECEBIDO. Este é o único documento pendente agora." · na fase CTPS: "NÃO peça nenhum dos dois de novo — nem se o lead duvidar do que já mandou. A ÚNICA pendência agora é a CTPS." · "CONJUNTO DO TERCEIRO CHEGANDO: agradeça cada item, NÃO valide você mesma, NÃO peça CTPS agora." Fix Sedirlene: só afirma "recebido e aceito" se o slot está <b>realmente preenchido</b> (antes, comprovantes todos rejeitados + lead reclamando = Julia alucinava "já temos o comprovante").</p>
+
+  <h3>Proteção do nome — "nome de dentro do doc nunca vira tratamento"</h3>
+  <ul>
+    <li><b>No prompt:</b> "use SOMENTE o primeiro nome do CADASTRO do titular — NUNCA um nome lido do documento" (o OCR pode ler o nome do pai/emissor/filiação).</li>
+    <li><b>No código:</b> <code>protegerNomeIdentidade()</code> — 2ª imagem de RG de OUTRA pessoa não sobrescreve o nome bom do slot (caso Greisso). FIX-6 (Vilnei): no verso, CPF batendo NÃO autoriza sobrescrever o nome (o CPF prova que o doc é do titular, não que o texto lido é o nome dele).</li>
+    <li><b>No reader:</b> nome nunca é filiação, nunca é o emissor/diretor do verso ("se repete em milhares de docs do mesmo estado" — contaminava cadastros), nunca é assinatura manuscrita nem naturalidade.</li>
+    <li><b>Sentido inverso:</b> <code>nomeAuditoriaMelhor()</code> — o nome real vindo da auditoria do CPF só substitui o cadastro quando é o mesmo nome mais completo, ou quando o atual está poluído (emoji/e-mail/1 token).</li>
+    <li><b>Nome declarado no site vence pushname:</b> lead criado com nome do perfil do WhatsApp ("Renatacordeirofreitaslima") → parseia o nome declarado da mensagem do site; token único ≥16 chars nunca vira tratamento. Cadeia: auditoria &gt; nome declarado &gt; perfil (se nome de gente) &gt; nunca nome de doc.</li>
+  </ul>
+</div>
+
+<!-- ============ 14 READER ============ -->
+<div class="section" id="reader">
+  <div class="section-header"><span class="section-icon">👁️</span><h2>14 · O reader (leitor de documentos) por dentro</h2></div>
+  <div class="code-block">Meta → edge mdzap-webhook (baixa mídia → bucket mdzap-media, lock anti-429)
+  → julia-server: readDocumentCached()                         [doc-reader.ts]
+     ├ IMAGEM: sha256 do buffer → cache julia_doc_reader_cache (hit → devolve salvo)
+     │   miss → normaliza rotação EXIF (sips) → Claude Sonnet 4.6
+     │          com DOCUMENT_ANALYSIS_PROMPT (~7.850 tokens, prompt caching)
+     │        → fallback gpt-4.1-mini se Sonnet falhar/sem sinal
+     │        → cache grava SÓ resultado válido
+     └ PDF: detecta senha (qpdf) → tenta senha do lead/CPF → converte p/ PNG se ilegível
+  → refinarDocTipo → GATE de campos obrigatórios → DocReaderResult
+  → resumirParaContexto → linha [LEITOR-DOC ...] no prompt da Julia
+  → fn_atualizar_documento_lead → slot em leads.documentos
+     + resumo em whatsapp_mensagens.metadata.doc_reader_result (pro front)</div>
+  <ul>
+    <li><b>Contrato de saída:</b> <code>tipo</code> (identidade|cnh|comprovante|ctps|declaracao|extrato_bancario|extrato_cartao|registrato|imposto_renda|outro) · <code>valido</code> (por PRESENÇA de campo obrigatório, não por score) · <code>confianca</code> 0-100 (informativo) · <code>lado</code> · <code>flag_humano</code> · <code>fonte</code> (sonnet|gpt-4.1-mini|none) · <code>motivo</code> (debug, nunca vai pro lead) + ~28 campos de dados.</li>
+    <li><b>Nunca lança exceção</b> — em falha devolve <code>{valido:false, flag_humano:true}</code>. Retry com backoff em 429/5xx (máx 4), p-limit dedicado.</li>
+    <li><b>São DOIS leitores no mesmo turno</b> (media-processor extrai bruto; doc-reader qualifica e aplica gates) — custo dobrado de visão, candidato a unificação.</li>
+    <li><b>Guards da RPC de gravação:</b> slot comprovante só aceita tipo comprovante/declaração (bug: RG na fase do comprovante virava "falso comprovante"); slot ctps só tipos de renda/trabalho (04/08). Campos vazios não sobrescrevem dado bom.</li>
+    <li><b>Regras de classificação memoráveis:</b> CTPS física tem foto 3x4 — o TÍTULO vence a foto (não classificar como RG); página "QUALIFICAÇÃO CIVIL" é CTPS mesmo manuscrita/girada; telas de login/menu de app são recusadas (exceto o PDF oficial exportado); "Cartório" chega com ó decomposto (U+006F+U+0301) — por isso normalização NFD explícita no front.</li>
+    <li><b>Acurácia:</b> v2.1 ~85-90% campo a campo; golden set de 16 docs reais → 88% (94% pré-expansão); golden set expandido pra 38 casos. Causa-raiz do verso não-determinístico era PARSING (Vision duplicava o JSON — fix: primeiro JSON balanceado). Falha determinística aberta: rotação 90° em RG antigo gasto.</li>
+    <li><b>Áudio:</b> whisper.cpp LOCAL (<code>whisper-cli</code> + modelo large-v3-turbo, ~2s), cache por sha256 em <code>julia_audio_transcricoes</code>.</li>
+  </ul>
+</div>
+
+<!-- ============ 15 HSM ============ -->
+<div class="section" id="hsm">
+  <div class="section-header"><span class="section-icon">💬</span><h2>15 · Tipos de resposta — janela aberta vs templates HSM</h2></div>
+  <h3>Dentro da janela 24h — mensagem livre multi-bolha</h3>
+  <p>O LLM devolve <code>{bolhas, delays_ms}</code>: ≤140 chars/bolha, máx 4 (ideal 3), 1 ideia por bolha, máx 1 emoji, sem markdown. "Tu", nunca "você". O JSON é envelope técnico — ao lead vai só o texto (nunca markers, nunca raciocínio, nunca template não-preenchido). Exceção de formato: fluxo do terceiro pode passar de 140 chars (1-2 bolhas). ⚠️ Na prática o anti-spam junta as bolhas numa mensagem só antes de enviar (seção 5).</p>
+  <h3>Fora da janela (24h-7d) — só template HSM aprovado</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Estado do lead</th><th>Template</th><th>Corpo ({{1}} = primeiro nome)</th></tr></thead><tbody>
+    <tr><td><code>aguardando_assinatura</code> / procuração pendente</td><td><code>pendencia_assinatura_procuracao_01</code></td><td>"Oi, {{1}}! Só ficou pendente a assinatura da procuração para o teu caso. Consegues acessar o link que te enviamos e assinar?"</td></tr>
+    <tr><td><code>aguardando_comprovante</code></td><td><code>pendencia_comprovante_residencia_01</code></td><td>"Oi, {{1}}! Temos tudo praticamente pronto, só ficou pendente o comprovante de residência. Consegues nos enviar aqui no WhatsApp?"</td></tr>
+    <tr><td><code>aguardando_id</code> / sem fase + aguardando_documentos</td><td><code>pendencia_documento_identificacao_01</code></td><td>"Oi, {{1}}! Ficou pendente o teu documento de identificação (RG ou CNH). Consegues nos enviar a foto aqui pelo WhatsApp?"</td></tr>
+    <tr><td><code>aguardando_ctps</code> (+ fallback: atendente pediu CTPS)</td><td><code>pendencia_carteira_trabalho_01</code></td><td>"Oi, {{1}}! Ficou pendente a carteira de trabalho. Quando puder, nos envia a foto aqui pelo WhatsApp!"</td></tr>
+  </tbody></table></div>
+  <p class="small">Todos <code>UTILITY</code>, pt_BR, sem botões, na tabela <code>whatsapp_templates</code> (<code>agente_slugs=['sdr_leads']</code>). Skips logados: doc já recebido · cooldown 7d · humano assumiu (exceto assinatura — assinatura parada é dinheiro parado) · procuração já assinada (checa a API ZapSign antes) · CPF sem restrições (caso Ademar) · renda já tratada (caso Vera) · recusa explícita 30d · 2 templates seguidos failed. O HSM sai pelo número da PRÓPRIA conversa (multi-app, 06/08). Existe ainda <code>cobranca_documentos_01</code> — pós-venda CP/HM, status pending na Meta.</p>
+</div>
+<!-- ============ 16 AUDITORIA ============ -->
+<div class="section" id="auditoria">
+  <div class="section-header"><span class="section-icon">🔍</span><h2>16 · O workflow de auditorias — do CPF ao PDF</h2></div>
+  <p><b>Auditoria = consulta paga de restrições de crédito no CPF do lead</b> via <b>ApiFull</b> (produto <code>cp-cadastrais-score-dividas</code>, base <b>Boa Vista SCPC</b> — bureau único; por isso a Julia NUNCA afirma ter dados de Serasa/SPC). É o evento que transforma "lead com documentos" em "caso viável" — o PDF é a isca de qualificação. O código aceita multi-bureau mas 100% do tráfego real é <code>apifull_115</code> (6.825 de 6.882 linhas).</p>
+
+  <h3>Quando dispara (3 caminhos)</h3>
+  <ol>
+    <li><b>Pós-comprovante (canônico, desde 24/06):</b> fase avança pra <code>aguardando_ctps</code> → seta <code>auditoria_autorizada=true</code> e chama <code>rodarAuditoriaCompleta</code>. (Foi movida do ID pro comprovante porque a consulta é paga.)</li>
+    <li><b>CPF detectado na conversa:</b> só se <code>auditoria_autorizada===true</code>; senão grava <code>cpf_pendente_auditoria</code> e espera.</li>
+    <li><b>Marker <code>[AUDITORIA_AUTORIZADA]</code>:</b> relê o estado — <code>processando</code>? ignora (evita 2ª cobrança) · <code>concluida</code>? só reenvia o PDF sem novo bureau.</li>
+  </ol>
+  <div class="quote danger"><b>Gate LGPD:</b> o CPF consultado é SEMPRE o do titular do código de atendimento, NUNCA o lido de um documento. Nasceu de 9 casos em 30 dias de diagnóstico (e até procuração) da pessoa errada porque um parente mandou o próprio doc. CPF do doc ≠ titular → auditoria bloqueada + log.</div>
+
+  <h3>Pipeline (caminho Julia — 6.542 de 6.882 auditorias)</h3>
+  <div class="code-block">rodarAuditoriaCompleta()                    [auditoria-pipeline.ts:171-402]
+ 1. lock       → RPC fn_julia_auditoria_lock (CAS atômico em leads.julia_auditoria_status='rodando')
+ 2. insert     → INSERT auditorias (bureau apifull_115, status processando, origem julia_inbound)
+ 3. wh_aud_01  → POST n8n /webhook/mdflow/auditorias/disparar (retry backoff 0/3/8/15s, só 5xx)
+                 n8n WH-AUD-01 (síncrono): ApiFull → parse → classificação → PDF (pdf.co)
+                 → upload Storage → envio WhatsApp
+ 4. verificar  → RELÊ auditorias.status do banco (o n8n responde 200 MESMO gravando falha!
+                 incidente 23/06: 124 leads avançaram sem PDF)
+ 5. finalize   → fn_julia_auditoria_set_status('concluida') + limpa aviso_demorando</div>
+  <p><b>Caminho paralelo do front:</b> <code>rpc_disparar_auditoria</code> → INSERT em <code>auditorias</code> + <code>webhook_requests</code> → trigger <code>net.http_post</code> pra MESMA URL do WH-AUD-01. <b>Não toca em <code>julia_auditoria_status</code></b> — auditoria disparada pelo operador deixa o campo do lead intacto (e o WH-AUD-01 também nunca escreve nesse campo — só o julia-server escreve). Terceiro caminho: edge <code>mia-consultar-restricoes</code> (Mia, cache 24h, sem PDF/WhatsApp).</p>
+
+  <h3>Estados de <code>leads.julia_auditoria_status</code></h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Valor</th><th>Leads</th><th>Quem escreve</th></tr></thead><tbody>
+    <tr><td><code>concluida</code></td><td>6.249</td><td>finalize (RPC set_status)</td></tr>
+    <tr><td><code>null</code></td><td>5.776</td><td>nunca auditado / auditado só pelo front</td></tr>
+    <tr><td><code>erro_wh_aud_01</code> / <code>erro_verificar_resultado</code></td><td>71 / 54</td><td>catch do pipeline (n8n fora / falha ApiFull — tipicamente saldo)</td></tr>
+    <tr><td><code>erro_stale_destravado_0707</code> · <code>enviado_manual</code> · outros</td><td>8 · 5 · 4</td><td>destrave manual / intervenção humana</td></tr>
+  </tbody></table></div>
+  <p class="small"><code>auditorias.status</code>: concluida 6.142 · <b>falha 649 (~9,4%, quase toda ApiFull)</b> · cancelada 93 · processando 3.</p>
+
+  <h3>O drain — PDFs concluídos que nunca chegaram</h3>
+  <p>Cron <code>julia-auditoria-drain</code> (a cada 15min, 8-21h — <b>pausado hoje</b> junto com os follow-ups): varre auditorias <code>concluida</code> com PDF no storage e sem <code>pdf_enviado_em</code> (últimas 72h) e entrega. Blindagens, cada uma nascida de um incidente: sweeper de lock zumbi (lead 'rodando' &gt;30min → erro_stale; 8 presos, um há 11 dias) · carência de 10min (corrida drain × envio-na-conclusão — caso Sandra recebeu 2× no mesmo minuto) · dedup por lead + janela 96h · só envia se o último inbound foi &lt;24h (fora da janela queima o número) · cap 10/rodada · só conversas sdr_leads.</p>
+  <div class="quote warn"><b>Detalhe caro do reenvio:</b> se o PDF sumiu dos 3 buckets (<code>auditorias</code> → <code>auditorias-pdfs</code> → <code>julia-pdfs</code>), o código REGENERA a auditoria = nova consulta PAGA. Entre 13/05 e 04/08 o reenvio apontava só pro bucket errado (42 fósseis vs 5.841 objetos reais) — 99 eventos <code>storage_miss_regenerando</code>, cada um custando uma consulta.</div>
+
+  <h3>Como a Julia entrega o resultado</h3>
+  <p>Skill <code>auditoria.md</code>: "Pronto, te mandei o PDF aí 📄" → "Achei {N} restrições no teu nome, total R$ {X}." → 4 tons por classificação: <b>alta</b> (≥10 restrições — e atenção à inversão semântica: alta = BOA notícia, mais material processável) · <b>média</b> (3-9) · <b>baixa</b> (1-2, "pode parecer pouco, mas dá pra contestar") · <b>limpo</b> (0 → skill <code>cpf_limpo</code>, vira pedido de indicação). Caption do PDF: "Aqui está seu relatório de restrições de crédito." / "Ótima notícia! Seu CPF não apresenta restrições. ✅". Nome do arquivo mascara o CPF (<code>Consulta_CPF_MidasR_123xxx.pdf</code>). Tabus na entrega: nunca tribunal/processo/advogado/garantia/prazo exato.</p>
+  <p class="small">⚠️ Schema drift conhecido: a skill cita {CREDOR_TOP_1}/{CREDOR_TOP_2}, mas <code>diagnostico-brief.ts</code> tem <code>credor_top_1/2</code> hardcoded como <code>null</code> ("futuro: query restricoes top valor") — a bolha "A maioria do X e Y" não tem dado real por trás.</p>
+
+  <h3>Sentinela de saldo (o incidente de 05/08)</h3>
+  <p>Saldo ApiFull zerou → toda auditoria falhava → leads recebiam "consulta demorando" A CADA mensagem. Fixes no ar: aviso "demorando" agora é 1× por lead (flag <code>aviso_demorando</code>, zera no finalize; nas próximas escala silenciosamente) + cron <code>julia-sentinela-saldo</code> (*/10min, SEMPRE ativo): ≥2 falhas em 40min → alerta P0 em <code>julia_sentinela_alertas</code> + Telegram — "provável SALDO ESGOTADO… recarregar e re-disparar os aptos". Re-disparo em lote: canário + <code>rpc_disparar_auditoria</code> nos aptos.</p>
+</div>
+
+<!-- ============ 17 MATCHING ============ -->
+<div class="section" id="matching">
+  <div class="section-header"><span class="section-icon">🎯</span><h2>17 · Matching de restrições por nome — como o credor vira empresa</h2></div>
+  <p>Quando a auditoria volta, cada restrição traz o nome bruto do credor ("BCO BRADESCO S A", "CLARO SA"…). O matching liga esse nome à tabela <code>empresas</code> (nome canônico, <code>processavel</code>, categoria). <b>Achado central: existem QUATRO implementações independentes</b>, e a que roda de verdade hoje é a do front.</p>
+
+  <h3>A que roda hoje: front TypeScript <span class="badge badge-success">ativa</span></h3>
+  <p><code>src/pages/auditorias/hooks/use_cadastrar_restricoes.ts</code> (<code>findBestMatch</code>): similaridade por <b>tokens Jaccard</b> — normaliza (lower + NFD sem diacríticos + só a-z0-9) → conta tokens em comum / máx. Regras:</p>
+  <ul>
+    <li><b>Thresholds:</b> ≥0,75 = match <code>alto</code> (entra confirmado) · 0,45-0,75 = <code>medio</code> (operador confirma) · &lt;0,45 = <code>nenhum</code>. Variação já confirmada antes → threshold cai pra 0,6. Match exato em <code>empresas.nome_variacoes[]</code> → score 1,0 direto.</li>
+    <li><b>Cartórios/protestos/tribunais são excluídos</b> por regex ANTES do matching (inclusive o "Cartório" com ó decomposto U+006F+U+0301 que a API manda — daí a normalização NFD).</li>
+    <li><b>Item Boa Vista extra:</b> além dos credores individuais, cria 1 restrição agregada somando tudo do bureau, vinculada à empresa "Boa Vista"/SCPC (16 restrições → 16 + 1 = 17).</li>
+    <li><b>Auto-aprendizado:</b> operador confirmou o vínculo e o nome difere → <code>fn_empresas_append_variacao</code> grava o credor bruto como variação permanente daquela empresa (182 empresas já têm variações). É assim que o sistema "aprende" nomes novos.</li>
+    <li><b>Regra dura:</b> NUNCA cria empresa nova automaticamente — só vincula às existentes. Persistência via <code>fn_restricao_salvar</code> (trava anti-duplicação por cliente/lead/empresa/contrato/data/valor).</li>
+  </ul>
+
+  <h3>As outras 3 implementações</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Onde</th><th>Algoritmo</th><th>Status</th></tr></thead><tbody>
+    <tr><td><code>fn_mdzap_auto_cadastrar_restricoes</code> (SQL)</td><td>pg_trgm similarity nos 3 campos + faixas 0,75/0,45; item BV agregado; marca <code>requer_revisao</code></td><td><span class="badge badge-danger">morta desde maio/2026</span> — zero linhas com os motivos que só ela produz; o cadastro automático pós-auditoria PAROU (hoje só roda quando o operador abre o drawer)</td></tr>
+    <tr><td><code>fn_match_credor_empresa</code> (SQL)</td><td>mesma lógica trigrama, encapsulada (faixas confiante/revisao/nao_identificada)</td><td><span class="badge badge-neutral">sem chamador ativo</span></td></tr>
+    <tr><td><code>classificador-restricao.ts</code> (julia-server)</td><td><code>ilike('%primeiroToken%').limit(1)</code> — alimenta a classificação alta/média/baixa do PDF</td><td><span class="badge badge-warn">frágil</span> — "Banco" casa com qualquer banco</td></tr>
+  </tbody></table></div>
+  <p class="small">Estado da tabela <code>restricoes</code>: 15.451 ativas · 11.669 processáveis · 747 sem <code>empresa_id</code> · 216 pendentes de revisão (todas de maio). Apoio: <code>fn_empresa_match</code> (nunca chuta em ambiguidade) e <code>fn_restricao_eh_boa_vista</code> (SCPC≠SPC Brasil).</p>
+</div>
+
+<!-- ============ 18 FRONT ============ -->
+<div class="section" id="front">
+  <div class="section-header"><span class="section-icon">🖥️</span><h2>18 · Front MdZap — o que o operador vê e faz</h2></div>
+  <h3>Arquivos exatos (sob <code>~/beta-mdflow/</code>)</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Componente</th><th>Arquivo</th><th>Papel</th></tr></thead><tbody>
+    <tr><td>Painel do lead</td><td><code>src/components/mdzap/MdzapLeadPanel.tsx</code></td><td>badge de auditoria (:107-144), botão "Auditar e Cadastrar" (:262), abas</td></tr>
+    <tr><td>Mutações</td><td><code>src/components/mdzap/lead-panel/useLeadMutations.ts</code></td><td><code>triggerCadastrarLead</code> · <code>criarLeadEAuditarInline</code> (cria lead + vincula conversa + pasta Drive + dispara auditoria)</td></tr>
+    <tr><td>Aba Restrições</td><td><code>src/components/mdzap/lead-panel/LeadRestricoesMdzapTab.tsx</code></td><td>compõe CrmAuditoriaPanel + banner Boa Vista</td></tr>
+    <tr><td>Painel de auditoria</td><td><code>src/components/crm/CrmAuditoriaPanel.tsx</code> (427L)</td><td>máquina de 5 estados, reusada do CRM</td></tr>
+    <tr><td>Drawer de cadastro</td><td><code>src/components/mdzap/MdzapLeadCadastroDrawer.tsx</code></td><td>2 fases: dados → restrições</td></tr>
+    <tr><td>Card de restrição</td><td><code>src/components/mdzap/cadastro/CadastroRestricaoCard.tsx</code></td><td>seleção de empresa via EmpresaCombobox</td></tr>
+    <tr><td>Status realtime</td><td><code>src/pages/auditorias/hooks/use_auditoria_status.ts</code></td><td>Realtime + polling 5s fallback</td></tr>
+    <tr><td>Matching + save</td><td><code>src/pages/auditorias/hooks/use_cadastrar_restricoes.ts</code> (473L)</td><td>o matching vivo (seção 17)</td></tr>
+    <tr><td>Docs do lead</td><td><code>src/components/mdzap/lead-panel/LeadDocumentosTab.tsx</code></td><td>extrai o PDF do resultado_json como "Relatório Boa Vista"</td></tr>
+  </tbody></table></div>
+  <h3>Fluxo do operador</h3>
+  <ol>
+    <li><b>Badge no header do lead</b> (precedência): "Consultando…" âmbar → "N restrições" vermelho (há processáveis) → âmbar (só não-processáveis) → "Sem restrições" verde → "Falha na consulta" cinza.</li>
+    <li><b>1 clique "Auditar e Cadastrar"</b>: cria o lead (se preciso), vincula a conversa, cria pasta no Drive, dispara <code>rpc_disparar_auditoria(['apifull_115'])</code>.</li>
+    <li><b>Acompanha</b> via Realtime + polling 5s; progress bar "anti-ansiedade" (1,42%/s, trava em 85%) com cronômetro; download automático do PDF ao concluir.</li>
+    <li><b>Estados do painel:</b> nunca auditado → "Consultar CPF Completo" · processando · falha → "Tentar novamente" · concluída sem restrições → banner verde + comprovante · concluída com restrições → banner vermelho com contagem/valor + lista scrollável de credores + "Cadastrar Restrições", "Baixar PDF", "Nova Consulta" (⚠️ sem confirmação de custo — clique acidental = consulta paga).</li>
+    <li><b>Matching manual no drawer:</b> cada restrição vira um card com o match sugerido; operador troca a empresa, marca/desmarca "incluir", confirma matches médios ("Sim, confirmar" → dispara o auto-aprendizado da variação). <code>auditorias.lead_id</code> preenchido → "já processada" (proteção contra reprocessar).</li>
+  </ol>
+  <p class="small">Extras: KPIs no <code>MdzapDashboard.tsx</code> ("Auditorias Julia" com custo real em BRL, "Qualificação", "Custo/cliente") · aba Gestão → Vault Julia (o editor que limpa o cache — seção 7) · card swipeable mostra "Auditoria pendente" via <code>metadata.pending_audit</code>.</p>
+</div>
+
+<!-- ============ 19 ATENÇÃO ============ -->
+<div class="section" id="atencao">
+  <div class="section-header"><span class="section-icon">🚨</span><h2>19 · Pontos de atenção — o que este levantamento descobriu</h2></div>
+  <div class="pending-item p0"><span class="pending-icon">🔴</span><div class="pending-content"><b>Senha de sudo em texto puro dentro do vault</b>MANUAL.md (linha ~414) e 2 arquivos de <code>04_bia/03_treinamentos/</code> (<code>pos-venda-templates.md</code>, <code>templates-hsm-meta-pendentes.md</code>) começam com a senha do Mac Mini em texto puro. Remover das 3 ocorrências (o valor não está reproduzido neste handoff).</div></div>
+  <div class="pending-item p0"><span class="pending-icon">🔴</span><div class="pending-content"><b>Matching automático de restrições está MORTO desde maio</b><code>fn_mdzap_auto_cadastrar_restricoes</code> não produz linhas desde maio/2026 — hoje restrição só é cadastrada quando um operador abre o drawer e clica. Decidir: religar o caminho automático ou assumir o manual como oficial.</div></div>
+  <div class="pending-item p1"><span class="pending-icon">🟡</span><div class="pending-content"><b>pos_pdf.md contradiz a redação-fonte do terceiro</b>Ainda tem a versão pré-20/06 ("sem a declaração não conseguimos aceitar") — e como objeção/pos_pdf podem carregar no lugar da skill de comprovante, a versão dura pode chegar ao lead. Atualizar o trecho pra referenciar a redação-fonte.</div></div>
+  <div class="pending-item p1"><span class="pending-icon">🟡</span><div class="pending-content"><b>Foto amassada: duas regras em tensão no prompt do reader</b>Regra 05/08 ("campos-chave não nítidos → ilegível") vs regra de ouro ("na dúvida prefira TRUE"). Precisa de arbitragem do Gustavo pra deixar UMA hierarquia explícita. Idem selfie-com-documento (skill diz não, reader diz sim — reader vence hoje).</div></div>
+  <div class="pending-item p1"><span class="pending-icon">🟡</span><div class="pending-content"><b>4 crons proativos pausados desde 07/07 + flag só lido no boot</b><code>.followup-paused</code> bloqueia followup/funil/HSM/auditoria-drain. Remover o arquivo NÃO religa nada sem restart — e o quality-sensor pode recriá-lo a qualquer hora cheia. Faz parte do plano de religada pós-desban Meta.</div></div>
+  <div class="pending-item p1"><span class="pending-icon">🟡</span><div class="pending-content"><b>Dois plists instalados pro mesmo servidor</b>LaunchDaemon <code>com.midas.julia</code> + LaunchAgent <code>com.midas.julia-server</code> apontam pro mesmo dist. Se ambos subirem: 2 listeners na 8787 e crons duplicados. Remover um.</div></div>
+  <div class="pending-item p2"><span class="pending-icon">🔵</span><div class="pending-content"><b>lead_documentos (tabela) vazia · julia_pdfs_gerados vazia</b>A primeira nunca teve write-path (fonte real: JSONB <code>leads.documentos</code>); a segunda zerou e com ela <code>hasPdf</code>/skill <code>pos_pdf</code> ficaram inativos. Decidir deprecar ou religar.</div></div>
+  <div class="pending-item p2"><span class="pending-icon">🔵</span><div class="pending-content"><b>Higienes menores</b>Allowlist do editor web com 2 arquivos fantasma e sem PUBLICO.md · MANUAL.md defasado (path e fluxo antigos) · <code>recepcao_v2_backup.md</code> solto entre as skills vivas · ~40 pastas .bak no vault · dupla leitura de visão por turno (custo) · "Nova Consulta" no front sem aviso de custo · <code>credores_top</code> da skill de auditoria sem fonte de dados (null hardcoded).</div></div>
+</div>
+
+<footer>Julia — Super Handoff Completo · gerado em 2026-08-11 · Fontes primárias: julia-server (código vivo + processo verificado), julia-vault completo, Supabase produção (qdivfairxhdihaqqypgb), front beta-mdflow, doc canônica mdzap-core · 4 agentes de pesquisa em paralelo · MdFlow DS v5 Warm Charcoal</footer>
+</main>
+</div>
+</body>
+</html>
