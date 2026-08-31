@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fluxo Assinatura → Distribuição — UF × Advogado</title>
+<title>Fluxo Assinatura → Distribuição desde 18/08 — UF × Advogado</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -73,7 +73,6 @@ tr.grand-total td { background: var(--primary-dim); font-weight: 700; border-top
 }
 .badge-primary { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary-border); }
 .badge-warn { background: #f59e0b20; color: var(--warn); border: 1px solid #f59e0b40; }
-.badge-danger { background: #ef444420; color: var(--danger); border: 1px solid #ef444440; }
 .pending-item {
   display: flex; gap: .75rem; background: var(--card); border: 1px solid var(--border);
   border-left: 3px solid var(--warn); border-radius: 10px; padding: .8rem 1rem; margin-bottom: .6rem;
@@ -90,38 +89,38 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
 <body>
 
 <header>
-  <h1>Fluxo Assinatura → Distribuição — por Estado e Advogado</h1>
-  <div class="subtitle">Clientes que assinaram a procuração, restrições processáveis totais e quantas já foram enviadas para a distribuição</div>
+  <h1>Fluxo Assinatura → Distribuição — desde a volta do atendimento (18/08)</h1>
+  <div class="subtitle">Clientes que assinaram a procuração a partir de 18/08/2026, restrições processáveis totais e quantas já foram enviadas para a distribuição — por estado e advogado</div>
   <div class="meta-row">
-    <span class="meta-chip">📅 Gerado em 31/08/2026</span>
+    <span class="meta-chip">📅 Período: 18/08/2026 → 31/08/2026</span>
     <span class="meta-chip">🗄️ Supabase produção (qdivfairxhdihaqqypgb)</span>
     <span class="meta-chip">📐 Régua da skill /fluxo-atendimento</span>
-    <span class="meta-chip">⏱️ Estado das restrições = hoje</span>
+    <span class="meta-chip">🕐 Data = assinatura em America/Sao_Paulo</span>
   </div>
 </header>
 
 <div class="section">
-  <div class="section-header"><span class="section-icon">📊</span><span class="section-title">Visão geral</span></div>
+  <div class="section-header"><span class="section-icon">📊</span><span class="section-title">Visão geral do período</span></div>
   <div class="grid4">
     <div class="card kpi-primary">
-      <div class="kpi-value">667</div>
+      <div class="kpi-value">142</div>
       <div class="kpi-label">Clientes assinados</div>
-      <div class="kpi-sub">assinaram a procuração (fechamento)</div>
+      <div class="kpi-sub">1ª procuração assinada a partir de 18/08</div>
     </div>
     <div class="card kpi-info">
-      <div class="kpi-value">2.287</div>
+      <div class="kpi-value">525</div>
       <div class="kpi-label">Restrições processáveis</div>
       <div class="kpi-sub">desses clientes, estado de hoje</div>
     </div>
     <div class="card kpi-warn">
-      <div class="kpi-value">1.921</div>
+      <div class="kpi-value">312</div>
       <div class="kpi-label">Já foram para a distribuição</div>
-      <div class="kpi-sub">84% das processáveis viraram processo</div>
+      <div class="kpi-sub">59% das processáveis viraram processo</div>
     </div>
     <div class="card kpi-success">
-      <div class="kpi-value">1.668</div>
+      <div class="kpi-value">86</div>
       <div class="kpi-label">Já distribuídas</div>
-      <div class="kpi-sub">87% das enviadas foram ajuizadas</div>
+      <div class="kpi-sub">28% das enviadas foram ajuizadas</div>
     </div>
   </div>
 </div>
@@ -145,45 +144,28 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
       <tr>
         <td rowspan="4"><span class="badge badge-primary">RS</span></td>
         <td>Heloísa Miglioranza Schmitt</td>
-        <td class="num">174</td><td class="num">607</td><td class="num">569</td><td class="pct">94%</td><td class="num">510</td>
-      </tr>
-      <tr>
-        <td>Christian Dener Paz</td>
-        <td class="num">170</td><td class="num">578</td><td class="num">529</td><td class="pct">92%</td><td class="num">506</td>
+        <td class="num">20</td><td class="num">93</td><td class="num">78</td><td class="pct">84%</td><td class="num">19</td>
       </tr>
       <tr>
         <td>Stefany Larger França</td>
-        <td class="num">34</td><td class="num">110</td><td class="num">3</td><td class="pct">3%</td><td class="num">2</td>
+        <td class="num">16</td><td class="num">52</td><td class="num">3</td><td class="pct">6%</td><td class="num">2</td>
+      </tr>
+      <tr>
+        <td>Christian Dener Paz</td>
+        <td class="num">15</td><td class="num">51</td><td class="num">32</td><td class="pct">63%</td><td class="num">11</td>
       </tr>
       <tr class="uf-total">
         <td>Total RS</td>
-        <td class="num">378</td><td class="num">1.295</td><td class="num">1.101</td><td class="pct">85%</td><td class="num">1.018</td>
+        <td class="num">51</td><td class="num">196</td><td class="num">113</td><td class="pct">58%</td><td class="num">32</td>
       </tr>
       <tr>
         <td rowspan="2"><span class="badge badge-primary">SP</span></td>
         <td>Christian Dener Paz</td>
-        <td class="num">176</td><td class="num">626</td><td class="num">537</td><td class="pct">86%</td><td class="num">422</td>
+        <td class="num">52</td><td class="num">187</td><td class="num">121</td><td class="pct">65%</td><td class="num">31</td>
       </tr>
       <tr class="uf-total">
         <td>Total SP</td>
-        <td class="num">176</td><td class="num">626</td><td class="num">537</td><td class="pct">86%</td><td class="num">422</td>
-      </tr>
-      <tr>
-        <td rowspan="3"><span class="badge badge-primary">SC</span></td>
-        <td>Heloísa Miglioranza Schmitt</td>
-        <td class="num">44</td><td class="num">145</td><td class="num">141</td><td class="pct">97%</td><td class="num">125</td>
-      </tr>
-      <tr>
-        <td>Christian Dener Paz</td>
-        <td class="num">41</td><td class="num">121</td><td class="num">108</td><td class="pct">89%</td><td class="num">103</td>
-      </tr>
-      <tr>
-        <td>Stefany Larger França</td>
-        <td class="num">3</td><td class="num">7</td><td class="num">0</td><td class="pct">0%</td><td class="num">0</td>
-      </tr>
-      <tr class="uf-total">
-        <td>Total SC</td>
-        <td class="num">88</td><td class="num">273</td><td class="num">249</td><td class="pct">91%</td><td class="num">228</td>
+        <td class="num">52</td><td class="num">187</td><td class="num">121</td><td class="pct">65%</td><td class="num">31</td>
       </tr>
       <tr>
         <td rowspan="2"><span class="badge badge-warn">RJ</span></td>
@@ -195,6 +177,19 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
         <td class="num">19</td><td class="num">70</td><td class="num">34</td><td class="pct">49%</td><td class="num">0</td>
       </tr>
       <tr>
+        <td rowspan="3"><span class="badge badge-primary">SC</span></td>
+        <td>Heloísa Miglioranza Schmitt</td>
+        <td class="num">9</td><td class="num">34</td><td class="num">31</td><td class="pct">91%</td><td class="num">15</td>
+      </tr>
+      <tr>
+        <td>Christian Dener Paz</td>
+        <td class="num">8</td><td class="num">25</td><td class="num">13</td><td class="pct">52%</td><td class="num">8</td>
+      </tr>
+      <tr class="uf-total">
+        <td>Total SC</td>
+        <td class="num">17</td><td class="num">59</td><td class="num">44</td><td class="pct">75%</td><td class="num">23</td>
+      </tr>
+      <tr>
         <td rowspan="2"><span class="badge badge-warn">MG</span></td>
         <td>Christian Dener Paz</td>
         <td class="num">3</td><td class="num">13</td><td class="num">0</td><td class="pct">0%</td><td class="num">0</td>
@@ -203,22 +198,9 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
         <td>Total MG</td>
         <td class="num">3</td><td class="num">13</td><td class="num">0</td><td class="pct">0%</td><td class="num">0</td>
       </tr>
-      <tr>
-        <td rowspan="3"><span class="badge badge-danger">(sem UF)</span></td>
-        <td>(sem advogado vinculado)</td>
-        <td class="num">2</td><td class="num">6</td><td class="num">0</td><td class="pct">0%</td><td class="num">0</td>
-      </tr>
-      <tr>
-        <td>Christian Dener Paz</td>
-        <td class="num">1</td><td class="num">4</td><td class="num">0</td><td class="pct">0%</td><td class="num">0</td>
-      </tr>
-      <tr class="uf-total">
-        <td>Total (sem UF)</td>
-        <td class="num">3</td><td class="num">10</td><td class="num">0</td><td class="pct">0%</td><td class="num">0</td>
-      </tr>
       <tr class="grand-total">
         <td colspan="2">TOTAL GERAL</td>
-        <td class="num">667</td><td class="num">2.287</td><td class="num">1.921</td><td class="pct">84%</td><td class="num">1.668</td>
+        <td class="num">142</td><td class="num">525</td><td class="num">312</td><td class="pct">59%</td><td class="num">86</td>
       </tr>
     </tbody>
   </table>
@@ -230,27 +212,27 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
   <div class="grid4">
     <div class="card">
       <div class="card-title"><strong>Christian Dener Paz</strong></div>
-      <div class="kpi-value">391</div>
-      <div class="kpi-label">clientes assinados</div>
-      <div class="kpi-sub">1.342 restrições processáveis · 1.174 enviadas (87%) · 1.031 distribuídas</div>
+      <div class="kpi-value">78</div>
+      <div class="kpi-label">clientes assinados (SP·RS·SC·MG)</div>
+      <div class="kpi-sub">276 restrições processáveis · 166 enviadas (60%) · 50 distribuídas</div>
     </div>
     <div class="card">
       <div class="card-title"><strong>Heloísa Miglioranza Schmitt</strong></div>
-      <div class="kpi-value">237</div>
-      <div class="kpi-label">clientes assinados</div>
-      <div class="kpi-sub">822 restrições processáveis · 744 enviadas (91%) · 635 distribuídas</div>
+      <div class="kpi-value">48</div>
+      <div class="kpi-label">clientes assinados (RS·RJ·SC)</div>
+      <div class="kpi-sub">197 restrições processáveis · 143 enviadas (73%) · 34 distribuídas</div>
     </div>
     <div class="card">
       <div class="card-title"><strong>Stefany Larger França</strong></div>
-      <div class="kpi-value">37</div>
-      <div class="kpi-label">clientes assinados</div>
-      <div class="kpi-sub">117 restrições processáveis · 3 enviadas (3%) · 2 distribuídas</div>
+      <div class="kpi-value">16</div>
+      <div class="kpi-label">clientes assinados (RS)</div>
+      <div class="kpi-sub">52 restrições processáveis · 3 enviadas (6%) · 2 distribuídas</div>
     </div>
     <div class="card">
-      <div class="card-title"><strong>(sem advogado)</strong></div>
-      <div class="kpi-value">2</div>
+      <div class="card-title"><strong>Ritmo do período</strong></div>
+      <div class="kpi-value">~10/dia</div>
       <div class="kpi-label">clientes assinados</div>
-      <div class="kpi-sub">6 restrições processáveis · 0 enviadas — anomalia de cadastro</div>
+      <div class="kpi-sub">142 clientes em 14 dias · 3,7 restrições por cliente</div>
     </div>
   </div>
 </div>
@@ -260,29 +242,29 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
   <div class="pending-item p1">
     <div class="pending-icon">🟠</div>
     <div class="pending-content">
-      <strong>Christian e Heloísa rodam com a esteira madura: 87–91% das processáveis já viraram processo</strong>
-      <span>RS e SC acima de 85% de envio. O funil histórico está saudável nesses estados.</span>
-    </div>
-  </div>
-  <div class="pending-item p1">
-    <div class="pending-icon">🟠</div>
-    <div class="pending-content">
-      <strong>Stefany é o contraste: 117 processáveis e só 3 enviadas (3%)</strong>
-      <span>37 clientes assinados esperando a criação dos processos — é a maior lacuna proporcional do quadro.</span>
+      <strong>A esteira está absorvendo bem a volta: 59% do que entrou desde 18/08 já virou processo</strong>
+      <span>SC (75%) e RS da Heloísa (84%) na frente; SP com 65% e o maior volume absoluto (121 enviadas de 187).</span>
     </div>
   </div>
   <div class="pending-item p0">
     <div class="pending-icon">🔴</div>
     <div class="pending-content">
-      <strong>RJ: 49% enviadas e zero distribuídas</strong>
-      <span>As 34 enviadas aguardam o eproc TJRJ (credencial + TOTP + porte do worker). MG nem começou (0 enviadas de 13).</span>
+      <strong>Stefany destoa: 16 clientes e 52 processáveis no período, só 3 enviadas (6%)</strong>
+      <span>Todo o fechamento novo dela está parado antes da criação do processo.</span>
+    </div>
+  </div>
+  <div class="pending-item p0">
+    <div class="pending-icon">🔴</div>
+    <div class="pending-content">
+      <strong>RJ: 34 enviadas e zero distribuídas — travado no eproc TJRJ</strong>
+      <span>Falta credencial + TOTP e o porte do worker. MG (13 processáveis) nem começou a enviar.</span>
     </div>
   </div>
   <div class="pending-item p2">
     <div class="pending-icon">🔵</div>
     <div class="pending-content">
-      <strong>Anomalias de cadastro: 3 clientes sem UF, 2 deles sem advogado vinculado (10 restrições)</strong>
-      <span>Todo cliente fechado deveria ter advogado no lead — corrigir o cadastro antes de criar os processos.</span>
+      <strong>Só 28% das enviadas do período já foram ajuizadas (86 de 312)</strong>
+      <span>Normal para um recorte de 14 dias — o ajuizamento vem atrás do envio — mas vale acompanhar a conversão na próxima semana.</span>
     </div>
   </div>
 </div>
@@ -291,6 +273,7 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
   <div class="section-header"><span class="section-icon">📐</span><span class="section-title">Régua utilizada</span></div>
   <div class="card">
     <ul style="list-style: none; display: grid; gap: .4rem;">
+      <li>📅 <strong>Período</strong> — cliente entra se a <strong>primeira</strong> assinatura de fechamento dele foi a partir de 18/08/2026, pela data da assinatura em <span class="mono">America/Sao_Paulo</span> (fim de semana conta)</li>
       <li>✍️ <strong>Cliente assinado</strong> — envelope-pai <span class="mono">signed</span> com ≥1 procuração (<span class="mono">zapsign_envelopes</span> + <span class="mono">zapsign_envelope_docs.eh_procuracao</span>); quem assina vários envelopes conta uma vez</li>
       <li>⚖️ <strong>Restrição processável</strong> — <span class="mono">restricoes.processavel = true</span>, estado de hoje (a flag muda com re-auditoria)</li>
       <li>📤 <strong>Enviada para a distribuição</strong> — restrição com processo criado e vivo (<span class="mono">processo_id</span> → <span class="mono">processos.deleted_at IS NULL</span>), distribuída ou não</li>
@@ -302,7 +285,7 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
 </div>
 
 <footer>
-  Gerado em 31/08/2026 · Fonte: Supabase produção · Skill /fluxo-atendimento (régua) + consulta ad-hoc UF × advogado · MdFlow — MDX LegalTech
+  Gerado em 31/08/2026 · Período 18/08 → 31/08 · Fonte: Supabase produção · Skill /fluxo-atendimento (régua) + consulta ad-hoc UF × advogado · MdFlow — MDX LegalTech
 </footer>
 
 </body>
