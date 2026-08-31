@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pendentes de Distribuição — UF × Advogado</title>
+<title>Fila da Distribuição — UF × Advogado</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -46,9 +46,8 @@ h1 { font-family: Manrope, sans-serif; font-size: 1.6rem; font-weight: 700; }
 .section-icon { font-size: 1.1rem; }
 .section-title { font-family: Manrope, sans-serif; font-size: 1.1rem; font-weight: 600; }
 .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-.grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
 @media (max-width: 900px) { .grid4 { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) { .grid4, .grid2 { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .grid4 { grid-template-columns: 1fr; } }
 .card {
   background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem;
 }
@@ -73,8 +72,6 @@ tr.grand-total td { background: var(--primary-dim); font-weight: 700; border-top
 .badge-primary { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary-border); }
 .badge-warn { background: #f59e0b20; color: var(--warn); border: 1px solid #f59e0b40; }
 .badge-danger { background: #ef444420; color: var(--danger); border: 1px solid #ef444440; }
-.badge-info { background: #60a5fa20; color: var(--info); border: 1px solid #60a5fa40; }
-.badge-neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
 .pending-item {
   display: flex; gap: .75rem; background: var(--card); border: 1px solid var(--border);
   border-left: 3px solid var(--warn); border-radius: 10px; padding: .8rem 1rem; margin-bottom: .6rem;
@@ -85,8 +82,8 @@ tr.grand-total td { background: var(--primary-dim); font-weight: 700; border-top
 .pending-content strong { display: block; margin-bottom: .1rem; }
 .pending-content span { color: var(--muted); font-size: .82rem; }
 .bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--surface); margin-top: .5rem; }
-.bar .seg-fila { background: var(--info); }
-.bar .seg-semproc { background: var(--warn); }
+.seg-prep { background: var(--warn); }
+.seg-aguard { background: var(--info); }
 .legend { display: flex; gap: 1rem; margin-top: .4rem; font-size: .75rem; color: var(--muted); }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: .35rem; }
 footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1px solid var(--border); padding-top: 1rem; }
@@ -96,8 +93,8 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
 <body>
 
 <header>
-  <h1>Pendentes de Distribuição — por Estado e Advogado</h1>
-  <div class="subtitle">Restrições processáveis de clientes que já assinaram a procuração e ainda não foram distribuídas</div>
+  <h1>Fila da Distribuição — por Estado e Advogado</h1>
+  <div class="subtitle">Somente processos já enviados para a distribuição (criados, aguardando ajuizamento) — de clientes com procuração assinada e restrição processável</div>
   <div class="meta-row">
     <span class="meta-chip">📅 Gerado em 31/08/2026</span>
     <span class="meta-chip">🗄️ Supabase produção (qdivfairxhdihaqqypgb)</span>
@@ -110,24 +107,24 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
   <div class="section-header"><span class="section-icon">📊</span><span class="section-title">Visão geral</span></div>
   <div class="grid4">
     <div class="card kpi-primary">
-      <div class="kpi-value">619</div>
-      <div class="kpi-label">Restrições não distribuídas</div>
-      <div class="kpi-sub">de clientes com procuração assinada</div>
+      <div class="kpi-value">253</div>
+      <div class="kpi-label">Processos na fila da distribuição</div>
+      <div class="kpi-sub">criados e ainda não ajuizados</div>
     </div>
     <div class="card kpi-warn">
-      <div class="kpi-value">363</div>
-      <div class="kpi-label">Ainda sem processo criado</div>
-      <div class="kpi-sub">fila anterior à distribuição</div>
+      <div class="kpi-value">130</div>
+      <div class="kpi-label">Em preparação</div>
+      <div class="kpi-sub">etapa <span class="mono">preparacao</span></div>
     </div>
     <div class="card kpi-info">
-      <div class="kpi-value">256</div>
-      <div class="kpi-label">Na fila da distribuição</div>
-      <div class="kpi-sub">processo criado, aguardando ajuizamento</div>
+      <div class="kpi-value">123</div>
+      <div class="kpi-label">Aguardando</div>
+      <div class="kpi-sub">etapa <span class="mono">aguardando</span></div>
     </div>
     <div class="card">
-      <div class="kpi-value">185</div>
-      <div class="kpi-label">Clientes com pendência</div>
-      <div class="kpi-sub">≥1 restrição não distribuída</div>
+      <div class="kpi-value">73</div>
+      <div class="kpi-label">Clientes na fila</div>
+      <div class="kpi-sub">≥1 processo aguardando ajuizamento</div>
     </div>
   </div>
 </div>
@@ -140,91 +137,64 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
       <tr>
         <th>UF</th>
         <th>Advogado</th>
-        <th>Não distribuídas</th>
-        <th>Sem processo criado</th>
-        <th>Na fila da distribuição</th>
-        <th>Clientes pendentes</th>
-        <th>Já distribuídas</th>
+        <th>Na fila</th>
+        <th>Em preparação</th>
+        <th>Aguardando</th>
+        <th>Clientes</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td rowspan="4"><span class="badge badge-primary">RS</span></td>
-        <td>Stefany Larger França</td>
-        <td class="num">108</td><td class="num">107</td><td class="num">1</td><td class="num">34</td><td class="num">2</td>
-      </tr>
-      <tr>
-        <td>Heloísa Miglioranza Schmitt</td>
-        <td class="num">97</td><td class="num">38</td><td class="num">59</td><td class="num">27</td><td class="num">510</td>
-      </tr>
-      <tr>
-        <td>Christian Dener Paz</td>
-        <td class="num">72</td><td class="num">49</td><td class="num">23</td><td class="num">23</td><td class="num">506</td>
-      </tr>
-      <tr class="uf-total">
-        <td>Total RS</td>
-        <td class="num">277</td><td class="num">194</td><td class="num">83</td><td class="num">84</td><td class="num">1.018</td>
-      </tr>
-      <tr>
         <td rowspan="2"><span class="badge badge-primary">SP</span></td>
         <td>Christian Dener Paz</td>
-        <td class="num">204</td><td class="num">86</td><td class="num">118</td><td class="num">60</td><td class="num">422</td>
+        <td class="num">115</td><td class="num">53</td><td class="num">62</td><td class="num">33</td>
       </tr>
       <tr class="uf-total">
         <td>Total SP</td>
-        <td class="num">204</td><td class="num">86</td><td class="num">118</td><td class="num">60</td><td class="num">422</td>
+        <td class="num">115</td><td class="num">53</td><td class="num">62</td><td class="num">33</td>
+      </tr>
+      <tr>
+        <td rowspan="4"><span class="badge badge-primary">RS</span></td>
+        <td>Heloísa Miglioranza Schmitt</td>
+        <td class="num">59</td><td class="num">47</td><td class="num">12</td><td class="num">11</td>
+      </tr>
+      <tr>
+        <td>Christian Dener Paz</td>
+        <td class="num">23</td><td class="num">8</td><td class="num">15</td><td class="num">9</td>
+      </tr>
+      <tr>
+        <td>Stefany Larger França</td>
+        <td class="num">1</td><td class="num">0</td><td class="num">1</td><td class="num">1</td>
+      </tr>
+      <tr class="uf-total">
+        <td>Total RS</td>
+        <td class="num">83</td><td class="num">55</td><td class="num">28</td><td class="num">21</td>
       </tr>
       <tr>
         <td rowspan="2"><span class="badge badge-warn">RJ</span></td>
         <td>Heloísa Miglioranza Schmitt</td>
-        <td class="num">70</td><td class="num">36</td><td class="num">34</td><td class="num">19</td><td class="num">0</td>
+        <td class="num">34</td><td class="num">15</td><td class="num">19</td><td class="num">11</td>
       </tr>
       <tr class="uf-total">
         <td>Total RJ</td>
-        <td class="num">70</td><td class="num">36</td><td class="num">34</td><td class="num">19</td><td class="num">0</td>
+        <td class="num">34</td><td class="num">15</td><td class="num">19</td><td class="num">11</td>
       </tr>
       <tr>
-        <td rowspan="4"><span class="badge badge-primary">SC</span></td>
+        <td rowspan="3"><span class="badge badge-primary">SC</span></td>
         <td>Heloísa Miglioranza Schmitt</td>
-        <td class="num">20</td><td class="num">4</td><td class="num">16</td><td class="num">7</td><td class="num">125</td>
+        <td class="num">16</td><td class="num">5</td><td class="num">11</td><td class="num">5</td>
       </tr>
       <tr>
         <td>Christian Dener Paz</td>
-        <td class="num">18</td><td class="num">13</td><td class="num">5</td><td class="num">7</td><td class="num">103</td>
-      </tr>
-      <tr>
-        <td>Stefany Larger França</td>
-        <td class="num">7</td><td class="num">7</td><td class="num">0</td><td class="num">3</td><td class="num">0</td>
+        <td class="num">5</td><td class="num">2</td><td class="num">3</td><td class="num">3</td>
       </tr>
       <tr class="uf-total">
         <td>Total SC</td>
-        <td class="num">45</td><td class="num">24</td><td class="num">21</td><td class="num">17</td><td class="num">228</td>
-      </tr>
-      <tr>
-        <td rowspan="2"><span class="badge badge-warn">MG</span></td>
-        <td>Christian Dener Paz</td>
-        <td class="num">13</td><td class="num">13</td><td class="num">0</td><td class="num">3</td><td class="num">0</td>
-      </tr>
-      <tr class="uf-total">
-        <td>Total MG</td>
-        <td class="num">13</td><td class="num">13</td><td class="num">0</td><td class="num">3</td><td class="num">0</td>
-      </tr>
-      <tr>
-        <td rowspan="3"><span class="badge badge-danger">(sem UF)</span></td>
-        <td>(sem advogado vinculado)</td>
-        <td class="num">6</td><td class="num">6</td><td class="num">0</td><td class="num">1</td><td class="num">0</td>
-      </tr>
-      <tr>
-        <td>Christian Dener Paz</td>
-        <td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">1</td><td class="num">0</td>
-      </tr>
-      <tr class="uf-total">
-        <td>Total (sem UF)</td>
-        <td class="num">10</td><td class="num">10</td><td class="num">0</td><td class="num">2</td><td class="num">0</td>
+        <td class="num">21</td><td class="num">7</td><td class="num">14</td><td class="num">8</td>
       </tr>
       <tr class="grand-total">
         <td colspan="2">TOTAL GERAL</td>
-        <td class="num">619</td><td class="num">363</td><td class="num">256</td><td class="num">185</td><td class="num">1.668</td>
+        <td class="num">253</td><td class="num">130</td><td class="num">123</td><td class="num">73</td>
       </tr>
     </tbody>
   </table>
@@ -236,36 +206,35 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
   <div class="grid4">
     <div class="card">
       <div class="card-title"><strong>Christian Dener Paz</strong></div>
-      <div class="kpi-value">311</div>
-      <div class="kpi-label">não distribuídas (RS·SC·SP·MG)</div>
-      <div class="bar"><div class="seg-semproc" style="width:53%"></div><div class="seg-fila" style="width:47%"></div></div>
-      <div class="kpi-sub">165 sem processo · 146 na fila</div>
+      <div class="kpi-value">143</div>
+      <div class="kpi-label">na fila (SP · RS · SC)</div>
+      <div class="bar"><div class="seg-prep" style="width:44%"></div><div class="seg-aguard" style="width:56%"></div></div>
+      <div class="kpi-sub">63 em preparação · 80 aguardando</div>
     </div>
     <div class="card">
       <div class="card-title"><strong>Heloísa Miglioranza Schmitt</strong></div>
-      <div class="kpi-value">187</div>
-      <div class="kpi-label">não distribuídas (RS·SC·RJ)</div>
-      <div class="bar"><div class="seg-semproc" style="width:42%"></div><div class="seg-fila" style="width:58%"></div></div>
-      <div class="kpi-sub">78 sem processo · 109 na fila</div>
+      <div class="kpi-value">109</div>
+      <div class="kpi-label">na fila (RS · RJ · SC)</div>
+      <div class="bar"><div class="seg-prep" style="width:61%"></div><div class="seg-aguard" style="width:39%"></div></div>
+      <div class="kpi-sub">67 em preparação · 42 aguardando</div>
     </div>
     <div class="card">
       <div class="card-title"><strong>Stefany Larger França</strong></div>
-      <div class="kpi-value">115</div>
-      <div class="kpi-label">não distribuídas (RS·SC)</div>
-      <div class="bar"><div class="seg-semproc" style="width:99%"></div><div class="seg-fila" style="width:1%"></div></div>
-      <div class="kpi-sub">114 sem processo · 1 na fila</div>
+      <div class="kpi-value">1</div>
+      <div class="kpi-label">na fila (RS)</div>
+      <div class="bar"><div class="seg-aguard" style="width:100%"></div></div>
+      <div class="kpi-sub">1 aguardando</div>
     </div>
     <div class="card">
-      <div class="card-title"><strong>(sem advogado)</strong></div>
-      <div class="kpi-value">6</div>
-      <div class="kpi-label">não distribuídas</div>
-      <div class="bar"><div class="seg-semproc" style="width:100%"></div></div>
-      <div class="kpi-sub">anomalia de cadastro — investigar</div>
+      <div class="card-title"><strong>MG</strong></div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-label">na fila</div>
+      <div class="kpi-sub">nenhum processo de MG chegou à distribuição ainda</div>
     </div>
   </div>
   <div class="legend">
-    <span><span class="dot" style="background:var(--warn)"></span>Sem processo criado</span>
-    <span><span class="dot" style="background:var(--info)"></span>Na fila da distribuição</span>
+    <span><span class="dot" style="background:var(--warn)"></span>Em preparação</span>
+    <span><span class="dot" style="background:var(--info)"></span>Aguardando</span>
   </div>
 </div>
 
@@ -274,36 +243,29 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
   <div class="pending-item p0">
     <div class="pending-icon">🔴</div>
     <div class="pending-content">
-      <strong>RJ 100% travado na distribuição — 70 restrições, zero distribuídas</strong>
-      <span>Ajuizamento no RJ é obrigatório via eproc TJRJ desde 26/02. As 34 da fila aguardam credencial + TOTP e o porte do worker. Todas da Heloísa.</span>
+      <strong>RJ: 34 na fila e zero saída possível</strong>
+      <span>Ajuizamento no RJ é obrigatório via eproc TJRJ desde 26/02 — falta credencial + TOTP e o porte do worker. Todos da Heloísa (11 clientes).</span>
     </div>
   </div>
   <div class="pending-item p1">
     <div class="pending-icon">🟠</div>
     <div class="pending-content">
-      <strong>Stefany quase toda na ponta do atendimento: 114 de 115 sem processo criado</strong>
-      <span>O gargalo dela não é a distribuição — é criar os processos dos clientes fechados (34 clientes no RS + 3 em SC).</span>
-    </div>
-  </div>
-  <div class="pending-item p1">
-    <div class="pending-icon">🟠</div>
-    <div class="pending-content">
-      <strong>SP concentra a maior fila de distribuição: 118 processos criados aguardando</strong>
-      <span>Tudo do Christian. É o maior bloco único de trabalho pendente de ajuizamento.</span>
+      <strong>SP é quase metade da fila: 115 de 253 (45%)</strong>
+      <span>Tudo do Christian, 33 clientes. 62 já em "aguardando" — é o maior bloco pronto para ajuizar.</span>
     </div>
   </div>
   <div class="pending-item p2">
     <div class="pending-icon">🔵</div>
     <div class="pending-content">
-      <strong>MG parado na criação: 13 restrições, nada enviado</strong>
-      <span>Banco e front de OAB MG/RJ prontos; DOCX + PJe ainda pendentes.</span>
+      <strong>Heloísa concentra a preparação: 67 dos 130 em "preparacao"</strong>
+      <span>Principalmente RS (47). São processos criados mas ainda em montagem antes de entrar na esteira.</span>
     </div>
   </div>
   <div class="pending-item p2">
     <div class="pending-icon">🔵</div>
     <div class="pending-content">
-      <strong>Anomalias de cadastro: 10 restrições sem UF (2 clientes), 6 delas sem advogado vinculado</strong>
-      <span>Todo cliente fechado deveria ter advogado no lead. Vale corrigir o cadastro antes de criar os processos.</span>
+      <strong>3 restrições de SP apontam para processos soft-deletados</strong>
+      <span>Contavam como "na fila" no levantamento anterior (256 → 253). Na prática voltaram para a fila de criação — vale re-vincular ou limpar o <span class="mono">processo_id</span>.</span>
     </div>
   </div>
 </div>
@@ -314,9 +276,10 @@ footer { color: var(--muted); font-size: .75rem; margin-top: 3rem; border-top: 1
     <ul style="list-style: none; display: grid; gap: .4rem;">
       <li>✍️ <strong>Procuração assinada</strong> — envelope-pai <span class="mono">signed</span> com ≥1 procuração (<span class="mono">zapsign_envelopes</span> + <span class="mono">zapsign_envelope_docs.eh_procuracao</span>)</li>
       <li>⚖️ <strong>Restrição processável</strong> — <span class="mono">restricoes.processavel = true</span>, estado de hoje (a flag muda com re-auditoria)</li>
-      <li>📤 <strong>Não distribuída</strong> — sem processo criado (<span class="mono">processo_id IS NULL</span>) ou processo criado com <span class="mono">distribuido ≠ true</span></li>
+      <li>📤 <strong>Na fila da distribuição</strong> — restrição com processo criado e vivo (<span class="mono">processo_id</span> → <span class="mono">processos.deleted_at IS NULL</span>) e <span class="mono">distribuido ≠ true</span>. Excluídas: sem processo criado e já distribuídas.</li>
+      <li>🪜 <strong>Etapas</strong> — <span class="mono">preparacao → aguardando → agendado → em_distribuicao → distribuido</span>; hoje a fila só tem as duas primeiras</li>
       <li>👤 <strong>Advogado</strong> — vínculo do lead (<span class="mono">leads.advogado_id</span>), agrupado por nome (um advogado tem várias OABs)</li>
-      <li>🗺️ <strong>UF</strong> — <span class="mono">clientes.endereco_uf</span> com fallback <span class="mono">leads.endereco_uf</span> (as restrições do RJ vinculam por <span class="mono">lead_id</span>)</li>
+      <li>🗺️ <strong>UF</strong> — <span class="mono">clientes.endereco_uf</span> com fallback <span class="mono">leads.endereco_uf</span></li>
     </ul>
   </div>
 </div>
